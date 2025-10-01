@@ -7,7 +7,7 @@ interface ElectronIntegrationProps {
 
 const ElectronIntegration: React.FC<ElectronIntegrationProps> = ({ children }) => {
   const [isElectron, setIsElectron] = useState(false);
-  const [electronAPI, setElectronAPI] = useState<ElectronAPI | null>(null);
+  const [_electronAPI, setElectronAPI] = useState<ElectronAPI | null>(null);
   const [appVersion, setAppVersion] = useState<string>('');
 
   useEffect(() => {

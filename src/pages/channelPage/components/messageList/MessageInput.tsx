@@ -7,7 +7,7 @@ const MessageInput: React.FC = observer(() => {
     const [message, setMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const typingTimeoutRef = useRef<NodeJS.Timeout>();
+    const typingTimeoutRef = useRef<number | null>(null);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;

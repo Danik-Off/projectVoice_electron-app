@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 import audioSettingsStore from '../../../../store/AudioSettingsStore';

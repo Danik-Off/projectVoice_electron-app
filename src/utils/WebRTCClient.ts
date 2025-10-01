@@ -18,8 +18,6 @@ class WebRTCClient {
 
     private localStream: MediaStream | null = null;
 
-    private isMuteMicro = false;
-
     //управление Медиа
     public async initializeMedia() {
         console.log('WebRTCClient: Initializing media...');
@@ -94,12 +92,11 @@ class WebRTCClient {
             const offer = await peerConnection.createOffer({
                 offerToReceiveAudio: true,
                 offerToReceiveVideo: false,
-                voiceActivityDetection: true, // Включаем детекцию голосовой активности
             });
             
             // Модифицируем SDP для максимального качества звука
             const modifiedSdp = this.optimizeSdpForHighQualityAudio(offer.sdp || '');
-            const optimizedOffer = { ...offer, sdp: modifiedSdp };
+            const optimizedOffer: RTCSessionDescriptionInit = { type: offer.type, sdp: modifiedSdp };
             
             await peerConnection.setLocalDescription(optimizedOffer);
             const sdp = optimizedOffer.sdp;
@@ -202,7 +199,7 @@ class WebRTCClient {
         // Приоритет кодека Opus с максимальным битрейтом
         optimizedSdp = optimizedSdp.replace(
             /m=audio (\d+) RTP\/SAVPF ([\d\s]+)/,
-            (match, port, codecs) => {
+            (_match, port, codecs) => {
                 // Устанавливаем Opus как приоритетный кодек
                 const opusCodec = '111'; // Opus кодек
                 const newCodecs = `${opusCodec} ${codecs.replace(opusCodec, '').trim()}`;
@@ -213,7 +210,7 @@ class WebRTCClient {
         // Настройки Opus кодека для максимального качества
         optimizedSdp = optimizedSdp.replace(
             /a=fmtp:111 (.+)/,
-            (match, params) => {
+            (_match, _params) => {
                 // Устанавливаем максимальные параметры качества для Opus
                 const optimizedParams = [
                     'minptime=10',           // Минимальное время пакета
@@ -239,7 +236,7 @@ class WebRTCClient {
         // Настройки для уменьшения задержки
         optimizedSdp = optimizedSdp.replace(
             /a=rtcp-fb:111 (.+)/,
-            (match, params) => {
+            (_match, _params) => {
                 const enhancedParams = [
                     'goog-remb',     // Google REMB для адаптивного битрейта
                     'transport-cc', // Transport-wide congestion control
@@ -431,7 +428,7 @@ class WebRTCClient {
             console.error('чего то нет ');
         }
     }
-    
+
     // Управление состоянием mute для всех удаленных аудиоэлементов
     public setRemoteAudioMuted(muted: boolean): void {
         this.gainNodes.forEach((gainNode, socketId) => {

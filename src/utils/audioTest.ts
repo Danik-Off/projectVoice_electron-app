@@ -22,7 +22,6 @@ export interface AudioTestResult {
 class AudioQualityTester {
     private audioContext: AudioContext | null = null;
     private analyser: AnalyserNode | null = null;
-    private microphone: MediaStream | null = null;
     private testResults: AudioTestResult[] = [];
 
     /**
@@ -90,7 +89,6 @@ class AudioQualityTester {
                     sampleRate: 48000,
                     sampleSize: 32,
                     channelCount: 2,
-                    latency: 0.01 // Минимальная задержка
                 }
             });
 
@@ -120,8 +118,6 @@ class AudioQualityTester {
                     sampleRate: 48000,
                     sampleSize: 32,
                     channelCount: 2,
-                    latency: 0.005, // Профессиональная задержка
-                    volume: 1.0,
                     deviceId: { ideal: 'default' }
                 }
             });
@@ -369,7 +365,6 @@ class AudioQualityTester {
         }
         this.audioContext = null;
         this.analyser = null;
-        this.microphone = null;
         this.testResults = [];
     }
 }

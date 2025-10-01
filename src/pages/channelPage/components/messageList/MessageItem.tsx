@@ -19,7 +19,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     const [showActions, setShowActions] = useState(false);
     const editInputRef = useRef<HTMLTextAreaElement>(null);
     const messageRef = useRef<HTMLDivElement>(null);
-    const actionsTimeoutRef = useRef<NodeJS.Timeout>();
+    const actionsTimeoutRef = useRef<number | null>(null);
     const { openProfile } = useUserProfile();
 
     const currentUser = authStore.user;

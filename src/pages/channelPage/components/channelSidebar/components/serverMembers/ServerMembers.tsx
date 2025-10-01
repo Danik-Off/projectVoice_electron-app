@@ -37,17 +37,6 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(({
         }));
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'owner': return '#ff6b6b';
-            case 'admin': return '#ffa726';
-            case 'moderator': return '#66bb6a';
-            case 'member': return '#90a4ae';
-            default: return '#90a4ae';
-        }
-    };
-
     const getRoleIcon = (role: string) => {
         switch (role) {
             case 'owner': return '👑';

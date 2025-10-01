@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, type JSX } from 'react';
 import { observer } from 'mobx-react';
 import { adminService } from '../../services/adminService';
 import { authStore } from '../../store/authStore';
@@ -648,8 +648,23 @@ const ServersManagement: React.FC<{
     getServerStatusBadge
 }) => {
     return (
-        <div className="table-container">
-            <table>
+        <>
+            <div className="filters">
+                <input
+                    type="text"
+                    placeholder="Поиск по названию сервера..."
+                    value={searchTerm}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                />
+                <select value={statusFilter} onChange={(e) => onStatusFilterChange(e.target.value)}>
+                    <option value="">Все статусы</option>
+                    <option value="active">Активные</option>
+                    <option value="blocked">Заблокированные</option>
+                </select>
+            </div>
+
+            <div className="table-container">
+                <table>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -675,12 +690,21 @@ const ServersManagement: React.FC<{
                             <td>{new Date(server.createdAt).toLocaleDateString()}</td>
                             <td>{getServerStatusBadge(server.isBlocked)}</td>
                             <td>
-                                <button
-                                    onClick={() => onBlockServer(server.id, server.name)}
-                                    className="block-btn"
-                                >
-                                    {server.isBlocked ? 'Разблокировать' : 'Заблокировать'}
-                                </button>
+                                {server.isBlocked ? (
+                                    <button
+                                        onClick={() => onUnblockServer(server.id)}
+                                        className="unblock-btn"
+                                    >
+                                        ✅ Разблокировать
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => onBlockServer(server.id, server.name)}
+                                        className="block-btn"
+                                    >
+                                        🚫 Заблокировать
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => onDeleteServer(server.id)}
                                     className="delete-btn"
@@ -693,6 +717,23 @@ const ServersManagement: React.FC<{
                 </tbody>
             </table>
         </div>
+
+        <div className="pagination">
+            <button 
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+            >
+                ← Предыдущая
+            </button>
+            <span>Страница {currentPage} из {totalPages}</span>
+            <button 
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+            >
+                Следующая →
+            </button>
+        </div>
+        </>
     );
 };
 

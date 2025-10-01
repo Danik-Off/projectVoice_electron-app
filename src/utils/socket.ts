@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { getCookie } from './cookie';
-import type { SocketClientState } from '../types/socket.types';
+import { SocketClientState } from '../types/socket.types';
 import { iceServers } from '../configs/iceServers';
 
 class SocketClient {
@@ -83,7 +83,7 @@ class SocketClient {
             this.socket?.emit('join-room', channelId, this.token);
         });
 
-        this.socket.on('created', async (user: { socketId: string }) => {
+        this.socket.on('created', async (_user: { socketId: string }) => {
             await this.initializeMedia(); // Initialize media
         });
 
@@ -100,7 +100,7 @@ class SocketClient {
             this.handleSignal(data);
         });
 
-        this.socket.on('connect_error', (error) => {
+        this.socket.on('connect_error', (_error) => {
             // Ошибка Socket.IO подключения
         });
 
