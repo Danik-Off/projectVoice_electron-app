@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "description": "ProjectVoice - Voice communication application",
   "author": "Danila Ovchinnikov (Danik Off)",
+  "license": "MIT",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron\"",
