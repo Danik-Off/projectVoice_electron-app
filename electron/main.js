@@ -1,191 +1,84 @@
-const { app, BrowserWindow, Menu, shell } = require('electron');
-const path = require('path');
-const http = require('http');
-const fs = require('fs');
-const url = require('url');
-const isDev = process.env.NODE_ENV === 'development';
+const { app, BrowserWindow } = require('electron/main')
+const path = require('node:path')
+const { spawn } = require('child_process')
+const isDev = process.env.NODE_ENV === 'development'
 
-let mainWindow;
-let server;
+let serverProcess = null
 
-// Функция для запуска легкого HTTP сервера в продакшн
-function startLocalServer() {
-  if (!isDev && !server) {
-    const buildPath = path.join(__dirname, '..');
+function startServer() {
+  if (!isDev && !serverProcess) {
+    const serverPath = path.join(__dirname, '../server.js')
+    serverProcess = spawn('node', [serverPath], {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'pipe'
+    })
     
-    server = http.createServer((req, res) => {
-      const parsedUrl = url.parse(req.url);
-      let pathname = parsedUrl.pathname;
-      
-      // Если запрос к корню, возвращаем index.html
-      if (pathname === '/') {
-        pathname = '/index.html';
-      }
-      
-      // Если запрос к файлу, который не существует, возвращаем index.html для SPA
-      const filePath = path.join(buildPath, pathname);
-      
-      fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-          // Файл не найден, возвращаем index.html для клиентской маршрутизации
-          const indexPath = path.join(buildPath, 'index.html');
-          fs.readFile(indexPath, (err, data) => {
-            if (err) {
-              res.writeHead(404);
-              res.end('File not found');
-            } else {
-              res.writeHead(200, { 'Content-Type': 'text/html' });
-              res.end(data);
-            }
-          });
-        } else {
-          // Файл найден, отдаем его
-          const ext = path.extname(filePath);
-          const contentType = getContentType(ext);
-          
-          fs.readFile(filePath, (err, data) => {
-            if (err) {
-              res.writeHead(500);
-              res.end('Server error');
-            } else {
-              res.writeHead(200, { 'Content-Type': contentType });
-              res.end(data);
-            }
-          });
-        }
-      });
-    });
+    serverProcess.stdout.on('data', (data) => {
+      console.log(`Server: ${data}`)
+    })
     
-    // Запускаем сервер на порту 3001
-    server.listen(3001, () => {
-      console.log('Local server started on port 3001');
-    });
+    serverProcess.stderr.on('data', (data) => {
+      console.error(`Server error: ${data}`)
+    })
   }
 }
 
-// Функция для определения типа контента
-function getContentType(ext) {
-  const types = {
-    '.html': 'text/html',
-    '.js': 'application/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon'
-  };
-  return types[ext] || 'application/octet-stream';
-}
-
-function createWindow() {
-  // Создаем главное окно приложения
-  mainWindow = new BrowserWindow({
+function createWindow () {
+  const win = new BrowserWindow({
     width: 1200,
     height: 800,
-    minWidth: 800,
-    minHeight: 600,
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      enableRemoteModule: false,
-      preload: path.join(__dirname, 'preload.js'),
-      webSecurity: true
+      enableRemoteModule: false
     },
-    icon: path.join(__dirname, '../favicon.ico'),
-    titleBarStyle: 'default',
-    show: false
-  });
-
-  // Запускаем локальный сервер в продакшн режиме
-  if (!isDev) {
-    startLocalServer();
-  }
-
-  // Загружаем приложение
-  const startUrl = isDev 
-    ? 'http://localhost:3000' 
-    : 'http://localhost:3001';
-  
-  mainWindow.loadURL(startUrl);
+    icon: path.join(__dirname, '../public/vite.svg'),
+    show: false,
+    autoHideMenuBar: true
+  })
 
   // Показываем окно когда оно готово
-  mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
-    
+  win.once('ready-to-show', () => {
+    win.show()
+  })
+
+  // Загружаем приложение
+  if (isDev) {
+    win.loadURL('http://localhost:3000')
     // Открываем DevTools в режиме разработки
-    if (isDev) {
-      mainWindow.webContents.openDevTools();
-    }
-  });
-
-  // Обработка закрытия окна
-  mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
-
-  // Обработка внешних ссылок
-  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
-    return { action: 'deny' };
-  });
-
-  // Предотвращаем навигацию на внешние сайты
-  mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
-    const parsedUrl = new URL(navigationUrl);
-    
-    // Разрешаем навигацию только в пределах localhost:3000 и localhost:3001
-    if (parsedUrl.origin !== 'http://localhost:3000' && 
-        parsedUrl.origin !== 'http://localhost:3001') {
-      event.preventDefault();
-      shell.openExternal(navigationUrl);
-    }
-  });
+    win.webContents.openDevTools()
+  } else {
+    // Запускаем сервер и загружаем приложение
+    startServer()
+    // Ждем немного для запуска сервера
+    setTimeout(() => {
+      win.loadURL('http://localhost:3000')
+    }, 2000)
+  }
 }
 
-// Создаем меню приложения
-function createMenu() {
-  // Устанавливаем пустое меню для скрытия строки меню
-  Menu.setApplicationMenu(null);
-}
-
-// События приложения
 app.whenReady().then(() => {
-  createWindow();
-  createMenu();
+  createWindow()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWindow()
     }
-  });
-});
+  })
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    // Закрываем сервер при закрытии приложения
-    if (server) {
-      server.close();
+    if (serverProcess) {
+      serverProcess.kill()
     }
-    app.quit();
+    app.quit()
   }
-});
+})
 
-// Обработка протокола приложения (для глубоких ссылок)
-app.setAsDefaultProtocolClient('projectvoice');
-
-// Обработка запуска приложения через протокол
-app.on('open-url', (event, url) => {
-  event.preventDefault();
-  // Здесь можно обработать глубокие ссылки
-  console.log('Deep link received:', url);
-});
-
-// Предотвращаем создание новых окон
-app.on('web-contents-created', (event, contents) => {
-  contents.on('new-window', (event, navigationUrl) => {
-    event.preventDefault();
-    shell.openExternal(navigationUrl);
-  });
-});
+app.on('before-quit', () => {
+  if (serverProcess) {
+    serverProcess.kill()
+  }
+})

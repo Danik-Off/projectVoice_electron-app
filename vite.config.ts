@@ -30,5 +30,9 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  // Настройки для Electron
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
   }
 })
