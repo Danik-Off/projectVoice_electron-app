@@ -5,6 +5,7 @@ import { authStore } from '../../store/authStore';
 import { themeStore } from '../../store/ThemeStore';
 import Spinner from '../../components/spinner/Spinner';
 import BlockedAccountModal from '../../components/BlockedAccountModal';
+import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
 import './Auth.scss';
 import LoginForm from './components/loginForm/LoginForm';
 import RegisterForm from './components/registerForm/RegisterForm';
@@ -43,6 +44,7 @@ const AuthPage: React.FC = observer(() => {
 
     return (
         <div className={`auth-container theme-${themeStore.currentTheme}`}>
+            <ToastNotifications />
             {authStore.loading && (
                 <div className="spinner-container">
                     <Spinner />

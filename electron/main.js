@@ -105,8 +105,8 @@ function createWindow() {
 
   // Загружаем приложение
   const startUrl = isDev 
-    ? 'http://localhost:3000/auth' 
-    : 'http://localhost:3001/auth';
+    ? 'http://localhost:3000' 
+    : 'http://localhost:3001';
   
   mainWindow.loadURL(startUrl);
 

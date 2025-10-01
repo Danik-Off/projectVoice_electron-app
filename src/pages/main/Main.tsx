@@ -5,6 +5,7 @@ import ServerSidebar from './components/serverSlidebar/ServerSidebar';
 import ServerCreateModal from './components/serverSlidebar/serverCreateModal/ServerCreateModal';
 import VoiceControls from '../channelPage/components/channelSidebar/components/voiceControls/VoiceControls';
 import { UserProfileProvider } from '../../components/UserProfileProvider';
+import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
 import voiceRoomStore from '../../store/roomStore';
 import audioSettingsStore from '../../store/AudioSettingsStore';
 
@@ -38,6 +39,7 @@ const Layout = observer(() => {
     return (
         <UserProfileProvider>
             <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`} onClick={initMedia}>
+                <ToastNotifications />
                 {shouldShowVoiceControls && <VoiceControls />}
                 <ServerSidebar onOpenModal={() => setModalOpen(true)} />
                 <div className="content-page">

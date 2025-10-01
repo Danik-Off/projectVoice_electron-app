@@ -1,18 +1,21 @@
-export enum SocketClientState {
-    INIT = 'init',
-    CONNECTING = 'connecting',
-    CONNECTED = 'connected',
-    DISCONNECTED = 'disconnected',
-    ERROR = 'error',
-    RECONNECTING = 'reconnecting',
-    MEDIA_INITIALIZING = 'media_initializing',
-    MEDIA_INITIALIZED = 'media_initialized',
-    MEDIA_ERROR = 'media_error',
-    PEER_CONNECTION_CREATING = 'peer_connection_creating',
-    PEER_CONNECTION_ESTABLISHED = 'peer_connection_established',
-    PEER_CONNECTION_CLOSED = 'peer_connection_closed',
-    SIGNALING_ERROR = 'signaling_error',
-}
+export const SocketClientState = {
+    INIT: 'init',
+    CONNECTING: 'connecting',
+    CONNECTED: 'connected',
+    DISCONNECTED: 'disconnected',
+    ERROR: 'error',
+    RECONNECTING: 'reconnecting',
+    MEDIA_INITIALIZING: 'media_initializing',
+    MEDIA_INITIALIZED: 'media_initialized',
+    MEDIA_ERROR: 'media_error',
+    PEER_CONNECTION_CREATING: 'peer_connection_creating',
+    PEER_CONNECTION_ESTABLISHED: 'peer_connection_established',
+    PEER_CONNECTION_CLOSED: 'peer_connection_closed',
+    SIGNALING_ERROR: 'signaling_error',
+} as const;
+
+export type SocketClientState = typeof SocketClientState[keyof typeof SocketClientState];
+
 export const stateMessages: { [key in SocketClientState]: string } = {
     [SocketClientState.INIT]: 'Состояние инициализировано.',
     [SocketClientState.CONNECTING]: 'Соединение устанавливается...',

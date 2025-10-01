@@ -19,7 +19,15 @@ class NotificationStore {
     addNotification(message: string, type: 'info' | 'success' | 'error' | 'warning', duration: number = 5000) {
         const id = Math.random().toString(36).substr(2, 9); // simple ID generator
         // Проверяем, является ли сообщение ключом перевода
-        const translatedMessage = message.startsWith('notifications.') ? i18n.t(message) : message;
+        let translatedMessage = message;
+        if (message.startsWith('notifications.')) {
+            try {
+                translatedMessage = i18n.t(message);
+            } catch (error) {
+                console.warn('Translation error:', error);
+                translatedMessage = message;
+            }
+        }
         const notification: Notification = { id, message: translatedMessage, type, duration };
         this.notifications.push(notification);
 

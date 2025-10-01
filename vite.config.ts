@@ -15,19 +15,15 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    proxy: {
-      '/api': {
-        target: 'http://77.222.58.224:5000',
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
-      }
-    }
+    cors: true,
   },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: true
+    sourcemap: true,
+    rollupOptions: {
+      external: ['electron']
+    }
   },
   base: './',
   resolve: {

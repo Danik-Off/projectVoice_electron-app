@@ -431,9 +431,7 @@ class WebRTCClient {
             console.error('чего то нет ');
         }
     }
-
-    private setState(): void {}
-
+    
     // Управление состоянием mute для всех удаленных аудиоэлементов
     public setRemoteAudioMuted(muted: boolean): void {
         this.gainNodes.forEach((gainNode, socketId) => {

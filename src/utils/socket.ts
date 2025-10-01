@@ -49,7 +49,6 @@ class SocketClient {
             this.localStream.getAudioTracks().forEach((track) => {
                 track.enabled = false; // Mute the audio track
             });
-            console.log('Микрофон отключен');
             this.socket?.emit('mute');
             this.isMuteMicro = true;
         }
@@ -60,7 +59,6 @@ class SocketClient {
             this.localStream.getAudioTracks().forEach((track) => {
                 track.enabled = true; // Unmute the audio track
             });
-            console.log('Микрофон включен');
             this.socket?.emit('unmute');
             this.isMuteMicro = false;
         }
@@ -68,50 +66,46 @@ class SocketClient {
 
     public connect(channelId: number) {
         if (this.socket && this.socket.connected) {
-            console.log('Соединение уже установлено');
             return;
         }
 
         // const url = `https://projectvoice.suzenebl.ru`;
-        const url = import.meta.env.DEV ? 'http://localhost:5555' : 'http://77.222.58.224:5555';
+        const url = 'http://77.222.58.224:5555';
         this.socket = io(url, {
             path: '/socket',
             query: { token: this.token },
-            transports: ['websocket'],
+            transports: ['websocket', 'polling'],
+            timeout: 20000,
+            forceNew: true
         });
 
         this.socket.on('connect', () => {
-            console.log('Соединение с Socket.IO установлено');
             this.socket?.emit('join-room', channelId, this.token);
         });
 
         this.socket.on('created', async (user: { socketId: string }) => {
-            console.log(`Пользователь ${user.socketId} подключен`);
             await this.initializeMedia(); // Initialize media
         });
 
         this.socket.on('user-connected', async (user: { socketId: string }) => {
-            console.log(`Пользователь ${user.socketId} подключен`);
             await this.initializeMedia(); // Initialize media
             this.createOffer(user.socketId); // Initiate connection with the new user
         });
 
         this.socket.on('user-disconnected', (socketId: string) => {
-            console.log(`Пользователь ${socketId} отключен`);
             this.disconnectPeer(socketId); // Close connection with the disconnected user
         });
 
         this.socket.on('signal', (data) => {
-            console.log(data);
             this.handleSignal(data);
         });
 
         this.socket.on('connect_error', (error) => {
-            console.error('Ошибка Socket.IO подключения:', error);
+            // Ошибка Socket.IO подключения
         });
 
         this.socket.on('disconnect', () => {
-            console.log('Соединение с Socket.IO закрыто');
+            // Соединение с Socket.IO закрыто
         });
     }
 
@@ -139,7 +133,7 @@ class SocketClient {
                 });
             }
         } catch (error) {
-            console.error('Ошибка доступа к локальному медиа:', error);
+            // Ошибка доступа к локальному медиа
             this.state = SocketClientState.MEDIA_ERROR;
         }
     }
@@ -199,7 +193,7 @@ class SocketClient {
                 sdp: offer.sdp,
             });
         } catch (error) {
-            console.error('Ошибка при создании предложения:', error);
+            // Ошибка при создании предложения
         }
     }
 
@@ -214,7 +208,7 @@ class SocketClient {
                 sdp: answer.sdp,
             });
         } catch (error) {
-            console.error('Ошибка при создании ответа:', error);
+            // Ошибка при создании ответа
         }
     }
 
@@ -231,7 +225,6 @@ class SocketClient {
             );
             await this.createAnswer(from); // Reply to the user who sent the offer
         } else if (type === 'answer') {
-            console.log('🚀 ~ SocketClient ~ handleSignal ~ data:', data);
             await this.peerConnections[from].setRemoteDescription(
                 new RTCSessionDescription({ type, sdp })
             );
@@ -246,7 +239,6 @@ class SocketClient {
         if (this.peerConnections[socketId]) {
             this.peerConnections[socketId].close(); // Close the connection
             delete this.peerConnections[socketId]; // Remove from storage
-            console.log(`Соединение с пользователем ${socketId} закрыто`);
         }
         if (this.remoteStreams[socketId]) {
             this.remoteStreams[socketId]
@@ -259,7 +251,6 @@ class SocketClient {
     public disconnect() {
         if (this.socket) {
             this.socket.disconnect();
-            console.log('Socket.IO соединение закрыто');
         }
         Object.values(this.peerConnections).forEach((peerConnection) =>
             peerConnection.close()

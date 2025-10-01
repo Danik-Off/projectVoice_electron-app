@@ -14,19 +14,19 @@ class SocketClient {
 
     public connect() {
         if (this.socket && this.socket.connected) {
-            console.log('Соединение уже установлено');
             return;
         }
 
-        const url = import.meta.env.DEV ? '' : BASE_URL;
-        this.socket = io(url, {
+        this.socket = io(BASE_URL, {
             path: '/socket',
             query: { token: this.token },
-            transports: ['websocket'],
+            transports: ['websocket', 'polling'],
+            timeout: 20000,
+            forceNew: true
         });
 
         this.socket.on('connect', () => {
-            console.log('Соединение с Socket.IO установлено');
+            // Соединение с Socket.IO установлено
         });
     }
 

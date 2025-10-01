@@ -7,6 +7,7 @@
     flex-direction: column;
     gap: 10px;
     z-index: var(--z-index-notification, 4000);
+    pointer-events: none; /* Позволяет кликать через контейнер */
 }
 
 .toast {
@@ -23,6 +24,7 @@
     opacity: 0.95;
     min-width: 300px;
     max-width: 400px;
+    pointer-events: auto; /* Позволяет кликать на само уведомление */
 }
 
 .toast:hover {
@@ -32,27 +34,27 @@
 }
 
 .toast-success { 
-    background-color: var(--success-color, #81c784);
-    border-color: var(--success-color, #81c784);
-    color: #ffffff;
+    background-color: #81c784 !important;
+    border-color: #81c784 !important;
+    color: #ffffff !important;
 }
 
 .toast-error { 
-    background-color: var(--error-color, #e57373);
-    border-color: var(--error-color, #e57373);
-    color: #ffffff;
+    background-color: #e57373 !important;
+    border-color: #e57373 !important;
+    color: #ffffff !important;
 }
 
 .toast-warning { 
-    background-color: var(--warning-color, #ffb74d);
-    border-color: var(--warning-color, #ffb74d);
-    color: #212529;
+    background-color: #ffb74d !important;
+    border-color: #ffb74d !important;
+    color: #212529 !important;
 }
 
 .toast-info { 
-    background-color: var(--info-color, #64b5f6);
-    border-color: var(--info-color, #64b5f6);
-    color: #ffffff;
+    background-color: #64b5f6 !important;
+    border-color: #64b5f6 !important;
+    color: #ffffff !important;
 }
 
 .toast-message {
