@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ElectronAPI } from '../types/electron';
+import type { ElectronAPI } from '../types/electron';
 
 interface ElectronIntegrationProps {
   children: React.ReactNode;

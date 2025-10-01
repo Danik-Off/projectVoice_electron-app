@@ -4,7 +4,7 @@ import { getCookie } from '../utils/cookie';
 import WebRTCClient from '../utils/WebRTCClient';
 import audioSettingsStore from './AudioSettingsStore';
 import notificationStore from './NotificationStore';
-import voiceActivityService, { VoiceActivityEvent } from '../services/VoiceActivityService';
+import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
 
 interface UserData {
     id: number;

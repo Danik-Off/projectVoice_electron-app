@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { getCookie } from '../utils/cookie';
 import { userService } from '../services/userService';
-import { User } from '../types/user';
+import type { User } from '../types/user';
 
 class UserStore {
     isAuthenticated = false;

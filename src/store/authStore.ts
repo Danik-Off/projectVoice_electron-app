@@ -1,7 +1,18 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, configure } from 'mobx';
 import { authService } from '../services/authService';
 import { getCookie, setCookie } from '../utils/cookie';
 import notificationStore from './NotificationStore';
+
+// Настройка MobX
+export function enableMobX() {
+    configure({
+        enforceActions: 'never',
+        computedRequiresReaction: false,
+        reactionRequiresObservable: false,
+        observableRequiresReaction: false,
+        disableErrorBoundaries: true
+    });
+}
 
 class AuthStore {
     public loading = false;

@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Channel } from '../types/channel';
+import type { Channel } from '../types/channel';
 import { channelService } from '../services/channelService';
 import notificationStore from './NotificationStore';
 

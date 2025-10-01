@@ -1,4 +1,4 @@
-@import '../../styles/main.scss';
+@use '../../styles/main' as *;
 
 .welcome-page {
     width: 100%;

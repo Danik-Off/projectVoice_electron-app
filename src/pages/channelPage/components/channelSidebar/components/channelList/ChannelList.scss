@@ -1,4 +1,4 @@
-@import '../../../../../../styles/main.scss';
+@use '../../../../../../styles/main' as *;
 
 .channel-list {
     background: $primary-bg;

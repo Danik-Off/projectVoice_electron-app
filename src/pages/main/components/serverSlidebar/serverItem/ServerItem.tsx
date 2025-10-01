@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Server } from '../../../../../types/server';
+import type { Server } from '../../../../../types/server';
 import './ServerItem.scss';
 
 interface ServerItemProps {

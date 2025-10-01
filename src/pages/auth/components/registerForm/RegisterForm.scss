@@ -1,5 +1,5 @@
 // RegisterForm.scss
-@import '../../../../styles/main.scss';
+@use '../../../../styles/main' as *;
 
 .auth-form {
     .input-group {

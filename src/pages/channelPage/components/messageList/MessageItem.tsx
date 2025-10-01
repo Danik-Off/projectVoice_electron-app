@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { Message } from '../../../../types/message';
+import type { Message } from '../../../../types/message';
 import { messageStore } from '../../../../store/messageStore';
 import { authStore } from '../../../../store/authStore';
 import { useUserProfile } from '../../../../components/UserProfileProvider';

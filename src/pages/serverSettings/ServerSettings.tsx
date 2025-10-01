@@ -12,9 +12,9 @@ import {
     MembersSettings,
     RolesSettings,
     ChannelsSettings,
-    DangerSettings,
-    ServerSettingsTab
+    DangerSettings
 } from './components';
+import type { ServerSettingsTab } from './components';
 
 import './ServerSettings.scss';
 

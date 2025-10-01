@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { serverMembersService } from '../../../../services/serverMembersService';
-import { ServerMember } from '../../../../types/server';
+import type { ServerMember } from '../../../../types/server';
 import ServerMembers from '../../../channelPage/components/channelSidebar/components/serverMembers/ServerMembers';
 import serverStore from '../../../../store/serverStore';
 import notificationStore from '../../../../store/NotificationStore';

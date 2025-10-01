@@ -1,4 +1,4 @@
-@import '../../../../styles/main.scss';
+@use '../../../../styles/main' as *;
 
 .settings-sidebar {
     width: $sidebar-width;

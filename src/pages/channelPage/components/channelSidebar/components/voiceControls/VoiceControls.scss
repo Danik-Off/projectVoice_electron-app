@@ -1,4 +1,4 @@
-@import '../../../../../../styles/main.scss';
+@use '../../../../../../styles/main' as *;
 
 .voice-controls {
     position: fixed; // Возвращаем fixed позиционирование

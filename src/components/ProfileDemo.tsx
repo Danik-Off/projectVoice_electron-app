@@ -1,7 +1,7 @@
 import React from 'react';
 import { useUserProfile } from './UserProfileProvider';
 import ClickableAvatar from './ClickableAvatar';
-import { User } from '../types/user';
+import type { User } from '../types/user';
 
 const ProfileDemo: React.FC = () => {
     const { openProfile } = useUserProfile();

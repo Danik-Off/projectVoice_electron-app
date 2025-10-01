@@ -1,4 +1,4 @@
-@import '../../styles/main.scss';
+@use '../../styles/main' as *;
 
 /* Основной фон модального окна */
 .modal-overlay {

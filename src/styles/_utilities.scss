@@ -1,4 +1,5 @@
 // VoiceVerse - Утилитарные классы
+@use 'sizes' as *;
 
 // Утилиты для отступов
 @each $size, $value in (

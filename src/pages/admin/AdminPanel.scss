@@ -1,4 +1,4 @@
-@import '../../styles/main.scss';
+@use '../../styles/main' as *;
 
 .admin-panel {
     width: 100%;

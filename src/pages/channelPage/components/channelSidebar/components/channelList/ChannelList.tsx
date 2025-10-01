@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import serverStore from '../../../../../../store/serverStore';
-import { Channel } from '../../../../../../types/channel';
+import type { Channel } from '../../../../../../types/channel';
 
 import './ChannelList.scss'; // Import the CSS file for styling
 import CreateChannelForm from './components/сreateChannelForm/CreateChannelForm';

@@ -1,12 +1,22 @@
 // Импорт основных стилей
-@import 'sizes';
-@import 'colors';
-@import 'typography';
-@import 'utilities';
-@import 'animations';
-@import 'basic';
-@import 'theme/_light';
-@import 'theme/_dark';
+@forward 'sizes';
+@forward 'colors';
+@forward 'typography';
+@forward 'utilities';
+@forward 'animations';
+@forward 'basic';
+
+// Импорт для использования в этом файле
+@use 'sizes' as *;
+@use 'colors' as *;
+@use 'typography' as *;
+@use 'utilities' as *;
+@use 'animations' as *;
+@use 'basic' as *;
+
+// Импорт тем (только для CSS переменных, не форвардим)
+@use 'theme/_light';
+@use 'theme/_dark';
 
 // VoiceVerse - Основные стили с поддержкой тем
 // CSS переменные устанавливаются в файлах тем и применяются через ThemeStore

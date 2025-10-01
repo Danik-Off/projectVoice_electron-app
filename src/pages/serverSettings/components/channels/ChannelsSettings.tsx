@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import channelsStore from '../../../../store/channelsStore';
-import { Channel } from '../../../../types/channel';
+import type { Channel } from '../../../../types/channel';
 
 const ChannelsSettings: React.FC = observer(() => {
     const { t } = useTranslation();

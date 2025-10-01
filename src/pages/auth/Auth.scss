@@ -1,4 +1,4 @@
-@import '../../styles/main.scss';
+@use '../../styles/main' as *;
 
 .auth-container {
     position: relative;
@@ -403,7 +403,7 @@
     &:hover {
         background: var(--button-primary-hover);
         border-color: var(--border-secondary);
-        transform: translateY(-$hover-translate / 2);
+        transform: translateY(calc(-1 * $hover-translate / 2));
     }
     
     .language-icon,

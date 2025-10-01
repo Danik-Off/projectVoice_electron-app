@@ -18,7 +18,8 @@ class SocketClient {
             return;
         }
 
-        this.socket = io(BASE_URL, {
+        const url = import.meta.env.DEV ? '' : BASE_URL;
+        this.socket = io(url, {
             path: '/socket',
             query: { token: this.token },
             transports: ['websocket'],

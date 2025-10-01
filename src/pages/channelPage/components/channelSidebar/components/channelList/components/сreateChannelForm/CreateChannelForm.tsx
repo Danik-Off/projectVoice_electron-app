@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from '../../../../../../../../components/ui';
 import serverStore from '../../../../../../../../store/serverStore';
 import channelsStore from '../../../../../../../../store/channelsStore';
-import { Channel } from '../../../../../../../../types/channel';
+import type { Channel } from '../../../../../../../../types/channel';
 
 interface CreateChannelFormProps {
     onClose: () => void;

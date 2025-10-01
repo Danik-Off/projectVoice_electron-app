@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import { makeAutoObservable, runInAction } from 'mobx';
 import { serverService } from '../services/serverService'; // Путь к серверному сервису
-import { Server } from '../types/server';
-import { User } from '../types/user'; // Предполагается, что у вас есть типы для пользователей
+import type { Server } from '../types/server';
+import type { User } from '../types/user'; // Предполагается, что у вас есть типы для пользователей
 import notificationStore from './NotificationStore';
 
 class ServerStore {

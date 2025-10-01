@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { getCookie } from './cookie';
-import { SocketClientState } from '../types/socket.types';
+import type { SocketClientState } from '../types/socket.types';
 import { iceServers } from '../configs/iceServers';
 
 class SocketClient {
@@ -73,7 +73,7 @@ class SocketClient {
         }
 
         // const url = `https://projectvoice.suzenebl.ru`;
-        const url = `http://localhost:5555`;
+        const url = import.meta.env.DEV ? 'http://localhost:5555' : 'http://77.222.58.224:5555';
         this.socket = io(url, {
             path: '/socket',
             query: { token: this.token },

@@ -1,4 +1,4 @@
-@import '../../../../../../styles/main.scss';
+@use '../../../../../../styles/main' as *;
 
 .server-header {
     display: flex;
@@ -124,7 +124,7 @@
                 transition: all $animation-duration $animation-timing;
 
                 &:hover {
-                    transform: translateX($hover-translate / 2);
+                    transform: translateX(calc($hover-translate / 2));
                 }
             }
 
@@ -161,7 +161,7 @@
                     }
 
                     &:hover {
-                        transform: translateY(-$hover-lift / 2);
+                        transform: translateY(calc(-1 * $hover-lift / 2));
                         box-shadow: $shadow-light;
                         
                         &::before {
@@ -194,7 +194,7 @@
                     &:hover {
                         color: $text-primary;
                         background: $hover-bg;
-                        transform: translateY(-$hover-lift / 2);
+                        transform: translateY(calc(-1 * $hover-lift / 2));
                     }
 
                     .member-icon {
@@ -399,7 +399,7 @@
             }
 
             &:active {
-                transform: translateX($hover-translate / 2);
+                transform: translateX(calc($hover-translate / 2));
             }
 
             &:disabled {

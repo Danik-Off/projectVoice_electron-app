@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
     id: number;
     username: string;
     email: string;
@@ -11,4 +11,7 @@ export type User = {
     blockedAt?: string;
     blockedBy?: string;
     blockReason?: string;
-};
+}
+
+// Явный экспорт для совместимости
+export type { User as UserType };

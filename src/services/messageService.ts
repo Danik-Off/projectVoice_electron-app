@@ -1,5 +1,5 @@
 import { apiClient } from '../utils/apiClient';
-import { Message, CreateMessageRequest, UpdateMessageRequest, MessageResponse, MessageFilters } from '../types/message';
+import type { Message, CreateMessageRequest, UpdateMessageRequest, MessageResponse, MessageFilters } from '../types/message';
 
 class MessageService {
     // Получение сообщений канала с пагинацией
