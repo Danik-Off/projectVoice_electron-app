@@ -318,7 +318,7 @@ class WebRTCClient {
         }
     }
 
-    // Настройка аудио обработки для участника
+    // Настройка аудио обработки для участника - отключены все эффекты для максимального качества
     private setupAudioProcessing(id: string, remoteStream: MediaStream): void {
         const audioContext = this.audioContexts.get(id);
         const gainNode = this.gainNodes.get(id);
@@ -345,43 +345,12 @@ class WebRTCClient {
             if (!audioContext.state.includes('closed')) {
                 const source = audioContext.createMediaStreamSource(remoteStream);
                 
-                // Создаем оптимизированную цепочку обработки для максимального качества
-                const compressor = audioContext.createDynamicsCompressor();
-                compressor.threshold.value = -24; // Более мягкий порог
-                compressor.knee.value = 30; // Более мягкий переход
-                compressor.ratio.value = 4; // Оптимальное соотношение
-                compressor.attack.value = 0.003; // Быстрая атака
-                compressor.release.value = 0.25; // Оптимальное восстановление
-                
-                // Добавляем фильтр для улучшения качества голоса
-                const voiceEnhancer = audioContext.createBiquadFilter();
-                voiceEnhancer.type = 'peaking';
-                voiceEnhancer.frequency.value = 1500; // Оптимальная частота для голоса
-                voiceEnhancer.Q.value = 0.7;
-                voiceEnhancer.gain.value = 2; // Легкое усиление голосовых частот
-                
-                // Добавляем фильтр для подавления низкочастотных шумов
-                const highpassFilter = audioContext.createBiquadFilter();
-                highpassFilter.type = 'highpass';
-                highpassFilter.frequency.value = 80; // Убираем низкочастотные шумы
-                highpassFilter.Q.value = 0.5;
-                
-                // Добавляем фильтр для подавления высокочастотных шумов
-                const lowpassFilter = audioContext.createBiquadFilter();
-                lowpassFilter.type = 'lowpass';
-                lowpassFilter.frequency.value = 8000; // Сохраняем важные голосовые частоты
-                lowpassFilter.Q.value = 0.5;
-                
-                // Подключаем оптимизированную цепочку обработки
-                source.connect(highpassFilter);
-                highpassFilter.connect(lowpassFilter);
-                lowpassFilter.connect(voiceEnhancer);
-                voiceEnhancer.connect(compressor);
-                compressor.connect(gainNode);
+                // Прямое подключение без эффектов для максимального качества
+                source.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
                 this.audioSources.set(id, source);
-                console.log('Аудио обработка настроена для участника:', id);
+                console.log('Аудио обработка настроена для участника (без эффектов):', id);
                 
                 // Настраиваем VoiceActivity для удаленного участника
                 this.setupRemoteVoiceActivity(id, remoteStream);

@@ -1,9 +1,5 @@
 // Audio Settings Components
-export { default as SpeakerSettings } from './audioSettings/SpeakerSettings';
-export { default as MicrophoneSettings } from './audioSettings/MicrophoneSettings';
-export { default as MicrophoneVisualizer } from './audioSettings/MicrophoneVisualizer/MicrophoneVisualizer';
-export { default as AudioQualitySettings } from './audioSettings/AudioQualitySettings';
-export { default as AudioEffectsSettings } from './audioSettings/AudioEffectsSettings';
+export { default as AudioSettings } from './audioSettings/AudioSettings';
 
 // Settings Components
 export { default as SettingsHeader } from './header/SettingsHeader';

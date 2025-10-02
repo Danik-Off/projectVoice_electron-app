@@ -16,8 +16,9 @@ const SettingsNavigation: React.FC<SettingsNavigationProps> = ({ activeTab, onTa
         { id: 'general', label: t('settingsPage.tabs.general'), icon: '⚙️' },
         { id: 'appearance', label: t('settingsPage.tabs.appearance'), icon: '🎨' },
         { id: 'audio', label: t('settingsPage.tabs.audio'), icon: '🎵' },
-        { id: 'notifications', label: t('settingsPage.tabs.notifications'), icon: '🔔' },
-        { id: 'privacy', label: t('settingsPage.tabs.privacy'), icon: '🔒' },
+        // TODO: когда будет реализованы уведомления и приватность
+        // { id: 'notifications', label: t('settingsPage.tabs.notifications'), icon: '🔔' },
+        // { id: 'privacy', label: t('settingsPage.tabs.privacy'), icon: '🔒' },
         { id: 'about', label: t('settingsPage.tabs.about'), icon: 'ℹ️' },
     ];
 

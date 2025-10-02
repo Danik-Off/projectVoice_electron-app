@@ -315,20 +315,56 @@ class AudioSettingsStore {
         this.updateWebRTCStream();
     }
 
-    // Метод для принудительного обновления WebRTC потока
-    public updateWebRTCStream(): void {
+    // Метод для принудительного применения всех настроек
+    public applyAllSettings(): void {
         try {
-            console.log('AudioSettingsStore: Updating WebRTC stream...');
-            // Импортируем roomStore динамически, чтобы избежать циклических зависимостей
-            import('./roomStore').then(({ default: roomStore }) => {
-                if (roomStore.webRTCClient && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
-                    roomStore.webRTCClient.resendlocalStream();
-                    console.log('AudioSettingsStore: WebRTC stream updated successfully');
-                }
-            });
+            console.log('AudioSettingsStore: Applying all audio settings...');
+            
+            // Если есть активный поток, обновляем настройки в реальном времени
+            if (this._stream && this._stream.getAudioTracks().length > 0) {
+                this.updateRealtimeSettings();
+                this.updateWebRTCStream();
+                console.log('AudioSettingsStore: All settings applied to existing stream');
+            } else {
+                // Если нет активного потока, создаем новый
+                this.updateMediaStream(true);
+                console.log('AudioSettingsStore: New stream created with all settings');
+            }
         } catch (error) {
-            console.error('AudioSettingsStore: Error updating WebRTC stream:', error);
+            console.error('AudioSettingsStore: Error applying all settings:', error);
         }
+    }
+
+    // Метод для сброса настроек к умолчанию
+    public resetToDefaults(): void {
+        console.log('AudioSettingsStore: Resetting to default settings...');
+        
+        // Сбрасываем основные настройки
+        this.echoCancellation = true;
+        this.noiseSuppression = true;
+        this.autoGainControl = true;
+        this.volume = 80;
+        this.sampleRate = 48000;
+        this.bitrate = 256;
+        this.latency = 50;
+        this.channelCount = 2;
+        
+        // Сбрасываем дополнительные настройки
+        this.voiceEnhancement = true;
+        this.voiceClarity = 0.8;
+        this.backgroundNoiseReduction = 0.8;
+        this.voiceBoost = 0.3;
+        this.bassBoost = 0.2;
+        this.trebleBoost = 0.2;
+        this.stereoEnhancement = true;
+        this.spatialAudio = true;
+        this.voiceIsolation = true;
+        this.dynamicRangeCompression = 0.2;
+        
+        // Применяем настройки
+        this.applyAllSettings();
+        
+        console.log('AudioSettingsStore: Settings reset to defaults');
     }
 
     // Методы для настроек в реальном времени (не требуют пересоздания потока)
@@ -336,60 +372,70 @@ class AudioSettingsStore {
         if (this.voiceEnhancement === enabled) return;
         this.voiceEnhancement = enabled;
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setVoiceClarity(clarity: number): void {
         if (this.voiceClarity === clarity) return;
         this.voiceClarity = Math.max(0, Math.min(1, clarity));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setBackgroundNoiseReduction(reduction: number): void {
         if (this.backgroundNoiseReduction === reduction) return;
         this.backgroundNoiseReduction = Math.max(0, Math.min(1, reduction));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setVoiceBoost(boost: number): void {
         if (this.voiceBoost === boost) return;
         this.voiceBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setBassBoost(boost: number): void {
         if (this.bassBoost === boost) return;
         this.bassBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setTrebleBoost(boost: number): void {
         if (this.trebleBoost === boost) return;
         this.trebleBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setStereoEnhancement(enabled: boolean): void {
         if (this.stereoEnhancement === enabled) return;
         this.stereoEnhancement = enabled;
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setSpatialAudio(enabled: boolean): void {
         if (this.spatialAudio === enabled) return;
         this.spatialAudio = enabled;
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setVoiceIsolation(enabled: boolean): void {
         if (this.voiceIsolation === enabled) return;
         this.voiceIsolation = enabled;
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public setDynamicRangeCompression(compression: number): void {
         if (this.dynamicRangeCompression === compression) return;
         this.dynamicRangeCompression = Math.max(0, Math.min(1, compression));
         this.updateRealtimeSettings();
+        this.updateWebRTCStream();
     }
 
     public toggleMicrophoneMute(): void {
@@ -497,6 +543,10 @@ class AudioSettingsStore {
     private prepareMediaStream() {
         try {
             console.log('AudioSettingsStore: Preparing media stream with enhanced settings...');
+            
+            // Очищаем предыдущие процессоры
+            this.audioProcessors = {};
+            
             // Создаем источник из потока микрофона
             this.audioSource = this.audioContext.createMediaStreamSource(this._stream);
 
@@ -519,7 +569,12 @@ class AudioSettingsStore {
 
             // Сохраняем новый поток
             this.stream = destination.stream;
+            
+            // Применяем настройки в реальном времени после создания цепочки
+            this.updateRealtimeSettings();
+            
             console.log('AudioSettingsStore: Enhanced media stream prepared, output tracks:', this.stream.getAudioTracks().length);
+            console.log('AudioSettingsStore: Applied settings - Voice Enhancement:', this.voiceEnhancement, 'Voice Clarity:', this.voiceClarity, 'Noise Reduction:', this.backgroundNoiseReduction);
         } catch (error) {
             console.error('AudioSettingsStore: Error preparing media stream:', error);
         }
@@ -530,26 +585,45 @@ class AudioSettingsStore {
         try {
             console.log('AudioSettingsStore: Updating realtime audio settings...');
             
+            // Если нет активного потока, пропускаем обновление
+            if (!this._stream || this._stream.getAudioTracks().length === 0) {
+                console.log('AudioSettingsStore: No active stream, skipping realtime update');
+                return;
+            }
+            
             // Обновляем параметры существующих процессоров
             if (this.audioProcessors.voiceEnhancer) {
                 this.audioProcessors.voiceEnhancer.gain.value = this.voiceClarity * 3;
+                console.log('AudioSettingsStore: Updated voice enhancer gain:', this.voiceClarity * 3);
             }
             
             if (this.audioProcessors.voiceBooster) {
                 this.audioProcessors.voiceBooster.gain.value = this.voiceBoost * 8;
+                console.log('AudioSettingsStore: Updated voice booster gain:', this.voiceBoost * 8);
             }
             
             if (this.audioProcessors.bassBooster) {
                 this.audioProcessors.bassBooster.gain.value = this.bassBoost * 5;
+                console.log('AudioSettingsStore: Updated bass booster gain:', this.bassBoost * 5);
             }
             
             if (this.audioProcessors.trebleBooster) {
                 this.audioProcessors.trebleBooster.gain.value = this.trebleBoost * 5;
+                console.log('AudioSettingsStore: Updated treble booster gain:', this.trebleBoost * 5);
             }
             
             if (this.audioProcessors.compressor) {
                 const compressionRatio = 1 + (this.dynamicRangeCompression * 8); // 1-9
                 this.audioProcessors.compressor.ratio.value = compressionRatio;
+                console.log('AudioSettingsStore: Updated compressor ratio:', compressionRatio);
+            }
+            
+            // Обновляем параметры фильтров шумоподавления
+            if (this.audioProcessors.voiceIsolator) {
+                // Обновляем частоты фильтрации в зависимости от уровня шумоподавления
+                const cutoffFreq = 300 + (this.backgroundNoiseReduction * 200); // 300-500 Hz
+                this.audioProcessors.voiceIsolator.frequency.value = cutoffFreq;
+                console.log('AudioSettingsStore: Updated voice isolator frequency:', cutoffFreq);
             }
             
             console.log('AudioSettingsStore: Realtime settings updated successfully');
