@@ -136,46 +136,6 @@ const AboutSettings: React.FC = () => {
                         </div>
                     </div>
                 </div>
-
-                <div className="settings-card">
-                    <div className="card-header">
-                        <div className="header-content">
-                            <div className="icon-container">
-                                ⚙️
-                            </div>
-                            <div className="header-text">
-                                <h3>{t('settingsPage.about.technical.title')}</h3>
-                                <p>{t('settingsPage.about.technical.subtitle')}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="card-content">
-                        <div className="settings-info">
-                            <div className="info-header">
-                                <h4>{t('settingsPage.about.technical.technologies')}</h4>
-                            </div>
-                            <div className="info-content">
-                                <div className="info-row">
-                                    <span className="info-label">{t('settingsPage.about.technical.frontend')}</span>
-                                    <span className="info-value">React + TypeScript</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="info-label">{t('settingsPage.about.technical.backend')}</span>
-                                    <span className="info-value">Node.js + Express</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="info-label">{t('settingsPage.about.technical.webrtc')}</span>
-                                    <span className="info-value">Peer-to-peer</span>
-                                </div>
-                                <div className="info-row">
-                                    <span className="info-label">{t('settingsPage.about.technical.database')}</span>
-                                    <span className="info-value">SQLite</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );
