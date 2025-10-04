@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import './VoiceControls.scss';
 import voiceRoomStore from '../../../../../../store/roomStore';
 import { authStore } from '../../../../../../store/authStore';
@@ -12,6 +13,9 @@ import participantVolumeStore from '../../../../../../store/ParticipantVolumeSto
 
 const VoiceControls: React.FC = observer(() => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { serverId } = useParams<{ serverId: string }>();
+    
     // Убираем локальные состояния, используем данные из store
     const [showVolumeSlider] = useState<boolean>(false);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -47,12 +51,15 @@ const VoiceControls: React.FC = observer(() => {
     const handleDisconnect = (): void => {
         voiceRoomStore.disconnectToRoom();
         notificationStore.addNotification(t('voiceControls.disconnect'), 'info');
+        
+        // Переходим на страницу сервера без голосовой комнаты
+        if (serverId) {
+            navigate(`/server/${serverId}`);
+        }
     };
 
     const handleExpand = (): void => {
-        console.log('handleExpand called, current isExpanded:', isExpanded);
         setIsExpanded(!isExpanded);
-        console.log('New isExpanded will be:', !isExpanded);
     };
 
     const handleParticipantVolumeChange = (socketId: string, volume: number): void => {
@@ -74,7 +81,7 @@ const VoiceControls: React.FC = observer(() => {
                         <div className="voice-controls__channel-icon">🔊</div>
                         <div className="voice-controls__channel-details">
                             <span className="voice-controls__channel-name">{currentVoiceChannel.name}</span>
-                            <span className="voice-controls__participant-count">{participants.length} {t('voiceControls.participants')}</span>
+                            <span className="voice-controls__participant-count">{participants.length + 1} {t('voiceControls.participants')}</span>
                         </div>
                     </div>
                 </div>

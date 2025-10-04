@@ -24,7 +24,7 @@ const SettingsNavigation: React.FC<SettingsNavigationProps> = ({ activeTab, onTa
 
     return (
         <div className="settings-sidebar">
-            <nav className="settings-nav">
+            <nav className="styles/main' as *;">
                 {tabs.map((tab) => (
                     <div
                         key={tab.id}

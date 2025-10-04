@@ -37,16 +37,16 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
 
     return (
         <div className="settings-sidebar">
-            <nav className="settings-nav">
+            <nav className="styles/main' as *;">
                 {filteredTabs.map((tab) => (
-                    <button
+                    <div
                         key={tab.id}
                         className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => onTabChange(tab.id)}
                     >
                         <span className="tab-icon">{tab.icon}</span>
                         <span className="tab-label">{tab.label}</span>
-                    </button>
+                    </div>
                 ))}
             </nav>
         </div>
