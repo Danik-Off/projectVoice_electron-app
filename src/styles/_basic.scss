@@ -1,44 +1,273 @@
 // VoiceVerse - Базовые стили для элементов форм
 @use 'sizes' as *;
 
-.input[type='text'] {
+// Базовые стили для всех input элементов
+input {
     width: 100%;
     padding: $spacing-md;
     margin-bottom: 1rem;
-    border: none;
+    border: 1px solid var(--border-color);
     border-radius: $border-radius;
     background-color: var(--input-bg);
     color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
     &::placeholder {
         color: var(--text-disabled);
     }
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 2px rgba(var(--primary-accent-rgb), 0.2);
+    }
+
+    &:disabled {
+        background-color: var(--input-disabled-bg);
+        color: var(--text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    &.error {
+        border-color: var(--error-color);
+        
+        &:focus {
+            box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
+        }
+    }
 }
 
-.textArea {
+// Специфичные стили для разных типов input
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='search'],
+input[type='url'] {
+    // Наследует базовые стили
+}
+
+input[type='number'] {
+    text-align: right;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+    width: auto;
+    margin-right: $spacing-sm;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+input[type='file'] {
+    padding: $spacing-sm;
+    cursor: pointer;
+}
+
+// Стили для textarea
+textarea {
     width: 100%;
     padding: $spacing-md;
-    border: none;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
     border-radius: $border-radius;
     background-color: var(--input-bg);
     color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s, box-shadow 0.2s;
 
     &::placeholder {
         color: var(--text-disabled);
     }
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 2px rgba(var(--primary-accent-rgb), 0.2);
+    }
+
+    &:disabled {
+        background-color: var(--input-disabled-bg);
+        color: var(--text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    &.error {
+        border-color: var(--error-color);
+        
+        &:focus {
+            box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
+        }
+    }
 }
 
-.button {
+// Стили для select
+select {
+    width: 100%;
+    padding: $spacing-md;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: $border-radius;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 2px rgba(var(--primary-accent-rgb), 0.2);
+    }
+
+    &:disabled {
+        background-color: var(--input-disabled-bg);
+        color: var(--text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    &.error {
+        border-color: var(--error-color);
+        
+        &:focus {
+            box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
+        }
+    }
+}
+
+// Базовые стили для кнопок
+button {
     background-color: var(--primary-accent);
     color: #ffffff;
     border: none;
-    padding: $spacing-md;
+    padding: $spacing-md $spacing-lg;
     border-radius: $border-radius-small;
     cursor: pointer;
-    margin-top: $spacing-md;
-    transition: background-color 0.2s;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
 
     &:hover {
         background-color: var(--button-primary-hover);
+        transform: translateY(-1px);
     }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background-color: var(--button-disabled-bg);
+        color: var(--text-disabled);
+        cursor: not-allowed;
+        opacity: 0.6;
+        transform: none;
+    }
+
+    // Варианты кнопок
+    &.secondary {
+        background-color: var(--button-secondary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+
+        &:hover {
+            background-color: var(--button-secondary-hover);
+        }
+    }
+
+    &.danger {
+        background-color: var(--error-color);
+
+        &:hover {
+            background-color: var(--error-color-hover);
+        }
+    }
+
+    &.ghost {
+        background-color: transparent;
+        color: var(--text-primary);
+        border: 1px solid transparent;
+
+        &:hover {
+            background-color: var(--button-ghost-hover);
+        }
+    }
+
+    // Размеры кнопок
+    &.small {
+        padding: $spacing-sm $spacing-md;
+        font-size: 0.875rem;
+    }
+
+    &.large {
+        padding: $spacing-lg $spacing-xl;
+        font-size: 1.125rem;
+    }
+
+    // Полная ширина
+    &.full-width {
+        width: 100%;
+    }
+}
+
+// Стили для label
+label {
+    display: block;
+    margin-bottom: $spacing-sm;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.875rem;
+
+    &.required::after {
+        content: ' *';
+        color: var(--error-color);
+    }
+}
+
+// Стили для групп элементов форм
+.form-group {
+    margin-bottom: $spacing-lg;
+
+    &.error {
+        label {
+            color: var(--error-color);
+        }
+    }
+}
+
+.form-row {
+    display: flex;
+    gap: $spacing-md;
+    margin-bottom: $spacing-lg;
+
+    .form-group {
+        flex: 1;
+        margin-bottom: 0;
+    }
+}
+
+// Стили для сообщений об ошибках
+.error-message {
+    color: var(--error-color);
+    font-size: 0.75rem;
+    margin-top: $spacing-xs;
+    display: block;
+}
+
+// Стили для подсказок
+.help-text {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    margin-top: $spacing-xs;
+    display: block;
 }
