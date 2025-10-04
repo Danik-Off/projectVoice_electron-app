@@ -2,7 +2,10 @@
 
 .profile-settings {
     .settings-section {
-        padding: $spacing-xl;
+        padding-left: $spacing-xl;
+        padding-right: $spacing-xl;
+        padding-top: $spacing-xl;
+        padding-bottom: $spacing-xl;
         max-width: 800px;
         margin: 0 auto;
     }
@@ -12,10 +15,11 @@
         text-align: center;
 
         h2 {
+            color: var(--text-primary);
+            margin-bottom: $spacing-md;
             font-size: 32px;
             font-weight: 700;
-            color: var(--text-primary);
-            margin: 0 0 $spacing-md 0;
+            margin-top: 0;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -23,8 +27,8 @@
         }
 
         p {
-            font-size: 16px;
             color: var(--text-secondary);
+            font-size: 16px;
             margin: 0;
             line-height: 1.6;
         }
@@ -34,10 +38,10 @@
         background: var(--secondary-bg);
         border: 1px solid var(--border-primary);
         border-radius: $border-radius-large;
-        overflow: hidden;
         box-shadow: var(--shadow-light);
         transition: all 0.3s ease;
         margin-bottom: $spacing-xl;
+        overflow: hidden;
 
         &:hover {
             box-shadow: var(--shadow-medium);
@@ -50,7 +54,10 @@
     }
 
     .card-header {
-        padding: $spacing-lg $spacing-xl;
+        padding-left: $spacing-xl;
+        padding-right: $spacing-xl;
+        padding-top: $spacing-lg;
+        padding-bottom: $spacing-lg;
         background: var(--tertiary-bg);
         border-bottom: 1px solid var(--border-primary);
 
@@ -73,15 +80,16 @@
 
             .header-text {
                 h3 {
+                    color: var(--text-primary);
+                    margin-bottom: $spacing-sm;
                     font-size: 20px;
                     font-weight: 600;
-                    color: var(--text-primary);
-                    margin: 0 0 $spacing-sm 0;
+                    margin-top: 0;
                 }
 
                 p {
-                    font-size: 14px;
                     color: var(--text-secondary);
+                    font-size: 14px;
                     margin: 0;
                     line-height: 1.5;
                 }
@@ -90,17 +98,20 @@
     }
 
     .card-content {
-        padding: $spacing-xl;
+        padding-left: $spacing-xl;
+        padding-right: $spacing-xl;
+        padding-top: $spacing-xl;
+        padding-bottom: $spacing-xl;
     }
 
     .profile-info-section {
         .profile-avatar-section {
             display: flex;
             align-items: center;
-            gap: $spacing-lg;
             margin-bottom: $spacing-xl;
             padding-bottom: $spacing-lg;
             border-bottom: 1px solid var(--border-primary);
+            gap: $spacing-lg;
 
             .profile-avatar {
                 width: 80px;
@@ -120,13 +131,13 @@
                 .avatar-placeholder {
                     width: 100%;
                     height: 100%;
-                    background: var(--gradient-primary);
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    color: white;
+                    background: var(--gradient-primary);
                     font-size: 32px;
                     font-weight: 700;
-                    color: white;
                     text-transform: uppercase;
                 }
             }
@@ -137,18 +148,17 @@
                 color: white;
                 border: none;
                 border-radius: $border-radius-small;
-                font-size: 14px;
-                font-weight: 500;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                font-weight: 500;
 
                 &:hover:not(:disabled) {
-                    background: var(--primary-accent-hover);
                     transform: translateY(-1px);
+                    background: var(--primary-accent-hover);
                 }
 
                 &:disabled {
-                    opacity: 0.6;
+                    opacity: 0.5;
                     cursor: not-allowed;
                     transform: none;
                 }
@@ -178,10 +188,10 @@
         margin-bottom: $spacing-md;
 
         .setting-label {
-            font-size: 16px;
-            font-weight: 600;
             color: var(--text-primary);
             cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
         }
     }
 
@@ -192,7 +202,10 @@
             .edit-input,
             .password-input {
                 width: 100%;
-                padding: $spacing-sm $spacing-md;
+                padding-left: $spacing-md;
+                padding-right: $spacing-md;
+                padding-top: $spacing-sm;
+                padding-bottom: $spacing-sm;
                 border: 1px solid var(--border-secondary);
                 border-radius: $border-radius-small;
                 background: var(--input-bg);
@@ -221,21 +234,24 @@
                 }
 
                 &:disabled {
-                    opacity: 0.6;
+                    opacity: 0.5;
                     cursor: not-allowed;
                 }
             }
 
             .error-message {
                 color: var(--error-color);
-                font-size: 12px;
                 margin-top: $spacing-xs;
+                font-size: 12px;
                 font-weight: 500;
             }
         }
 
         .info-display {
-            padding: $spacing-sm $spacing-md;
+            padding-left: $spacing-md;
+            padding-right: $spacing-md;
+            padding-top: $spacing-sm;
+            padding-bottom: $spacing-sm;
             background: var(--tertiary-bg);
             border: 1px solid var(--border-primary);
             border-radius: $border-radius-small;
@@ -247,10 +263,13 @@
 
             &.role-display {
                 .role-badge {
-                    background: var(--gradient-primary);
                     color: white;
-                    padding: $spacing-xs $spacing-sm;
+                    padding-left: $spacing-sm;
+                    padding-right: $spacing-sm;
+                    padding-top: $spacing-xs;
+                    padding-bottom: $spacing-xs;
                     border-radius: $border-radius-small;
+                    background: var(--gradient-primary);
                     font-size: 12px;
                     font-weight: 600;
                     text-transform: uppercase;
@@ -264,10 +283,9 @@
             padding: $spacing-sm $spacing-md;
             border: none;
             border-radius: $border-radius-small;
-            font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-weight: 500;
             min-height: 36px;
 
             &:hover:not(:disabled) {
@@ -276,7 +294,7 @@
             }
 
             &:disabled {
-                opacity: 0.6;
+                opacity: 0.5;
                 cursor: not-allowed;
                 transform: none;
             }
@@ -306,8 +324,6 @@
             padding: $spacing-sm $spacing-md;
             border: none;
             border-radius: $border-radius-small;
-            font-size: 14px;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
             min-height: 36px;
@@ -315,6 +331,7 @@
             align-items: center;
             justify-content: center;
             gap: $spacing-xs;
+            font-weight: 500;
 
             &:hover:not(:disabled) {
                 transform: translateY(-1px);
@@ -322,7 +339,7 @@
             }
 
             &:disabled {
-                opacity: 0.6;
+                opacity: 0.5;
                 cursor: not-allowed;
                 transform: none;
             }
@@ -370,12 +387,12 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: var(--modal-overlay);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
+        z-index: 2000;
         backdrop-filter: blur(4px);
+        background: var(--modal-overlay);
     }
 
     .password-modal {
@@ -392,8 +409,8 @@
             max-width: 400px;
 
             .logout-message {
-                text-align: center;
                 color: var(--text-secondary);
+                text-align: center;
                 font-size: 16px;
                 line-height: 1.6;
                 margin: 0;
@@ -401,16 +418,19 @@
         }
 
         .modal-header {
-            padding: $spacing-lg $spacing-xl;
+            padding-left: $spacing-xl;
+            padding-right: $spacing-xl;
+            padding-top: $spacing-lg;
+            padding-bottom: $spacing-lg;
             border-bottom: 1px solid var(--border-primary);
             display: flex;
             align-items: center;
             justify-content: space-between;
 
             h3 {
+                color: var(--text-primary);
                 font-size: 18px;
                 font-weight: 600;
-                color: var(--text-primary);
                 margin: 0;
             }
 
@@ -418,11 +438,11 @@
                 background: none;
                 border: none;
                 color: var(--text-secondary);
-                font-size: 18px;
                 cursor: pointer;
-                padding: $spacing-xs;
                 border-radius: $border-radius-small;
                 transition: all 0.3s ease;
+                font-size: 18px;
+                padding: $spacing-xs;
 
                 &:hover:not(:disabled) {
                     background: var(--hover-bg);
@@ -430,14 +450,17 @@
                 }
 
                 &:disabled {
-                    opacity: 0.6;
+                    opacity: 0.5;
                     cursor: not-allowed;
                 }
             }
         }
 
         .modal-content {
-            padding: $spacing-xl;
+            padding-left: $spacing-xl;
+            padding-right: $spacing-xl;
+            padding-top: $spacing-xl;
+            padding-bottom: $spacing-xl;
 
             .setting-group {
                 margin-bottom: $spacing-lg;
@@ -445,15 +468,18 @@
                 .setting-label {
                     display: block;
                     margin-bottom: $spacing-sm;
+                    color: var(--text-primary);
                     font-size: 14px;
                     font-weight: 500;
-                    color: var(--text-primary);
                 }
             }
         }
 
         .modal-actions {
-            padding: $spacing-lg $spacing-xl;
+            padding-left: $spacing-xl;
+            padding-right: $spacing-xl;
+            padding-top: $spacing-lg;
+            padding-bottom: $spacing-lg;
             border-top: 1px solid var(--border-primary);
             display: flex;
             gap: $spacing-md;
@@ -463,8 +489,6 @@
                 padding: $spacing-sm $spacing-md;
                 border: none;
                 border-radius: $border-radius-small;
-                font-size: 14px;
-                font-weight: 500;
                 cursor: pointer;
                 transition: all 0.3s ease;
                 min-height: 36px;
@@ -472,6 +496,7 @@
                 align-items: center;
                 justify-content: center;
                 gap: $spacing-xs;
+                font-weight: 500;
 
                 &:hover:not(:disabled) {
                     transform: translateY(-1px);
@@ -479,7 +504,7 @@
                 }
 
                 &:disabled {
-                    opacity: 0.6;
+                    opacity: 0.5;
                     cursor: not-allowed;
                     transform: none;
                 }
@@ -522,21 +547,12 @@
     }
 }
 
-// Анимация загрузки
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 // Адаптивность
 @media (max-width: 768px) {
     .profile-settings {
         .settings-section {
-            padding: $spacing-lg;
+            padding-left: $spacing-lg;
+            padding-right: $spacing-lg;
         }
 
         .card-header .header-content {

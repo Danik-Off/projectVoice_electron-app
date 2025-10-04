@@ -69,7 +69,7 @@ const OverviewSettings: React.FC = observer(() => {
                         {!isEditing && (
                             <div className="header-actions">
                                 <button className="edit-button" onClick={handleEdit}>
-                                    {t('serverSettings.edit')}
+                                    {t('common.edit')}
                                 </button>
                             </div>
                         )}
@@ -129,10 +129,10 @@ const OverviewSettings: React.FC = observer(() => {
 
                                 <div className="form-actions">
                                     <button className="cancel-button" onClick={handleCancel}>
-                                        {t('serverSettings.cancel')}
+                                        {t('common.cancel')}
                                     </button>
                                     <button className="save-button" onClick={handleSave}>
-                                        {t('serverSettings.save')}
+                                        {t('common.save')}
                                     </button>
                                 </div>
                             </div>

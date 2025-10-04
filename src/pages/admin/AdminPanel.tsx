@@ -605,7 +605,7 @@ const UsersManagement: React.FC<{
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                 >
-                    ← Предыдущая
+                     Предыдущая
                 </button>
                 <span>Страница {currentPage} из {totalPages}</span>
                 <button 
@@ -723,7 +723,7 @@ const ServersManagement: React.FC<{
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
-                ← Предыдущая
+                 Предыдущая
             </button>
             <span>Страница {currentPage} из {totalPages}</span>
             <button 

@@ -225,13 +225,14 @@ const ProfileSettings: React.FC = observer(() => {
                                         </div>
                                     )}
                                 </div>
+                                {/* TODO: пока не реализована аватарка
                                 <button 
                                     className="btn-change-avatar"
                                     onClick={handleAvatarChange}
                                     disabled={isLoading}
                                 >
                                     {t('settingsPage.profile.basicInfo.changeAvatar')}
-                                </button>
+                                </button> */}
                             </div>
 
                             <div className="profile-fields">
@@ -272,7 +273,7 @@ const ProfileSettings: React.FC = observer(() => {
                                 <div className="setting-group">
                                     <div className="setting-header">
                                         <label className="setting-label">
-                                            {t('settingsPage.profile.basicInfo.email')}
+                                            {t('common.email')}
                                         </label>
                                     </div>
                                     <div className="setting-control">
@@ -323,6 +324,13 @@ const ProfileSettings: React.FC = observer(() => {
                                 {isEditing ? (
                                     <div className="edit-actions">
                                         <button 
+                                            className="btn-cancel" 
+                                            onClick={handleCancel}
+                                            disabled={isLoading}
+                                        >
+                                            {t('common.cancel')}
+                                        </button>
+                                        <button 
                                             className="btn-save" 
                                             onClick={handleSave}
                                             disabled={isLoading}
@@ -330,15 +338,8 @@ const ProfileSettings: React.FC = observer(() => {
                                             {isLoading ? (
                                                 <span className="loading-spinner">⏳</span>
                                             ) : (
-                                                t('settingsPage.profile.basicInfo.save')
+                                                t('common.save')
                                             )}
-                                        </button>
-                                        <button 
-                                            className="btn-cancel" 
-                                            onClick={handleCancel}
-                                            disabled={isLoading}
-                                        >
-                                            {t('settingsPage.profile.basicInfo.cancel')}
                                         </button>
                                     </div>
                                 ) : (
@@ -347,7 +348,7 @@ const ProfileSettings: React.FC = observer(() => {
                                         onClick={handleEdit}
                                         disabled={isLoading}
                                     >
-                                        {t('settingsPage.profile.basicInfo.edit')}
+                                        {t('common.edit')}
                                     </button>
                                 )}
                             </div>
@@ -373,7 +374,7 @@ const ProfileSettings: React.FC = observer(() => {
                         <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
-                                    {t('settingsPage.profile.security.password')}
+                                    {t('common.password')}
                                 </label>
                             </div>
                             <div className="setting-control">
@@ -504,7 +505,7 @@ const ProfileSettings: React.FC = observer(() => {
                                     {isPasswordLoading ? (
                                         <span className="loading-spinner">⏳</span>
                                     ) : (
-                                        t('settingsPage.profile.security.savePassword')
+                                        t('common.save')
                                     )}
                                 </button>
                                 <button 
@@ -512,7 +513,7 @@ const ProfileSettings: React.FC = observer(() => {
                                     onClick={handlePasswordCancel}
                                     disabled={isPasswordLoading}
                                 >
-                                    {t('settingsPage.profile.security.cancel')}
+                                    {t('common.cancel')}
                                 </button>
                             </div>
                         </div>
@@ -544,7 +545,7 @@ const ProfileSettings: React.FC = observer(() => {
                                     className="btn-cancel" 
                                     onClick={() => setShowLogoutConfirm(false)}
                                 >
-                                    {t('settingsPage.profile.security.cancel')}
+                                    {t('common.cancel')}
                                 </button>
                             </div>
                         </div>

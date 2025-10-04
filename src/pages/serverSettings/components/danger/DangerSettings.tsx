@@ -51,7 +51,7 @@ const DangerSettings: React.FC = observer(() => {
     return (
         <div className="settings-section">
             <div className="section-header">
-                <h2>{t('serverSettings.danger')}</h2>
+                <h2>{t('serverSettings.dangerZone')}</h2>
                 <p>{t('serverSettings.dangerDescription')}</p>
             </div>
             
@@ -63,7 +63,7 @@ const DangerSettings: React.FC = observer(() => {
                                 ⚠️
                             </div>
                             <div className="header-text">
-                                <h3>{t('serverSettings.dangerZone')}</h3>
+                                <h3>{t('serverSettings.dangerZoneTitle')}</h3>
                                 <p>{t('serverSettings.dangerZoneDescription')}</p>
                             </div>
                         </div>
@@ -111,7 +111,7 @@ const DangerSettings: React.FC = observer(() => {
                                     className="cancel-button"
                                     onClick={() => setShowDeleteConfirm(false)}
                                 >
-                                    {t('serverSettings.cancel')}
+                                    {t('common.cancel')}
                                 </button>
                                 <button 
                                     className="danger-button"

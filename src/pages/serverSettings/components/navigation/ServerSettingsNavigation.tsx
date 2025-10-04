@@ -24,7 +24,7 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
         { id: 'channels', label: t('serverSettings.channels'), icon: '📝' },
         { 
             id: 'danger', 
-            label: t('serverSettings.danger'), 
+            label: t('serverSettings.dangerZone'), 
             icon: '⚠️',
             requiredRole: 'owner'
         },
@@ -37,7 +37,7 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
 
     return (
         <div className="settings-sidebar">
-            <nav className="styles/main' as *;">
+            <nav className="settings-nav">
                 {filteredTabs.map((tab) => (
                     <div
                         key={tab.id}

@@ -8,40 +8,40 @@ const RolesSettings: React.FC = observer(() => {
     const roles = [
         {
             name: 'Owner',
-            description: t('serverSettings.roles.ownerDescription'),
+            description: t('serverSettings.roleDescriptions.ownerDescription'),
             permissions: [
-                t('serverSettings.permissions.manageServer'),
-                t('serverSettings.permissions.manageRoles'),
-                t('serverSettings.permissions.manageChannels'),
-                t('serverSettings.permissions.kickMembers'),
-                t('serverSettings.permissions.banMembers'),
-                t('serverSettings.permissions.deleteServer')
+                t('serverSettings.permissionList.manageServer'),
+                t('serverSettings.permissionList.manageRoles'),
+                t('serverSettings.permissionList.manageChannels'),
+                t('serverSettings.permissionList.kickMembers'),
+                t('serverSettings.permissionList.banMembers'),
+                t('serverSettings.permissionList.deleteServer')
             ]
         },
         {
             name: 'Admin',
-            description: t('serverSettings.roles.adminDescription'),
+            description: t('serverSettings.roleDescriptions.adminDescription'),
             permissions: [
-                t('serverSettings.permissions.manageRoles'),
-                t('serverSettings.permissions.manageChannels'),
-                t('serverSettings.permissions.kickMembers'),
-                t('serverSettings.permissions.banMembers')
+                t('serverSettings.permissionList.manageRoles'),
+                t('serverSettings.permissionList.manageChannels'),
+                t('serverSettings.permissionList.kickMembers'),
+                t('serverSettings.permissionList.banMembers')
             ]
         },
         {
             name: 'Moderator',
-            description: t('serverSettings.roles.moderatorDescription'),
+            description: t('serverSettings.roleDescriptions.moderatorDescription'),
             permissions: [
-                t('serverSettings.permissions.kickMembers'),
-                t('serverSettings.permissions.manageMessages')
+                t('serverSettings.permissionList.kickMembers'),
+                t('serverSettings.permissionList.manageMessages')
             ]
         },
         {
             name: 'Member',
-            description: t('serverSettings.roles.memberDescription'),
+            description: t('serverSettings.roleDescriptions.memberDescription'),
             permissions: [
-                t('serverSettings.permissions.sendMessages'),
-                t('serverSettings.permissions.joinVoice')
+                t('serverSettings.permissionList.sendMessages'),
+                t('serverSettings.permissionList.joinVoice')
             ]
         }
     ];

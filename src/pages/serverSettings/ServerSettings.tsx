@@ -73,7 +73,7 @@ const ServerSettings: React.FC = observer(() => {
         return (
             <div className="server-settings">
                 <div className="loading">
-                    <h2>{t('serverSettings.loading')}</h2>
+                    <h2>{t('common.loading')}</h2>
                     <p>{t('serverSettings.loadingDescription')}</p>
                 </div>
             </div>
@@ -84,7 +84,7 @@ const ServerSettings: React.FC = observer(() => {
         return (
             <div className="server-settings">
                 <div className="error">
-                    <h2>{t('serverSettings.error')}</h2>
+                    <h2>{t('common.error')}</h2>
                     <p>{t('serverSettings.serverNotFound')}</p>
                 </div>
             </div>
