@@ -380,110 +380,100 @@
         }
     }
 
-    // Модальное окно изменения пароля
-    .password-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-        backdrop-filter: blur(4px);
-        background: var(--modal-overlay);
-    }
+    // Стили для форм внутри модалок
+    .profile-edit-form {
+        .setting-group {
+            margin-bottom: $spacing-lg;
 
-    .password-modal {
-        background: var(--modal-bg);
-        border: 1px solid var(--modal-border);
-        border-radius: $border-radius-large;
-        width: 90%;
-        max-width: 500px;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: var(--shadow-heavy);
-
-        &.logout-confirm-modal {
-            max-width: 400px;
-
-            .logout-message {
-                color: var(--text-secondary);
-                text-align: center;
-                font-size: 16px;
-                line-height: 1.6;
-                margin: 0;
+            .setting-label {
+                display: block;
+                margin-bottom: $spacing-sm;
+                color: var(--text-primary);
+                font-size: 14px;
+                font-weight: 500;
             }
         }
 
-        .modal-header {
-            padding-left: $spacing-xl;
-            padding-right: $spacing-xl;
-            padding-top: $spacing-lg;
-            padding-bottom: $spacing-lg;
-            border-bottom: 1px solid var(--border-primary);
+        .modal-actions {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            gap: $spacing-md;
+            justify-content: flex-end;
+            margin-top: $spacing-xl;
+            padding-top: $spacing-lg;
+            border-top: 1px solid var(--border-primary);
 
-            h3 {
-                color: var(--text-primary);
-                font-size: 18px;
-                font-weight: 600;
-                margin: 0;
-            }
-
-            .btn-close {
-                background: none;
+            button {
+                padding: $spacing-sm $spacing-md;
                 border: none;
-                color: var(--text-secondary);
-                cursor: pointer;
                 border-radius: $border-radius-small;
+                cursor: pointer;
                 transition: all 0.3s ease;
-                font-size: 18px;
-                padding: $spacing-xs;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: $spacing-xs;
+                font-weight: 500;
 
                 &:hover:not(:disabled) {
-                    background: var(--hover-bg);
-                    color: var(--text-primary);
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-light);
                 }
 
                 &:disabled {
                     opacity: 0.5;
                     cursor: not-allowed;
+                    transform: none;
+                }
+
+                .loading-spinner {
+                    animation: spin 1s linear infinite;
+                }
+            }
+
+            .btn-save {
+                background: var(--success-accent);
+                color: white;
+
+                &:hover:not(:disabled) {
+                    background: var(--success-accent);
+                    filter: brightness(0.9);
+                }
+            }
+
+            .btn-cancel {
+                background: var(--tertiary-bg);
+                color: var(--text-primary);
+                border: 1px solid var(--border-secondary);
+
+                &:hover:not(:disabled) {
+                    background: var(--hover-bg);
+                    border-color: var(--border-accent);
                 }
             }
         }
+    }
 
-        .modal-content {
-            padding-left: $spacing-xl;
-            padding-right: $spacing-xl;
-            padding-top: $spacing-xl;
-            padding-bottom: $spacing-xl;
+    .password-form {
+        .setting-group {
+            margin-bottom: $spacing-lg;
 
-            .setting-group {
-                margin-bottom: $spacing-lg;
-
-                .setting-label {
-                    display: block;
-                    margin-bottom: $spacing-sm;
-                    color: var(--text-primary);
-                    font-size: 14px;
-                    font-weight: 500;
-                }
+            .setting-label {
+                display: block;
+                margin-bottom: $spacing-sm;
+                color: var(--text-primary);
+                font-size: 14px;
+                font-weight: 500;
             }
         }
 
         .modal-actions {
-            padding-left: $spacing-xl;
-            padding-right: $spacing-xl;
-            padding-top: $spacing-lg;
-            padding-bottom: $spacing-lg;
-            border-top: 1px solid var(--border-primary);
             display: flex;
             gap: $spacing-md;
             justify-content: flex-end;
+            margin-top: $spacing-xl;
+            padding-top: $spacing-lg;
+            border-top: 1px solid var(--border-primary);
 
             button {
                 padding: $spacing-sm $spacing-md;
@@ -545,6 +535,68 @@
             }
         }
     }
+
+    .logout-confirm {
+        .logout-message {
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.6;
+            margin: 0 0 $spacing-lg 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: $spacing-md;
+            justify-content: flex-end;
+            margin-top: $spacing-lg;
+
+            button {
+                padding: $spacing-sm $spacing-md;
+                border: none;
+                border-radius: $border-radius-small;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: $spacing-xs;
+                font-weight: 500;
+
+                &:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-light);
+                }
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+            }
+
+            .btn-cancel {
+                background: var(--tertiary-bg);
+                color: var(--text-primary);
+                border: 1px solid var(--border-secondary);
+
+                &:hover:not(:disabled) {
+                    background: var(--hover-bg);
+                    border-color: var(--border-accent);
+                }
+            }
+
+            .btn-logout {
+                background: var(--error-color);
+                color: white;
+
+                &:hover:not(:disabled) {
+                    background: var(--error-color-hover);
+                }
+            }
+        }
+    }
 }
 
 // Адаптивность
@@ -576,10 +628,9 @@
             }
         }
 
-        .password-modal {
-            width: 95%;
-            margin: $spacing-md;
-
+        .profile-edit-form,
+        .password-form,
+        .logout-confirm {
             .modal-actions {
                 flex-direction: column;
                 gap: $spacing-sm;
