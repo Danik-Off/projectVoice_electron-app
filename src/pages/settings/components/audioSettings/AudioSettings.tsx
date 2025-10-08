@@ -11,9 +11,32 @@ const AudioSettings: React.FC = observer(() => {
     const [isSpeakerActive, setIsSpeakerActive] = useState(false);
     const isReconnectingRef = useRef(false);
 
+    // Инициализируем микрофон при открытии настроек аудио
+    useEffect(() => {
+        console.log('AudioSettings: Checking microphone initialization for audio settings...');
+        
+        // Проверяем, нужен ли микрофон и не инициализирован ли он уже
+        if (!audioSettingsStore.isMicrophoneNeeded()) {
+            console.log('AudioSettings: Initializing microphone for audio settings...');
+            audioSettingsStore.initMedia();
+        } else {
+            console.log('AudioSettings: Microphone already initialized, skipping initialization');
+        }
+        
+        // Очищаем микрофон при закрытии настроек аудио
+        return () => {
+            console.log('AudioSettings: Cleaning up microphone after closing audio settings...');
+            // Не очищаем микрофон, если пользователь находится в голосовом канале
+            if (!roomStore.currentVoiceChannel) {
+                audioSettingsStore.cleanup();
+            }
+        };
+    }, []);
+
     // Автоматическое переподключение при изменении настроек
     useEffect(() => {
         let lastSettings = '';
+        let isInitialized = false;
 
         const checkForChanges = () => {
             // Пропускаем проверку, если уже идет переподключение
@@ -44,6 +67,14 @@ const AudioSettings: React.FC = observer(() => {
             };
 
             const currentSettingsString = JSON.stringify(currentSettings);
+            
+            // Инициализируем базовые настройки при первом запуске
+            if (!isInitialized) {
+                lastSettings = currentSettingsString;
+                isInitialized = true;
+                console.log('AudioSettings: Initial settings captured, auto-reconnect disabled for first check');
+                return;
+            }
             
             // Проверяем, действительно ли настройки изменились
             if (currentSettingsString !== lastSettings && roomStore.currentVoiceChannel) {

@@ -15,10 +15,6 @@ const Layout = observer(() => {
     const [isModalOpen, setModalOpen] = useState(false);
     const [wasConnectedToVoice, setWasConnectedToVoice] = useState(false);
     
-    const initMedia = () => {
-        audioSettingsStore.initMedia();
-    };
-
     const isConnectedToVoice = voiceRoomStore.currentVoiceChannel !== null;
 
     // Отслеживаем, был ли пользователь подключен к голосовому каналу
@@ -34,11 +30,9 @@ const Layout = observer(() => {
     // VoiceControls остается видимым, если пользователь был подключен к голосовому каналу
     const shouldShowVoiceControls = isConnectedToVoice || wasConnectedToVoice;
 
-
-
     return (
         <UserProfileProvider>
-            <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`} onClick={initMedia}>
+            <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`}>
                 <ToastNotifications />
                 {shouldShowVoiceControls && <VoiceControls />}
                 <ServerSidebar onOpenModal={() => setModalOpen(true)} />

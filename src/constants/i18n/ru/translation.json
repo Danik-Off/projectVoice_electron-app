@@ -436,7 +436,7 @@
         "inviteAcceptError": "Ошибка принятия приглашения",
         "inviteAcceptSuccess": "Приглашение принято успешно",
         "loginRequired": "Для принятия приглашения необходимо войти в аккаунт",
-        "voiceConnectError": "Ошибка подключения к голосовому каналу",
+        "connectError": "Ошибка подключения к серверу",
         "voiceDisconnectError": "Ошибка отключения от голосового канала",
         "channelCreateError": "Ошибка создания канала",
         "channelCreateSuccess": "Канал создан успешно"

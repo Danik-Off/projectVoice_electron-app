@@ -444,7 +444,7 @@
         "inviteAcceptError": "Error accepting invite",
         "inviteAcceptSuccess": "Invite accepted successfully",
         "loginRequired": "You need to log in to accept the invite",
-        "voiceConnectError": "Error connecting to voice channel",
+        "connectError": "Error connecting to server",
         "voiceDisconnectError": "Error disconnecting from voice channel",
         "channelCreateError": "Error creating channel",
         "channelCreateSuccess": "Channel created successfully"

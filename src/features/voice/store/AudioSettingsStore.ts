@@ -62,9 +62,10 @@ class AudioSettingsStore {
     }
 
     public initMedia() {
-        // Проверяем, не инициализирован ли уже поток
-        if (this._stream && this._stream.getAudioTracks().length > 0) {
-            console.log('AudioSettingsStore: Media stream already exists, skipping initialization');
+        // Проверяем, не инициализирован ли уже поток и активен ли он
+        if (this._stream && this._stream.getAudioTracks().length > 0 && 
+            this._stream.getAudioTracks().some(track => track.readyState === 'live')) {
+            console.log('AudioSettingsStore: Media stream already exists and is active, skipping initialization');
             return;
         }
         console.log('AudioSettingsStore: Initializing media stream...');
@@ -100,6 +101,19 @@ class AudioSettingsStore {
         this.audioProcessors = {};
         
         console.log('AudioSettingsStore: Media resources cleaned up');
+    }
+
+    // Проверка, нужен ли микрофон в данный момент
+    public isMicrophoneNeeded(): boolean {
+        return this._stream && this._stream.getAudioTracks().length > 0;
+    }
+
+    // Проверка, активен ли микрофон (не заглушен)
+    public isMicrophoneActive(): boolean {
+        if (!this.isMicrophoneNeeded()) {
+            return false;
+        }
+        return this._stream.getAudioTracks().some(track => track.enabled && track.readyState === 'live');
     }
 
     // Методы для управления режимами
@@ -481,8 +495,16 @@ class AudioSettingsStore {
             runInAction(() => {
                 this.microphoneDevices = devices.filter((device) => device.kind === 'audioinput');
                 this.speakerDevices = devices.filter((device) => device.kind === 'audiooutput');
-                this.selectedMicrophone = this.microphoneDevices[0];
-                this.selectedSpeaker = this.speakerDevices[0];
+                
+                // Устанавливаем микрофон по умолчанию только если он еще не выбран
+                if (!this.selectedMicrophone && this.microphoneDevices.length > 0) {
+                    this.selectedMicrophone = this.microphoneDevices[0];
+                }
+                
+                // Устанавливаем динамик по умолчанию только если он еще не выбран
+                if (!this.selectedSpeaker && this.speakerDevices.length > 0) {
+                    this.selectedSpeaker = this.speakerDevices[0];
+                }
             });
         } catch (error) {
             console.error('Error fetching audio devices:', error);

@@ -155,7 +155,7 @@ class VoiceRoomStore {
         });
         this.socketClient.socketOn('connect_error', (error) => {
             console.error('Ошибка Socket.IO подключения:', error);
-            notificationStore.addNotification('notifications.voiceConnectError', 'error');
+            notificationStore.addNotification('notifications.connectError', 'error');
         });
         this.socketClient.socketOn('disconnect', () => {
             console.log('Соединение с Socket.IO закрыто');
