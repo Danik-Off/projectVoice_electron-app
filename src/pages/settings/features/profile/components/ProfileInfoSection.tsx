@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { authStore } from '../../../../../store/authStore';
-import { Modal } from '../../../../../components/ui';
+import { authStore } from '../../../../../core';
+import { Modal } from '../../../../../shared';
 import type { ProfileForm, ValidationErrors } from '../types';
 import './ProfileInfoSection.scss';
 

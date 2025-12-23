@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { themeStore } from '../../../../store/ThemeStore';
+import { themeStore } from '../../../../core';
 import './AppearanceSettings.scss';
 
 const AppearanceSettings: React.FC = observer(() => {

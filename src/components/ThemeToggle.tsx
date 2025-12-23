@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { themeStore } from '../store/ThemeStore';
+import { themeStore } from '../core';
 import './ThemeToggle.scss';
 
 const ThemeToggle: React.FC = () => {

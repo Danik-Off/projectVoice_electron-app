@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import serverStore from '../../../../store/serverStore';
+import { serverStore } from '../../../../modules/servers';
 
 const OverviewSettings: React.FC = observer(() => {
     const { t } = useTranslation();

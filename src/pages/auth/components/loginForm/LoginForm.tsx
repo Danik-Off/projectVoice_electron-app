@@ -1,9 +1,8 @@
 // LoginForm.tsx
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { authStore } from '../../../../store/authStore';
+import { authStore, notificationStore } from '../../../../core';
 import { useTranslation } from 'react-i18next';
-import notificationStore from '../../../../store/NotificationStore';
 
 const LoginForm: React.FC = () => {
     const { t } = useTranslation();

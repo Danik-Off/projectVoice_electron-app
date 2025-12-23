@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { messageService } from '../services/messageService';
 import type { Message, CreateMessageRequest, UpdateMessageRequest, MessageFilters } from '../types/message';
-import { authStore } from './authStore';
+import { authStore } from '../../../core';
 
 class MessageStore {
     messages: Message[] = [];

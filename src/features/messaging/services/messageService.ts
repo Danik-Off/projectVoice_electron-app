@@ -1,4 +1,4 @@
-import { apiClient } from '../utils/apiClient';
+import { apiClient } from '../../../core';
 import type { Message, CreateMessageRequest, UpdateMessageRequest, MessageResponse, MessageFilters } from '../types/message';
 
 class MessageService {

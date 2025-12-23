@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import serverStore from '../../store/serverStore';
-import { authStore } from '../../store/authStore';
-import { serverMembersService } from '../../services/serverMembersService';
+import { serverStore } from '../../modules/servers';
+import { authStore } from '../../core';
+import { serverMembersService } from '../../modules/servers';
 import {
     ServerSettingsHeader,
     ServerSettingsNavigation,

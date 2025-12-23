@@ -3,10 +3,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import './ServerHeader.scss';
-import serverStore from '../../../../../../store/serverStore';
-import { authStore } from '../../../../../../store/authStore';
-import notificationStore from '../../../../../../store/NotificationStore';
-import { inviteService } from '../../../../../../services/inviteService';
+import { serverStore } from '../../../../../../modules/servers';
+import { authStore, notificationStore } from '../../../../../../core';
+import { inviteService } from '../../../../../../modules/invite';
 
 const ServerHeader: React.FC = observer(() => {
     const currentServer = serverStore.currentServer;

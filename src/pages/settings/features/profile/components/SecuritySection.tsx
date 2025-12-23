@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { Modal } from '../../../../../components/ui';
+import { Modal } from '../../../../../shared';
 import type { PasswordForm, ValidationErrors } from '../types';
 import './SecuritySection.scss';
 

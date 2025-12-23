@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { authStore } from '../../../../../store/authStore';
-import { userStore } from '../../../../../store/userStore';
-import { notificationStore } from '../../../../../store/NotificationStore';
+import { authStore, notificationStore } from '../../../../../core';
+import { userStore } from '../../../../../modules/auth';
 import type { ProfileForm, PasswordForm, ValidationErrors } from '../types';
 
 export const useProfileSettings = () => {

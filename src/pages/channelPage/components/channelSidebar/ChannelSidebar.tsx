@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import './ChannelSidebar.scss';
 import ChannelList from './components/channelList/ChannelList';
-import serverStore from '../../../../store/serverStore';
+import { serverStore } from '../../../../modules/servers';
 import ServerHeader from './components/serverHeader/ServerHeader';
 
 const ChannelSidebar: React.FC = () => {

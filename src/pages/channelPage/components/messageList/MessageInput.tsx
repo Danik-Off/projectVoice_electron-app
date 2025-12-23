@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { messageStore } from '../../../../store/messageStore';
+import { messageStore } from '../../../../modules/messaging';
 import './MessageInput.scss';
 
 const MessageInput: React.FC = observer(() => {

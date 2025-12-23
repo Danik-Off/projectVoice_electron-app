@@ -3,7 +3,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 
 import './ToastNotifications.scss';
-import notificationStore from '../../store/NotificationStore';
+import { notificationStore } from '../../core';
 
 const ToastNotifications: React.FC = observer(() => {
     return (

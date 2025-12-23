@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import serverStore from '../../../../store/serverStore';
-import notificationStore from '../../../../store/NotificationStore';
+import { serverStore } from '../../../../modules/servers';
+import { notificationStore } from '../../../../core';
 
 const DangerSettings: React.FC = observer(() => {
     const { t } = useTranslation();

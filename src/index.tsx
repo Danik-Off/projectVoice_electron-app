@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import './styles/main.scss';
 import { router } from './routes/root';
-import { themeStore } from './store/ThemeStore';
+import { themeStore } from './core';
 
 import './constants/i18n';
 

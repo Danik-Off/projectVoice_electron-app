@@ -1,8 +1,8 @@
 // src/components/ServerSidebar/ServerSidebar.tsx
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import serverStore from '../../../../store/serverStore';
-import { authStore } from '../../../../store/authStore';
+import { serverStore } from '../../../../modules/servers';
+import { authStore } from '../../../../core';
 import BlockedServerModal from '../../../../components/BlockedServerModal';
 import './ServerSidebar.scss';
 import ServerItem from './serverItem/ServerItem';

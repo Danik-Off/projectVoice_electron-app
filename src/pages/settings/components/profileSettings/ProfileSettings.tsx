@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { authStore } from '../../../../store/authStore';
+import { authStore } from '../../../../core';
 import { ProfileInfoSection, SecuritySection } from '../../features/profile/components';
 import { useProfileSettings } from '../../features/profile/hooks';
 import './ProfileSettings.scss';

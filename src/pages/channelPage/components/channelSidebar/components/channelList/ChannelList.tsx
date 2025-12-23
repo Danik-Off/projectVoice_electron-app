@@ -1,16 +1,14 @@
 // ChannelList.tsx
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
-import serverStore from '../../../../../../store/serverStore';
 import type { Channel } from '../../../../../../types/channel';
-
-import './ChannelList.scss'; // Import the CSS file for styling
-import CreateChannelForm from './components/сreateChannelForm/CreateChannelForm';
-import voiceRoomStore from '../../../../../../store/roomStore';
+import { serverStore } from '../../../../../../modules/servers';
+import { channelsStore } from '../../../../../../modules/channels';
+import { RoomStore as voiceRoomStore } from '../../../../../../features/voice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-import channelsStore from '../../../../../../store/channelsStore';
+import './ChannelList.scss'; // Import the CSS file for styling
+import CreateChannelForm from './components/сreateChannelForm/CreateChannelForm';
 import Spinner from '../../../../../../components/spinner/Spinner';
 
 const ChannelList: React.FC = observer(() => {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal } from '../../../../../components/ui';
-import serverStore from '../../../../../store/serverStore';
-import notificationStore from '../../../../../store/NotificationStore';
+import { Modal } from '../../../../../shared';
+import { serverStore } from '../../../../../modules/servers';
+import { notificationStore } from '../../../../../core';
 
 interface ServerCreateModalProps {
     isOpen: boolean;

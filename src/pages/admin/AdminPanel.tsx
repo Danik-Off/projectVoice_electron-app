@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, type JSX } from 'react';
 import { observer } from 'mobx-react';
 import { adminService } from '../../services/adminService';
-import { authStore } from '../../store/authStore';
+import { authStore } from '../../core';
 // import { useTranslation } from 'react-i18next';
 import './AdminPanel.scss';
 

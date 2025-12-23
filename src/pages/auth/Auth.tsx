@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { authStore } from '../../store/authStore';
-import { themeStore } from '../../store/ThemeStore';
+import { authStore, themeStore } from '../../core';
 import Spinner from '../../components/spinner/Spinner';
 import BlockedAccountModal from '../../components/BlockedAccountModal';
 import ToastNotifications from '../../components/toastNotifications/ToastNotifications';

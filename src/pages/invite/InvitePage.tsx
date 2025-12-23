@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { authStore } from '../../store/authStore';
-import { inviteService } from '../../services/inviteService';
-import notificationStore from '../../store/NotificationStore';
+import { authStore, notificationStore } from '../../core';
+import { inviteService } from '../../modules/invite';
 import './InvitePage.scss';
 
 interface InviteData {

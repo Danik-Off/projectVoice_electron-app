@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { serverMembersService } from '../../../../services/serverMembersService';
 import type { ServerMember } from '../../../../types/server';
 import ServerMembers from '../../../channelPage/components/channelSidebar/components/serverMembers/ServerMembers';
-import serverStore from '../../../../store/serverStore';
-import notificationStore from '../../../../store/NotificationStore';
+import { serverStore } from '../../../../modules/servers';
+import { notificationStore } from '../../../../core';
 
 const MembersSettings: React.FC = observer(() => {
     const { t } = useTranslation();

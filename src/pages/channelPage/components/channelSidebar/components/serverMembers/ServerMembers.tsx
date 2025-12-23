@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
-import { authStore } from '../../../../../../store/authStore';
+import { authStore } from '../../../../../../core';
 import type { ServerMember } from '../../../../../../types/server';
 import { useUserProfile } from '../../../../../../components/UserProfileProvider';
 import ClickableAvatar from '../../../../../../components/ClickableAvatar';

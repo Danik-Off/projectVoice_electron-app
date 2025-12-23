@@ -4,8 +4,8 @@ import ChannelSidebar from './components/channelSidebar/ChannelSidebar';
 import VoiceControls from './components/channelSidebar/components/voiceControls/VoiceControls';
 import BlockedServerModal from '../../components/BlockedServerModal';
 import { useEffect, useState } from 'react';
-import serverStore from '../../store/serverStore';
-import roomStore from '../../store/roomStore';
+import { serverStore } from '../../modules/servers';
+import { RoomStore as roomStore } from '../../features/voice';
 import Spinner from '../../components/spinner/Spinner';
 import { observer } from 'mobx-react';
 

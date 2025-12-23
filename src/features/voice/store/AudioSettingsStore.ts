@@ -216,35 +216,50 @@ class AudioSettingsStore {
         if (this.echoCancellation === value) return;
         this.echoCancellation = value;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setNoiseSuppression(value: boolean) {
         if (this.noiseSuppression === value) return;
         this.noiseSuppression = value;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setAutoGainControl(value: boolean) {
         if (this.autoGainControl === value) return;
         this.autoGainControl = value;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setSampleRate(rate: number) {
         if (this.sampleRate === rate) return;
         this.sampleRate = rate;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setSampleSize(size: number) {
         if (this.sampleSize === size) return;
         this.sampleSize = size;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setLatency(latency: number) {
@@ -312,21 +327,30 @@ class AudioSettingsStore {
         if (this.bitrate === bitrate) return;
         this.bitrate = bitrate;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setBufferSize(bufferSize: number): void {
         if (this.bufferSize === bufferSize) return;
         this.bufferSize = bufferSize;
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setCompressionLevel(level: number): void {
         if (this.compressionLevel === level) return;
         this.compressionLevel = Math.max(0, Math.min(1, level));
         this.updateMediaStream();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     // Метод для принудительного применения всех настроек
@@ -337,7 +361,10 @@ class AudioSettingsStore {
             // Если есть активный поток, обновляем настройки в реальном времени
             if (this._stream && this._stream.getAudioTracks().length > 0) {
                 this.updateRealtimeSettings();
-                this.updateWebRTCStream();
+                // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
                 console.log('AudioSettingsStore: All settings applied to existing stream');
             } else {
                 // Если нет активного потока, создаем новый
@@ -386,70 +413,100 @@ class AudioSettingsStore {
         if (this.voiceEnhancement === enabled) return;
         this.voiceEnhancement = enabled;
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setVoiceClarity(clarity: number): void {
         if (this.voiceClarity === clarity) return;
         this.voiceClarity = Math.max(0, Math.min(1, clarity));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setBackgroundNoiseReduction(reduction: number): void {
         if (this.backgroundNoiseReduction === reduction) return;
         this.backgroundNoiseReduction = Math.max(0, Math.min(1, reduction));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setVoiceBoost(boost: number): void {
         if (this.voiceBoost === boost) return;
         this.voiceBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setBassBoost(boost: number): void {
         if (this.bassBoost === boost) return;
         this.bassBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setTrebleBoost(boost: number): void {
         if (this.trebleBoost === boost) return;
         this.trebleBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setStereoEnhancement(enabled: boolean): void {
         if (this.stereoEnhancement === enabled) return;
         this.stereoEnhancement = enabled;
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setSpatialAudio(enabled: boolean): void {
         if (this.spatialAudio === enabled) return;
         this.spatialAudio = enabled;
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setVoiceIsolation(enabled: boolean): void {
         if (this.voiceIsolation === enabled) return;
         this.voiceIsolation = enabled;
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public setDynamicRangeCompression(compression: number): void {
         if (this.dynamicRangeCompression === compression) return;
         this.dynamicRangeCompression = Math.max(0, Math.min(1, compression));
         this.updateRealtimeSettings();
-        this.updateWebRTCStream();
+        // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
     }
 
     public toggleMicrophoneMute(): void {
@@ -555,7 +612,10 @@ class AudioSettingsStore {
                 // Обновляем WebRTC поток после смены микрофона
                 if (forceUpdate) {
                     console.log('AudioSettingsStore: Updating WebRTC stream after microphone change...');
-                    this.updateWebRTCStream();
+                    // Обновляем WebRTC поток через roomStore
+        if ((roomStore as any).webRTCClient?.resendlocalStream) {
+            (roomStore as any).webRTCClient.resendlocalStream();
+        }
                 }
             });
         } catch (error) {

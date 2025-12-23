@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { observer } from 'mobx-react';
 import { useParams } from 'react-router-dom';
-import { messageStore } from '../../../../store/messageStore';
-import channelsStore from '../../../../store/channelsStore';
+import { messageStore } from '../../../../modules/messaging';
+import { channelsStore } from '../../../../modules/channels';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
 import './MessageList.scss';

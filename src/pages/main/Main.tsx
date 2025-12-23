@@ -6,8 +6,8 @@ import ServerCreateModal from './components/serverSlidebar/serverCreateModal/Ser
 import VoiceControls from '../channelPage/components/channelSidebar/components/voiceControls/VoiceControls';
 import { UserProfileProvider } from '../../components/UserProfileProvider';
 import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
-import voiceRoomStore from '../../store/roomStore';
-import audioSettingsStore from '../../store/AudioSettingsStore';
+import { RoomStore as voiceRoomStore } from '../../features/voice';
+import { AudioSettingsStore as audioSettingsStore } from '../../features/voice';
 
 import './Main.scss'; // Main CSS for layout
 

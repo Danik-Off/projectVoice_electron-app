@@ -2,7 +2,7 @@ import  { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 // Убедитесь, что путь к store корректен
 import './UserSidebar.css';
-import serverStore from '../../../../store/serverStore';
+import { serverStore } from '../../../../modules/servers';
 
 const UserSidebar = observer(() => {
     // Загрузка пользователей, если список пуст

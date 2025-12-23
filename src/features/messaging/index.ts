@@ -7,10 +7,10 @@ export { default as MessageInput } from './components/MessageInput';
 export { default as MessageItem } from './components/MessageItem';
 
 // Store
-export { default as MessageStore } from './store/messageStore';
+export { messageStore } from './store/messageStore';
 
 // Services
-export { default as MessageService } from './services/messageService';
+export { messageService } from './services/messageService';
 
 // Types
 export * from './types/message';

@@ -4,7 +4,7 @@ import voiceRoomStore from '../../../../store/roomStore';
 import { observer } from 'mobx-react';
 import { useUserProfile } from '../../../../components/UserProfileProvider';
 import ClickableAvatar from '../../../../components/ClickableAvatar';
-import { authStore } from '../../../../store/authStore';
+import { authStore } from '../../../../core';
 
 const VoiceRoom: React.FC = observer(() => {
     const { openProfile } = useUserProfile();

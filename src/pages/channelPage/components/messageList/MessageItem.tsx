@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react';
 import type { Message } from '../../../../types/message';
-import { messageStore } from '../../../../store/messageStore';
-import { authStore } from '../../../../store/authStore';
+import { messageStore } from '../../../../modules/messaging';
+import { authStore } from '../../../../core';
 import { useUserProfile } from '../../../../components/UserProfileProvider';
 import ClickableAvatar from '../../../../components/ClickableAvatar';
 import './MessageItem.scss';

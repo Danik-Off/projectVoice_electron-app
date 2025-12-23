@@ -4,7 +4,7 @@ import ChannelSidebar from './components/channelSidebar/ChannelSidebar';
 import VoiceControls from './components/channelSidebar/components/voiceControls/VoiceControls';
 import BlockedServerModal from '../../components/BlockedServerModal';
 import { useEffect, useState } from 'react';
-import serverStore from '../../store/serverStore';
+import { serverStore } from '../../modules/servers';
 import { observer } from 'mobx-react';
 
 // Используем новую feature-based архитектуру
