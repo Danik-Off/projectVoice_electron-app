@@ -1,4 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import roomStore from './roomStore';
+import { notificationStore } from '../../../core';
 
 class AudioSettingsStore {
     public stream: MediaStream = new MediaStream();
@@ -294,22 +296,18 @@ class AudioSettingsStore {
                 await this.updateMediaStream(true);
                 
                 // Показываем уведомление об успехе
-                import('./NotificationStore').then(({ default: notificationStore }) => {
-                    notificationStore.addNotification(
-                        `Микрофон изменен на: ${device.label || 'Неизвестное устройство'}`,
-                        'success'
-                    );
-                });
+                notificationStore.addNotification(
+                    `Микрофон изменен на: ${device.label || 'Неизвестное устройство'}`,
+                    'success'
+                );
             } catch (error) {
                 console.error('AudioSettingsStore: Error switching microphone:', error);
                 
                 // Показываем уведомление об ошибке
-                import('./NotificationStore').then(({ default: notificationStore }) => {
-                    notificationStore.addNotification(
-                        `Ошибка при смене микрофона: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
-                        'error'
-                    );
-                });
+                notificationStore.addNotification(
+                    `Ошибка при смене микрофона: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+                    'error'
+                );
             }
         }
     }

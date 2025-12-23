@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { observer } from 'mobx-react';
 import { useParams } from 'react-router-dom';
-import { messageStore } from '../../../../store/messageStore';
-import channelsStore from '../../../../store/channelsStore';
+import { messageStore } from '../store/messageStore';
+import { channelsStore } from '../../../modules/channels';
+import { RoomStore as roomStore } from '../../../modules/voice';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
 import './MessageList.scss';
-import roomStore from '../../../../store/roomStore';
 
 const MessageList: React.FC = observer(() => {
     const { roomId } = useParams<{ roomId: string }>();
@@ -33,7 +33,7 @@ const MessageList: React.FC = observer(() => {
     // Установка текущего канала при загрузке компонента
     useEffect(() => {
         if (roomId && channels.length > 0) {
-            const channel = channels.find(ch => ch.id === parseInt(roomId));
+            const channel = channels.find((ch: any) => ch.id === parseInt(roomId));
             if (channel) {
                 channelsStore.setCurrentChannel(channel);
                 console.log('Установлен текущий канал:', channel);
@@ -107,7 +107,7 @@ const MessageList: React.FC = observer(() => {
     const groupMessages = () => {
         const groups: Array<{ userId: number; messages: typeof messages }> = [];
         
-        messages.forEach(message => {
+        messages.forEach((message: any) => {
             const lastGroup = groups[groups.length - 1];
             
             if (lastGroup && lastGroup.userId === message.userId) {
@@ -248,7 +248,7 @@ const MessageList: React.FC = observer(() => {
 
                     {messageGroups.map((group, groupIndex) => (
                         <div key={`${group.userId}-${groupIndex}`} className="message-group">
-                            {group.messages.map((message, messageIndex) => (
+                            {group.messages.map((message: any, messageIndex: number) => (
                                 <MessageItem
                                     key={message.id}
                                     message={message}

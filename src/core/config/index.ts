@@ -1,7 +1,7 @@
 /**
  * Конфигурация приложения
  */
-import { IAppConfig } from '../types';
+import type { IAppConfig } from '../types';
 
 export const appConfig: IAppConfig = {
   api: {

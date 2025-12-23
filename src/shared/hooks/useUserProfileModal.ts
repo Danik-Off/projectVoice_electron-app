@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { User } from '../types/user';
+import type { User } from '../../types/user';
 
 interface UseUserProfileModalReturn {
     isOpen: boolean;

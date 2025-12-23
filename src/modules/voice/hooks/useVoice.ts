@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { RoomStore } from '../store/roomStore';
-import { AudioSettingsStore } from '../store/AudioSettingsStore';
+import RoomStore from '../store/roomStore';
+import AudioSettingsStore from '../store/AudioSettingsStore';
 
 /**
  * Хук для управления голосовыми комнатами
@@ -8,7 +8,7 @@ import { AudioSettingsStore } from '../store/AudioSettingsStore';
 export const useVoice = () => {
   const joinRoom = useCallback(async (roomId: string, roomName: string) => {
     try {
-      await RoomStore.connectToRoom(roomId, roomName);
+      await RoomStore.connectToRoom(Number(roomId), roomName);
       return { success: true };
     } catch (error) {
       console.error('Error joining voice room:', error);
@@ -130,6 +130,6 @@ export const useParticipants = () => {
     participants: RoomStore.participants,
     participantCount: RoomStore.participants.length,
     isParticipant: (userId: string) => 
-      RoomStore.participants.some(p => p.id === userId),
+      RoomStore.participants.some((p: any) => p.socketId === userId || p.userData?.id === userId),
   };
 };

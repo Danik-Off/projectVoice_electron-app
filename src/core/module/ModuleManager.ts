@@ -2,7 +2,7 @@
  * Менеджер модулей
  * Управляет жизненным циклом модулей и их маршрутами
  */
-import { IModule } from '../types';
+import type { IModule } from '../types';
 
 export class ModuleManager {
   private modules: Map<string, IModule> = new Map();

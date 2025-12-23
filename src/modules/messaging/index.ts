@@ -3,11 +3,16 @@
  */
 export { messagingModule } from './module';
 
-// Re-export from features/messaging
-export { default as MessageList } from '../../features/messaging/components/MessageList';
-export { default as MessageInput } from '../../features/messaging/components/MessageInput';
-export { default as MessageItem } from '../../features/messaging/components/MessageItem';
-export { messageStore } from '../../features/messaging/store/messageStore';
-export { messageService } from '../../features/messaging/services/messageService';
-export * from '../../features/messaging/types/message';
+// Components
+export { default as MessageList } from './components/MessageList';
+export { default as MessageInput } from './components/MessageInput';
+export { default as MessageItem } from './components/MessageItem';
 
+// Store
+export { messageStore } from './store/messageStore';
+
+// Services
+export { messageService } from './services/messageService';
+
+// Types
+export * from './types/message';

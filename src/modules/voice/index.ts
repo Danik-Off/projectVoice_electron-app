@@ -3,17 +3,28 @@
  */
 export { voiceModule } from './module';
 
-// Re-export from features/voice
-export { default as VoiceRoom } from '../../features/voice/components/VoiceRoom';
-export { default as AudioSettings } from '../../features/voice/components/AudioSettings';
-export { useVoice, useAudioSettings, useParticipants } from '../../features/voice/hooks/useVoice';
-export { default as AudioSettingsStore } from '../../features/voice/store/AudioSettingsStore';
-export { default as RoomStore } from '../../features/voice/store/roomStore';
-export { default as ParticipantVolumeStore } from '../../features/voice/store/ParticipantVolumeStore';
-export { default as VoiceActivityService } from '../../features/voice/services/VoiceActivityService';
-export { default as WebRTCClient } from '../../features/voice/utils/WebRTCClient';
-export * from '../../features/voice/utils/audioOptimization';
-export * from '../../features/voice/utils/audioTest';
-export * from '../../features/voice/types/WebRTCClient.types';
-export * from '../../features/voice/utils/constants/WebRTCClient.constants';
+// Components
+export { default as VoiceRoom } from './components/VoiceRoom';
+export { default as AudioSettings } from './components/AudioSettings';
 
+// Hooks
+export { useVoice, useAudioSettings, useParticipants } from './hooks/useVoice';
+
+// Store
+export { default as AudioSettingsStore } from './store/AudioSettingsStore';
+export { default as RoomStore } from './store/roomStore';
+export { default as ParticipantVolumeStore } from './store/ParticipantVolumeStore';
+
+// Services
+export { default as VoiceActivityService } from './services/VoiceActivityService';
+
+// Utils
+export { default as WebRTCClient } from './utils/WebRTCClient';
+export * from './utils/audioOptimization';
+export * from './utils/audioTest';
+
+// Types
+export * from './types/WebRTCClient.types';
+
+// Constants
+export * from '../../utils/constants/WebRTCClient.constants';

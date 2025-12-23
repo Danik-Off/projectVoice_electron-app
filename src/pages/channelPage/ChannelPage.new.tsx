@@ -8,8 +8,8 @@ import { serverStore } from '../../modules/servers';
 import { observer } from 'mobx-react';
 
 // Используем новую feature-based архитектуру
-import { useVoice } from '../../features/voice';
-import { Spinner } from '../../shared';
+import { useVoice } from '../../modules/voice';
+import Spinner from '../../components/spinner/Spinner';
 
 const LoadingState: React.FC = () => (
     <div className="loading-state">
@@ -59,7 +59,7 @@ const ChannelPage: React.FC = () => {
 
     useEffect(() => {
         if (serverId) {
-            serverStore.fetchServer(serverId).catch((error) => {
+            serverStore.fetchServerById(Number(serverId)).catch((error: any) => {
                 console.error('Error fetching server:', error);
                 if (error.status === 403) {
                     setShowBlockedModal(true);
@@ -79,7 +79,11 @@ const ChannelPage: React.FC = () => {
         <>
             <Page />
             {showBlockedModal && (
-                <BlockedServerModal onClose={handleCloseBlockedModal} />
+                <BlockedServerModal 
+                    isOpen={showBlockedModal}
+                    serverName={serverStore.currentServer?.name || ''}
+                    onClose={handleCloseBlockedModal} 
+                />
             )}
         </>
     );

@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, configure } from 'mobx';
 import { authService } from '../../modules/auth/services/authService';
 import { getCookie, setCookie } from '../../shared/utils/cookie';
 import { notificationStore } from './NotificationStore';
@@ -134,7 +134,6 @@ export const authStore = new AuthStore();
 
 // Настройка MobX
 export function enableMobX() {
-    const { configure } = require('mobx');
     configure({
         enforceActions: 'never',
         computedRequiresReaction: false,

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import audioSettingsStore from '../../../../store/AudioSettingsStore';
-import roomStore from '../../../../store/roomStore';
+import { AudioSettingsStore as audioSettingsStore } from '../store/AudioSettingsStore';
+import { RoomStore as roomStore } from '../store/roomStore';
 import './audioSettings.scss';
 
 const AudioSettings: React.FC = observer(() => {
@@ -126,7 +126,7 @@ const AudioSettings: React.FC = observer(() => {
                                     onChange={(e) => audioSettingsStore.setMicrophone(e.target.value)}
                                             >
                                                 <option value="">Выберите микрофон</option>
-                                                {audioSettingsStore.microphoneDevices.map((device) => (
+                                                {audioSettingsStore.microphoneDevices.map((device: MediaDeviceInfo) => (
                                                     <option key={device.deviceId} value={device.deviceId}>
                                                         {device.label || 'Неизвестное устройство'}
                                                     </option>
@@ -268,7 +268,7 @@ const AudioSettings: React.FC = observer(() => {
                                                 onChange={(e) => audioSettingsStore.setSpeaker(e.target.value)}
                                             >
                                                 <option value="">Выберите устройство</option>
-                                                {audioSettingsStore.speakerDevices.map((device) => (
+                                                {audioSettingsStore.speakerDevices.map((device: MediaDeviceInfo) => (
                                                     <option key={device.deviceId} value={device.deviceId}>
                                                         {device.label || 'Неизвестное устройство'}
                                                     </option>

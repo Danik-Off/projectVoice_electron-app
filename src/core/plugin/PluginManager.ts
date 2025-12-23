@@ -2,7 +2,7 @@
  * Менеджер плагинов
  * Управляет жизненным циклом плагинов
  */
-import { IPlugin } from '../types';
+import type { IPlugin } from '../types';
 
 export class PluginManager {
   private plugins: Map<string, IPlugin> = new Map();

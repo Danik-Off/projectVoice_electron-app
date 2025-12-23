@@ -1,9 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import SocketClient from '../utils/SocketClient';
-import { getCookie } from '../utils/cookie';
+import { SocketClient } from '../../../core';
+import { getCookie } from '../../../shared/utils/cookie';
 import WebRTCClient from '../utils/WebRTCClient';
 import audioSettingsStore from './AudioSettingsStore';
-import notificationStore from './NotificationStore';
+import { notificationStore } from '../../../core';
 import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
 
 interface UserData {
@@ -112,7 +112,7 @@ class VoiceRoomStore {
         this.socketClient.socketOn('connect', () => {
             console.log('Соединение с Socket.IO установлено');
         });
-        this.socketClient.socketOn('created', (room) => {
+        this.socketClient.socketOn('created', (room: any) => {
             console.log(`Вы подключены `, room);
             runInAction(() => {
                 // Исключаем локального пользователя из списка участников
@@ -149,11 +149,11 @@ class VoiceRoomStore {
                 notificationStore.addNotification(`${disconnectedUser.userData?.username || 'Пользователь'} покинул голосовой канал`, 'info');
             }
         });
-        this.socketClient.socketOn('signal', (data) => {
+        this.socketClient.socketOn('signal', (data: any) => {
             console.log(`Сигнал`, data);
             this.webRTCClient.handleSignal(data);
         });
-        this.socketClient.socketOn('connect_error', (error) => {
+        this.socketClient.socketOn('connect_error', (error: any) => {
             console.error('Ошибка Socket.IO подключения:', error);
             notificationStore.addNotification('notifications.connectError', 'error');
         });

@@ -1,10 +1,10 @@
 import React from 'react';
 import './VoiceRoom.css'; // стили для оформления комнаты
-import voiceRoomStore from '../../../../store/roomStore';
+import voiceRoomStore from '../store/roomStore';
 import { observer } from 'mobx-react';
-import { useUserProfile } from '../../../../components/UserProfileProvider';
-import ClickableAvatar from '../../../../components/ClickableAvatar';
-import { authStore } from '../../../../store/authStore';
+import { useUserProfile } from '../../../components/UserProfileProvider';
+import ClickableAvatar from '../../../components/ClickableAvatar';
+import { authStore } from '../../../core';
 
 const VoiceRoom: React.FC = observer(() => {
     const { openProfile } = useUserProfile();
@@ -44,7 +44,7 @@ const VoiceRoom: React.FC = observer(() => {
             )}
             
             <div className="user-list">
-                {users.map((user) => (
+                {users.map((user: any) => (
                     <div
                         key={user.socketId}
                         className={`user-box ${

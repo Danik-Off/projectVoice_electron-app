@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import type { Channel } from '../../../../../../types/channel';
 import { serverStore } from '../../../../../../modules/servers';
 import { channelsStore } from '../../../../../../modules/channels';
-import { RoomStore as voiceRoomStore } from '../../../../../../features/voice';
+import { RoomStore as voiceRoomStore } from '../../../../../../modules/voice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ChannelList.scss'; // Import the CSS file for styling
