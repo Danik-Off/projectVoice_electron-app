@@ -2,8 +2,8 @@
  * Servers Module - модуль работы с серверами
  */
 import type { IModule } from '../../core';
-import ChannelPage from '../../pages/channelPage/ChannelPage';
-import ServerSettings from '../../pages/serverSettings/ServerSettings';
+import ChannelPage from './pages/channelPage/ChannelPage';
+import ServerSettings from './pages/serverSettings/ServerSettings';
 
 export const serversModule: IModule = {
     id: 'servers',

@@ -2,7 +2,7 @@
  * Settings Module - модуль настроек
  */
 import type { IModule } from '../../core';
-import Settings from '../../pages/settings/Settings';
+import Settings from './pages/Settings';
 
 export const settingsModule: IModule = {
     id: 'settings',

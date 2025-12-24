@@ -1,0 +1,190 @@
+@use '../../../../../../styles/main' as *;
+
+.profile-info-section {
+    .profile-avatar-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: $spacing-xl;
+        padding-bottom: $spacing-lg;
+        border-bottom: 1px solid var(--border-primary);
+        gap: $spacing-lg;
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 3px solid var(--border-accent);
+            background: var(--tertiary-bg);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .avatar-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                background: var(--gradient-primary);
+                font-size: 32px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    .profile-fields {
+        margin-bottom: $spacing-xl;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: $spacing-md;
+        justify-content: flex-end;
+
+        button {
+            padding: $spacing-sm $spacing-md;
+            border: none;
+            border-radius: $border-radius-small;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: $spacing-xs;
+            font-weight: 500;
+
+            &:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: var(--shadow-light);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+            }
+        }
+
+        .btn-edit {
+            background: var(--primary-accent);
+            color: white;
+
+            &:hover:not(:disabled) {
+                background: var(--primary-accent-hover);
+            }
+        }
+    }
+
+    // Стили для формы редактирования профиля в модалке
+    .profile-edit-form {
+        .setting-group {
+            margin-bottom: $spacing-lg;
+
+            .setting-label {
+                display: block;
+                margin-bottom: $spacing-sm;
+                color: var(--text-primary);
+                font-size: 14px;
+                font-weight: 500;
+            }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: $spacing-md;
+            justify-content: flex-end;
+            margin-top: $spacing-xl;
+            padding-top: $spacing-lg;
+            border-top: 1px solid var(--border-primary);
+
+            button {
+                padding: $spacing-sm $spacing-md;
+                border: none;
+                border-radius: $border-radius-small;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: $spacing-xs;
+                font-weight: 500;
+
+                &:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                    box-shadow: var(--shadow-light);
+                }
+
+                &:disabled {
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                    transform: none;
+                }
+
+                .loading-spinner {
+                    animation: spin 1s linear infinite;
+                }
+            }
+
+            .btn-save {
+                background: var(--success-accent);
+                color: white;
+
+                &:hover:not(:disabled) {
+                    background: var(--success-accent);
+                    filter: brightness(0.9);
+                }
+            }
+
+            .btn-cancel {
+                background: var(--tertiary-bg);
+                color: var(--text-primary);
+                border: 1px solid var(--border-secondary);
+
+                &:hover:not(:disabled) {
+                    background: var(--hover-bg);
+                    border-color: var(--border-accent);
+                }
+            }
+        }
+    }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+    .profile-info-section {
+        .profile-avatar-section {
+            flex-direction: column;
+            text-align: center;
+            gap: $spacing-md;
+        }
+
+        .profile-actions {
+            flex-direction: column;
+            gap: $spacing-sm;
+
+            button {
+                width: 100%;
+            }
+        }
+
+        .profile-edit-form {
+            .modal-actions {
+                flex-direction: column;
+                gap: $spacing-sm;
+
+                button {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

@@ -25,6 +25,7 @@ export * from './utils/audioTest';
 
 // Types
 export * from './types/WebRTCClient.types';
+export type { Participant, UserData } from './store/roomStore';
 
 // Constants
 export * from '../../utils/constants/WebRTCClient.constants';

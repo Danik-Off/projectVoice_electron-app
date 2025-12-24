@@ -1,0 +1,312 @@
+@use '../../../../styles/main' as *;
+
+// Блок: servers (sidebar с серверами)
+.servers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: $servers-panel-width;
+    height: 100vh;
+    background: var(--secondary-bg);
+    border-right: $separator-height solid var(--border-primary);
+    position: relative;
+    transition: all $animation-duration $animation-timing;
+    overflow: hidden;
+
+    // Элемент: servers__header (закрепленная верхняя часть)
+    .servers__header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: $spacing-md 0 $spacing-sm 0;
+        gap: $spacing-sm;
+        flex-shrink: 0;
+        width: 100%;
+    }
+
+    // Элемент: servers__list (скроллируемый список серверов)
+    .servers__list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $spacing-sm;
+        padding: $spacing-sm 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        width: 100%;
+        min-height: 0; // Важно для правильной работы flex
+        position: relative;
+        z-index: 1;
+
+        // Скроллбар для списка
+        &::-webkit-scrollbar {
+            width: $scrollbar-width;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: $border-radius-round;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: $border-radius-round;
+            transition: background $animation-duration-fast $animation-timing;
+
+            &:hover {
+                background: var(--scrollbar-thumb-hover);
+            }
+        }
+    }
+
+    // Элемент: servers__footer (закрепленная нижняя часть)
+    .servers__footer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: $spacing-sm 0 $spacing-md 0;
+        gap: $spacing-sm;
+        flex-shrink: 0;
+        width: 100%;
+        position: relative;
+        z-index: 10;
+        background: var(--secondary-bg);
+        pointer-events: auto;
+
+        // Разделитель перед настройками
+        .servers__footer-separator {
+            width: $server-size * 0.6;
+            height: $separator-height;
+            background: var(--border-primary);
+            border-radius: $border-radius-round;
+            margin: $spacing-xs 0;
+            opacity: 0.8;
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+
+        // Убеждаемся, что кнопки в footer кликабельны
+        .server {
+            pointer-events: auto;
+            position: relative;
+            z-index: 11;
+        }
+    }
+
+    // Элемент: server (отдельный сервер/кнопка)
+    .server {
+        position: relative;
+        width: $server-size;
+        height: $server-size;
+        min-width: $server-size;
+        min-height: $server-size;
+        border-radius: $border-radius-round; // Круглые элементы
+        background: var(--tertiary-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all $animation-duration $animation-timing;
+        overflow: hidden;
+        box-shadow: $shadow-light;
+        flex-shrink: 0;
+        z-index: 1;
+        user-select: none;
+
+        // Эффект при наведении
+        &:hover {
+            background: var(--primary-accent);
+            transform: translateY(-$hover-lift) scale($hover-scale);
+            box-shadow: $shadow-medium;
+        }
+
+        // Активное состояние
+        &.active {
+            background: var(--gradient-primary);
+            box-shadow: $glow-primary;
+
+            .server-icon {
+                color: white;
+                transform: scale(1.1);
+            }
+        }
+
+        // Модификатор: home (домашний сервер)
+        &.home {
+            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--secondary-accent) 100%);
+
+            &:hover {
+                background: linear-gradient(135deg, var(--primary-accent-hover) 0%, var(--secondary-accent-hover) 100%);
+            }
+
+            &.active {
+                box-shadow: $glow-primary;
+            }
+        }
+
+        // Модификатор: add (кнопка добавления)
+        &.add {
+            background: var(--success-accent);
+            color: white;
+
+            &:hover {
+                background: var(--success-accent);
+                transform: rotate(90deg) scale($hover-scale);
+            }
+
+            .server-icon {
+                font-size: $icon-size-xl;
+                font-weight: 300;
+                color: white;
+            }
+        }
+
+        // Модификатор: settings (кнопка настроек)
+        &.settings {
+            background: var(--tertiary-bg);
+
+            &:hover {
+                background: var(--primary-accent);
+            }
+
+            &.active {
+                background: var(--gradient-primary);
+            }
+        }
+
+        // Модификатор: admin (кнопка админ панели)
+        &.admin {
+            background: linear-gradient(135deg, var(--warning-accent) 0%, var(--secondary-accent) 100%);
+
+            &:hover {
+                background: linear-gradient(135deg, var(--warning-accent) 0%, var(--secondary-accent-hover) 100%);
+                transform: translateY(-$hover-lift) scale($hover-scale);
+            }
+        }
+
+        // Элемент: server-icon (иконка сервера)
+        .server-icon {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: $server-icon-size;
+            color: var(--text-primary);
+            transition: all $animation-duration $animation-timing;
+            user-select: none;
+            pointer-events: none;
+
+            // Для текстовых иконок (эмодзи)
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: $border-radius-round; // Круглые изображения
+            }
+        }
+    }
+
+    // Элемент: server-separator (разделитель между серверами)
+    .server-separator {
+        width: $server-size * 0.6;
+        height: $separator-height;
+        background: var(--border-primary);
+        border-radius: $border-radius-round;
+        margin: $spacing-xs 0;
+        opacity: 0.5;
+        transition: opacity $animation-duration-fast $animation-timing;
+        flex-shrink: 0;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// Анимации для серверов
+@keyframes serverPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: $shadow-light;
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: $shadow-medium;
+    }
+}
+
+@keyframes serverShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-4px);
+    }
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+// Адаптивность
+@media (max-width: $breakpoint-mobile) {
+    .servers {
+        width: 60px;
+
+        .servers__header,
+        .servers__footer {
+            padding: $spacing-sm 0;
+        }
+
+        .server {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            min-height: 44px;
+        }
+    }
+}
+
+// Темная тема (дополнительные стили, если нужно)
+[data-theme="dark"] {
+    .servers {
+        background: var(--secondary-bg);
+        border-right-color: var(--border-primary);
+
+        .server {
+            background: var(--tertiary-bg);
+
+            &:hover {
+                background: var(--primary-accent);
+            }
+        }
+
+        .servers__footer-separator {
+            background: var(--border-primary);
+        }
+    }
+}
+
+// Светлая тема
+[data-theme="light"] {
+    .servers {
+        background: var(--secondary-bg);
+        border-right-color: var(--border-primary);
+
+        .server {
+            background: var(--tertiary-bg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+            &:hover {
+                background: var(--primary-accent);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        .servers__footer-separator {
+            background: var(--border-primary);
+        }
+    }
+}
+

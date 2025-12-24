@@ -6,12 +6,21 @@ export const getCookie = (name: string): string | null => {
     return null;
 };
 // Метод для установки cookie
-export const setCookie = (name: string, value: string, days: number) :void => {
+export const setCookie = (name: string, value: string, days: number): void => {
     let expires = '';
     if (days) {
         const date = new Date();
         date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Конвертация дней в миллисекунды
         expires = `; expires=${date.toUTCString()}`;
     }
-    document.cookie = `${name}=${value || ''}${expires}; path=/`; // Сохранение cookie с путём
+    // Сохранение cookie с путём и SameSite для безопасности
+    document.cookie = `${name}=${value || ''}${expires}; path=/; SameSite=Lax`;
+    
+    // Проверка, что cookie действительно установлен
+    const savedValue = getCookie(name);
+    if (savedValue !== value) {
+        console.warn(`Cookie ${name} was not saved correctly. Expected: ${value}, Got: ${savedValue}`);
+    } else {
+        console.log(`Cookie ${name} saved successfully`);
+    }
 };

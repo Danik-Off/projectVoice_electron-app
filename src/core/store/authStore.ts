@@ -38,25 +38,29 @@ class AuthStore {
         }
     }
 
-    public async login(email: string, password: string, redirect?: string | null): Promise<void> {
+    public async login(email: string, password: string, redirect?: string | null): Promise<string> {
         try {
             this.loading = true;
             const data = await authService.login(email, password);
+            
+            if (!data || !data.token) {
+                throw new Error('Invalid response from server');
+            }
+            
             this.user = data.user;
             this.token = data.token;
 
             // Сохранение токена в cookie
             setCookie('token', data.token, 7); // Токен будет действителен 7 дней
+            
+            console.log('Token saved to cookie:', data.token);
+            console.log('Cookie after save:', document.cookie);
 
             this.isAuthenticated = true;
             this.loading = false;
             
-            // Перенаправление после успешного входа
-            if (redirect) {
-                window.location.href = redirect;
-            } else {
-                window.location.href = '/';
-            }
+            // Возвращаем путь для редиректа (компонент сам выполнит навигацию)
+            return redirect || '/';
         } catch (error) {
             this.loading = false;
             console.error('Login failed', error);
@@ -84,10 +88,14 @@ class AuthStore {
         }
     }
 
-    public async register(username: string, email: string, password: string, redirect?: string | null): Promise<void> {
+    public async register(username: string, email: string, password: string, redirect?: string | null): Promise<string> {
         try {
             this.loading = true;
-            const data = await authService.register( email,username, password);
+            const data = await authService.register(email, username, password);
+            
+            if (!data || !data.token) {
+                throw new Error('Invalid response from server');
+            }
             
             // После успешной регистрации получаем информацию о пользователе
             const userData = await authService.getMe();
@@ -96,16 +104,15 @@ class AuthStore {
 
             // Сохранение токена в cookie
             setCookie('token', data.token, 7); // Токен будет действителен 7 дней
+            
+            console.log('Token saved to cookie:', data.token);
+            console.log('Cookie after save:', document.cookie);
 
             this.isAuthenticated = true;
             this.loading = false;
             
-            // Перенаправление после успешной регистрации
-            if (redirect) {
-                window.location.href = redirect;
-            } else {
-                window.location.href = '/';
-            }
+            // Возвращаем путь для редиректа (компонент сам выполнит навигацию)
+            return redirect || '/';
         } catch (error) {
             this.loading = false;
             console.error('Registration failed', error);

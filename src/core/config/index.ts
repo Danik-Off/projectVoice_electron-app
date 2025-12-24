@@ -3,13 +3,16 @@
  */
 import type { IAppConfig } from '../types';
 
+// Базовый URL для всех сервисов (API и Socket)
+const BASE_SERVER_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+
 export const appConfig: IAppConfig = {
   api: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://77.222.58.224:5000',
-    apiUrl: `${import.meta.env.VITE_API_BASE_URL || 'http://77.222.58.224:5000'}/api`,
+    baseUrl: BASE_SERVER_URL,
+    apiUrl: `${BASE_SERVER_URL}/api`,
   },
   socket: {
-    url: import.meta.env.VITE_SOCKET_URL || 'http://77.222.58.224:5555',
+    url: BASE_SERVER_URL,
     path: '/socket',
   },
   webrtc: {

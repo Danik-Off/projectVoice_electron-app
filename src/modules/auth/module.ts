@@ -2,7 +2,7 @@
  * Auth Module - модуль аутентификации
  */
 import type { IModule } from '../../core';
-import Auth from '../../pages/auth/Auth';
+import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 

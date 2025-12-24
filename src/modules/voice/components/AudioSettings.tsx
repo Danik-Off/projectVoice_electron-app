@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { AudioSettingsStore as audioSettingsStore } from '../store/AudioSettingsStore';
-import { RoomStore as roomStore } from '../store/roomStore';
+import audioSettingsStore from '../store/AudioSettingsStore';
+import roomStore from '../store/roomStore';
 import './audioSettings.scss';
 
 const AudioSettings: React.FC = observer(() => {

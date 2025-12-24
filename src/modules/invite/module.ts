@@ -2,7 +2,7 @@
  * Invite Module - модуль приглашений
  */
 import type { IModule } from '../../core';
-import InvitePage from '../../pages/invite/InvitePage';
+import InvitePage from './pages/InvitePage';
 
 export const inviteModule: IModule = {
     id: 'invite',

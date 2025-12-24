@@ -2,7 +2,7 @@
  * Admin Module - модуль администрирования
  */
 import type { IModule } from '../../core';
-import AdminPanel from '../../pages/admin/AdminPanel';
+import AdminPanel from './pages/AdminPanel';
 
 export const adminModule: IModule = {
     id: 'admin',

@@ -6,14 +6,14 @@ import audioSettingsStore from './AudioSettingsStore';
 import { notificationStore } from '../../../core';
 import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
 
-interface UserData {
+export interface UserData {
     id: number;
     username: string;
     profilePicture?: string;
     role: string;
 }
 
-interface Participant {
+export interface Participant {
     socketId: string;
     micToggle: boolean;
     userData: UserData;

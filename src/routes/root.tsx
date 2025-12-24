@@ -1,18 +1,18 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import Settings from '../pages/settings/Settings';
-import Auth from '../pages/auth/Auth';
 import ProtectedRoute from '../store/ProtectedRoute';
-import Layout from '../pages/main/Main';
-import ChannelPage from '../pages/channelPage/ChannelPage';
-import WelcomePage from '../pages/welcomePage/WelcomePage';
-import VoiceRoom from '../pages/channelPage/components/voiceRoom/VoiceRoom';
-import MessageList from '../pages/channelPage/components/messageList/MessageList';
-import AdminPanel from '../pages/admin/AdminPanel';
 import AdminRoute from '../store/AdminRoute';
-import ServerSettings from '../pages/serverSettings/ServerSettings';
-import InvitePage from '../pages/invite/InvitePage';
 import ProfileDemo from '../components/ProfileDemo';
+import Layout from '../app/layout/Main';
+import AdminPanel from '../modules/admin/pages/AdminPanel';
+import Auth from '../modules/auth/pages/Auth';
+import InvitePage from '../modules/invite/pages/InvitePage';
+import { MessageList } from '../modules/messaging';
+import ChannelPage from '../modules/servers/pages/channelPage/ChannelPage';
+import ServerSettings from '../modules/servers/pages/serverSettings/ServerSettings';
+import WelcomePage from '../modules/servers/pages/welcomePage/WelcomePage';
+import Settings from '../modules/settings/pages/Settings';
+import { VoiceRoom } from '../modules/voice';
 
 export const router = createBrowserRouter([
     {

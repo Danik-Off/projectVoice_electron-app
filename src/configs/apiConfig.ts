@@ -1,3 +1,5 @@
-// config.ts
-export const BASE_URL = 'http://77.222.58.224:5000';
-export const API_URL = `${BASE_URL}/api`;
+/**
+ * Конфигурация API (реэкспорт из core для обратной совместимости)
+ * @deprecated Используйте импорты из '../core/config' или '../core'
+ */
+export { BASE_URL, API_URL } from '../core/config';
