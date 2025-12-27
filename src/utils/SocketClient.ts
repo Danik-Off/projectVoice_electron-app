@@ -30,12 +30,16 @@ class SocketClient {
         });
     }
 
-    public socketOn(ev: string, listner: (data: any) => void) {
-        this.socket && this.socket.on(ev, listner);
+    public socketOn(ev: string, listner: (data: unknown) => void) {
+        if (this.socket) {
+            this.socket.on(ev, listner);
+        }
     }
 
-    public socketEmit(ev: string, ...args: any) {
-        this.socket && this.socket.emit(ev, ...args);
+    public socketEmit(ev: string, ...args: unknown[]) {
+        if (this.socket) {
+            this.socket.emit(ev, ...args);
+        }
     }
 
     public getSocketId(): string | undefined {

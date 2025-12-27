@@ -69,7 +69,9 @@ class WebRTCClient {
         };
 
         newPeerConnection.onconnectionstatechange = (state) => {
-            this.changeState && this.changeState(id, state);
+            if (this.changeState) {
+                this.changeState(id, state);
+            }
         };
 
         newPeerConnection.ontrack = (event) => {
@@ -160,7 +162,7 @@ class WebRTCClient {
         }
     }
 
-    public async handleSignal(data: any) {
+    public async handleSignal(data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) {
         const { from, type, sdp, candidate } = data;
         console.log('обработка сигнала:', type);
         let peerConnection = this.peerConnections.get(from) || false;
@@ -169,7 +171,7 @@ class WebRTCClient {
         }
 
         switch (type) {
-            case 'offer':
+            case 'offer': {
                 // Оптимизируем входящий SDP
                 const optimizedOfferSdp = this.optimizeSdpForHighQualityAudio(sdp);
                 await peerConnection.setRemoteDescription(new RTCSessionDescription({ 
@@ -178,7 +180,8 @@ class WebRTCClient {
                 }));
                 await this.createAnswer(from);
                 break;
-            case 'answer':
+            }
+            case 'answer': {
                 // Оптимизируем входящий SDP
                 const optimizedAnswerSdp = this.optimizeSdpForHighQualityAudio(sdp);
                 await peerConnection.setRemoteDescription(new RTCSessionDescription({ 
@@ -186,6 +189,7 @@ class WebRTCClient {
                     sdp: optimizedAnswerSdp 
                 }));
                 break;
+            }
             case 'candidate':
                 await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
                 break;
@@ -210,7 +214,7 @@ class WebRTCClient {
         // Настройки Opus кодека для максимального качества
         optimizedSdp = optimizedSdp.replace(
             /a=fmtp:111 (.+)/,
-            (_match, _params) => {
+            () => {
                 // Устанавливаем максимальные параметры качества для Opus
                 const optimizedParams = [
                     'minptime=10',           // Минимальное время пакета
@@ -236,7 +240,7 @@ class WebRTCClient {
         // Настройки для уменьшения задержки
         optimizedSdp = optimizedSdp.replace(
             /a=rtcp-fb:111 (.+)/,
-            (_match, _params) => {
+            () => {
                 const enhancedParams = [
                     'goog-remb',     // Google REMB для адаптивного битрейта
                     'transport-cc', // Transport-wide congestion control
@@ -267,7 +271,7 @@ class WebRTCClient {
     }
 
     //логика работы с потоками
-    private addRemoteStream(track: any, id: string): void {
+    private addRemoteStream(track: MediaStreamTrack, id: string): void {
         console.log('попытка добавить поток', id);
         let remoteStream = this.remoteStreams.get(id);
         if (!remoteStream) {
@@ -386,10 +390,10 @@ class WebRTCClient {
     private addLocalStream(id: string): void {
         const peerConnection = this.peerConnections.get(id);
         console.log('add-local-stream', peerConnection);
-        if (audioSettingsStore.stream) {
+        if (audioSettingsStore.stream && peerConnection) {
             audioSettingsStore.stream.getTracks().forEach((track) => {
                 //Если существет локальный стрим и пир для подключения то рассылаем стрим
-                peerConnection && peerConnection.addTrack(track, audioSettingsStore.stream);
+                peerConnection.addTrack(track, audioSettingsStore.stream!);
                 track.enabled = !audioSettingsStore.isMicrophoneMuted;
             });
         } else {

@@ -11,7 +11,11 @@ const VoiceControl: React.FC = () => {
 
     const handleMicToggle = (): void => {
         setMicOn(!isMicOn);
-        isMicOn ? voiceRoomStore.muteMicrophone() : voiceRoomStore.unmuteMicrophone();
+        if (isMicOn) {
+            voiceRoomStore.muteMicrophone();
+        } else {
+            voiceRoomStore.unmuteMicrophone();
+        }
     };
     const handleVolumeChange = (newVolume: number): void => {
         setVolumeMic(newVolume);

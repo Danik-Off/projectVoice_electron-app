@@ -203,7 +203,7 @@ export async function checkConnectionQuality(): Promise<{
             quality,
             recommendations
         };
-    } catch (error) {
+    } catch {
         return {
             downloadSpeed: 0,
             uploadSpeed: 0,

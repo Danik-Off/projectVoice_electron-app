@@ -83,7 +83,7 @@ class SocketClient {
             this.socket?.emit('join-room', channelId, this.token);
         });
 
-        this.socket.on('created', async (_user: { socketId: string }) => {
+        this.socket.on('created', async () => {
             await this.initializeMedia(); // Initialize media
         });
 
@@ -100,7 +100,7 @@ class SocketClient {
             this.handleSignal(data);
         });
 
-        this.socket.on('connect_error', (_error) => {
+        this.socket.on('connect_error', () => {
             // Ошибка Socket.IO подключения
         });
 
@@ -119,11 +119,12 @@ class SocketClient {
             if (this.localStream) {
                 for (const socketId in this.peerConnections) {
                     this.localStream.getTracks().forEach((track) => {
-                        this.localStream &&
+                        if (this.localStream) {
                             this.peerConnections[socketId].addTrack(
                                 track,
                                 this.localStream
                             );
+                        }
                     });
                 }
             }
@@ -132,7 +133,7 @@ class SocketClient {
                     track.enabled = false; // Mute the audio track
                 });
             }
-        } catch (error) {
+        } catch {
             // Ошибка доступа к локальному медиа
             this.state = SocketClientState.MEDIA_ERROR;
         }
@@ -172,8 +173,9 @@ class SocketClient {
         // Add local tracks to the PeerConnection
         if (this.localStream) {
             this.localStream.getTracks().forEach((track) => {
-                this.localStream &&
+                if (this.localStream) {
                     peerConnection.addTrack(track, this.localStream);
+                }
             });
         }
 
@@ -192,7 +194,7 @@ class SocketClient {
                 type: 'offer',
                 sdp: offer.sdp,
             });
-        } catch (error) {
+        } catch {
             // Ошибка при создании предложения
         }
     }
@@ -207,12 +209,12 @@ class SocketClient {
                 type: 'answer',
                 sdp: answer.sdp,
             });
-        } catch (error) {
+        } catch {
             // Ошибка при создании ответа
         }
     }
 
-    private async handleSignal(data: any) {
+    private async handleSignal(data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) {
         const { from, type, sdp, candidate } = data;
 
         if (!this.peerConnections[from]) {
