@@ -2,8 +2,12 @@
  * Скрипт для обновления версии в package.json
  * Использование: node scripts/version-update.js [patch|minor|major]
  */
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const packageJsonPath = path.join(__dirname, '..', 'package.json');
 const type = process.argv[2] || 'patch';

@@ -2,7 +2,7 @@
  * Проверка платформы перед сборкой
  * Использование: node scripts/check-platform.js [win|mac|linux]
  */
-const os = require('os');
+import os from 'os';
 const platform = process.argv[2];
 
 if (!platform) {

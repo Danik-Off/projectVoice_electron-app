@@ -1,11 +1,18 @@
 /**
  * Генерация описания релиза на основе коммитов
  */
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function getVersion() {
   try {
-    const packageJson = require('../package.json');
+    const packageJsonPath = path.join(__dirname, '..', 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     return packageJson.version;
   } catch (error) {
     console.error('Failed to read package.json:', error);
@@ -171,9 +178,10 @@ function getPreviousVersion() {
   }
 }
 
-if (require.main === module) {
+// Check if this is the main module (ES module equivalent of require.main === module)
+if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(generateReleaseNotes());
 }
 
-module.exports = { generateReleaseNotes, getVersion };
+export { generateReleaseNotes, getVersion };
 
