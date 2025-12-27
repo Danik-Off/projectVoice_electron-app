@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { SocketClient } from '../../../core';
-import { getCookie } from '../../../shared/utils/cookie';
+import { getToken } from '../../../shared/utils/storage';
 import WebRTCClient from '../utils/WebRTCClient';
 import audioSettingsStore from './AudioSettingsStore';
 import { notificationStore } from '../../../core';
@@ -55,7 +55,7 @@ class VoiceRoomStore {
         }
         
         // eslint-disable-next-line max-len
-        const token = getCookie('token'); //TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
+        const token = getToken(); //TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
         this.socketClient.socketEmit('join-room', roomId, token);
         
         // Инициализируем аудио только при подключении к голосовому каналу

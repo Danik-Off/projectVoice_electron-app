@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { getCookie } from '../../../shared/utils/cookie';
+import { getToken } from '../../../shared/utils/storage';
 import { userService } from '../services/userService';
 import type { User } from '../../../types/user';
 
@@ -10,8 +10,8 @@ class UserStore {
 
     constructor() {
         makeAutoObservable(this);
-        // Проверка наличия токена в cookies при инициализации
-        this.token = getCookie('token');
+        // Проверка наличия токена в localStorage при инициализации
+        this.token = getToken();
         this.isAuthenticated = this.token !== null;
     }
 

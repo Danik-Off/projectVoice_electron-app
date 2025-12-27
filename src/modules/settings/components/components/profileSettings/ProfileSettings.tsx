@@ -36,8 +36,18 @@ const ProfileSettings: React.FC = observer(() => {
         confirmLogout
     } = useProfileSettings();
 
+    // Показываем загрузку, если данные пользователя еще не загружены
     if (!authStore.user) {
-        return null;
+        return (
+            <div className="profile-settings">
+                <div className="settings-section">
+                    <div className="section-header">
+                        <h2>{t('settingsPage.profile.title')}</h2>
+                        <p>Загрузка данных профиля...</p>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

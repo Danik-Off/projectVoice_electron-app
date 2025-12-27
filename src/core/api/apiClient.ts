@@ -2,8 +2,7 @@
  * API Client - базовый HTTP клиент
  */
 import { API_URL } from '../config';
-import { getCookie } from '../../shared/utils/cookie';
-import { authStore } from '../store/authStore';
+import { getToken } from '../../shared/utils/storage';
 
 /**
  * Проверяет, является ли ошибка ошибкой протухшего/недействительного токена
@@ -52,7 +51,7 @@ export const apiClient = async (
     options: RequestInit = {},
     body?: any
 ) => {
-    const token = getCookie('token');
+    const token = getToken();
 
     // Установка заголовков
     const headers = {
@@ -78,10 +77,10 @@ export const apiClient = async (
         const errorMessage = await response.text();
 
         // Проверяем, является ли это ошибкой протухшего токена
+        // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
         if (isTokenExpiredError(response, errorMessage)) {
-            console.warn('Token expired or invalid, logging out...');
-            // Вызываем logout только если токен действительно протух
-            authStore.logout();
+            console.warn('Token expired or invalid, but keeping user authenticated until manual logout');
+            // Можно показать уведомление, но не разлогиниваем автоматически
         }
         
         throw new Error(errorMessage);

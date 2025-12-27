@@ -2,7 +2,7 @@
  * Socket.io Client - базовый клиент для WebSocket соединений
  */
 import { io, Socket } from 'socket.io-client';
-import { getCookie } from '../../shared/utils/cookie';
+import { getToken } from '../../shared/utils/storage';
 import { appConfig } from '../config';
 
 class SocketClient {
@@ -10,7 +10,7 @@ class SocketClient {
     private socket: Socket | null;
 
     public constructor() {
-        this.token = getCookie('token') || '';
+        this.token = getToken() || '';
         this.socket = null;
     }
 
@@ -18,6 +18,9 @@ class SocketClient {
         if (this.socket && this.socket.connected) {
             return;
         }
+
+        // Всегда получаем актуальный токен из localStorage
+        this.token = getToken() || '';
 
         this.socket = io(appConfig.socket.url, {
             path: appConfig.socket.path,

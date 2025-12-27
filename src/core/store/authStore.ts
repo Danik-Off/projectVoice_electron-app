@@ -1,6 +1,6 @@
 import { makeAutoObservable, configure } from 'mobx';
 import { authService } from '../../modules/auth/services/authService';
-import { getCookie, setCookie } from '../../shared/utils/cookie';
+import { saveToken, getToken, removeToken, saveUser, getUser, removeUser } from '../../shared/utils/storage';
 import { notificationStore } from './NotificationStore';
 
 class AuthStore {
@@ -26,23 +26,54 @@ class AuthStore {
 
     public constructor() {
         makeAutoObservable(this);
-        // Проверка наличия токена в cookies при инициализации
-        this.token = getCookie('token');
-        // Устанавливаем isAuthenticated = true если есть токен
-        // Авторизация сохраняется до тех пор, пока сервер не вернет ошибку о протухшем токене
-        this.isAuthenticated = this.token !== null;
+        // Восстанавливаем токен из cookies при инициализации
+        this.restoreAuthFromCookie();
+    }
+
+    /**
+     * Восстанавливает авторизацию из localStorage
+     * Вызывается при инициализации и может быть вызвана вручную
+     */
+    private restoreAuthFromCookie(): void {
+        const savedToken = getToken();
+        const savedUser = getUser();
         
-        console.log('AuthStore constructor - token:', this.token, 'isAuthenticated:', this.isAuthenticated);
+        console.log('🔐 Restoring auth from localStorage...');
+        console.log('📦 Token exists:', !!savedToken);
+        console.log('📦 User data exists:', !!savedUser);
         
-        // Загружаем данные пользователя, если есть токен
-        // Если токен протух, loadUserData вызовет logout только при ошибке токена
-        if (this.token) {
-            // Загружаем асинхронно, не блокируя инициализацию
+        if (savedToken) {
+            // Восстанавливаем токен и устанавливаем авторизацию СИНХРОННО
+            this.token = savedToken;
+            this.isAuthenticated = true;
+            
+            // Восстанавливаем данные пользователя из localStorage, если они есть
+            if (savedUser) {
+                this.user = savedUser;
+                console.log('✅ User data restored from localStorage:', savedUser.username, 'role:', savedUser.role);
+            }
+            
+            console.log('✅ Auth restored from localStorage - token present, isAuthenticated:', this.isAuthenticated);
+            console.log('✅ Token restored:', this.token.substring(0, 20) + '...');
+            
+            // Загружаем актуальные данные пользователя асинхронно
+            // НЕ вызываем logout при ошибке - пользователь должен выйти вручную
             this.loadUserData().catch(error => {
                 // Ошибка уже обработана в loadUserData
-                console.error('Error loading user data on init:', error);
+                // Авторизация сохраняется даже при ошибке загрузки данных
+                console.error('❌ Error loading user data on init:', error);
+                console.log('⚠️ But keeping isAuthenticated = true and using cached user data');
             });
+        } else {
+            // Нет токена в localStorage - пользователь не авторизован
+            this.token = null;
+            this.user = null;
+            this.isAuthenticated = false;
+            removeUser(); // Очищаем данные пользователя
+            console.log('❌ No token in localStorage - user not authenticated');
         }
+        
+        console.log('🔐 Auth restoration complete. isAuthenticated:', this.isAuthenticated, 'user:', this.user?.username);
     }
 
     public async login(email: string, password: string, redirect?: string | null): Promise<string> {
@@ -57,11 +88,11 @@ class AuthStore {
             this.user = data.user;
             this.token = data.token;
 
-            // Сохранение токена в cookie
-            setCookie('token', data.token, 7); // Токен будет действителен 7 дней
+            // Сохранение токена и данных пользователя в localStorage
+            saveToken(data.token);
+            saveUser(data.user);
             
-            console.log('Token saved to cookie:', data.token);
-            console.log('Cookie after save:', document.cookie);
+            console.log('Login successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.isAuthenticated = true;
             this.loading = false;
@@ -87,27 +118,20 @@ class AuthStore {
             console.log('User data loaded:', userData);
             this.user = userData;
             this.isAuthenticated = true;
+            
+            // Сохраняем данные пользователя в localStorage
+            saveUser(userData);
         } catch (error) {
             console.error('Failed to load user data:', error);
             
-            // Проверяем, является ли это ошибкой протухшего токена
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            const isTokenError = errorMessage.includes('401') || 
-                                 errorMessage.includes('Недействительный токен') ||
-                                 errorMessage.includes('invalid token') ||
-                                 errorMessage.includes('token expired') ||
-                                 errorMessage.includes('unauthorized');
+            // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
+            // Сохраняем авторизацию даже при ошибке загрузки данных
+            // Пользователь останется авторизованным до ручного выхода
+            notificationStore.addNotification('notifications.serverDataLoadError', 'error');
             
-            if (isTokenError) {
-                // Токен протух - выходим из системы
-                console.warn('Token expired during user data load, logging out...');
-                this.logout();
-            } else {
-                // Другая ошибка - не выходим, просто показываем уведомление
-                notificationStore.addNotification('notifications.serverDataLoadError', 'error');
-                // Сохраняем авторизацию, но не загружаем данные пользователя
-                // Пользователь останется авторизованным до следующего запроса
-            }
+            // Сохраняем isAuthenticated = true, даже если не удалось загрузить данные
+            // Это позволяет пользователю оставаться авторизованным после перезагрузки
+            this.isAuthenticated = true;
         }
     }
 
@@ -125,11 +149,11 @@ class AuthStore {
             this.user = userData;
             this.token = data.token;
 
-            // Сохранение токена в cookie
-            setCookie('token', data.token, 7); // Токен будет действителен 7 дней
+            // Сохранение токена и данных пользователя в localStorage
+            saveToken(data.token);
+            saveUser(userData);
             
-            console.log('Token saved to cookie:', data.token);
-            console.log('Cookie after save:', document.cookie);
+            console.log('Registration successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.isAuthenticated = true;
             this.loading = false;
@@ -144,6 +168,22 @@ class AuthStore {
     }
 
     public getToken(): string | null {
+        // Всегда синхронизируем токен с localStorage перед возвратом
+        // Это гарантирует, что если токен был удален из localStorage вручную, мы это заметим
+        const storedToken = getToken();
+        if (storedToken !== this.token) {
+            console.warn('Token mismatch between store and localStorage, syncing...');
+            if (storedToken) {
+                this.token = storedToken;
+                // Если токен восстановлен из localStorage, обновляем авторизацию
+                this.isAuthenticated = true;
+            } else {
+                // Токен удален из localStorage - НЕ выходим автоматически
+                // Пользователь должен выйти вручную через кнопку
+                console.warn('Token removed from localStorage, but keeping authentication until manual logout');
+                // Оставляем isAuthenticated = true, чтобы пользователь не был разлогинен
+            }
+        }
         return this.token;
     }
 
@@ -152,11 +192,12 @@ class AuthStore {
         this.token = null;
         this.isAuthenticated = false;
 
-        // Удаление токена из cookie
-        setCookie('token', '', -1); // Устанавливаем срок действия в -1, чтобы удалить cookie
+        // Удаление токена и данных пользователя из localStorage
+        removeToken();
+        removeUser();
 
         // Перенаправление после выхода
-        window.location.href = '/auth'; // Замените '/login' на нужный URL
+        window.location.href = '/auth';
     }
 }
 
