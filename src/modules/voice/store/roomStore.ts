@@ -66,9 +66,9 @@ class VoiceRoomStore {
         console.log('VoiceRoomStore: Initializing WebRTC and VAS for voice call...');
         this.webRTCClient.initializeMedia();
         
-        runInAction(() => {
-            this.currentVoiceChannel = { id: roomId, name: channelName || `Voice Channel ${roomId}` };
-        });
+        // Устанавливаем currentVoiceChannel напрямую (store уже observable через makeAutoObservable)
+        this.currentVoiceChannel = { id: roomId, name: channelName || `Voice Channel ${roomId}` };
+        console.log('VoiceRoomStore: currentVoiceChannel set to:', this.currentVoiceChannel);
         notificationStore.addNotification(`Подключились к голосовому каналу: ${channelName || `Voice Channel ${roomId}`}`, 'info');
     }
     // Проверка, подключен ли пользователь к голосовой комнате
@@ -93,12 +93,12 @@ class VoiceRoomStore {
         console.log('VoiceRoomStore: Cleaning up VAS after voice call...');
         voiceActivityService.cleanup();
         
-        runInAction(() => {
-            this.currentVoiceChannel = null;
-            // Сбрасываем состояние активности речи для всех участников
-            this.participants.forEach(participant => {
-                participant.isSpeaking = false;
-            });
+        // Устанавливаем currentVoiceChannel в null напрямую (store уже observable)
+        this.currentVoiceChannel = null;
+        console.log('VoiceRoomStore: currentVoiceChannel set to null');
+        // Сбрасываем состояние активности речи для всех участников
+        this.participants.forEach(participant => {
+            participant.isSpeaking = false;
         });
     }
     public muteMicrophone() {

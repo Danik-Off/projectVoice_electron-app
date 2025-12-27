@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MicButton from '../micButton/MicButton';
 import VolumeControl from '../volumeControl/VolumeControl';
-import voiceRoomStore from '../../../../../../../../../../store/roomStore';
+import voiceRoomStore from '../../../../../../../../../voice/store/roomStore';
 import './VoiceControl.scss';
 
 const VoiceControl: React.FC = () => {

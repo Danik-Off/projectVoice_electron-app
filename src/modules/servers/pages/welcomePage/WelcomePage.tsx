@@ -171,7 +171,7 @@ const WelcomePage: React.FC = () => {
                         <div className="social-links">
                             <h3 className="social-title">Следите за развитием проекта</h3>
                             <div className="social-buttons">
-                                <a href="https://t.me/projectvoice" target="_blank" rel="noopener noreferrer" className="social-btn telegram">
+                                <a href="https://t.me/+67a6CP6FbcpjNjdi" target="_blank" rel="noopener noreferrer" className="social-btn telegram">
                                     <span className="social-icon">📱</span>
                                     <span className="social-text">Telegram</span>
                                 </a>
@@ -179,7 +179,7 @@ const WelcomePage: React.FC = () => {
                                     <span className="social-icon">🐙</span>
                                     <span className="social-text">GitHub</span>
                                 </a>
-                                <a href="https://vk.com/projectvoice" target="_blank" rel="noopener noreferrer" className="social-btn vk">
+                                <a href="https://vk.com/freeprojectvoice" target="_blank" rel="noopener noreferrer" className="social-btn vk">
                                     <span className="social-icon">💙</span>
                                     <span className="social-text">VK</span>
                                 </a>

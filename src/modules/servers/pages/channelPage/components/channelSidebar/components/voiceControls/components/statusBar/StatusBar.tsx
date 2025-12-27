@@ -1,6 +1,6 @@
 import React from 'react';
 import './StatusBar.scss';
-import voiceRoomStore from '../../../../../../../../../../store/roomStore';
+import voiceRoomStore from '../../../../../../../../../voice/store/roomStore';
 
 const StatusBar: React.FC = () => {
     return (

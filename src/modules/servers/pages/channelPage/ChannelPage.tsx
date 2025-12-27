@@ -5,7 +5,7 @@ import VoiceControls from './components/channelSidebar/components/voiceControls/
 import BlockedServerModal from '../../../../components/BlockedServerModal';
 import { useEffect, useState } from 'react';
 import { serverStore } from '../../../../modules/servers';
-import { RoomStore as roomStore } from '../../../../modules/voice';
+import voiceRoomStore from '../../../../modules/voice/store/roomStore';
 import Spinner from '../../../../components/spinner/Spinner';
 import { observer } from 'mobx-react';
 
@@ -30,7 +30,10 @@ const LoadingState: React.FC = () => (
 );
 
 const Page = observer(() => {
-    const isVoiceConnected = roomStore.currentVoiceChannel !== null;
+    const isVoiceConnected = voiceRoomStore.currentVoiceChannel !== null;
+    
+    // Логирование для отладки
+    console.log('ChannelPage - isVoiceConnected:', isVoiceConnected, 'currentChannel:', voiceRoomStore.currentVoiceChannel);
 
     return (
         <>

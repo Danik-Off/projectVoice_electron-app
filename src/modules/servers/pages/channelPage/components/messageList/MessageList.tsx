@@ -6,7 +6,7 @@ import { channelsStore } from '../../../../../../modules/channels';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
 import './MessageList.scss';
-import roomStore from '../../../../../../store/roomStore';
+import voiceRoomStore from '../../../../../../modules/voice/store/roomStore';
 
 const MessageList: React.FC = observer(() => {
     const { roomId } = useParams<{ roomId: string }>();
@@ -17,7 +17,7 @@ const MessageList: React.FC = observer(() => {
 
     const { messages, loading, error, hasMore, currentChannelId } = messageStore;
     const { currentChannel, channels } = channelsStore;
-    const isConnected = roomStore.currentVoiceChannel !== null;
+    const isConnected = voiceRoomStore.currentVoiceChannel !== null;
 
     // Отладочная информация
     console.log('MessageList Debug:', {
