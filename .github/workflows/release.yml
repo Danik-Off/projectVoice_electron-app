@@ -21,6 +21,11 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Get current version
         id: version
         run: |
@@ -32,30 +37,40 @@ jobs:
         id: check
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
-          PREVIOUS_VERSION=$(git show HEAD~1:package.json 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0, 'utf-8')).version" || echo "")
+          
+          # Пытаемся получить предыдущую версию из предыдущего коммита
+          PREVIOUS_VERSION=""
+          if git show HEAD~1:package.json > /dev/null 2>&1; then
+            PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf-8')).version" 2>/dev/null || echo "")
+          fi
+          
+          # Если не удалось получить из предыдущего коммита, проверяем последний тег
+          if [ -z "$PREVIOUS_VERSION" ]; then
+            LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$LAST_TAG" ]; then
+              PREVIOUS_VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
+            fi
+          fi
           
           if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ] && [ -n "$PREVIOUS_VERSION" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "✅ Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+          elif [ -z "$PREVIOUS_VERSION" ]; then
+            # Если это первый релиз, все равно создаем релиз
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ First release detected: $CURRENT_VERSION"
           else
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "Version not changed or first commit"
+            echo "ℹ️ Version not changed: $CURRENT_VERSION"
           fi
 
-  build:
+  build-linux:
     needs: check-version
     if: needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch'
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            platform: linux
-            build-command: npm run build:linux
-          - os: windows-latest
-            platform: win
-            build-command: npm run build:win
-    runs-on: ${{ matrix.os }}
-    
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    outputs:
+      success: ${{ steps.build.outputs.success || 'false' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -69,19 +84,87 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application for ${{ matrix.platform }}
-        run: ${{ matrix.build-command }}
+      - name: Build application for Linux
+        id: build
+        continue-on-error: true
+        run: |
+          set +e
+          if npm run build:linux; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "✅ Linux build successful"
+            exit 0
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+            echo "❌ Linux build failed"
+            exit 1
+          fi
 
-      - name: Upload build artifacts
+      - name: Upload build artifacts (Linux)
+        if: steps.build.outputs.success == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.platform }}-${{ needs.check-version.outputs.version }}
+          name: build-linux-${{ needs.check-version.outputs.version }}
           path: build/*
           retention-days: 30
+          if-no-files-found: warn
+
+  build-windows:
+    needs: check-version
+    if: needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    continue-on-error: true
+    outputs:
+      success: ${{ steps.build.outputs.success || 'false' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application for Windows
+        id: build
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = "Continue"
+          try {
+            npm run build:win
+            if ($LASTEXITCODE -eq 0) {
+              "success=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+              Write-Host "✅ Windows build successful"
+              exit 0
+            } else {
+              "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+              Write-Host "❌ Windows build failed with exit code $LASTEXITCODE"
+              exit 1
+            }
+          } catch {
+            "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            Write-Host "❌ Windows build failed: $_"
+            exit 1
+          }
+
+      - name: Upload build artifacts (Windows)
+        if: steps.build.outputs.success == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-win-${{ needs.check-version.outputs.version }}
+          path: build/*
+          retention-days: 30
+          if-no-files-found: warn
 
   create-release:
-    needs: [check-version, build]
-    if: needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch'
+    needs: [check-version, build-linux, build-windows]
+    if: |
+      (needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch') &&
+      (needs.build-linux.result == 'success' || needs.build-windows.result == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -97,6 +180,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Generate release notes
         id: release-notes
         run: |
@@ -109,16 +195,42 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: build-*
+          merge-multiple: false
 
       - name: Organize artifacts by platform
         run: |
           mkdir -p release-files
           
-          # Копируем все файлы из артефактов
-          find artifacts -type f -exec cp {} release-files/ \;
+          # Копируем файлы из артефактов Linux
+          if [ -d "artifacts/build-linux-${{ needs.check-version.outputs.version }}" ]; then
+            echo "📦 Copying Linux artifacts..."
+            find "artifacts/build-linux-${{ needs.check-version.outputs.version }}" -type f -exec cp {} release-files/ \;
+          else
+            echo "⚠️ Linux artifacts not found"
+          fi
           
-          echo "Release files:"
-          ls -lh release-files/ || true
+          # Копируем файлы из артефактов Windows
+          if [ -d "artifacts/build-win-${{ needs.check-version.outputs.version }}" ]; then
+            echo "📦 Copying Windows artifacts..."
+            find "artifacts/build-win-${{ needs.check-version.outputs.version }}" -type f -exec cp {} release-files/ \;
+          else
+            echo "⚠️ Windows artifacts not found"
+          fi
+          
+          echo ""
+          echo "📋 Release files:"
+          ls -lh release-files/ 2>/dev/null || echo "No files found"
+          
+          # Проверяем, что есть хотя бы один файл
+          if [ -z "$(ls -A release-files 2>/dev/null)" ]; then
+            echo "❌ Error: No release files found!"
+            echo "Available artifacts:"
+            ls -la artifacts/ 2>/dev/null || echo "No artifacts directory"
+            exit 1
+          fi
+          
+          echo "✅ Found $(ls -1 release-files | wc -l) file(s) for release"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -131,7 +243,42 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: false
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
 
+  notify:
+    needs: [check-version, build-linux, build-windows, create-release]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Status Summary
+        run: |
+          echo "## Build Status Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.build-linux.result }}" == "success" ]; then
+            echo "| Linux | ✅ Success |" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.build-linux.result }}" == "failure" ]; then
+            echo "| Linux | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Linux | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.build-windows.result }}" == "success" ]; then
+            echo "| Windows | ✅ Success |" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.build-windows.result }}" == "failure" ]; then
+            echo "| Windows | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Windows | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ needs.create-release.result }}" == "success" ]; then
+            echo "| Release | ✅ Created |" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ needs.create-release.result }}" == "failure" ]; then
+            echo "| Release | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Release | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+          fi
