@@ -1,7 +1,7 @@
 {
   "name": "projectvoice-electron",
   "private": true,
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "ProjectVoice - Voice communication application",
   "author": "Danila Ovchinnikov (Danik Off)",
   "license": "MIT",
@@ -23,9 +23,9 @@
     "build:linux": "node scripts/check-platform.js linux && npm run build:check && cross-env NODE_ENV=production electron-builder --linux",
     "build:linux:clean": "node scripts/clear-electron-cache.js && npm run build:linux",
     "lint": "eslint .",
-    "version:patch": "npm version patch -m \"chore: bump version to %s\"",
-    "version:minor": "npm version minor -m \"chore: bump version to %s\"",
-    "version:major": "npm version major -m \"chore: bump version to %s\"",
+    "version:patch": "npm version patch -m \"chore: поднятие фикса версии до версии %s\"",
+    "version:minor": "npm version minor -m \"chore: поднятие минорной версии до версии %s\"",
+    "version:major": "npm version major -m \"chore: поднятие мажорной версии до версии %s\"",
     "version:patch:local": "node scripts/version-update.js patch",
     "version:minor:local": "node scripts/version-update.js minor",
     "version:major:local": "node scripts/version-update.js major"

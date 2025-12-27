@@ -16,6 +16,18 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       version-changed: ${{ steps.check.outputs.changed }}
     steps:
+      - name: 🚀 Job Started
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔍 CHECK VERSION JOB"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "⏰ Started at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "📦 Repository: ${{ github.repository }}"
+          echo "🔀 Branch: ${{ github.ref_name }}"
+          echo "📝 Commit: ${{ github.sha }}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -29,40 +41,65 @@ jobs:
       - name: Get current version
         id: version
         run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 GETTING CURRENT VERSION"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Current version: $VERSION"
+          echo "✅ Current version: $VERSION"
+          echo "📄 Package.json path: $(pwd)/package.json"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Check if version changed
         id: check
         run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔄 CHECKING VERSION CHANGE"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "📌 Current version: $CURRENT_VERSION"
           
           # Пытаемся получить предыдущую версию из предыдущего коммита
           PREVIOUS_VERSION=""
+          echo "🔍 Checking previous commit..."
           if git show HEAD~1:package.json > /dev/null 2>&1; then
             PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync(0, 'utf-8')).version" 2>/dev/null || echo "")
+            echo "📌 Previous commit version: ${PREVIOUS_VERSION:-'not found'}"
+          else
+            echo "⚠️ Cannot access previous commit"
           fi
           
           # Если не удалось получить из предыдущего коммита, проверяем последний тег
           if [ -z "$PREVIOUS_VERSION" ]; then
+            echo "🔍 Checking last git tag..."
             LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             if [ -n "$LAST_TAG" ]; then
               PREVIOUS_VERSION=$(echo "$LAST_TAG" | sed 's/^v//')
+              echo "📌 Last tag version: $PREVIOUS_VERSION (from tag: $LAST_TAG)"
+            else
+              echo "ℹ️ No tags found in repository"
             fi
           fi
+          
+          echo ""
+          echo "📊 Version Comparison:"
+          echo "  Current:  $CURRENT_VERSION"
+          echo "  Previous: ${PREVIOUS_VERSION:-'N/A (first release)'}"
           
           if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ] && [ -n "$PREVIOUS_VERSION" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "✅ Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "🚀 Release will be triggered"
           elif [ -z "$PREVIOUS_VERSION" ]; then
-            # Если это первый релиз, все равно создаем релиз
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "✅ First release detected: $CURRENT_VERSION"
+            echo "🚀 Release will be triggered"
           else
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "ℹ️ Version not changed: $CURRENT_VERSION"
+            echo "⏭️ Release will be skipped"
           fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   build-linux:
     needs: check-version
@@ -72,6 +109,16 @@ jobs:
     outputs:
       success: ${{ steps.set-output.outputs.success }}
     steps:
+      - name: 🚀 Job Started
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🐧 LINUX BUILD JOB"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "⏰ Started at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "🖥️  OS: $(uname -a)"
+          echo "📦 Version: ${{ needs.check-version.outputs.version }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -80,55 +127,198 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Environment Info
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🌍 ENVIRONMENT INFORMATION"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Node.js version: $(node --version)"
+          echo "npm version: $(npm --version)"
+          echo "Working directory: $(pwd)"
+          echo "Available disk space:"
+          df -h | grep -E '^/dev/'
+          echo "Memory info:"
+          free -h || echo "Memory info not available"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Clean install dependencies
         run: |
-          echo "🧹 Cleaning node_modules and package-lock.json..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 INSTALLING DEPENDENCIES"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🧹 Step 1: Cleaning old dependencies..."
           rm -rf node_modules package-lock.json
+          echo "✅ Cleaned node_modules and package-lock.json"
           
-          echo "📦 Installing dependencies..."
-          npm install --legacy-peer-deps
+          echo ""
+          echo "📦 Step 2: Installing dependencies..."
+          echo "Using: npm install --legacy-peer-deps"
+          npm install --legacy-peer-deps 2>&1 | tail -20
+          echo "✅ Dependencies installed"
           
-          echo "🔧 Ensuring rollup native dependencies are installed..."
-          # Устанавливаем нативные зависимости rollup для Linux
+          echo ""
+          echo "🔧 Step 3: Ensuring rollup native dependencies..."
           npm install @rollup/rollup-linux-x64-gnu --save-optional --force || echo "⚠️ Rollup native dependency install failed, but continuing..."
           
-          # Проверяем, что rollup работает
-          echo "🧪 Testing rollup..."
-          npx rollup --version || echo "⚠️ Rollup test failed"
+          echo ""
+          echo "🧪 Step 4: Testing rollup..."
+          ROLLUP_VERSION=$(npx rollup --version 2>&1 || echo "failed")
+          if [ "$ROLLUP_VERSION" != "failed" ]; then
+            echo "✅ Rollup version: $ROLLUP_VERSION"
+          else
+            echo "⚠️ Rollup test failed"
+          fi
           
-          echo "✅ Dependencies installed"
+          echo ""
+          echo "📊 Installed packages count:"
+          npm list --depth=0 2>/dev/null | wc -l || echo "Cannot count packages"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Build application for Linux
         id: build
         run: |
-          echo "🔨 Starting Linux build..."
-          npm run build:linux || BUILD_EXIT_CODE=$?
-          echo "Build exit code: ${BUILD_EXIT_CODE:-0}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔨 BUILDING APPLICATION FOR LINUX"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "⏰ Build started at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
           
-          if [ "${BUILD_EXIT_CODE:-0}" -eq 0 ]; then
-            echo "✅ Linux build successful"
+          set +e
+          echo "📋 Running: npm run build:linux"
+          npm run build:linux 2>&1 | tee build.log
+          BUILD_EXIT_CODE=$?
+          set -e
+          
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📊 BUILD RESULT"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Exit code: ${BUILD_EXIT_CODE}"
+          echo "⏰ Build finished at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          
+          if [ "${BUILD_EXIT_CODE}" -eq 0 ]; then
+            echo "✅ Linux build completed successfully"
           else
             echo "❌ Linux build failed with exit code ${BUILD_EXIT_CODE}"
+            echo ""
+            echo "📋 Last 50 lines of build log:"
+            tail -50 build.log || echo "Cannot read build log"
           fi
+          
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 POST-BUILD DIAGNOSTICS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Checking build directory..."
+          if [ -d "build" ]; then
+            echo "✅ Build directory exists"
+            echo ""
+            echo "📂 Contents of build directory:"
+            ls -lah build/ || echo "Cannot list build directory"
+            echo ""
+            echo "🔍 Searching for AppImage files:"
+            find build -name "*.AppImage" -o -name "*.appimage" 2>/dev/null | while read file; do
+              echo "  ✅ Found: $file ($(du -h "$file" | cut -f1))"
+            done || echo "  ❌ No AppImage found"
+            echo ""
+            echo "📊 All files in build (first 20):"
+            find build -type f 2>/dev/null | head -20 | while read file; do
+              echo "  - $file"
+            done || echo "  No files found"
+            echo ""
+            echo "💾 Total size of build directory:"
+            du -sh build/ 2>/dev/null || echo "Cannot calculate size"
+          else
+            echo "❌ Build directory does not exist"
+            echo ""
+            echo "Checking dist directory:"
+            if [ -d "dist" ]; then
+              echo "✅ dist directory exists"
+              ls -lah dist/ | head -10
+            else
+              echo "❌ dist directory also does not exist"
+            fi
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Set build output
         id: set-output
         if: always()
         run: |
-          if [ -d "build" ] && [ "$(ls -A build 2>/dev/null)" ]; then
-            echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Build artifacts found"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🔍 CHECKING BUILD ARTIFACTS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Current directory: $(pwd)"
+          echo "Build directory exists: $([ -d "build" ] && echo "yes" || echo "no")"
+          
+          if [ -d "build" ]; then
+            echo ""
+            echo "📂 Contents of build directory:"
+            ls -lah build/ || echo "Cannot list build directory"
+            echo ""
+            echo "📂 Recursive structure (first 30 items):"
+            find build -type f -o -type d 2>/dev/null | head -30 | while read item; do
+              if [ -f "$item" ]; then
+                echo "  📄 $item ($(du -h "$item" 2>/dev/null | cut -f1))"
+              else
+                echo "  📁 $item/"
+              fi
+            done || echo "Cannot find files in build"
+            echo ""
+            
+            # Проверяем наличие файлов (включая подпапки)
+            FILE_COUNT=$(find build -type f 2>/dev/null | wc -l)
+            echo "📊 Found $FILE_COUNT file(s) in build directory"
+            
+            # Ищем конкретные файлы для Linux
+            APPIMAGE=$(find build -name "*.AppImage" -o -name "*.appimage" 2>/dev/null | head -1)
+            if [ -n "$APPIMAGE" ]; then
+              APPIMAGE_SIZE=$(du -h "$APPIMAGE" | cut -f1)
+              echo "✅ Found AppImage: $APPIMAGE ($APPIMAGE_SIZE)"
+            else
+              echo "⚠️ No AppImage file found"
+            fi
+            
+            # Проверяем наличие любых файлов
+            if [ "$FILE_COUNT" -gt 0 ]; then
+              echo "success=true" >> $GITHUB_OUTPUT
+              echo "✅ Build artifacts found ($FILE_COUNT files)"
+            else
+              echo "success=false" >> $GITHUB_OUTPUT
+              echo "❌ Build directory exists but is empty"
+            fi
           else
             echo "success=false" >> $GITHUB_OUTPUT
-            echo "❌ No build artifacts found"
+            echo "❌ Build directory does not exist"
+            echo ""
+            echo "Checking if dist exists: $([ -d "dist" ] && echo "yes" || echo "no")"
+            if [ -d "dist" ]; then
+              echo "dist directory contents:"
+              ls -lah dist/ | head -10
+            fi
           fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Upload build artifacts (Linux)
+        if: steps.set-output.outputs.success == 'true'
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📤 UPLOADING BUILD ARTIFACTS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Artifact name: build-linux-${{ needs.check-version.outputs.version }}"
+          echo "Files to upload:"
+          find build -type f 2>/dev/null | head -20
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        continue-on-error: true
+
+      - name: Upload build artifacts (Linux) - Action
         if: steps.set-output.outputs.success == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-linux-${{ needs.check-version.outputs.version }}
-          path: build/*
+          path: |
+            build/**/*
+            !build/**/node_modules/**
           retention-days: 30
           if-no-files-found: error
 
@@ -140,6 +330,17 @@ jobs:
     outputs:
       success: ${{ steps.set-output.outputs.success }}
     steps:
+      - name: 🚀 Job Started
+        shell: pwsh
+        run: |
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "🪟 WINDOWS BUILD JOB"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "⏰ Started at: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss UTC')"
+          Write-Host "🖥️  OS: $($env:OS)"
+          Write-Host "📦 Version: ${{ needs.check-version.outputs.version }}"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -148,65 +349,219 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Environment Info
+        shell: pwsh
+        run: |
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "🌍 ENVIRONMENT INFORMATION"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "Node.js version: $(node --version)"
+          Write-Host "npm version: $(npm --version)"
+          Write-Host "Working directory: $(Get-Location)"
+          Write-Host "Available disk space:"
+          Get-PSDrive C | Format-Table -AutoSize
+          Write-Host "Memory info:"
+          Get-CimInstance Win32_OperatingSystem | Select-Object TotalVisibleMemorySize, FreePhysicalMemory | Format-List
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Clean install dependencies
         shell: pwsh
         run: |
-          Write-Host "🧹 Cleaning node_modules and package-lock.json..."
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "📦 INSTALLING DEPENDENCIES"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "🧹 Step 1: Cleaning old dependencies..."
           Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
           Remove-Item -Force package-lock.json -ErrorAction SilentlyContinue
+          Write-Host "✅ Cleaned node_modules and package-lock.json"
           
-          Write-Host "📦 Installing dependencies..."
-          npm install --legacy-peer-deps
+          Write-Host ""
+          Write-Host "📦 Step 2: Installing dependencies..."
+          Write-Host "Using: npm install --legacy-peer-deps"
+          npm install --legacy-peer-deps 2>&1 | Select-Object -Last 20
+          Write-Host "✅ Dependencies installed"
           
-          Write-Host "🧪 Testing rollup..."
-          npx rollup --version | Out-Null
-          if ($LASTEXITCODE -ne 0) {
-            Write-Host "⚠️ Rollup test failed, but continuing..."
+          Write-Host ""
+          Write-Host "🧪 Step 3: Testing rollup..."
+          $rollupVersion = npx rollup --version 2>&1
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "✅ Rollup version: $rollupVersion"
+          } else {
+            Write-Host "⚠️ Rollup test failed"
           }
           
-          Write-Host "✅ Dependencies installed"
+          Write-Host ""
+          Write-Host "📊 Installed packages:"
+          npm list --depth=0 2>&1 | Select-Object -First 30
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Build application for Windows
         id: build
         shell: pwsh
         run: |
-          Write-Host "🔨 Starting Windows build..."
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "🔨 BUILDING APPLICATION FOR WINDOWS"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          $startTime = Get-Date
+          Write-Host "⏰ Build started at: $($startTime.ToString('yyyy-MM-dd HH:mm:ss UTC'))"
+          Write-Host ""
+          
           $ErrorActionPreference = "Continue"
-          npm run build:win
+          Write-Host "📋 Running: npm run build:win"
+          npm run build:win 2>&1 | Tee-Object -FilePath build.log
           $buildExitCode = $LASTEXITCODE
-          Write-Host "Build exit code: $buildExitCode"
+          
+          $endTime = Get-Date
+          $duration = $endTime - $startTime
+          
+          Write-Host ""
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "📊 BUILD RESULT"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "Exit code: $buildExitCode"
+          Write-Host "⏰ Build finished at: $($endTime.ToString('yyyy-MM-dd HH:mm:ss UTC'))"
+          Write-Host "⏱️  Duration: $($duration.ToString('mm\:ss'))"
           
           if ($buildExitCode -eq 0) {
-            Write-Host "✅ Windows build successful"
+            Write-Host "✅ Windows build completed successfully"
           } else {
             Write-Host "❌ Windows build failed with exit code $buildExitCode"
+            Write-Host ""
+            Write-Host "📋 Last 50 lines of build log:"
+            Get-Content build.log -Tail 50 -ErrorAction SilentlyContinue
           }
+          
+          Write-Host ""
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "📋 POST-BUILD DIAGNOSTICS"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "Checking build directory..."
+          if (Test-Path "build" -PathType Container) {
+            Write-Host "✅ Build directory exists"
+            Write-Host ""
+            Write-Host "📂 Contents of build directory:"
+            Get-ChildItem -Path "build" | Format-Table -AutoSize
+            Write-Host ""
+            Write-Host "🔍 Searching for .exe files:"
+            $exeFiles = Get-ChildItem -Path "build" -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue
+            if ($exeFiles.Count -gt 0) {
+              $exeFiles | ForEach-Object { 
+                $size = [math]::Round($_.Length / 1MB, 2)
+                Write-Host "  ✅ Found: $($_.FullName) ($size MB)"
+              }
+            } else {
+              Write-Host "  ❌ No .exe files found"
+            }
+            Write-Host ""
+            Write-Host "📊 All files in build (first 20):"
+            Get-ChildItem -Path "build" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 20 | ForEach-Object {
+              $size = [math]::Round($_.Length / 1MB, 2)
+              Write-Host "  - $($_.FullName) ($size MB)"
+            }
+            Write-Host ""
+            $totalSize = (Get-ChildItem -Path "build" -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+            $totalSizeMB = [math]::Round($totalSize / 1MB, 2)
+            Write-Host "💾 Total size of build directory: $totalSizeMB MB"
+          } else {
+            Write-Host "❌ Build directory does not exist"
+            Write-Host ""
+            Write-Host "Checking dist directory:"
+            if (Test-Path "dist" -PathType Container) {
+              Write-Host "✅ dist directory exists"
+              Get-ChildItem -Path "dist" | Select-Object -First 10 | Format-Table -AutoSize
+            } else {
+              Write-Host "❌ dist directory also does not exist"
+            }
+          }
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Set build output
         id: set-output
         if: always()
         shell: pwsh
         run: |
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "🔍 CHECKING BUILD ARTIFACTS"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "Current directory: $(Get-Location)"
+          Write-Host "Build directory exists: $(Test-Path "build" -PathType Container)"
+          
           if (Test-Path "build" -PathType Container) {
+            Write-Host ""
+            Write-Host "📂 Contents of build directory:"
+            Get-ChildItem -Path "build" | Format-Table -AutoSize
+            Write-Host ""
+            Write-Host "📂 Recursive structure (first 30 items):"
+            Get-ChildItem -Path "build" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 30 | ForEach-Object {
+              if ($_.PSIsContainer) {
+                Write-Host "  📁 $($_.FullName)\"
+              } else {
+                $size = [math]::Round($_.Length / 1MB, 2)
+                Write-Host "  📄 $($_.FullName) ($size MB)"
+              }
+            }
+            Write-Host ""
+            
+            # Ищем все файлы
             $files = Get-ChildItem -Path "build" -Recurse -File -ErrorAction SilentlyContinue
-            if ($files.Count -gt 0) {
+            $fileCount = $files.Count
+            Write-Host "📊 Found $fileCount file(s) in build directory"
+            
+            # Ищем конкретные файлы для Windows
+            $exeFiles = Get-ChildItem -Path "build" -Recurse -Filter "*.exe" -ErrorAction SilentlyContinue
+            if ($exeFiles.Count -gt 0) {
+              Write-Host "✅ Found $($exeFiles.Count) .exe file(s):"
+              $exeFiles | ForEach-Object { 
+                $size = [math]::Round($_.Length / 1MB, 2)
+                Write-Host "  - $($_.FullName) ($size MB)"
+              }
+            } else {
+              Write-Host "⚠️ No .exe files found"
+            }
+            
+            # Проверяем наличие любых файлов
+            if ($fileCount -gt 0) {
               "success=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-              Write-Host "✅ Build artifacts found: $($files.Count) file(s)"
+              Write-Host "✅ Build artifacts found ($fileCount files)"
             } else {
               "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-              Write-Host "❌ No build artifacts found"
+              Write-Host "❌ Build directory exists but is empty"
             }
           } else {
             "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "❌ Build directory not found"
+            Write-Host "❌ Build directory does not exist"
+            Write-Host ""
+            Write-Host "Checking if dist exists: $(Test-Path "dist" -PathType Container)"
+            if (Test-Path "dist" -PathType Container) {
+              Write-Host "dist directory contents:"
+              Get-ChildItem -Path "dist" | Select-Object -First 10 | Format-Table -AutoSize
+            }
           }
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Upload build artifacts (Windows)
+        if: steps.set-output.outputs.success == 'true'
+        shell: pwsh
+        run: |
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "📤 UPLOADING BUILD ARTIFACTS"
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          Write-Host "Artifact name: build-win-${{ needs.check-version.outputs.version }}"
+          Write-Host "Files to upload:"
+          Get-ChildItem -Path "build" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 20 | ForEach-Object {
+            Write-Host "  - $($_.FullName)"
+          }
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        continue-on-error: true
+
+      - name: Upload build artifacts (Windows) - Action
         if: steps.set-output.outputs.success == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-win-${{ needs.check-version.outputs.version }}
-          path: build/*
+          path: |
+            build/**/*
+            !build/**/node_modules/**
           retention-days: 30
           if-no-files-found: error
 
@@ -221,6 +576,17 @@ jobs:
     continue-on-error: true
     
     steps:
+      - name: 🚀 Job Started
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🚀 CREATE RELEASE JOB"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "⏰ Started at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "📦 Version: ${{ needs.check-version.outputs.version }}"
+          echo "🐧 Linux build success: ${{ needs.build-linux.outputs.success }}"
+          echo "🪟 Windows build success: ${{ needs.build-windows.outputs.success }}"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -232,17 +598,45 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 INSTALLING DEPENDENCIES"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          npm ci
+          echo "✅ Dependencies installed"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Generate release notes
         id: release-notes
         run: |
-          node scripts/generate-release-notes.js > release-notes.md || echo "# Release v${{ needs.check-version.outputs.version }}" > release-notes.md
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📝 GENERATING RELEASE NOTES"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          if node scripts/generate-release-notes.js > release-notes.md; then
+            echo "✅ Release notes generated successfully"
+            echo "Preview (first 20 lines):"
+            head -20 release-notes.md
+          else
+            echo "⚠️ Failed to generate release notes, using default"
+            echo "# Release v${{ needs.check-version.outputs.version }}" > release-notes.md
+          fi
+          echo ""
           echo "notes<<EOF" >> $GITHUB_OUTPUT
           cat release-notes.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+          echo "✅ Release notes saved to output"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Download all artifacts
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📥 DOWNLOADING ARTIFACTS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Downloading artifacts with pattern: build-*"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        continue-on-error: true
+
+      - name: Download all artifacts - Action
         uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -252,18 +646,23 @@ jobs:
 
       - name: Organize artifacts by platform
         run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 ORGANIZING ARTIFACTS"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           mkdir -p release-files
           
-          echo "📦 Searching for artifacts..."
+          echo "🔍 Searching for artifacts..."
           echo "Available artifact directories:"
           find artifacts -type d -maxdepth 2 2>/dev/null | head -20 || echo "No artifacts directory found"
+          echo ""
           
           # Копируем файлы из артефактов Linux
           LINUX_DIR="artifacts/build-linux-${{ needs.check-version.outputs.version }}"
           if [ -d "$LINUX_DIR" ]; then
             echo "📦 Copying Linux artifacts from $LINUX_DIR..."
+            LINUX_FILES=$(find "$LINUX_DIR" -type f | wc -l)
             find "$LINUX_DIR" -type f -exec cp {} release-files/ \;
-            echo "✅ Linux artifacts copied"
+            echo "✅ Linux artifacts copied ($LINUX_FILES files)"
           else
             echo "⚠️ Linux artifacts not found at $LINUX_DIR"
           fi
@@ -272,8 +671,9 @@ jobs:
           WIN_DIR="artifacts/build-win-${{ needs.check-version.outputs.version }}"
           if [ -d "$WIN_DIR" ]; then
             echo "📦 Copying Windows artifacts from $WIN_DIR..."
+            WIN_FILES=$(find "$WIN_DIR" -type f | wc -l)
             find "$WIN_DIR" -type f -exec cp {} release-files/ \;
-            echo "✅ Windows artifacts copied"
+            echo "✅ Windows artifacts copied ($WIN_FILES files)"
           else
             echo "⚠️ Windows artifacts not found at $WIN_DIR"
           fi
@@ -281,19 +681,39 @@ jobs:
           echo ""
           echo "📋 Release files:"
           ls -lh release-files/ 2>/dev/null || echo "No files found"
+          echo ""
           
           # Проверяем, что есть хотя бы один файл
           FILE_COUNT=$(ls -1 release-files 2>/dev/null | wc -l)
           if [ "$FILE_COUNT" -eq 0 ]; then
             echo "❌ Error: No release files found!"
+            echo ""
             echo "Available artifacts structure:"
             find artifacts -type f 2>/dev/null | head -10 || echo "No artifacts found"
+            echo ""
+            echo "Full artifacts tree:"
+            tree artifacts 2>/dev/null || find artifacts -type d 2>/dev/null | head -20
             exit 1
           fi
           
           echo "✅ Found $FILE_COUNT file(s) for release"
+          echo "Total size:"
+          du -sh release-files/ 2>/dev/null || echo "Cannot calculate size"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Create Release
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🚀 CREATING GITHUB RELEASE"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Tag: v${{ needs.check-version.outputs.version }}"
+          echo "Name: 🚀 Release v${{ needs.check-version.outputs.version }}"
+          echo "Files to attach:"
+          ls -lh release-files/ | head -10
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        continue-on-error: true
+
+      - name: Create Release - Action
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
@@ -356,3 +776,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** ${{ needs.check-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Version Changed:** ${{ needs.check-version.outputs.version-changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow Run:** ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
