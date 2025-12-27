@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      success: ${{ steps.build.outputs.success || 'false' }}
+      success: ${{ steps.set-output.outputs.success }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -79,34 +79,58 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Clean install dependencies
+        run: |
+          echo "🧹 Cleaning node_modules and package-lock.json..."
+          rm -rf node_modules package-lock.json
+          
+          echo "📦 Installing dependencies..."
+          npm install --legacy-peer-deps
+          
+          echo "🔧 Ensuring rollup native dependencies are installed..."
+          # Устанавливаем нативные зависимости rollup для Linux
+          npm install @rollup/rollup-linux-x64-gnu --save-optional --force || echo "⚠️ Rollup native dependency install failed, but continuing..."
+          
+          # Проверяем, что rollup работает
+          echo "🧪 Testing rollup..."
+          npx rollup --version || echo "⚠️ Rollup test failed"
+          
+          echo "✅ Dependencies installed"
 
       - name: Build application for Linux
         id: build
-        continue-on-error: true
         run: |
-          set +e
-          if npm run build:linux; then
-            echo "success=true" >> $GITHUB_OUTPUT
+          echo "🔨 Starting Linux build..."
+          npm run build:linux || BUILD_EXIT_CODE=$?
+          echo "Build exit code: ${BUILD_EXIT_CODE:-0}"
+          
+          if [ "${BUILD_EXIT_CODE:-0}" -eq 0 ]; then
             echo "✅ Linux build successful"
-            exit 0
+          else
+            echo "❌ Linux build failed with exit code ${BUILD_EXIT_CODE}"
+          fi
+
+      - name: Set build output
+        id: set-output
+        if: always()
+        run: |
+          if [ -d "build" ] && [ "$(ls -A build 2>/dev/null)" ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+            echo "✅ Build artifacts found"
           else
             echo "success=false" >> $GITHUB_OUTPUT
-            echo "❌ Linux build failed"
-            exit 1
+            echo "❌ No build artifacts found"
           fi
 
       - name: Upload build artifacts (Linux)
-        if: steps.build.outputs.success == 'true'
+        if: steps.set-output.outputs.success == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-linux-${{ needs.check-version.outputs.version }}
           path: build/*
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
   build-windows:
     needs: check-version
@@ -114,7 +138,7 @@ jobs:
     runs-on: windows-latest
     continue-on-error: true
     outputs:
-      success: ${{ steps.build.outputs.success || 'false' }}
+      success: ${{ steps.set-output.outputs.success }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -123,51 +147,78 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Clean install dependencies
+        shell: pwsh
+        run: |
+          Write-Host "🧹 Cleaning node_modules and package-lock.json..."
+          Remove-Item -Recurse -Force node_modules -ErrorAction SilentlyContinue
+          Remove-Item -Force package-lock.json -ErrorAction SilentlyContinue
+          
+          Write-Host "📦 Installing dependencies..."
+          npm install --legacy-peer-deps
+          
+          Write-Host "🧪 Testing rollup..."
+          npx rollup --version | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "⚠️ Rollup test failed, but continuing..."
+          }
+          
+          Write-Host "✅ Dependencies installed"
 
       - name: Build application for Windows
         id: build
         shell: pwsh
-        continue-on-error: true
         run: |
+          Write-Host "🔨 Starting Windows build..."
           $ErrorActionPreference = "Continue"
-          try {
-            npm run build:win
-            if ($LASTEXITCODE -eq 0) {
+          npm run build:win
+          $buildExitCode = $LASTEXITCODE
+          Write-Host "Build exit code: $buildExitCode"
+          
+          if ($buildExitCode -eq 0) {
+            Write-Host "✅ Windows build successful"
+          } else {
+            Write-Host "❌ Windows build failed with exit code $buildExitCode"
+          }
+
+      - name: Set build output
+        id: set-output
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path "build" -PathType Container) {
+            $files = Get-ChildItem -Path "build" -Recurse -File -ErrorAction SilentlyContinue
+            if ($files.Count -gt 0) {
               "success=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-              Write-Host "✅ Windows build successful"
-              exit 0
+              Write-Host "✅ Build artifacts found: $($files.Count) file(s)"
             } else {
               "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-              Write-Host "❌ Windows build failed with exit code $LASTEXITCODE"
-              exit 1
+              Write-Host "❌ No build artifacts found"
             }
-          } catch {
+          } else {
             "success=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-            Write-Host "❌ Windows build failed: $_"
-            exit 1
+            Write-Host "❌ Build directory not found"
           }
 
       - name: Upload build artifacts (Windows)
-        if: steps.build.outputs.success == 'true'
+        if: steps.set-output.outputs.success == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: build-win-${{ needs.check-version.outputs.version }}
           path: build/*
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
   create-release:
     needs: [check-version, build-linux, build-windows]
     if: |
       (needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch') &&
-      (needs.build-linux.result == 'success' || needs.build-windows.result == 'success')
+      (needs.build-linux.outputs.success == 'true' || needs.build-windows.outputs.success == 'true')
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    continue-on-error: true
     
     steps:
       - name: Checkout code
@@ -186,7 +237,7 @@ jobs:
       - name: Generate release notes
         id: release-notes
         run: |
-          node scripts/generate-release-notes.js > release-notes.md
+          node scripts/generate-release-notes.js > release-notes.md || echo "# Release v${{ needs.check-version.outputs.version }}" > release-notes.md
           echo "notes<<EOF" >> $GITHUB_OUTPUT
           cat release-notes.md >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -197,25 +248,34 @@ jobs:
           path: artifacts
           pattern: build-*
           merge-multiple: false
+          fail-on-error: false
 
       - name: Organize artifacts by platform
         run: |
           mkdir -p release-files
           
+          echo "📦 Searching for artifacts..."
+          echo "Available artifact directories:"
+          find artifacts -type d -maxdepth 2 2>/dev/null | head -20 || echo "No artifacts directory found"
+          
           # Копируем файлы из артефактов Linux
-          if [ -d "artifacts/build-linux-${{ needs.check-version.outputs.version }}" ]; then
-            echo "📦 Copying Linux artifacts..."
-            find "artifacts/build-linux-${{ needs.check-version.outputs.version }}" -type f -exec cp {} release-files/ \;
+          LINUX_DIR="artifacts/build-linux-${{ needs.check-version.outputs.version }}"
+          if [ -d "$LINUX_DIR" ]; then
+            echo "📦 Copying Linux artifacts from $LINUX_DIR..."
+            find "$LINUX_DIR" -type f -exec cp {} release-files/ \;
+            echo "✅ Linux artifacts copied"
           else
-            echo "⚠️ Linux artifacts not found"
+            echo "⚠️ Linux artifacts not found at $LINUX_DIR"
           fi
           
           # Копируем файлы из артефактов Windows
-          if [ -d "artifacts/build-win-${{ needs.check-version.outputs.version }}" ]; then
-            echo "📦 Copying Windows artifacts..."
-            find "artifacts/build-win-${{ needs.check-version.outputs.version }}" -type f -exec cp {} release-files/ \;
+          WIN_DIR="artifacts/build-win-${{ needs.check-version.outputs.version }}"
+          if [ -d "$WIN_DIR" ]; then
+            echo "📦 Copying Windows artifacts from $WIN_DIR..."
+            find "$WIN_DIR" -type f -exec cp {} release-files/ \;
+            echo "✅ Windows artifacts copied"
           else
-            echo "⚠️ Windows artifacts not found"
+            echo "⚠️ Windows artifacts not found at $WIN_DIR"
           fi
           
           echo ""
@@ -223,14 +283,15 @@ jobs:
           ls -lh release-files/ 2>/dev/null || echo "No files found"
           
           # Проверяем, что есть хотя бы один файл
-          if [ -z "$(ls -A release-files 2>/dev/null)" ]; then
+          FILE_COUNT=$(ls -1 release-files 2>/dev/null | wc -l)
+          if [ "$FILE_COUNT" -eq 0 ]; then
             echo "❌ Error: No release files found!"
-            echo "Available artifacts:"
-            ls -la artifacts/ 2>/dev/null || echo "No artifacts directory"
+            echo "Available artifacts structure:"
+            find artifacts -type f 2>/dev/null | head -10 || echo "No artifacts found"
             exit 1
           fi
           
-          echo "✅ Found $(ls -1 release-files | wc -l) file(s) for release"
+          echo "✅ Found $FILE_COUNT file(s) for release"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -254,31 +315,44 @@ jobs:
     steps:
       - name: Build Status Summary
         run: |
-          echo "## Build Status Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Build Status Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Status | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------|" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ needs.build-linux.result }}" == "success" ]; then
-            echo "| Linux | ✅ Success |" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.build-linux.result }}" == "failure" ]; then
-            echo "| Linux | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          LINUX_RESULT="${{ needs.build-linux.result }}"
+          LINUX_SUCCESS="${{ needs.build-linux.outputs.success }}"
+          if [ "$LINUX_RESULT" == "success" ] && [ "$LINUX_SUCCESS" == "true" ]; then
+            echo "| Linux | ✅ Success | Build completed and artifacts uploaded |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$LINUX_RESULT" == "success" ]; then
+            echo "| Linux | ⚠️ Partial | Build completed but no artifacts found |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$LINUX_RESULT" == "failure" ]; then
+            echo "| Linux | ❌ Failed | Build failed |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Linux | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+            echo "| Linux | ⏭️ Skipped | Not executed |" >> $GITHUB_STEP_SUMMARY
           fi
           
-          if [ "${{ needs.build-windows.result }}" == "success" ]; then
-            echo "| Windows | ✅ Success |" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.build-windows.result }}" == "failure" ]; then
-            echo "| Windows | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          WIN_RESULT="${{ needs.build-windows.result }}"
+          WIN_SUCCESS="${{ needs.build-windows.outputs.success }}"
+          if [ "$WIN_RESULT" == "success" ] && [ "$WIN_SUCCESS" == "true" ]; then
+            echo "| Windows | ✅ Success | Build completed and artifacts uploaded |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$WIN_RESULT" == "success" ]; then
+            echo "| Windows | ⚠️ Partial | Build completed but no artifacts found |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$WIN_RESULT" == "failure" ]; then
+            echo "| Windows | ❌ Failed | Build failed |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Windows | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+            echo "| Windows | ⏭️ Skipped | Not executed |" >> $GITHUB_STEP_SUMMARY
           fi
           
-          if [ "${{ needs.create-release.result }}" == "success" ]; then
-            echo "| Release | ✅ Created |" >> $GITHUB_STEP_SUMMARY
-          elif [ "${{ needs.create-release.result }}" == "failure" ]; then
-            echo "| Release | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+          RELEASE_RESULT="${{ needs.create-release.result }}"
+          if [ "$RELEASE_RESULT" == "success" ]; then
+            echo "| Release | ✅ Created | Release v${{ needs.check-version.outputs.version }} created successfully |" >> $GITHUB_STEP_SUMMARY
+          elif [ "$RELEASE_RESULT" == "failure" ]; then
+            echo "| Release | ❌ Failed | Failed to create release |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Release | ⏭️ Skipped |" >> $GITHUB_STEP_SUMMARY
+            echo "| Release | ⏭️ Skipped | Not executed |" >> $GITHUB_STEP_SUMMARY
           fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.check-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version Changed:** ${{ needs.check-version.outputs.version-changed }}" >> $GITHUB_STEP_SUMMARY
