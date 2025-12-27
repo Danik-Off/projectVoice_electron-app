@@ -79,9 +79,6 @@ function generateReleaseNotes() {
   notes += `### Windows\n`;
   notes += `- **Installer**: Download the \`.exe\` installer for Windows\n`;
   notes += `- **Portable**: Download the portable version (no installation required)\n\n`;
-  notes += `### macOS\n`;
-  notes += `- **DMG**: Download the \`.dmg\` file for macOS (Intel and Apple Silicon)\n`;
-  notes += `- **App**: Drag and drop to Applications folder\n\n`;
   notes += `### Linux\n`;
   notes += `- **AppImage**: Download the \`.AppImage\` file (runs on most Linux distributions)\n`;
   notes += `- Make executable: \`chmod +x ProjectVoice-*.AppImage\`\n\n`;
@@ -151,11 +148,6 @@ function generateReleaseNotes() {
   notes += `1. Download the \`.exe\` installer\n`;
   notes += `2. Run the installer and follow the setup wizard\n`;
   notes += `3. Launch ProjectVoice from the Start menu\n\n`;
-  notes += `### macOS\n`;
-  notes += `1. Download the \`.dmg\` file\n`;
-  notes += `2. Open the DMG file\n`;
-  notes += `3. Drag ProjectVoice to your Applications folder\n`;
-  notes += `4. Launch ProjectVoice from Applications\n\n`;
   notes += `### Linux\n`;
   notes += `1. Download the \`.AppImage\` file\n`;
   notes += `2. Make it executable: \`chmod +x ProjectVoice-*.AppImage\`\n`;

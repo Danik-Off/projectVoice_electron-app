@@ -33,9 +33,14 @@ npm run build
 
 # Сборка для конкретной платформы
 npm run build:win   # Windows
-npm run build:mac   # macOS
-npm run build:linux # Linux
+npm run build:mac   # macOS (только на macOS)
+npm run build:linux # Linux (только на Linux или через Docker/WSL)
 ```
+
+**Важно:** 
+- Сборка Linux AppImage возможна только на Linux системе или через Docker/WSL
+- На Windows сборка Linux версии не поддерживается напрямую
+- Для сборки Linux используйте CI/CD или Linux окружение
 
 ## Структура проекта
 

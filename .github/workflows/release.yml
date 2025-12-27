@@ -54,9 +54,6 @@ jobs:
           - os: windows-latest
             platform: win
             build-command: npm run build:win
-          - os: macos-latest
-            platform: mac
-            build-command: npm run build:mac
     runs-on: ${{ matrix.os }}
     
     steps:
