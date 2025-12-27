@@ -130,6 +130,6 @@ export const useParticipants = () => {
     participants: RoomStore.participants,
     participantCount: RoomStore.participants.length,
     isParticipant: (userId: string) => 
-      RoomStore.participants.some((p: any) => p.socketId === userId || p.userData?.id === userId),
+      RoomStore.participants.some((p) => p.socketId === userId || p.userData?.id === userId),
   };
 };

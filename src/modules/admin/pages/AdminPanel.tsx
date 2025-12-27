@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, type JSX } from 'react';
 import { observer } from 'mobx-react';
-import { adminService } from '../../../services/adminService';
+import { adminService, type UpdateUserRequest, type LogsResponse } from '../services/adminService';
 import { authStore } from '../../../core';
+import type { Channel } from '../../../types/channel';
 // import { useTranslation } from 'react-i18next';
 import './AdminPanel.scss';
 
@@ -57,7 +58,7 @@ interface Server {
         id: number;
         username: string;
     };
-    channels?: any[];
+    channels?: Channel[];
     memberCount?: number;
     owner?: {
         id: number;
@@ -128,7 +129,7 @@ const AdminPanel: React.FC = observer(() => {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [logs, setLogs] = useState<any>(null);
+    const [logs, setLogs] = useState<LogsResponse | null>(null);
     const [blockModal, setBlockModal] = useState<{ isOpen: boolean; serverId: number; serverName: string }>({
         isOpen: false,
         serverId: 0,
@@ -206,7 +207,7 @@ const AdminPanel: React.FC = observer(() => {
         }
     }, [activeTab, loadUsers, loadServers, loadLogs]);
 
-    const updateUser = async (userId: number, updates: any) => {
+    const updateUser = async (userId: number, updates: UpdateUserRequest) => {
         try {
             const result = await adminService.updateUser(userId, updates);
             console.log(result.message);
@@ -508,7 +509,7 @@ const UsersManagement: React.FC<{
     onRoleFilterChange: (value: string) => void;
     onStatusFilterChange: (value: string) => void;
     onPageChange: (page: number) => void;
-    onUpdateUser: (userId: number, updates: any) => void;
+    onUpdateUser: (userId: number, updates: UpdateUserRequest) => void;
     onDeleteUser: (userId: number) => void;
     getRoleBadge: (role: string) => JSX.Element;
     getStatusBadge: (isActive: boolean) => JSX.Element;
@@ -738,7 +739,7 @@ const ServersManagement: React.FC<{
 };
 
 // Компонент просмотра логов
-const LogsViewer: React.FC<{ logs: any }> = ({ logs }) => {
+const LogsViewer: React.FC<{ logs: LogsResponse }> = ({ logs }) => {
     if (!logs) return <div>Загрузка логов...</div>;
 
     return (

@@ -121,8 +121,8 @@ export const useProfileSettings = () => {
                 setShowEditProfile(false);
                 notificationStore.addNotification(t('settingsPage.profile.messages.profileUpdated'), 'success');
             }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || t('settingsPage.profile.messages.updateError');
+        } catch (error: unknown) {
+            const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || t('settingsPage.profile.messages.updateError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error updating profile:', error);
         } finally {
@@ -156,8 +156,8 @@ export const useProfileSettings = () => {
                 setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                 notificationStore.addNotification(t('settingsPage.profile.messages.passwordChanged'), 'success');
             }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message || t('settingsPage.profile.messages.passwordChangeError');
+        } catch (error: unknown) {
+            const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || t('settingsPage.profile.messages.passwordChangeError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error changing password:', error);
         } finally {

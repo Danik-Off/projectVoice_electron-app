@@ -46,11 +46,11 @@ function isTokenExpiredError(response: Response, errorMessage: string): boolean 
     }
 }
 
-export const apiClient = async (
+export const apiClient = async <T = unknown>(
     endpoint: string,
     options: RequestInit = {},
-    body?: any
-) => {
+    body?: unknown
+): Promise<T> => {
     const token = getToken();
 
     // Установка заголовков
@@ -91,6 +91,6 @@ export const apiClient = async (
         return null;
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
 };
 

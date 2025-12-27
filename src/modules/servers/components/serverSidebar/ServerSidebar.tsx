@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { authStore } from '../../../../core';
 import BlockedServerModal from '../../../../components/BlockedServerModal';
+import type { Server } from '../../../../types/server';
 import './ServerSidebar.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ServerItem from '../../../../app/layout/components/serverSlidebar/serverItem/ServerItem';
@@ -33,7 +34,7 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
         navigate('/admin');
     };
 
-    const handleServerClick = (server: any) => {
+    const handleServerClick = (server: Server) => {
         if (server.isBlocked) {
             setBlockedServer({
                 name: server.name,
@@ -104,7 +105,7 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            handleSetting(e as any);
+                            handleSetting(e as React.MouseEvent);
                         }
                     }}
                 >

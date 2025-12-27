@@ -2,25 +2,14 @@
  * Root Router Configuration
  * Создает роутер приложения на основе зарегистрированных модулей
  */
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
 import { moduleManager } from '../core';
 import { ProtectedRoute, AdminRoute } from '../modules/auth';
 import Layout from '../app/layout/Main';
 import WelcomePage from '../modules/servers/pages/welcomePage/WelcomePage';
 import ProfileDemo from '../components/ProfileDemo';
 import Auth from '../modules/auth/pages/Auth';
-
-/**
- * Компонент для обработки 404 ошибок
- */
-const NotFound = () => {
-    return (
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-            <h1>404 - Страница не найдена</h1>
-            <p>Запрашиваемая страница не существует.</p>
-        </div>
-    );
-};
+import NotFound from '../app/routes/NotFound';
 
 /**
  * Создает роутер приложения на основе модулей
@@ -194,7 +183,7 @@ export function createRouter() {
     console.log('✅ Router created with', routes.length, 'top-level routes');
     console.log('📊 Routes structure:', routes.map(r => ({ 
         path: r.path, 
-        hasChildren: !!(r as any).children 
+        hasChildren: !!(r as RouteObject).children 
     })));
 
     return createBrowserRouter(routes);

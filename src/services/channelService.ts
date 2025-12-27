@@ -1,8 +1,9 @@
 import { apiClient } from '../utils/apiClient';
+import type { Channel } from '../types/channel';
 
 export const channelService = {
     // Создание канала
-    create: async (serverId: number, data: any) => {
+    create: async (serverId: number, data: Omit<Channel, 'id' | 'serverId'>) => {
         const response = await apiClient(`/servers/${serverId}/channels`, {
             method: 'POST',
             body: JSON.stringify(data), // Предполагается, что data - это данные канала
@@ -27,7 +28,7 @@ export const channelService = {
         return data;
     },
     // Обновление информации о канале
-    update: async (serverId: number, channelId: number, data: any) => {
+    update: async (serverId: number, channelId: number, data: Partial<Channel>) => {
         const response = await apiClient(`/servers/${serverId}/channels/${channelId}`, {
             method: 'PUT',
             body: JSON.stringify(data), // Предполагается, что data - это обновленные данные канала

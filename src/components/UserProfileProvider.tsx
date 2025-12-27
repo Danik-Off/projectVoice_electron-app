@@ -1,14 +1,8 @@
-import React, { createContext, useContext } from 'react';
+import React from 'react';
 import type { ReactNode } from 'react';
 import { useUserProfileModal } from '../hooks/useUserProfileModal';
 import UserProfileModal from './UserProfileModal';
-
-interface UserProfileContextType {
-    openProfile: (user: any, isOwnProfile?: boolean) => void;
-    closeProfile: () => void;
-}
-
-const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
+import { UserProfileContext, type UserProfileContextType } from '../contexts/UserProfileContext';
 
 interface UserProfileProviderProps {
     children: ReactNode;
@@ -35,10 +29,3 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
     );
 };
 
-export const useUserProfile = (): UserProfileContextType => {
-    const context = useContext(UserProfileContext);
-    if (context === undefined) {
-        throw new Error('useUserProfile must be used within a UserProfileProvider');
-    }
-    return context;
-};

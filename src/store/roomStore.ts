@@ -20,7 +20,7 @@ interface Participant {
     isSpeaking?: boolean;
 }
 
-class VoiceRoomStore {
+export class VoiceRoomStore {
     public participants: Participant[] = [];
     public currentVoiceChannel: { id: number; name: string } | null = null;
     public state = '';
@@ -54,7 +54,6 @@ class VoiceRoomStore {
             }
         }
         
-        // eslint-disable-next-line max-len
         const token = getCookie('token'); //TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
         this.socketClient.socketEmit('join-room', roomId, token);
         

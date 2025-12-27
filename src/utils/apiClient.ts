@@ -2,11 +2,11 @@ import { API_URL } from '../configs/apiConfig';
 import { authStore } from '../store/authStore';
 import { getCookie } from './cookie';
 
-export const apiClient = async (
+export const apiClient = async <T = unknown>(
     endpoint: string,
     options: RequestInit = {},
-    body?: any
-) => {
+    body?: unknown
+): Promise<T> => {
     const token = getCookie('token');
 
     // Установка заголовков
@@ -43,5 +43,5 @@ export const apiClient = async (
         return null;
     }
 
-    return response.json();
+    return response.json() as Promise<T>;
 };

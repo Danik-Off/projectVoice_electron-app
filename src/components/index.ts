@@ -1,7 +1,8 @@
 // Экспорт всех компонентов
 export { default as UserProfileModal } from './UserProfileModal';
 export { default as ClickableAvatar } from './ClickableAvatar';
-export { UserProfileProvider, useUserProfile } from './UserProfileProvider';
+export { UserProfileProvider } from './UserProfileProvider';
+export { useUserProfile } from '../hooks/useUserProfile';
 export { default as ProfileDemo } from './ProfileDemo';
 export { default as BlockedAccountModal } from './BlockedAccountModal';
 export { default as BlockedServerModal } from './BlockedServerModal';

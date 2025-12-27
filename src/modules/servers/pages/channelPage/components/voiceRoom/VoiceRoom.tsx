@@ -2,7 +2,7 @@ import React from 'react';
 import './VoiceRoom.css'; // стили для оформления комнаты
 import voiceRoomStore from '../../../../../../modules/voice/store/roomStore';
 import { observer } from 'mobx-react';
-import { useUserProfile } from '../../../../../../components/UserProfileProvider';
+import { useUserProfile } from '../../../../../../hooks/useUserProfile';
 import ClickableAvatar from '../../../../../../components/ClickableAvatar';
 import { authStore } from '../../../../../../core';
 

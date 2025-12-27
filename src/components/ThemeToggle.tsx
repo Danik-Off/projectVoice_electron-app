@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { themeStore } from '../core';
 import './ThemeToggle.scss';
 
-const ThemeToggle: React.FC = () => {
+const ThemeToggleComponent: React.FC = () => {
     const handleToggle = () => {
         themeStore.toggleTheme();
     };
@@ -41,4 +41,5 @@ const ThemeToggle: React.FC = () => {
     );
 };
 
-export default observer(ThemeToggle); 
+const ThemeToggle = observer(ThemeToggleComponent);
+export default ThemeToggle; 

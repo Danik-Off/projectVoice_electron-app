@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUserProfile } from './UserProfileProvider';
+import { useUserProfile } from '../hooks/useUserProfile';
 import ClickableAvatar from './ClickableAvatar';
 import type { User } from '../types/user';
 

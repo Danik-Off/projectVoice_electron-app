@@ -1,8 +1,9 @@
 import { apiClient } from '../../../core';
+import type { Server } from '../../../types/server';
 
 export const serverService = {
     // Создание сервера
-    create: async (data: any) => {
+    create: async (data: Omit<Server, 'id' | 'ownerId'>) => {
         const response = await apiClient('/servers', {
             method: 'POST',
             body: JSON.stringify(data),
@@ -27,7 +28,7 @@ export const serverService = {
         return data;
     },
     // Обновление информации о сервере
-    update: async (id: number, data: any) => {
+    update: async (id: number, data: Partial<Server>) => {
         const response = await apiClient(`/servers/${id}`, {
             method: 'PUT',
             body: JSON.stringify(data),

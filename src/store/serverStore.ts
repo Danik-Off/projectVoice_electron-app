@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { makeAutoObservable, runInAction } from 'mobx';
 import { serverService } from '../services/serverService'; // Путь к серверному сервису
 import type { Server } from '../types/server';

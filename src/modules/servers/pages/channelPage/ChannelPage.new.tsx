@@ -59,9 +59,9 @@ const ChannelPage: React.FC = () => {
 
     useEffect(() => {
         if (serverId) {
-            serverStore.fetchServerById(Number(serverId)).catch((error: any) => {
+            serverStore.fetchServerById(Number(serverId)).catch((error: unknown) => {
                 console.error('Error fetching server:', error);
-                if (error.status === 403) {
+                if ((error as { status?: number })?.status === 403) {
                     setShowBlockedModal(true);
                 } else {
                     navigate('/');

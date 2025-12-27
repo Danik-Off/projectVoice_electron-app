@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
+import type { ServerMember } from '../../../../../../../../types/server';
 import './ServerHeader.scss';
 import { notificationStore, authStore } from '../../../../../../../../core';
 import { inviteService } from '../../../../../../../invite';
@@ -85,7 +86,7 @@ const ServerHeader: React.FC = observer(() => {
     const currentUserId = authStore.user?.id;
     const isOwner = currentServer?.ownerId === currentUserId;
     const userMember = currentServer?.members?.find(
-        (member: any) => member.userId === currentUserId
+        (member: ServerMember) => member.userId === currentUserId
     );
     const userRole = userMember?.role || (isOwner ? 'owner' : 'member');
 

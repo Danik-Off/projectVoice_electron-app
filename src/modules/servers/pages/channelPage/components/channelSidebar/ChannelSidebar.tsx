@@ -7,7 +7,7 @@ import ChannelList from './components/channelList/ChannelList';
 import { serverStore } from '../../../../../../modules/servers';
 import ServerHeader from './components/serverHeader/ServerHeader';
 
-const ChannelSidebar: React.FC = () => {
+const ChannelSidebarComponent: React.FC = () => {
     const currentServer = serverStore.currentServer;
 
     return (
@@ -26,4 +26,5 @@ const ChannelSidebar: React.FC = () => {
     );
 };
 
-export default observer(ChannelSidebar);
+const ChannelSidebar = observer(ChannelSidebarComponent);
+export default ChannelSidebar;

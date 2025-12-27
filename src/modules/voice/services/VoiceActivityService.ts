@@ -117,7 +117,7 @@ class VoiceActivityService {
         }
 
         const animate = () => {
-            analyser.getByteFrequencyData(dataArray as any);
+            analyser.getByteFrequencyData(dataArray);
             
             const volume = this.calculateVolume(dataArray);
             const smoothedVolume = this.smoothVolume(userId, volume);

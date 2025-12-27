@@ -2,6 +2,7 @@
  * Утилиты для работы с localStorage
  * Используется для хранения токена авторизации и данных пользователя
  */
+import type { User } from '../../types/user';
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
@@ -54,7 +55,7 @@ export const hasToken = (): boolean => {
 /**
  * Сохраняет данные пользователя в localStorage
  */
-export const saveUser = (user: any): void => {
+export const saveUser = (user: User): void => {
     try {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         console.log('✅ User data saved to localStorage');
@@ -66,7 +67,7 @@ export const saveUser = (user: any): void => {
 /**
  * Получает данные пользователя из localStorage
  */
-export const getUser = (): any | null => {
+export const getUser = (): User | null => {
     try {
         const userStr = localStorage.getItem(USER_KEY);
         if (userStr) {

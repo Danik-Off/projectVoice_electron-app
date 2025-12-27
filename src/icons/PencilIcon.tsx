@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 // src/components/Icons/PencilIcon.tsx
 import React from 'react';
 

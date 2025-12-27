@@ -525,4 +525,5 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({
     );
 };
 
-export default observer(UserProfileModal);
+const ObservedUserProfileModal = observer(UserProfileModal);
+export default ObservedUserProfileModal;

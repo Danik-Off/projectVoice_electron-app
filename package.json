@@ -1,7 +1,8 @@
 {
   "name": "projectvoice-electron",
   "private": true,
-  "version": "0.0.8",
+  "type": "module",
+  "version": "0.0.9",
   "description": "ProjectVoice - Voice communication application",
   "author": "Danila Ovchinnikov (Danik Off)",
   "license": "MIT",

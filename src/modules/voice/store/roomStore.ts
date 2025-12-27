@@ -5,6 +5,7 @@ import WebRTCClient from '../utils/WebRTCClient';
 import audioSettingsStore from './AudioSettingsStore';
 import { notificationStore } from '../../../core';
 import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
+import type { Signal } from '../types/WebRTCClient.types';
 
 export interface UserData {
     id: number;
@@ -20,7 +21,7 @@ export interface Participant {
     isSpeaking?: boolean;
 }
 
-class VoiceRoomStore {
+export class VoiceRoomStore {
     public participants: Participant[] = [];
     public currentVoiceChannel: { id: number; name: string } | null = null;
     public state = '';
@@ -54,7 +55,6 @@ class VoiceRoomStore {
             }
         }
         
-        // eslint-disable-next-line max-len
         const token = getToken(); //TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
         this.socketClient.socketEmit('join-room', roomId, token);
         
@@ -112,7 +112,7 @@ class VoiceRoomStore {
         this.socketClient.socketOn('connect', () => {
             console.log('Соединение с Socket.IO установлено');
         });
-        this.socketClient.socketOn('created', (room: any) => {
+        this.socketClient.socketOn('created', (room: { participants: Participant[] }) => {
             console.log(`Вы подключены `, room);
             runInAction(() => {
                 // Исключаем локального пользователя из списка участников
@@ -149,11 +149,11 @@ class VoiceRoomStore {
                 notificationStore.addNotification(`${disconnectedUser.userData?.username || 'Пользователь'} покинул голосовой канал`, 'info');
             }
         });
-        this.socketClient.socketOn('signal', (data: any) => {
+        this.socketClient.socketOn('signal', (data: Signal) => {
             console.log(`Сигнал`, data);
             this.webRTCClient.handleSignal(data);
         });
-        this.socketClient.socketOn('connect_error', (error: any) => {
+        this.socketClient.socketOn('connect_error', (error: Error) => {
             console.error('Ошибка Socket.IO подключения:', error);
             notificationStore.addNotification('notifications.connectError', 'error');
         });

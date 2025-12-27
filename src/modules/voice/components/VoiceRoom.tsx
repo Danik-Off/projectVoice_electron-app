@@ -1,8 +1,9 @@
 import React from 'react';
 import './VoiceRoom.css'; // стили для оформления комнаты
 import voiceRoomStore from '../store/roomStore';
+import type { Participant } from '../store/roomStore';
 import { observer } from 'mobx-react';
-import { useUserProfile } from '../../../components/UserProfileProvider';
+import { useUserProfile } from '../../../hooks/useUserProfile';
 import ClickableAvatar from '../../../components/ClickableAvatar';
 import { authStore } from '../../../core';
 
@@ -44,7 +45,7 @@ const VoiceRoom: React.FC = observer(() => {
             )}
             
             <div className="user-list">
-                {users.map((user: any) => (
+                {users.map((user: Participant) => (
                     <div
                         key={user.socketId}
                         className={`user-box ${

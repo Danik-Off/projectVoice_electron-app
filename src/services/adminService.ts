@@ -1,4 +1,6 @@
 import { apiClient } from '../utils/apiClient';
+import type { Channel } from '../types/channel';
+import type { ServerMember } from '../types/server';
 
 export interface AdminStats {
     users: {
@@ -51,7 +53,7 @@ export interface User {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
-    serverMembers?: any[];
+    serverMembers?: ServerMember[];
 }
 
 export interface Server {
@@ -74,7 +76,7 @@ export interface Server {
         id: number;
         username: string;
     };
-    channels?: any[];
+    channels?: Channel[];
 }
 
 export interface UsersResponse {
