@@ -1,5 +1,7 @@
 # Автоматическая сборка релизов
 
+git push --follow-tags
+
 ## Как это работает
 
 При изменении версии в `package.json` и коммите в ветку `main` или `master` автоматически запускается сборка релиза.
@@ -89,13 +91,31 @@ git push
 
 1. **Проверка версии**: GitHub Actions проверяет, изменилась ли версия в `package.json`
 2. **Сборка**: Если версия изменилась, запускается сборка для всех платформ:
-   - Windows (NSIS installer)
-   - macOS (DMG)
-   - Linux (AppImage)
+   - Windows (NSIS installer) - `npm run build:win`
+   - macOS (DMG) - `npm run build:mac`
+   - Linux (AppImage) - `npm run build:linux`
 3. **Создание релиза**: После успешной сборки создается GitHub Release с:
    - Тегом версии (v0.1.0)
    - Артефактами сборки для всех платформ
    - Описанием релиза
+
+### Локальная сборка для конкретной платформы
+
+Вы можете собрать приложение для конкретной платформы локально:
+
+```bash
+# Сборка для Windows
+npm run build:win
+
+# Сборка для macOS
+npm run build:mac
+
+# Сборка для Linux
+npm run build:linux
+
+# Сборка для текущей платформы (автоматически определяется)
+npm run build
+```
 
 ## Файлы версии
 

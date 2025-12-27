@@ -47,7 +47,16 @@ jobs:
     if: needs.check-version.outputs.version-changed == 'true' || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            build-command: npm run build:linux
+          - os: windows-latest
+            platform: win
+            build-command: npm run build:win
+          - os: macos-latest
+            platform: mac
+            build-command: npm run build:mac
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -63,19 +72,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
-        run: npm run build
-
-      - name: Get version
-        id: version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Build application for ${{ matrix.platform }}
+        run: ${{ matrix.build-command }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.os }}-${{ needs.check-version.outputs.version }}
+          name: build-${{ matrix.platform }}-${{ needs.check-version.outputs.version }}
           path: build/*
           retention-days: 30
 
@@ -89,29 +92,49 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Получаем всю историю для генерации changelog
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          node scripts/generate-release-notes.js > release-notes.md
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          cat release-notes.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+      - name: Organize artifacts by platform
+        run: |
+          mkdir -p release-files
+          
+          # Копируем все файлы из артефактов
+          find artifacts -type f -exec cp {} release-files/ \;
+          
+          echo "Release files:"
+          ls -lh release-files/ || true
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.check-version.outputs.version }}
-          name: Release v${{ needs.check-version.outputs.version }}
-          body: |
-            ## Release v${{ needs.check-version.outputs.version }}
-            
-            ### Changes
-            - Automated release build
-            
-            ### Downloads
-            Build artifacts are available for download below.
+          name: 🚀 Release v${{ needs.check-version.outputs.version }}
+          body: ${{ steps.release-notes.outputs.notes }}
           files: |
-            artifacts/**/*
+            release-files/**/*
           draft: false
           prerelease: false
+          generate_release_notes: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
 

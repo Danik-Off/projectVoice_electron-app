@@ -16,17 +16,16 @@
     "build": "npm run build:vite && npm run build:electron",
     "build:vite": "tsc -b && vite build",
     "build:electron": "cross-env NODE_ENV=production electron-builder",
+    "build:win": "npm run build:vite && cross-env NODE_ENV=production electron-builder --win",
+    "build:mac": "npm run build:vite && cross-env NODE_ENV=production electron-builder --mac",
+    "build:linux": "npm run build:vite && cross-env NODE_ENV=production electron-builder --linux",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "electron": "electron electron/main.js",
-    "dist": "npm run build",
-    "start": "npm run build:vite && node server.js",
     "version:patch": "npm version patch -m \"chore: bump version to %s\"",
     "version:minor": "npm version minor -m \"chore: bump version to %s\"",
     "version:major": "npm version major -m \"chore: bump version to %s\"",
-    "version:patch:local": "node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));const v=p.version.split('.');v[2]=parseInt(v[2])+1;p.version=v.join('.');fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n');console.log('Version updated to',p.version);\"",
-    "version:minor:local": "node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));const v=p.version.split('.');v[1]=parseInt(v[1])+1;v[2]=0;p.version=v.join('.');fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n');console.log('Version updated to',p.version);\"",
-    "version:major:local": "node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json'));const v=p.version.split('.');v[0]=parseInt(v[0])+1;v[1]=0;v[2]=0;p.version=v.join('.');fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n');console.log('Version updated to',p.version);\""
+    "version:patch:local": "node scripts/version-update.js patch",
+    "version:minor:local": "node scripts/version-update.js minor",
+    "version:major:local": "node scripts/version-update.js major"
   },
   "dependencies": {
     "cors": "^2.8.5",

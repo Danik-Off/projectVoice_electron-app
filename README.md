@@ -28,19 +28,13 @@ npm run dev:full
 ## Сборка проекта
 
 ```bash
+# Сборка для текущей платформы
 npm run build
-```
 
-## Запуск production версии
-
-```bash
-npm start
-```
-
-## Создание дистрибутива
-
-```bash
-npm run dist
+# Сборка для конкретной платформы
+npm run build:win   # Windows
+npm run build:mac   # macOS
+npm run build:linux # Linux
 ```
 
 ## Структура проекта
@@ -58,8 +52,25 @@ npm run dist
 
 ## Скрипты
 
-- `npm run dev` - Запуск в режиме разработки
+### Разработка
+- `npm run dev` - Запуск Electron с Vite dev server
 - `npm run dev:full` - Полная разработка с локальным сервером
-- `npm run build` - Сборка проекта
-- `npm run start` - Запуск production версии
-- `npm run dist` - Создание дистрибутива
+- `npm run dev:vite` - Только Vite dev server
+- `npm run dev:server` - Только локальный сервер
+
+### Сборка
+- `npm run build` - Сборка для текущей платформы
+- `npm run build:win` - Сборка для Windows
+- `npm run build:mac` - Сборка для macOS
+- `npm run build:linux` - Сборка для Linux
+
+### Версионирование
+- `npm run version:patch` - Увеличить патч-версию (с коммитом)
+- `npm run version:minor` - Увеличить минорную версию (с коммитом)
+- `npm run version:major` - Увеличить мажорную версию (с коммитом)
+- `npm run version:patch:local` - Увеличить патч-версию (без коммита)
+- `npm run version:minor:local` - Увеличить минорную версию (без коммита)
+- `npm run version:major:local` - Увеличить мажорную версию (без коммита)
+
+### Другое
+- `npm run lint` - Проверка кода линтером

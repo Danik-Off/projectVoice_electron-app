@@ -26,7 +26,7 @@ initializeApp().then(() => {
       <RouterProvider router={router} />
     </StrictMode>,
   )
-}).catch((error) => {
+}).catch((error: unknown) => {
   console.error('Failed to initialize app:', error);
   // Показываем ошибку пользователю
   const root = createRoot(document.getElementById('root')!);

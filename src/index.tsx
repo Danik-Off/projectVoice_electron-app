@@ -29,7 +29,7 @@ initializeApp()
             // </React.StrictMode>
         );
     })
-    .catch((error) => {
+    .catch((error: unknown) => {
         console.error('❌ Failed to initialize app:', error);
         // Показываем ошибку пользователю
         const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
