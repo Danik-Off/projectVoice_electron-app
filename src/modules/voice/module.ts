@@ -2,7 +2,7 @@
  * Voice Module - модуль голосового общения
  */
 import type { IModule } from '../../core';
-import VoiceRoom from '../servers/pages/channelPage/components/voiceRoom/VoiceRoom';
+import VoiceRoom from './components/VoiceRoom';
 
 export const voiceModule: IModule = {
     id: 'voice',

@@ -5,6 +5,48 @@ import { API_URL } from '../config';
 import { getCookie } from '../../shared/utils/cookie';
 import { authStore } from '../store/authStore';
 
+/**
+ * Проверяет, является ли ошибка ошибкой протухшего/недействительного токена
+ */
+function isTokenExpiredError(response: Response, errorMessage: string): boolean {
+    // Проверяем статус 401 (Unauthorized)
+    if (response.status === 401) {
+        return true;
+    }
+
+    // Проверяем различные варианты сообщений об ошибке токена
+    try {
+        const errorJson = JSON.parse(errorMessage);
+        const errorText = errorJson.error?.toLowerCase() || '';
+        
+        // Различные варианты сообщений о протухшем токене
+        const tokenErrorPatterns = [
+            'недействительный токен',
+            'invalid token',
+            'token expired',
+            'токен истек',
+            'token is expired',
+            'unauthorized',
+            'не авторизован',
+            'token invalid',
+            'токен недействителен'
+        ];
+
+        return tokenErrorPatterns.some(pattern => 
+            errorText.includes(pattern.toLowerCase())
+        );
+    } catch {
+        // Если не удалось распарсить JSON, проверяем текст напрямую
+        const errorText = errorMessage.toLowerCase();
+        return errorText.includes('token') && (
+            errorText.includes('expired') || 
+            errorText.includes('invalid') || 
+            errorText.includes('недействительный') ||
+            errorText.includes('истек')
+        );
+    }
+}
+
 export const apiClient = async (
     endpoint: string,
     options: RequestInit = {},
@@ -35,9 +77,13 @@ export const apiClient = async (
     if (!response.ok) {
         const errorMessage = await response.text();
 
-        if (errorMessage === '{"error":"Недействительный токен."}') {
+        // Проверяем, является ли это ошибкой протухшего токена
+        if (isTokenExpiredError(response, errorMessage)) {
+            console.warn('Token expired or invalid, logging out...');
+            // Вызываем logout только если токен действительно протух
             authStore.logout();
         }
+        
         throw new Error(errorMessage);
     }
 

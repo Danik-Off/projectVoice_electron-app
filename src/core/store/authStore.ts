@@ -28,13 +28,20 @@ class AuthStore {
         makeAutoObservable(this);
         // Проверка наличия токена в cookies при инициализации
         this.token = getCookie('token');
+        // Устанавливаем isAuthenticated = true если есть токен
+        // Авторизация сохраняется до тех пор, пока сервер не вернет ошибку о протухшем токене
         this.isAuthenticated = this.token !== null;
         
         console.log('AuthStore constructor - token:', this.token, 'isAuthenticated:', this.isAuthenticated);
         
         // Загружаем данные пользователя, если есть токен
+        // Если токен протух, loadUserData вызовет logout только при ошибке токена
         if (this.token) {
-            this.loadUserData();
+            // Загружаем асинхронно, не блокируя инициализацию
+            this.loadUserData().catch(error => {
+                // Ошибка уже обработана в loadUserData
+                console.error('Error loading user data on init:', error);
+            });
         }
     }
 
@@ -82,9 +89,25 @@ class AuthStore {
             this.isAuthenticated = true;
         } catch (error) {
             console.error('Failed to load user data:', error);
-            notificationStore.addNotification('notifications.serverDataLoadError', 'error');
-            // Если не удалось загрузить данные пользователя, очищаем токен
-            this.logout();
+            
+            // Проверяем, является ли это ошибкой протухшего токена
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const isTokenError = errorMessage.includes('401') || 
+                                 errorMessage.includes('Недействительный токен') ||
+                                 errorMessage.includes('invalid token') ||
+                                 errorMessage.includes('token expired') ||
+                                 errorMessage.includes('unauthorized');
+            
+            if (isTokenError) {
+                // Токен протух - выходим из системы
+                console.warn('Token expired during user data load, logging out...');
+                this.logout();
+            } else {
+                // Другая ошибка - не выходим, просто показываем уведомление
+                notificationStore.addNotification('notifications.serverDataLoadError', 'error');
+                // Сохраняем авторизацию, но не загружаем данные пользователя
+                // Пользователь останется авторизованным до следующего запроса
+            }
         }
     }
 

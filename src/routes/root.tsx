@@ -1,74 +1,201 @@
-import { createBrowserRouter } from 'react-router-dom';
-
-import ProtectedRoute from '../store/ProtectedRoute';
-import AdminRoute from '../store/AdminRoute';
-import ProfileDemo from '../components/ProfileDemo';
+/**
+ * Root Router Configuration
+ * Создает роутер приложения на основе зарегистрированных модулей
+ */
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { moduleManager } from '../core';
+import { ProtectedRoute, AdminRoute } from '../modules/auth';
 import Layout from '../app/layout/Main';
-import AdminPanel from '../modules/admin/pages/AdminPanel';
-import Auth from '../modules/auth/pages/Auth';
-import InvitePage from '../modules/invite/pages/InvitePage';
-import { MessageList } from '../modules/messaging';
-import ChannelPage from '../modules/servers/pages/channelPage/ChannelPage';
-import ServerSettings from '../modules/servers/pages/serverSettings/ServerSettings';
 import WelcomePage from '../modules/servers/pages/welcomePage/WelcomePage';
-import Settings from '../modules/settings/pages/Settings';
-import { VoiceRoom } from '../modules/voice';
+import ProfileDemo from '../components/ProfileDemo';
+import Auth from '../modules/auth/pages/Auth';
 
-export const router = createBrowserRouter([
-    {
-        path: '/',
-        element: (
-            <ProtectedRoute>
-                <Layout />
-            </ProtectedRoute>
-        ),
-        children: [
-            {
-                path: '/',
-                element: <WelcomePage />,
-            },
-            {
-                path: 'server/:serverId',
-                element: <ChannelPage />,
-                children: [
-                    {
-                        path: 'voiceRoom/:roomId',
-                        element: <VoiceRoom />,
-                    },
-                    {
-                        path: 'textRoom/:roomId',
-                        element: <MessageList />,
-                    },
-                ],
-            },
-            {
-                path: 'server/:serverId/settings',
-                element: <ServerSettings />,
-            },
-            {
-                path: 'settings',
-                element: <Settings />,
-            },
-            {
-                path: 'profile-demo',
-                element: <ProfileDemo />,
-            },
-            {
-                path: 'admin',
-                element: (
-                    <AdminRoute>
-                        <AdminPanel />
-                    </AdminRoute>
-                ),
-            },
-        ],
-    },
-    {
-        path: '/auth',
-        element: <Auth />, // Public route
-    },
-    {
-        path: '/invite/:token',
-        element: <InvitePage />, // Public route for invites
-    },
-]);
+/**
+ * Компонент для обработки 404 ошибок
+ */
+const NotFound = () => {
+    return (
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+            <h1>404 - Страница не найдена</h1>
+            <p>Запрашиваемая страница не существует.</p>
+        </div>
+    );
+};
+
+/**
+ * Создает роутер приложения на основе модулей
+ * Должен вызываться ПОСЛЕ инициализации модулей (initializeApp)
+ */
+export function createRouter() {
+    // Получаем все маршруты из зарегистрированных модулей
+    const moduleRoutes = moduleManager.getRoutes();
+    
+    console.log('📋 Module routes loaded:', moduleRoutes.map(r => ({ 
+        path: r.path, 
+        moduleId: r.moduleId,
+        protected: r.protected,
+        admin: r.admin 
+    })));
+
+    // Разделяем маршруты на категории
+    const publicRoutes = moduleRoutes.filter(route => 
+        route.path === '/auth' || route.path === '/invite/:token'
+    );
+    
+    // Маршруты сервера (вложенные в server/:serverId)
+    const serverChildRoutes = moduleRoutes.filter(route => 
+        route.path.startsWith('server/:serverId/') && 
+        route.path !== 'server/:serverId' &&
+        route.path !== 'server/:serverId/settings'
+    );
+    
+    // Основной маршрут сервера
+    const serverMainRoute = moduleRoutes.find(route => route.path === 'server/:serverId');
+    
+    // Настройки сервера (вложенные в server/:serverId)
+    const serverSettingsRoute = moduleRoutes.find(route => route.path === 'server/:serverId/settings');
+    
+    // Остальные защищенные маршруты (settings, admin и т.д.)
+    const otherProtectedRoutes = moduleRoutes.filter(route => 
+        !route.path.includes('server/:serverId') && 
+        route.path !== '/' && 
+        route.path !== '/auth' && 
+        route.path !== '/invite/:token'
+    );
+
+    console.log('🔓 Public routes:', publicRoutes.map(r => r.path));
+    console.log('🖥️ Server main route:', serverMainRoute?.path);
+    console.log('🖥️ Server child routes:', serverChildRoutes.map(r => r.path));
+    console.log('⚙️ Server settings route:', serverSettingsRoute?.path);
+    console.log('🔒 Other protected routes:', otherProtectedRoutes.map(r => r.path));
+
+    // Создаем структуру маршрутов
+    const routes = [
+        // Публичные маршруты (должны быть первыми, вне Layout)
+        ...publicRoutes.map(route => {
+            const RouteComponent = route.component;
+            return {
+                path: route.path,
+                element: <RouteComponent />,
+                errorElement: <NotFound />,
+            };
+        }),
+        
+        // Fallback для /auth, если модуль не зарегистрировал маршрут
+        ...(publicRoutes.find(r => r.path === '/auth') ? [] : [{
+            path: '/auth',
+            element: <Auth />,
+            errorElement: <NotFound />,
+        }]),
+
+        // Главный защищенный маршрут с Layout
+        {
+            path: '/',
+            element: (
+                <ProtectedRoute>
+                    <Layout />
+                </ProtectedRoute>
+            ),
+            errorElement: <NotFound />,
+            children: [
+                // Главная страница (WelcomePage)
+                {
+                    index: true,
+                    element: <WelcomePage />,
+                },
+                
+                // Маршруты сервера с вложенными дочерними маршрутами
+                ...(serverMainRoute ? [{
+                    path: 'server/:serverId',
+                    element: (() => {
+                        const ServerComponent = serverMainRoute.component;
+                        return <ServerComponent />;
+                    })(),
+                    children: [
+                        // Вложенные маршруты сервера (textRoom, voiceRoom)
+                        ...serverChildRoutes.map(route => {
+                            // Убираем префикс 'server/:serverId/' из пути
+                            const childPath = route.path.replace(/^server\/:serverId\//, '');
+                            const RouteComponent = route.component;
+                            return {
+                                path: childPath,
+                                element: route.protected !== false ? (
+                                    <ProtectedRoute>
+                                        <RouteComponent />
+                                    </ProtectedRoute>
+                                ) : (
+                                    <RouteComponent />
+                                ),
+                            };
+                        }),
+                        // Настройки сервера
+                        ...(serverSettingsRoute ? [{
+                            path: 'settings',
+                            element: (() => {
+                                const SettingsComponent = serverSettingsRoute.component;
+                                return serverSettingsRoute.protected !== false ? (
+                                    <ProtectedRoute>
+                                        <SettingsComponent />
+                                    </ProtectedRoute>
+                                ) : (
+                                    <SettingsComponent />
+                                );
+                            })(),
+                        }] : []),
+                    ],
+                }] : []),
+                
+                // Демо страница профиля
+                {
+                    path: 'profile-demo',
+                    element: <ProfileDemo />,
+                },
+                
+                // Остальные защищенные маршруты из модулей (settings, admin и т.д.)
+                ...otherProtectedRoutes.map(route => {
+                    // Убираем ведущий слеш из пути для относительных маршрутов
+                    const cleanPath = route.path.startsWith('/') 
+                        ? route.path.substring(1) 
+                        : route.path;
+                    
+                    const RouteComponent = route.component;
+                    
+                    return {
+                        path: cleanPath,
+                        element: route.admin ? (
+                            <AdminRoute>
+                                <RouteComponent />
+                            </AdminRoute>
+                        ) : route.protected !== false ? (
+                            <ProtectedRoute>
+                                <RouteComponent />
+                            </ProtectedRoute>
+                        ) : (
+                            <RouteComponent />
+                        ),
+                    };
+                }),
+                
+                // Catch-all для 404 внутри защищенных маршрутов
+                {
+                    path: '*',
+                    element: <NotFound />,
+                },
+            ],
+        },
+        
+        // Глобальный catch-all для всех остальных маршрутов (должен быть последним)
+        {
+            path: '*',
+            element: <Navigate to="/" replace />,
+        },
+    ];
+
+    console.log('✅ Router created with', routes.length, 'top-level routes');
+    console.log('📊 Routes structure:', routes.map(r => ({ 
+        path: r.path, 
+        hasChildren: !!(r as any).children 
+    })));
+
+    return createBrowserRouter(routes);
+}

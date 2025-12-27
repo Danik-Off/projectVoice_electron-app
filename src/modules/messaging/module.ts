@@ -2,7 +2,7 @@
  * Messaging Module - модуль сообщений
  */
 import type { IModule } from '../../core';
-import MessageList from '../servers/pages/channelPage/components/messageList/MessageList';
+import MessageList from './components/MessageList';
 
 export const messagingModule: IModule = {
     id: 'messaging',

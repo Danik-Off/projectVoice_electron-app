@@ -1,12 +1,5 @@
-import { RouterProvider } from 'react-router-dom';
-import { createAppRouter } from './app/routes';
-import './styles/main.scss';
-
-// Создаем роутер приложения
-const router = createAppRouter();
-
-function App() {
-  return <RouterProvider router={router} />;
+// App.tsx больше не используется, роутер создается в main.tsx
+// Оставляем файл для совместимости, если где-то есть импорты
+export default function App() {
+  return null;
 }
-
-export default App;
