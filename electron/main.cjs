@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron/main')
+const { app, BrowserWindow } = require('electron')
 const path = require('node:path')
 const { spawn } = require('child_process')
 const isDev = process.env.NODE_ENV === 'development'
@@ -7,7 +7,7 @@ let serverProcess = null
 
 function startServer() {
   if (!isDev && !serverProcess) {
-    const serverPath = path.join(__dirname, '../server.js')
+    const serverPath = path.join(__dirname, '../server.cjs')
     serverProcess = spawn('node', [serverPath], {
       cwd: path.join(__dirname, '..'),
       stdio: 'pipe'
@@ -28,7 +28,7 @@ function createWindow () {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false
