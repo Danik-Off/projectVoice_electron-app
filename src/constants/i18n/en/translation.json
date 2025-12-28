@@ -512,6 +512,20 @@
         },
         "message": "Join our community, share ideas and enjoy the freedom of voice communication. Let's create great connections together!"
     },
+    "connection": {
+        "noConnection": "No connection to server",
+        "noConnectionDescription": "Could not establish connection to ProjectVoice server. Check your internet connection or specify a different server address.",
+        "serverSettings": "Server Settings",
+        "serverSettingsDescription": "Here you can change the backend server address that the application connects to.",
+        "currentAddress": "Current address:",
+        "editAddress": "Change server address",
+        "newAddress": "New server address:",
+        "placeholder": "Example: http://192.168.1.10:5000",
+        "saveAndRestart": "Save and restart",
+        "cancel": "Cancel",
+        "close": "Close",
+        "retryStatus": "Attempting to reconnect..."
+    },
     "userProfile": {
         "title": "User Profile",
         "tabs": {

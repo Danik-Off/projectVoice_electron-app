@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router-dom'
 import { initializeApp } from './app'
 import { createRouter } from './routes/root'
 import { themeStore } from './core'
+import NoConnectionModal from './components/NoConnectionModal'
 import './styles/main.scss'
 import './constants/i18n'
 
@@ -24,6 +25,7 @@ initializeApp().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <RouterProvider router={router} />
+      <NoConnectionModal />
     </StrictMode>,
   )
 }).catch((error: unknown) => {

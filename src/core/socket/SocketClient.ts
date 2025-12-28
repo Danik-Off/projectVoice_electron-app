@@ -4,6 +4,7 @@
 import { io, Socket } from 'socket.io-client';
 import { getToken } from '../../shared/utils/storage';
 import { appConfig } from '../config';
+import { connectionStore } from '../store/ConnectionStore';
 
 class SocketClient {
     private token: string;
@@ -32,6 +33,18 @@ class SocketClient {
 
         this.socket.on('connect', () => {
             // Соединение с Socket.IO установлено
+            connectionStore.setConnected(true);
+        });
+
+        this.socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            connectionStore.setConnected(false);
+        });
+
+        this.socket.on('disconnect', (reason) => {
+            if (reason === 'io server disconnect' || reason === 'transport close') {
+                connectionStore.setConnected(false);
+            }
         });
     }
 

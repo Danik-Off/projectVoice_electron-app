@@ -3,6 +3,7 @@
  */
 import { API_URL } from '../config';
 import { getToken } from '../../shared/utils/storage';
+import { connectionStore } from '../store/ConnectionStore';
 
 /**
  * Проверяет, является ли ошибка ошибкой протухшего/недействительного токена
@@ -71,26 +72,37 @@ export const apiClient = async <T = unknown>(
         requestOptions.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, requestOptions);
+    try {
+        const response = await fetch(`${API_URL}${endpoint}`, requestOptions);
 
-    if (!response.ok) {
-        const errorMessage = await response.text();
+        if (!response.ok) {
+            const errorMessage = await response.text();
 
-        // Проверяем, является ли это ошибкой протухшего токена
-        // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
-        if (isTokenExpiredError(response, errorMessage)) {
-            console.warn('Token expired or invalid, but keeping user authenticated until manual logout');
-            // Можно показать уведомление, но не разлогиниваем автоматически
+            // Проверяем, является ли это ошибкой протухшего токена
+            // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
+            if (isTokenExpiredError(response, errorMessage)) {
+                console.warn('Token expired or invalid, but keeping user authenticated until manual logout');
+                // Можно показать уведомление, но не разлогиниваем автоматически
+            }
+            
+            throw new Error(errorMessage);
         }
-        
-        throw new Error(errorMessage);
-    }
 
-    // Для ответов с кодом 204 (No Content) не пытаемся парсить JSON
-    if (response.status === 204) {
-        return null;
-    }
+        // Если запрос прошел успешно, значит подключение есть
+        connectionStore.setConnected(true);
 
-    return response.json() as Promise<T>;
+        // Для ответов с кодом 204 (No Content) не пытаемся парсить JSON
+        if (response.status === 204) {
+            return null;
+        }
+
+        return response.json() as Promise<T>;
+    } catch (error) {
+        // Проверяем, является ли это ошибкой сети
+        if (error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+            connectionStore.setConnected(false);
+        }
+        throw error;
+    }
 };
 

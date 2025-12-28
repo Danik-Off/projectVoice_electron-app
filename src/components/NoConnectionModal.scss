@@ -1,0 +1,219 @@
+.no-connection-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.no-connection-modal {
+    background: var(--bg-primary, #1e1e1e);
+    border-radius: 16px;
+    padding: 0;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color, #333);
+    animation: modalSlideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    overflow: hidden;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+    color: white;
+    padding: 32px 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-header .icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.modal-content {
+    padding: 24px 32px;
+}
+
+.message {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary, #b9bbbe);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.current-server {
+    background: var(--bg-secondary, #2f3136);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border-color, #333);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    .label {
+        font-size: 12px;
+        color: var(--text-muted, #72767d);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .url {
+        font-family: 'Fira Code', 'Courier New', monospace;
+        font-size: 14px;
+        color: var(--text-primary, #ffffff);
+        word-break: break-all;
+    }
+}
+
+.edit-button {
+    width: 100%;
+    background: transparent;
+    color: var(--text-link, #00aff4);
+    border: 1px solid var(--text-link, #00aff4);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba(0, 175, 244, 0.1);
+    }
+}
+
+.edit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeIn 0.2s ease-out;
+
+    label {
+        font-size: 13px;
+        color: var(--text-primary, #ffffff);
+        font-weight: 500;
+    }
+
+    .server-input {
+        background: var(--bg-tertiary, #202225);
+        border: 1px solid var(--border-color, #333);
+        border-radius: 8px;
+        padding: 12px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+
+        &:focus {
+            border-color: var(--text-link, #00aff4);
+        }
+    }
+
+    .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .save-button {
+            background: #5865f2;
+            color: white;
+
+            &:hover {
+                background: #4752c4;
+            }
+        }
+
+        .cancel-button {
+            background: transparent;
+            color: var(--text-primary, #ffffff);
+            border: 1px solid var(--border-color, #333);
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
+    }
+}
+
+.modal-footer {
+    padding: 0 32px 32px;
+}
+
+.retry-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-muted, #72767d);
+    font-size: 13px;
+
+    .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-top-color: var(--text-link, #00aff4);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+    .no-connection-modal {
+        width: 95%;
+    }
+    
+    .modal-content {
+        padding: 20px;
+    }
+}
+

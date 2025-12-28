@@ -1,6 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { getCookie } from './cookie';
 import { BASE_URL } from '../configs/apiConfig';
+import { connectionStore } from '../core/store/ConnectionStore';
 
 class SocketClient {
 
@@ -27,6 +28,18 @@ class SocketClient {
 
         this.socket.on('connect', () => {
             // Соединение с Socket.IO установлено
+            connectionStore.setConnected(true);
+        });
+
+        this.socket.on('connect_error', (error) => {
+            console.error('Socket connection error:', error);
+            connectionStore.setConnected(false);
+        });
+
+        this.socket.on('disconnect', (reason) => {
+            if (reason === 'io server disconnect' || reason === 'transport close') {
+                connectionStore.setConnected(false);
+            }
         });
     }
 
