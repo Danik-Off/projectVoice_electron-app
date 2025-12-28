@@ -138,24 +138,35 @@ class AuthStore {
     public async register(username: string, email: string, password: string, redirect?: string | null): Promise<string> {
         try {
             this.loading = true;
+            // ВНИМАНИЕ: authService.register принимает (email, username, password)
             const data = await authService.register(email, username, password);
             
             if (!data || !data.token) {
-                throw new Error('Invalid response from server');
+                console.error('Registration response missing token:', data);
+                throw new Error('Invalid response from server: token missing');
             }
             
-            // После успешной регистрации получаем информацию о пользователе
-            const userData = await authService.getMe();
-            this.user = userData;
+            // Сначала сохраняем токен, чтобы последующие запросы (getMe) могли его использовать
             this.token = data.token;
-
-            // Сохранение токена и данных пользователя в localStorage
             saveToken(data.token);
+            
+            // Если в ответе регистрации нет данных пользователя, получаем их через getMe
+            // Если они есть (data.user), используем их
+            let userData = data.user;
+            
+            if (!userData) {
+                console.log('User data missing in register response, fetching via getMe...');
+                userData = await authService.getMe();
+            }
+            
+            this.user = userData;
+            this.isAuthenticated = true;
+
+            // Сохранение данных пользователя в localStorage
             saveUser(userData);
             
             console.log('Registration successful - token and user data saved to localStorage, isAuthenticated:', true);
 
-            this.isAuthenticated = true;
             this.loading = false;
             
             // Возвращаем путь для редиректа (компонент сам выполнит навигацию)
