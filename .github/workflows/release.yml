@@ -61,6 +61,10 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Fix Linux dependencies
+        if: matrix.platform == 'linux'
+        run: npm install @rollup/rollup-linux-x64-gnu --save-optional --force
+
       - name: Build Application
         run: npm run build:${{ matrix.platform }}
         env:
