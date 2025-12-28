@@ -7,7 +7,7 @@
     font-size: 14px;
 
     .volume-slider {
-        width: 120px; // Размер ползунка, как в Discord
+        width: 120px; // Размер ползунка, как в 
         height: 8px;  // Тонкий ползунок
         background: #202225; // Темный фон ползунка
         border-radius: 5px;
@@ -19,7 +19,7 @@
             appearance: none;
             width: 16px;
             height: 16px;
-            background: #7289da; // Синий цвет (цвет Discord)
+            background: #7289da; // Синий цвет (цвет )
             border-radius: 50%;
             cursor: pointer;
             transition: background 0.2s ease-in-out;
@@ -28,7 +28,7 @@
         &::-moz-range-thumb {
             width: 16px;
             height: 16px;
-            background: #7289da; // Синий цвет (цвет Discord)
+            background: #7289da; // Синий цвет (цвет )
             border-radius: 50%;
             cursor: pointer;
             transition: background 0.2s ease-in-out;
@@ -50,7 +50,7 @@
     .volume-label {
         font-size: 14px;
         font-weight: 500;
-        color: #b9bbbe; // Светло-серый цвет, как в интерфейсе Discord
+        color: #b9bbbe; // Светло-серый цвет, как в интерфейсе 
         min-width: 30px;
         text-align: center;
     }

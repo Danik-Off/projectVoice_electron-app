@@ -460,6 +460,31 @@
         "volume": "Volume",
         "speaking": "speaking"
     },
+    "serverHeader": {
+        "selectServer": "Select a server",
+        "inviteMembers": "Invite members",
+        "serverSettings": "Server settings",
+        "inviteTitle": "Invite to server",
+        "inviteSubtitle": "Server invitation",
+        "inviteLinkLabel": "Invite link:",
+        "inviteLinkPlaceholder": "Creating link...",
+        "copyLink": "Copy link",
+        "copy": "Copy",
+        "done": "Done",
+        "linkCopied": "Link copied!",
+        "notifications": {
+            "inviteCreated": "Invite created successfully",
+            "inviteCreateError": "Error creating invite",
+            "linkCopied": "Link copied to clipboard",
+            "copyError": "Error copying link"
+        },
+        "roles": {
+            "owner": "Owner",
+            "admin": "Administrator",
+            "moderator": "Moderator",
+            "member": "Member"
+        }
+    },
     "invitePage": {
         "title": "Server Invitation",
         "loading": "Loading invite data...",
@@ -469,7 +494,14 @@
         "joinServer": "Join Server",
         "loginRequired": "You need to log in to accept the invite",
         "loginButton": "Log In",
-        "backToHome": " Back to Home"
+        "backToHome": " Back to Home",
+        "serverDescription": "Server description",
+        "joinSuccess": "You have successfully joined the server!",
+        "expiredOrDeleted": "The invitation may have expired or been deleted.",
+        "usesLabel": "Uses:",
+        "expiresLabel": "Expires:",
+        "joining": "Joining...",
+        "serverFallback": "Server"
     },
     "serverMembers": {
         "title": "Server Members",

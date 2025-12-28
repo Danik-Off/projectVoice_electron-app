@@ -59,14 +59,18 @@ const ChannelPage: React.FC = () => {
 
     useEffect(() => {
         if (serverId) {
-            serverStore.fetchServerById(Number(serverId)).catch((error: unknown) => {
-                console.error('Error fetching server:', error);
-                if ((error as { status?: number })?.status === 403) {
-                    setShowBlockedModal(true);
-                } else {
-                    navigate('/');
-                }
-            });
+            const id = Number(serverId);
+            // Загружаем данные сервера только если они еще не загружены или это другой сервер
+            if (!serverStore.currentServer || serverStore.currentServer.id !== id) {
+                serverStore.fetchServerById(id).catch((error: unknown) => {
+                    console.error('Error fetching server:', error);
+                    if ((error as { status?: number })?.status === 403) {
+                        setShowBlockedModal(true);
+                    } else {
+                        navigate('/');
+                    }
+                });
+            }
         }
     }, [serverId, navigate]);
 

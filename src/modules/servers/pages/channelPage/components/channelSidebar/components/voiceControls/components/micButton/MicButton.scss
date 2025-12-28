@@ -12,14 +12,14 @@
     transition: background-color 0.3s ease;
 
     &.active {
-        background-color: #3ba55c;  // Зеленый цвет, как в Discord
+        background-color: #3ba55c;  
         &:hover {
             background-color: #4cae73;  // Немного темнее при наведении
         }
     }
 
     &.inactive {
-        background-color: #40444b;  // Тёмный фон, как в Discord
+        background-color: #40444b;  
         &:hover {
             background-color: #2f3136;  // Немного темнее при наведении
         }

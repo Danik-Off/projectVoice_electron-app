@@ -50,8 +50,8 @@ const InvitePage: React.FC = observer(() => {
             // TODO: Добавить метод в inviteService для получения данных сервера
             setServerData({
                 id: inviteData.serverId,
-                name: `Server ${inviteData.serverId}`, // Временная заглушка
-                description: 'Описание сервера'
+                name: `${t('invitePage.serverFallback')} ${inviteData.serverId}`, // Временная заглушка
+                description: t('invitePage.serverDescription')
             });
         } catch (err) {
             console.error('🎯 InvitePage: Ошибка получения данных приглашения:', err);
@@ -87,7 +87,7 @@ const InvitePage: React.FC = observer(() => {
             
             // Перенаправляем на сервер
             navigate(`/server/${serverData?.id}`);
-            notificationStore.addNotification('Вы успешно присоединились к серверу!', 'success');
+            notificationStore.addNotification(t('invitePage.joinSuccess'), 'success');
         } catch (err) {
             console.error('🎯 InvitePage: Ошибка принятия приглашения:', err);
             const errorMessage = err instanceof Error ? err.message : t('notifications.inviteAcceptError');
@@ -134,7 +134,7 @@ const InvitePage: React.FC = observer(() => {
                 <div className="invite-container">
                     <div className="error">
                         <h2>{t('invitePage.error')}</h2>
-                        <p>Возможно, приглашение истекло или было удалено.</p>
+                        <p>{t('invitePage.expiredOrDeleted')}</p>
                         <button onClick={() => navigate('/')} className="btn-primary">
                             {t('invitePage.backToHome')}
                         </button>
@@ -169,12 +169,12 @@ const InvitePage: React.FC = observer(() => {
 
                 <div className="invite-details">
                     <div className="invite-stat">
-                        <span className="label">Использований:</span>
+                        <span className="label">{t('invitePage.usesLabel')}</span>
                         <span className="value">{inviteData.uses}/{inviteData.maxUses || '∞'}</span>
                     </div>
                     {inviteData.expiresAt && (
                         <div className="invite-stat">
-                            <span className="label">Истекает:</span>
+                            <span className="label">{t('invitePage.expiresLabel')}</span>
                             <span className="value">
                                 {new Date(inviteData.expiresAt).toLocaleDateString()}
                             </span>
@@ -189,7 +189,7 @@ const InvitePage: React.FC = observer(() => {
                             disabled={accepting}
                             className="btn-accept"
                         >
-                            {accepting ? 'Присоединяемся...' : t('invitePage.joinServer')}
+                            {accepting ? t('invitePage.joining') : t('invitePage.joinServer')}
                         </button>
                     ) : (
                         <div className="auth-required">

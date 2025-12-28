@@ -2,14 +2,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { ServerMember } from '../../../../../../../../types/server';
 import './ServerHeader.scss';
 import { notificationStore, authStore } from '../../../../../../../../core';
 import { inviteService } from '../../../../../../../invite';
 import serverStore from '../../../../../../store/serverStore';
+import InviteModal from './components/InviteModal/InviteModal';
+import CopyTooltip from './components/CopyTooltip/CopyTooltip';
+import { getRoleIcon, getRoleColor } from './utils/roleHelpers';
 
 
 const ServerHeader: React.FC = observer(() => {
+    const { t } = useTranslation();
     const currentServer = serverStore.currentServer;
     const navigate = useNavigate();
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -46,11 +51,11 @@ const ServerHeader: React.FC = observer(() => {
             setInviteLink(inviteUrl);
             setShowInviteModal(true);
             
-            notificationStore.addNotification('Приглашение создано успешно', 'success');
+            notificationStore.addNotification(t('serverHeader.notifications.inviteCreated'), 'success');
         } catch (error) {
             console.error('🎯 ServerHeader: Ошибка создания приглашения:', error);
             notificationStore.addNotification(
-                error instanceof Error ? error.message : 'Ошибка создания приглашения', 
+                error instanceof Error ? error.message : t('serverHeader.notifications.inviteCreateError'), 
                 'error'
             );
         } finally {
@@ -69,11 +74,11 @@ const ServerHeader: React.FC = observer(() => {
             await navigator.clipboard.writeText(inviteLink);
             // Показываем уведомление об успешном копировании
             setShowTooltip(true);
-            notificationStore.addNotification('Ссылка скопирована в буфер обмена', 'success');
+            notificationStore.addNotification(t('serverHeader.notifications.linkCopied'), 'success');
             setTimeout(() => setShowTooltip(false), 2000);
         } catch (error) {
             console.error('Ошибка копирования:', error);
-            notificationStore.addNotification('Ошибка копирования ссылки', 'error');
+            notificationStore.addNotification(t('serverHeader.notifications.copyError'), 'error');
         }
     };
 
@@ -93,30 +98,12 @@ const ServerHeader: React.FC = observer(() => {
     const canInvite = ['owner', 'admin', 'moderator'].includes(userRole);
     const canEditServer = ['owner', 'admin'].includes(userRole);
 
-    const getRoleIcon = (role: string) => {
-        switch (role) {
-            case 'owner': return '👑';
-            case 'admin': return '🛡️';
-            case 'moderator': return '⚡';
-            default: return '👤';
-        }
-    };
-
-    const getRoleColor = (role: string) => {
-        switch (role) {
-            case 'owner': return '#ffd700';
-            case 'admin': return '#ff6b6b';
-            case 'moderator': return '#4ecdc4';
-            default: return '#95a5a6';
-        }
-    };
-
     if (!currentServer) {
         return (
             <div className="server-header">
                 <div className="no-server-state">
                     <div className="no-server-icon">🏠</div>
-                    <span className="no-server-text">Выберите сервер</span>
+                    <span className="no-server-text">{t('serverHeader.selectServer')}</span>
                 </div>
             </div>
         );
@@ -152,7 +139,7 @@ const ServerHeader: React.FC = observer(() => {
                                 style={{ '--role-color': getRoleColor(userRole) } as React.CSSProperties}
                             >
                                 <span className="role-icon">{getRoleIcon(userRole)}</span>
-                                <span className="role-text">{userRole}</span>
+                                <span className="role-text">{t(`serverHeader.roles.${userRole}`)}</span>
                             </div>
                             {currentServer.members && (
                                 <div className="member-count">
@@ -170,7 +157,7 @@ const ServerHeader: React.FC = observer(() => {
                             className="action-button share-button"
                             onClick={handleShare}
                             disabled={isCreatingInvite}
-                            title="Пригласить участников"
+                            title={t('serverHeader.inviteMembers')}
                         >
                             {isCreatingInvite ? (
                                 <div className="loading-spinner"></div>
@@ -184,7 +171,7 @@ const ServerHeader: React.FC = observer(() => {
                         <button 
                             className="action-button settings-button"
                             onClick={handleEditServer}
-                            title="Настройки сервера"
+                            title={t('serverHeader.serverSettings')}
                         >
                             <span className="settings-icon">⚙️</span>
                         </button>
@@ -193,72 +180,20 @@ const ServerHeader: React.FC = observer(() => {
             </div>
 
             {/* Модальное окно с приглашением */}
-            {showInviteModal && (
-                <div className="invite-modal-overlay" onClick={closeInviteModal}>
-                    <div className="invite-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <div className="modal-title">
-                                <span className="modal-icon">🎉</span>
-                                <h3>Пригласить на сервер</h3>
-                            </div>
-                            <button className="modal-close" onClick={closeInviteModal}>
-                                <span>×</span>
-                            </button>
-                        </div>
-                        
-                        <div className="modal-content">
-                            <div className="server-preview">
-                                <div className="server-preview-icon">
-                                    {currentServer.icon ? (
-                                        <img src={currentServer.icon} alt="Server icon" />
-                                    ) : (
-                                        <span>{currentServer.name.charAt(0).toUpperCase()}</span>
-                                    )}
-                                </div>
-                                <div className="server-preview-info">
-                                    <h4>{currentServer.name}</h4>
-                                    <p>Приглашение в Discord-подобный сервер</p>
-                                </div>
-                            </div>
-                            
-                            <div className="invite-section">
-                                <label>Ссылка для приглашения:</label>
-                                <div className="invite-link-container">
-                                    <input 
-                                        type="text" 
-                                        value={inviteLink} 
-                                        readOnly 
-                                        className="invite-link-input"
-                                        placeholder="Создание ссылки..."
-                                    />
-                                    <button 
-                                        onClick={copyInviteLink} 
-                                        className="copy-button"
-                                        title="Копировать ссылку"
-                                    >
-                                        <span className="copy-icon">📋</span>
-                                        <span className="copy-text">Копировать</span>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div className="modal-footer">
-                                <button onClick={closeInviteModal} className="close-button">
-                                    Готово
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <InviteModal 
+                isOpen={showInviteModal}
+                onClose={closeInviteModal}
+                serverName={currentServer.name}
+                serverIcon={currentServer.icon}
+                inviteLink={inviteLink}
+                onCopy={copyInviteLink}
+            />
 
             {/* Tooltip для уведомления о копировании */}
-            {showTooltip && (
-                <div className="copy-tooltip" ref={tooltipRef}>
-                    <span className="tooltip-icon">✅</span>
-                    <span className="tooltip-text">Ссылка скопирована!</span>
-                </div>
-            )}
+            <CopyTooltip 
+                show={showTooltip}
+                tooltipRef={tooltipRef}
+            />
         </>
     );
 });

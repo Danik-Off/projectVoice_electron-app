@@ -452,6 +452,31 @@
         "volume": "Громкость",
         "speaking": "говорит"
     },
+    "serverHeader": {
+        "selectServer": "Выберите сервер",
+        "inviteMembers": "Пригласить участников",
+        "serverSettings": "Настройки сервера",
+        "inviteTitle": "Пригласить на сервер",
+        "inviteSubtitle": "Приглашение на сервер",
+        "inviteLinkLabel": "Ссылка для приглашения:",
+        "inviteLinkPlaceholder": "Создание ссылки...",
+        "copyLink": "Копировать ссылку",
+        "copy": "Копировать",
+        "done": "Готово",
+        "linkCopied": "Ссылка скопирована!",
+        "notifications": {
+            "inviteCreated": "Приглашение создано успешно",
+            "inviteCreateError": "Ошибка создания приглашения",
+            "linkCopied": "Ссылка скопирована в буфер обмена",
+            "copyError": "Ошибка копирования ссылки"
+        },
+        "roles": {
+            "owner": "Владелец",
+            "admin": "Администратор",
+            "moderator": "Модератор",
+            "member": "Участник"
+        }
+    },
     "invitePage": {
         "title": "Приглашение в сервер",
         "loading": "Загрузка данных приглашения...",
@@ -461,7 +486,14 @@
         "joinServer": "Присоединиться к серверу",
         "loginRequired": "Для принятия приглашения необходимо войти в аккаунт",
         "loginButton": "Войти в аккаунт",
-        "backToHome": " Вернуться на главную"
+        "backToHome": " Вернуться на главную",
+        "serverDescription": "Описание сервера",
+        "joinSuccess": "Вы успешно присоединились к серверу!",
+        "expiredOrDeleted": "Возможно, приглашение истекло или было удалено.",
+        "usesLabel": "Использований:",
+        "expiresLabel": "Истекает:",
+        "joining": "Присоединяемся...",
+        "serverFallback": "Сервер"
     },
     "serverMembers": {
         "title": "Участники сервера",

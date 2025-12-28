@@ -59,7 +59,11 @@ const ChannelPage = () => {
     
     useEffect(() => {
         if (serverId) {
-            serverStore.fetchServerById(Number(serverId));
+            const id = Number(serverId);
+            // Загружаем данные сервера только если они еще не загружены или это другой сервер
+            if (!serverStore.currentServer || serverStore.currentServer.id !== id) {
+                serverStore.fetchServerById(id);
+            }
         }
     }, [serverId]);
 

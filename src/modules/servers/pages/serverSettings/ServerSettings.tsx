@@ -33,7 +33,10 @@ const ServerSettings: React.FC = observer(() => {
         
         setLoading(true);
         try {
-            await serverStore.fetchServerById(parseInt(serverId));
+            // Загружаем данные сервера только если они еще не загружены или это другой сервер
+            if (!serverStore.currentServer || serverStore.currentServer.id !== parseInt(serverId)) {
+                await serverStore.fetchServerById(parseInt(serverId));
+            }
             
             // Загружаем роль пользователя на сервере
             if (currentUser?.id) {
