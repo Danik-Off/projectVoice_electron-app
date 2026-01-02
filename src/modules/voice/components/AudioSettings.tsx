@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { audioSettingsStore } from '../../../core';
 import roomStore from '../store/roomStore';
+import MicrophoneVisualizer from './MicrophoneVisualizer';
 import './audioSettings.scss';
 
 const AudioSettings: React.FC = observer(() => {
@@ -138,6 +139,21 @@ const AudioSettings: React.FC = observer(() => {
                                         </div>
                                     </div>
 
+                        {/* Microphone Visualization */}
+                                    <div className="setting-group">
+                            <div className="setting-header">
+                                        <label className="setting-label">
+                                    <span>Визуализация микрофона</span>
+                                        </label>
+                            </div>
+                                        <div className="setting-control">
+                                <MicrophoneVisualizer isActive={!audioSettingsStore.isMicrophoneMuted} />
+                                <div className="setting-description">
+                                    Визуализация уровня звука с микрофона в реальном времени
+                                            </div>
+                                        </div>
+                                    </div>
+
                         {/* Input Volume */}
                                     <div className="setting-group">
                             <div className="setting-header">
@@ -213,6 +229,31 @@ const AudioSettings: React.FC = observer(() => {
                                         </div>
                                     </div>
 
+                        {/* Microphone Mute */}
+                                    <div className="setting-group">
+                            <div className="setting-header">
+                                        <label className="setting-label">
+                                    <span>Управление микрофоном</span>
+                                        </label>
+                            </div>
+                                        <div className="setting-control">
+                                <div className="settings-toggle">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!audioSettingsStore.isMicrophoneMuted}
+                                                        onChange={() => audioSettingsStore.toggleMicrophoneMute()}
+                                                    />
+                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-label">
+                                        {audioSettingsStore.isMicrophoneMuted ? 'Микрофон выключен' : 'Микрофон включен'}
+                                    </span>
+                                </div>
+                                <div className="setting-description">
+                                    Включение/отключение микрофона
+                                            </div>
+                                        </div>
+                                    </div>
+
                         {/* Test Microphone */}
                                     <div className="setting-group">
                             <div className="setting-header">
@@ -223,6 +264,7 @@ const AudioSettings: React.FC = observer(() => {
                                         <div className="setting-control">
                                             <button 
                                                 className="settings-button settings-button--test"
+                                                disabled={audioSettingsStore.isMicrophoneMuted}
                                     onClick={async () => {
                                         setIsMicActive(true);
                                         await audioSettingsStore.testMicrophone();
@@ -292,23 +334,30 @@ const AudioSettings: React.FC = observer(() => {
                                     <input
                                         type="range"
                                         min="0"
-                                        max="200"
-                                        value={50}
-                                        onChange={(e) => console.log('Speaker volume:', e.target.value)}
+                                        max="100"
+                                        value={audioSettingsStore.isSpeakerMuted ? 0 : 100}
+                                        onChange={(e) => {
+                                            // Громкость вывода управляется через mute/unmute
+                                            // Можно добавить отдельное поле в store если нужно
+                                        }}
                                         className="settings-slider"
+                                        disabled
                                     />
-                                    <span className="volume-value">50%</span>
+                                    <span className="volume-value">{audioSettingsStore.isSpeakerMuted ? '0%' : '100%'}</span>
                                 </div>
                                 <div className="volume-visualizer">
                                     <div className="volume-bar">
                                         <div 
                                             className="volume-fill" 
-                                            style={{ width: '50%' }}
+                                            style={{ 
+                                                width: audioSettingsStore.isSpeakerMuted ? '0%' : '100%',
+                                                opacity: audioSettingsStore.isSpeakerMuted ? 0.3 : 1
+                                            }}
                                         />
                                     </div>
                                 </div>
                                 <div className="setting-description">
-                                    Уровень воспроизведения (0-200%)
+                                    Громкость вывода управляется через переключатель звука ниже
                                 </div>
                                         </div>
                                     </div>

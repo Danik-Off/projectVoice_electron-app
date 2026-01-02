@@ -1,0 +1,88 @@
+.microphone-visualizer {
+    width: 100%;
+    margin: 16px 0;
+
+    .visualizer-container {
+        background: var(--bg-secondary, #2f3136);
+        border: 1px solid var(--border-color, #40444b);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .visualizer-canvas {
+            width: 100%;
+            height: 120px;
+            background: var(--bg-primary, #202225);
+            border-radius: 8px;
+            border: 1px solid var(--border-color, #40444b);
+        }
+
+        .visualizer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            .level-indicator {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 14px;
+                color: var(--text-primary, #ffffff);
+
+                .level-label {
+                    font-weight: 600;
+                    min-width: 70px;
+                }
+
+                .level-bar-container {
+                    flex: 1;
+                    height: 8px;
+                    background: var(--bg-primary, #202225);
+                    border-radius: 4px;
+                    overflow: hidden;
+                    border: 1px solid var(--border-color, #40444b);
+
+                    .level-bar {
+                        height: 100%;
+                        transition: width 0.1s ease, background-color 0.1s ease;
+                        border-radius: 4px;
+                    }
+                }
+
+                .level-value {
+                    min-width: 45px;
+                    text-align: right;
+                    font-weight: 600;
+                    font-variant-numeric: tabular-nums;
+                }
+            }
+
+            .warning-message {
+                padding: 8px 12px;
+                background: rgba(255, 68, 68, 0.1);
+                border: 1px solid rgba(255, 68, 68, 0.3);
+                border-radius: 6px;
+                color: #ff4444;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .info-message {
+                padding: 8px 12px;
+                background: rgba(136, 136, 255, 0.1);
+                border: 1px solid rgba(136, 136, 255, 0.3);
+                border-radius: 6px;
+                color: #8888ff;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        }
+    }
+}
+
