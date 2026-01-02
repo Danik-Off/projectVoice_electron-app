@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import RoomStore from '../store/roomStore';
-import AudioSettingsStore from '../store/AudioSettingsStore';
+import { audioSettingsStore as AudioSettingsStore } from '../../../core';
 
 /**
  * Хук для управления голосовыми комнатами

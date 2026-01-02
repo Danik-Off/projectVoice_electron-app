@@ -8,7 +8,7 @@ import ToastNotifications from '../../components/toastNotifications/ToastNotific
 import voiceRoomStore from '../../modules/voice/store/roomStore';
 
 import './Main.scss'; // Main CSS for layout
-import ServerCreateModal from '../../modules/servers/pages/channelPage/components/serverEditModal/ServerCreateModal';
+import ServerCreateModal from './components/serverSlidebar/serverCreateModal/ServerCreateModal';
 
 const Layout = observer(() => {
     const [isModalOpen, setModalOpen] = useState(false);

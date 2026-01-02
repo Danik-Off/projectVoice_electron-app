@@ -1,17 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import { serverStore } from '../../../../../../modules/servers';
+import { serverMembersService } from '../../../../../../modules/servers';
+import { notificationStore } from '../../../../../../core';
+import './OverviewSettings.scss';
 
 const OverviewSettings: React.FC = observer(() => {
     const { t } = useTranslation();
+    const { serverId } = useParams<{ serverId: string }>();
     const [isEditing, setIsEditing] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [stats, setStats] = useState({
+        membersCount: 0,
+        channelsCount: 0,
+        rolesCount: 0,
+    });
     const [editForm, setEditForm] = useState({
         name: serverStore.currentServer?.name || '',
         description: serverStore.currentServer?.description || ''
     });
 
     const server = serverStore.currentServer;
+
+    useEffect(() => {
+        if (server) {
+            setEditForm({
+                name: server.name || '',
+                description: server.description || ''
+            });
+        }
+    }, [server]);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            if (!serverId) return;
+            try {
+                // Загружаем участников
+                const members = await serverMembersService.getServerMembers(parseInt(serverId));
+                
+                // Загружаем роли
+                const { roleService } = await import('../../../../services/roleService');
+                let rolesCount = 0;
+                try {
+                    const roles = await roleService.getRoles(parseInt(serverId));
+                    rolesCount = roles.length;
+                } catch (error) {
+                    console.error('Error loading roles:', error);
+                }
+                
+                // Загружаем каналы
+                let channelsCount = 0;
+                try {
+                    const { channelsStore } = await import('../../../../../../modules/channels');
+                    const channels = channelsStore.channels.filter((ch: any) => ch.serverId === parseInt(serverId));
+                    channelsCount = channels.length;
+                } catch (error) {
+                    console.error('Error loading channels:', error);
+                }
+                
+                setStats({
+                    membersCount: members.length,
+                    channelsCount,
+                    rolesCount,
+                });
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        };
+        loadStats();
+    }, [serverId]);
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -30,12 +89,35 @@ const OverviewSettings: React.FC = observer(() => {
     };
 
     const handleSave = async () => {
+        if (!serverId || !server) return;
+        
+        if (!editForm.name.trim()) {
+            notificationStore.addNotification(
+                t('serverSettings.serverNameRequired') || 'Название сервера обязательно',
+                'error'
+            );
+            return;
+        }
+
+        setLoading(true);
         try {
-            // Здесь будет логика сохранения
-            console.log('Saving server settings:', editForm);
+            await serverStore.updateServer(parseInt(serverId), {
+                name: editForm.name.trim(),
+                description: editForm.description.trim() || undefined,
+            });
             setIsEditing(false);
+            notificationStore.addNotification(
+                t('serverSettings.serverUpdated') || 'Настройки сервера обновлены',
+                'success'
+            );
         } catch (error) {
             console.error('Error saving server settings:', error);
+            notificationStore.addNotification(
+                t('serverSettings.serverUpdateError') || 'Ошибка обновления настроек сервера',
+                'error'
+            );
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,11 +131,38 @@ const OverviewSettings: React.FC = observer(() => {
     return (
         <div className="settings-section">
             <div className="section-header">
-                <h2>{t('serverSettings.overview')}</h2>
-                <p>{t('serverSettings.overviewDescription')}</p>
+                <div className="header-content">
+                    <h2>{t('serverSettings.overview') || 'Общая информация'}</h2>
+                    <p>{t('serverSettings.overviewDescription') || 'Основная информация и статистика сервера'}</p>
+                </div>
             </div>
             
             <div className="section-content">
+                {/* Статистика сервера */}
+                <div className="stats-grid">
+                    <div className="stat-card">
+                        <div className="stat-icon">👥</div>
+                        <div className="stat-content">
+                            <div className="stat-value">{stats.membersCount}</div>
+                            <div className="stat-label">{t('serverSettings.members') || 'Участников'}</div>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">📝</div>
+                        <div className="stat-content">
+                            <div className="stat-value">{stats.channelsCount}</div>
+                            <div className="stat-label">{t('serverSettings.channels') || 'Каналов'}</div>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon">🎭</div>
+                        <div className="stat-content">
+                            <div className="stat-value">{stats.rolesCount}</div>
+                            <div className="stat-label">{t('serverSettings.roles') || 'Ролей'}</div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Информация о сервере */}
                 <div className="settings-card">
                     <div className="card-header">
@@ -128,11 +237,22 @@ const OverviewSettings: React.FC = observer(() => {
                                 </div>
 
                                 <div className="form-actions">
-                                    <button className="cancel-button" onClick={handleCancel}>
+                                    <button 
+                                        className="cancel-button" 
+                                        onClick={handleCancel}
+                                        disabled={loading}
+                                    >
                                         {t('common.cancel')}
                                     </button>
-                                    <button className="save-button" onClick={handleSave}>
-                                        {t('common.save')}
+                                    <button 
+                                        className="save-button" 
+                                        onClick={handleSave}
+                                        disabled={loading || !editForm.name.trim()}
+                                    >
+                                        {loading 
+                                            ? (t('common.saving') || 'Сохранение...')
+                                            : (t('common.save') || 'Сохранить')
+                                        }
                                     </button>
                                 </div>
                             </div>

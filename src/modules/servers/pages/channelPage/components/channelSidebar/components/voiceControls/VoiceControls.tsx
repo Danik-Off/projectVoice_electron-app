@@ -6,7 +6,7 @@ import './VoiceControls.scss';
 import { useUserProfile, ClickableAvatar } from '../../../../../../../../components';
 import { authStore, notificationStore } from '../../../../../../../../core';
 import type { Participant } from '../../../../../../../voice';
-import audioSettingsStore from '../../../../../../../voice/store/AudioSettingsStore';
+import { audioSettingsStore } from '../../../../../../../../core';
 import participantVolumeStore from '../../../../../../../voice/store/ParticipantVolumeStore';
 import voiceRoomStore from '../../../../../../../voice/store/roomStore';
 

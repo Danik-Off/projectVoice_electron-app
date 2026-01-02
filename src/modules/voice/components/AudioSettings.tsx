@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import audioSettingsStore from '../store/AudioSettingsStore';
+import { audioSettingsStore } from '../../../core';
 import roomStore from '../store/roomStore';
 import './audioSettings.scss';
 

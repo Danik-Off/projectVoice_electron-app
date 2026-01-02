@@ -12,6 +12,9 @@ import {
     MembersSettings,
     RolesSettings,
     ChannelsSettings,
+    SecuritySettings,
+    BansSettings,
+    IntegrationsSettings,
     DangerSettings
 } from './components';
 import type { ServerSettingsTab } from './components';
@@ -24,6 +27,7 @@ const ServerSettings: React.FC = observer(() => {
     const [activeTab, setActiveTab] = useState<ServerSettingsTab>('overview');
     const [loading, setLoading] = useState(false);
     const [currentUserRole, setCurrentUserRole] = useState<string>('member');
+    const [currentUserPermissions, setCurrentUserPermissions] = useState<string | bigint>(0n);
 
     const currentUser = authStore.user;
     const server = serverStore.currentServer;
@@ -38,11 +42,18 @@ const ServerSettings: React.FC = observer(() => {
                 await serverStore.fetchServerById(parseInt(serverId));
             }
             
-            // Загружаем роль пользователя на сервере
+            // Загружаем права текущего пользователя на сервере
             if (currentUser?.id) {
-                const members = await serverMembersService.getServerMembers(parseInt(serverId));
-                const userMember = members.find(member => member.userId === currentUser.id);
-                setCurrentUserRole(userMember?.role || 'member');
+                try {
+                    const permissionsData = await serverMembersService.getCurrentMemberPermissions(parseInt(serverId));
+                    setCurrentUserPermissions(permissionsData.totalPermissions || '0');
+                } catch (error) {
+                    console.error('Error loading user permissions:', error);
+                    // Fallback: загружаем роль из списка участников
+                    const members = await serverMembersService.getServerMembers(parseInt(serverId));
+                    const userMember = members.find(member => member.userId === currentUser.id);
+                    setCurrentUserRole(userMember?.role || 'member');
+                }
             }
         } catch (error) {
             console.error('Error loading server data:', error);
@@ -56,19 +67,27 @@ const ServerSettings: React.FC = observer(() => {
     }, [loadServerData]);
 
     const renderTabContent = () => {
+        const commonProps = { currentUserPermissions };
+        
         switch (activeTab) {
             case 'overview':
-                return <OverviewSettings />;
+                return <OverviewSettings {...commonProps} />;
             case 'members':
-                return <MembersSettings />;
+                return <MembersSettings {...commonProps} />;
             case 'roles':
-                return <RolesSettings />;
+                return <RolesSettings {...commonProps} />;
             case 'channels':
-                return <ChannelsSettings />;
+                return <ChannelsSettings {...commonProps} />;
+            case 'security':
+                return <SecuritySettings {...commonProps} />;
+            case 'bans':
+                return <BansSettings {...commonProps} />;
+            case 'integrations':
+                return <IntegrationsSettings {...commonProps} />;
             case 'danger':
-                return <DangerSettings />;
+                return <DangerSettings {...commonProps} />;
             default:
-                return <OverviewSettings />;
+                return <OverviewSettings {...commonProps} />;
         }
     };
 
@@ -103,6 +122,7 @@ const ServerSettings: React.FC = observer(() => {
                     activeTab={activeTab} 
                     onTabChange={setActiveTab}
                     currentUserRole={currentUserRole}
+                    currentUserPermissions={currentUserPermissions}
                 />
                 
                 <div className="settings-main">

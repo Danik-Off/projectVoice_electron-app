@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { SocketClient } from '../../../core';
 import { getToken } from '../../../shared/utils/storage';
 import WebRTCClient from '../utils/WebRTCClient';
-import audioSettingsStore from './AudioSettingsStore';
+import { audioSettingsStore } from '../../../core';
 import { notificationStore } from '../../../core';
 import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
 import type { Signal } from '../types/WebRTCClient.types';

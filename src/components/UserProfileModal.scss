@@ -148,10 +148,6 @@
     }
 }
 
-// Контент вкладок
-.tab-content {
-    padding: 24px;
-}
 
 // Вкладка "Обзор"
 .profile-overview {
@@ -934,10 +930,7 @@
         }
     }
     
-    .tab-content {
-        padding: 20px;
-    }
-    
+
     .profile-overview .profile-header {
         flex-direction: column;
         text-align: center;
@@ -981,10 +974,6 @@
             padding: 12px 14px;
             font-size: 12px;
         }
-    }
-    
-    .tab-content {
-        padding: 16px;
     }
     
     .profile-overview .profile-header .profile-avatar-large {

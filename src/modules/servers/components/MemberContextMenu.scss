@@ -1,0 +1,159 @@
+.member-context-menu {
+    background: var(--bg-secondary, #2f3136);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 8px 0;
+    min-width: 200px;
+    max-width: 300px;
+    z-index: 1000;
+    overflow: hidden;
+
+    .context-menu-header {
+        padding: 8px 12px;
+        font-weight: 600;
+        color: var(--text-color, #ffffff);
+        font-size: 14px;
+        border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+        margin-bottom: 4px;
+
+        .member-name {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+
+    .context-menu-divider {
+        height: 1px;
+        background: var(--border-color, rgba(255, 255, 255, 0.1));
+        margin: 4px 0;
+    }
+
+    .context-menu-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 8px 12px;
+        background: transparent;
+        border: none;
+        color: var(--text-color, #dcddde);
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover {
+            background: var(--bg-hover, rgba(255, 255, 255, 0.1));
+        }
+
+        &.danger {
+            color: var(--danger-color, #f04747);
+
+            &:hover {
+                background: rgba(240, 71, 71, 0.1);
+            }
+        }
+
+        &.checkbox {
+            cursor: pointer;
+
+            input[type="checkbox"] {
+                margin-right: 8px;
+                cursor: pointer;
+            }
+        }
+
+        .icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+    }
+}
+
+.ban-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.ban-modal {
+    background: var(--bg-secondary, #2f3136);
+    border-radius: 8px;
+    padding: 24px;
+    min-width: 400px;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    h3 {
+        margin: 0 0 16px 0;
+        color: var(--text-color, #ffffff);
+        font-size: 20px;
+    }
+
+    p {
+        margin: 0 0 8px 0;
+        color: var(--text-secondary, #b9bbbe);
+        font-size: 14px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 8px;
+        background: var(--bg-primary, #202225);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+        border-radius: 4px;
+        color: var(--text-color, #ffffff);
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        margin-bottom: 16px;
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary-color, #5865f2);
+        }
+    }
+
+    .ban-modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+
+            &.cancel-btn {
+                background: transparent;
+                color: var(--text-color, #dcddde);
+
+                &:hover {
+                    background: var(--bg-hover, rgba(255, 255, 255, 0.1));
+                }
+            }
+
+            &.confirm-btn {
+                background: var(--danger-color, #f04747);
+                color: #ffffff;
+
+                &:hover {
+                    background: #d84040;
+                }
+            }
+        }
+    }
+}
+

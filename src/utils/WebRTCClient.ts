@@ -1,7 +1,7 @@
 import { reaction } from 'mobx';
 import { iceServers } from '../configs/iceServers';
 import type { Signal } from '../types/WebRTCClient.types';
-import audioSettingsStore from '../store/AudioSettingsStore';
+import { audioSettingsStore } from '../core';
 import participantVolumeStore from '../store/ParticipantVolumeStore';
 import voiceActivityService from '../services/VoiceActivityService';
 class WebRTCClient {

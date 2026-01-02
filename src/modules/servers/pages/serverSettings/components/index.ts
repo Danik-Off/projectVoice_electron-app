@@ -4,6 +4,9 @@ export { default as OverviewSettings } from './overview/OverviewSettings';
 export { default as MembersSettings } from './members/MembersSettings';
 export { default as RolesSettings } from './roles/RolesSettings';
 export { default as ChannelsSettings } from './channels/ChannelsSettings';
+export { default as SecuritySettings } from './security/SecuritySettings';
+export { default as BansSettings } from './bans/BansSettings';
+export { default as IntegrationsSettings } from './integrations/IntegrationsSettings';
 export { default as DangerSettings } from './danger/DangerSettings';
 
 export type { ServerSettingsTab } from './navigation/ServerSettingsNavigation';

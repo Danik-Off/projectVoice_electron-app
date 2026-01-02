@@ -1,0 +1,99 @@
+@use '../../../../../../styles/main' as *;
+
+.settings-section {
+    .bans-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .ban-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-primary, #202225);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .ban-user-info {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                flex: 1;
+
+                .ban-avatar {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                .ban-details {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.25rem;
+
+                    .ban-username {
+                        font-weight: 600;
+                        color: var(--text-color, #ffffff);
+                        font-size: 1rem;
+                    }
+
+                    .ban-reason,
+                    .ban-date {
+                        font-size: 0.85rem;
+                        color: var(--text-secondary, #b9bbbe);
+                    }
+                }
+            }
+
+            .unban-button {
+                padding: 0.5rem 1rem;
+                background: var(--success-color, #43b581);
+                color: #ffffff;
+                border: none;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+
+                &:hover {
+                    background: #3aa372;
+                    transform: translateY(-1px);
+                }
+
+                &:active {
+                    transform: translateY(0);
+                }
+            }
+        }
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: var(--text-color, #ffffff);
+            margin: 0 0 0.5rem 0;
+        }
+
+        p {
+            color: var(--text-secondary, #b9bbbe);
+            margin: 0;
+        }
+    }
+}
+

@@ -96,14 +96,15 @@
     overflow: hidden;
     position: relative;
     z-index: 1;
+    min-height: 0;
 }
 
 .settings-main {
     flex: 1;
-    padding: var(--spacing-2xl);
+    padding: 0;
     overflow-y: auto;
-    background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
-    backdrop-filter: blur(10px);
+    background: var(--primary-bg, #36393f);
+    position: relative;
 
     &::-webkit-scrollbar {
         width: $scrollbar-width;

@@ -10,8 +10,8 @@ export { default as AudioSettings } from './components/AudioSettings';
 // Hooks
 export { useVoice, useAudioSettings, useParticipants } from './hooks/useVoice';
 
-// Store
-export { default as AudioSettingsStore } from './store/AudioSettingsStore';
+// Store - AudioSettingsStore теперь в core, реэкспортируем для обратной совместимости
+export { audioSettingsStore as AudioSettingsStore } from '../../core';
 export { default as RoomStore } from './store/roomStore';
 export { default as ParticipantVolumeStore } from './store/ParticipantVolumeStore';
 

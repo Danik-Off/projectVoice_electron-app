@@ -1,7 +1,15 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import roomStore from './roomStore';
-import type { VoiceRoomStore } from './roomStore';
-import { notificationStore } from '../../../core';
+import { notificationStore } from './NotificationStore';
+// Динамический импорт roomStore для избежания циклических зависимостей
+let roomStore: any;
+const getRoomStore = async () => {
+    if (!roomStore) {
+        const roomStoreModule = await import('../../modules/voice/store/roomStore');
+        roomStore = roomStoreModule.default;
+    }
+    return roomStore;
+};
+import type { VoiceRoomStore } from '../../modules/voice/store/roomStore';
 
 class AudioSettingsStore {
     public stream: MediaStream = new MediaStream();
@@ -215,53 +223,58 @@ class AudioSettingsStore {
     }
 
     // Методы для изменения настроек (требуют пересоздания потока)
-    public setEchoCancellation(value: boolean) {
+    public async setEchoCancellation(value: boolean) {
         if (this.echoCancellation === value) return;
         this.echoCancellation = value;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setNoiseSuppression(value: boolean) {
+    public async setNoiseSuppression(value: boolean) {
         if (this.noiseSuppression === value) return;
         this.noiseSuppression = value;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setAutoGainControl(value: boolean) {
+    public async setAutoGainControl(value: boolean) {
         if (this.autoGainControl === value) return;
         this.autoGainControl = value;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setSampleRate(rate: number) {
+    public async setSampleRate(rate: number) {
         if (this.sampleRate === rate) return;
         this.sampleRate = rate;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setSampleSize(size: number) {
+    public async setSampleSize(size: number) {
         if (this.sampleSize === size) return;
         this.sampleSize = size;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
@@ -275,14 +288,13 @@ class AudioSettingsStore {
         this.updateMediaStream();
     }
 
-    public setSpeaker(deviceId: string): void {
+    public async setSpeaker(deviceId: string): Promise<void> {
         const device = this.speakerDevices.find((device) => device.deviceId === deviceId);
         if (device) {
             this.selectedSpeaker = device;
             // Применяем выбранное устройство к удаленным аудиоэлементам
-            import('./roomStore').then(({ default: roomStore }) => {
-                (roomStore as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
-            });
+            const store = await getRoomStore();
+            (store as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
         }
     }
 
@@ -322,38 +334,41 @@ class AudioSettingsStore {
     }
 
     // Методы для дополнительных настроек (требуют пересоздания потока)
-    public setBitrate(bitrate: number): void {
+    public async setBitrate(bitrate: number): Promise<void> {
         if (this.bitrate === bitrate) return;
         this.bitrate = bitrate;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setBufferSize(bufferSize: number): void {
+    public async setBufferSize(bufferSize: number): Promise<void> {
         if (this.bufferSize === bufferSize) return;
         this.bufferSize = bufferSize;
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setCompressionLevel(level: number): void {
+    public async setCompressionLevel(level: number): Promise<void> {
         if (this.compressionLevel === level) return;
         this.compressionLevel = Math.max(0, Math.min(1, level));
         this.updateMediaStream();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
     // Метод для принудительного применения всех настроек
-    public applyAllSettings(): void {
+    public async applyAllSettings(): Promise<void> {
         try {
             console.log('AudioSettingsStore: Applying all audio settings...');
             
@@ -361,13 +376,14 @@ class AudioSettingsStore {
             if (this._stream && this._stream.getAudioTracks().length > 0) {
                 this.updateRealtimeSettings();
                 // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
-        }
+                const store = await getRoomStore();
+                if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+                    (store as VoiceRoomStore).webRTCClient.resendlocalStream();
+                }
                 console.log('AudioSettingsStore: All settings applied to existing stream');
             } else {
                 // Если нет активного потока, создаем новый
-                this.updateMediaStream(true);
+                await this.updateMediaStream(true);
                 console.log('AudioSettingsStore: New stream created with all settings');
             }
         } catch (error) {
@@ -376,7 +392,7 @@ class AudioSettingsStore {
     }
 
     // Метод для сброса настроек к умолчанию
-    public resetToDefaults(): void {
+    public async resetToDefaults(): Promise<void> {
         console.log('AudioSettingsStore: Resetting to default settings...');
         
         // Сбрасываем основные настройки
@@ -402,109 +418,119 @@ class AudioSettingsStore {
         this.dynamicRangeCompression = 0.2;
         
         // Применяем настройки
-        this.applyAllSettings();
+        await this.applyAllSettings();
         
         console.log('AudioSettingsStore: Settings reset to defaults');
     }
 
     // Методы для настроек в реальном времени (не требуют пересоздания потока)
-    public setVoiceEnhancement(enabled: boolean): void {
+    public async setVoiceEnhancement(enabled: boolean): Promise<void> {
         if (this.voiceEnhancement === enabled) return;
         this.voiceEnhancement = enabled;
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setVoiceClarity(clarity: number): void {
+    public async setVoiceClarity(clarity: number): Promise<void> {
         if (this.voiceClarity === clarity) return;
         this.voiceClarity = Math.max(0, Math.min(1, clarity));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setBackgroundNoiseReduction(reduction: number): void {
+    public async setBackgroundNoiseReduction(reduction: number): Promise<void> {
         if (this.backgroundNoiseReduction === reduction) return;
         this.backgroundNoiseReduction = Math.max(0, Math.min(1, reduction));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setVoiceBoost(boost: number): void {
+    public async setVoiceBoost(boost: number): Promise<void> {
         if (this.voiceBoost === boost) return;
         this.voiceBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setBassBoost(boost: number): void {
+    public async setBassBoost(boost: number): Promise<void> {
         if (this.bassBoost === boost) return;
         this.bassBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setTrebleBoost(boost: number): void {
+    public async setTrebleBoost(boost: number): Promise<void> {
         if (this.trebleBoost === boost) return;
         this.trebleBoost = Math.max(0, Math.min(1, boost));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setStereoEnhancement(enabled: boolean): void {
+    public async setStereoEnhancement(enabled: boolean): Promise<void> {
         if (this.stereoEnhancement === enabled) return;
         this.stereoEnhancement = enabled;
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setSpatialAudio(enabled: boolean): void {
+    public async setSpatialAudio(enabled: boolean): Promise<void> {
         if (this.spatialAudio === enabled) return;
         this.spatialAudio = enabled;
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setVoiceIsolation(enabled: boolean): void {
+    public async setVoiceIsolation(enabled: boolean): Promise<void> {
         if (this.voiceIsolation === enabled) return;
         this.voiceIsolation = enabled;
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
-    public setDynamicRangeCompression(compression: number): void {
+    public async setDynamicRangeCompression(compression: number): Promise<void> {
         if (this.dynamicRangeCompression === compression) return;
         this.dynamicRangeCompression = Math.max(0, Math.min(1, compression));
         this.updateRealtimeSettings();
         // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
+        const store = await getRoomStore();
+        if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+            (store as VoiceRoomStore).webRTCClient.resendlocalStream();
         }
     }
 
@@ -531,14 +557,13 @@ class AudioSettingsStore {
         }
     }
 
-    public toggleSpeakerMute(): void {
+    public async toggleSpeakerMute(): Promise<void> {
         this.isSpeakerMuted = !this.isSpeakerMuted;
         
         // Управляем удаленными аудиоэлементами через roomStore
-        import('./roomStore').then(({ default: roomStore }) => {
-            // Используем экземпляр WebRTCClient из roomStore
-            (roomStore as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
-        });
+        const store = await getRoomStore();
+        // Используем экземпляр WebRTCClient из roomStore
+        (store as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
         
         console.log('Speaker mute toggled:', this.isSpeakerMuted);
     }
@@ -612,9 +637,10 @@ class AudioSettingsStore {
                 if (forceUpdate) {
                     console.log('AudioSettingsStore: Updating WebRTC stream after microphone change...');
                     // Обновляем WebRTC поток через roomStore
-        if ((roomStore as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-            (roomStore as VoiceRoomStore).webRTCClient.resendlocalStream();
-        }
+                    const store = await getRoomStore();
+                    if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
+                        (store as VoiceRoomStore).webRTCClient.resendlocalStream();
+                    }
                 }
             });
         } catch (error) {

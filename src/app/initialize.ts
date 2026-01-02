@@ -2,7 +2,8 @@
  * Инициализация приложения
  * Регистрация всех модулей и плагинов
  */
-import { moduleManager, pluginManager, enableMobX } from '../core';
+import { moduleManager, pluginManager, enableMobX, apiClient } from '../core';
+import { infoService } from '../services/infoService';
 
 // Modules
 import { authModule } from '../modules/auth';
@@ -63,6 +64,25 @@ export async function initializeApp() {
         await pluginManager.initializeAll();
         const pluginInitTime = Date.now() - pluginStartTime;
         console.log(`✅ All plugins initialized in ${pluginInitTime}ms`);
+
+        // Загружаем информацию о приложении (стили Discord и т.д.)
+        console.log('📡 Loading app info...');
+        try {
+            const appInfo = await infoService.getInfo();
+            if (appInfo.styles) {
+                // Применяем стили Discord как CSS-переменные
+                const root = document.documentElement;
+                Object.entries(appInfo.styles).forEach(([key, value]) => {
+                    if (value) {
+                        root.style.setProperty(`--discord-${key.toLowerCase()}`, value);
+                    }
+                });
+                console.log('✅ App info loaded and styles applied');
+            }
+        } catch (error) {
+            console.warn('⚠️ Failed to load app info:', error);
+            // Не критично, продолжаем работу
+        }
 
         const totalTime = Date.now() - startTime;
         console.log(`🎉 Application initialized successfully in ${totalTime}ms`);

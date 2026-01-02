@@ -18,8 +18,11 @@
     },
     "createServerModal": {
         "title": "Create Server",
-        "titlePlaceholder": "Enter server name...",
+        "nameLabel": "Server Name",
+        "namePlaceholder": "Enter server name...",
+        "descriptionLabel": "Server Description",
         "descriptionPlaceholder": "Enter server description...",
+        "titlePlaceholder": "Enter server name...",
         "avatarLabel": "Upload Avatar",
         "privacyLabel": "Privacy Settings",
         "publicOption": "Public",
@@ -177,13 +180,6 @@
                 "english": "English",
                 "russian": "Russian"
             }
-        },
-        "language": {
-            "title": "Language",
-            "label": "Interface Language",
-            "description": "Choose your preferred language for the application interface",
-            "english": "English",
-            "russian": "Russian"
         },
         "storage": {
             "title": "Storage",
@@ -360,13 +356,7 @@
             "noChannels": "No channels found"
         },
         "dangerTab": {
-            "title": "Danger Zone",
-            "deleteServer": {
-                "title": "Delete Server",
-                "description": "This action cannot be undone. All server data will be permanently deleted.",
-                "button": "Delete Server",
-                "confirmMessage": "Are you sure you want to delete this server? This action cannot be undone."
-            }
+            "title": "Danger Zone"
         },
         "authRequired": {
             "title": "Authentication Required",

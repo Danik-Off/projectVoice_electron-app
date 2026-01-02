@@ -6,4 +6,5 @@ export { authStore, enableMobX } from './authStore';
 export { themeStore } from './ThemeStore';
 export { notificationStore } from './NotificationStore';
 export { connectionStore } from './ConnectionStore';
+export { default as audioSettingsStore } from './AudioSettingsStore';
 
