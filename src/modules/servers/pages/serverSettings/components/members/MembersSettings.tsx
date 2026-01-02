@@ -236,7 +236,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
                                                 <option value="owner">{t('serverSettings.owners') || 'Владельцы'}</option>
                                                 <option value="admin">{t('serverSettings.admins') || 'Администраторы'}</option>
                                                 <option value="moderator">{t('serverSettings.moderators') || 'Модераторы'}</option>
-                                                <option value="member">{t('serverSettings.members') || 'Участники'}</option>
+                                                <option value="member">{t('serverSettings.membersFilter') || 'Участники'}</option>
                                             </select>
                                         </div>
                                     </div>

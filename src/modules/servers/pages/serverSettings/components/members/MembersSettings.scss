@@ -140,7 +140,6 @@
     &:hover {
         background: var(--bg-tertiary, #202225);
         border-color: var(--accent-color, #5865f2);
-        transform: translateX(4px);
         
         .actions-hint {
             opacity: 1;

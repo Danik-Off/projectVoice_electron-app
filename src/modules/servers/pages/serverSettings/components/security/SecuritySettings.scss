@@ -224,7 +224,6 @@
     
     &:hover:not(:disabled) {
         background: var(--accent-hover, #4752c4);
-        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
     }
     

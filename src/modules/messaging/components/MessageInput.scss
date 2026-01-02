@@ -35,7 +35,6 @@
     &:focus-within {
         border-color: var(--accent-color);
         box-shadow: 0 0 0 3px rgba(114, 137, 218, 0.15);
-        transform: translateY(-1px);
 
         &::before {
             opacity: 1;
@@ -121,7 +120,6 @@
     &:hover {
         background: rgba(255, 255, 255, 0.1);
         color: var(--text-primary);
-        transform: scale(1.1);
 
         &::before {
             opacity: 0.1;
@@ -169,7 +167,6 @@
 
     &:hover:not(:disabled) {
         background: linear-gradient(135deg, #5865f2, #4752c4);
-        transform: translateY(-2px) scale(1.05);
         box-shadow: 0 6px 16px rgba(114, 137, 218, 0.4);
 
         &::before {
@@ -202,7 +199,6 @@
     }
 
     &:hover svg {
-        transform: scale(1.1);
     }
 }
 

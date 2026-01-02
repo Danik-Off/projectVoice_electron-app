@@ -65,16 +65,11 @@
         }
 
         &:hover {
-            transform: translateY(-$hover-lift);
             box-shadow: var(--shadow-heavy);
 
             &::before {
                 left: 100%;
             }
-        }
-
-        &:active {
-            transform: translateY(0);
         }
     }
 
@@ -176,7 +171,6 @@
     
     &:hover {
         box-shadow: var(--shadow-medium);
-        transform: translateY(-$hover-lift);
     }
     
     &:last-child {
@@ -312,7 +306,6 @@
             box-shadow: var(--shadow-light);
             
             &:hover {
-                transform: translateY(-$hover-lift);
                 box-shadow: var(--shadow-medium);
             }
         }
@@ -445,7 +438,6 @@
             transition: all $animation-duration $animation-timing;
             
             &:hover {
-                transform: translateX($hover-translate);
                 box-shadow: var(--shadow-light);
                 border-color: var(--primary-accent);
             }
@@ -488,7 +480,6 @@
         transition: all $animation-duration $animation-timing;
         
         &:hover {
-            transform: translateY(-$hover-lift);
             box-shadow: var(--shadow-medium);
             border-color: rgba(229, 115, 115, 0.5);
         }
@@ -526,7 +517,6 @@
                 box-shadow: var(--shadow-light);
                 
                 &:hover {
-                    transform: translateY(-$hover-lift);
                     box-shadow: var(--shadow-medium);
                 }
             }

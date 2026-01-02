@@ -117,7 +117,6 @@
         // Эффект при наведении
         &:hover {
             background: var(--primary-accent);
-            transform: translateY(-$hover-lift) scale($hover-scale);
             box-shadow: $shadow-medium;
         }
 
@@ -128,7 +127,6 @@
 
             .server-icon {
                 color: white;
-                transform: scale(1.1);
             }
         }
 
@@ -152,7 +150,7 @@
 
             &:hover {
                 background: var(--success-accent);
-                transform: rotate(90deg) scale($hover-scale);
+                transform: rotate(90deg);
             }
 
             .server-icon {
@@ -181,7 +179,6 @@
 
             &:hover {
                 background: linear-gradient(135deg, var(--warning-accent) 0%, var(--secondary-accent-hover) 100%);
-                transform: translateY(-$hover-lift) scale($hover-scale);
             }
         }
 

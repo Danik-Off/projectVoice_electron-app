@@ -132,17 +132,12 @@
     &:hover {
         background: $hover-bg;
         color: $text-primary;
-        transform: translateX($hover-translate);
     }
 
     &.active {
         background: $primary-accent;
         color: white;
         box-shadow: $shadow-medium;
-
-        .tab-icon {
-            transform: scale($hover-scale);
-        }
     }
 
     .tab-icon {
@@ -230,7 +225,6 @@
     
     &:hover {
         box-shadow: $shadow-medium;
-        transform: translateY(-2px);
     }
     
     &:last-child {
@@ -374,7 +368,6 @@
         transition: all $animation-duration ease;
         
         &:hover {
-            transform: scale(1.1);
             box-shadow: $shadow-medium;
         }
     }
@@ -388,10 +381,6 @@
         border: none;
         box-shadow: $shadow-light;
         transition: all $animation-duration ease;
-        
-        &:hover {
-            transform: scale(1.1);
-        }
     }
 }
 
@@ -412,12 +401,7 @@
     
     &:hover:not(:disabled) {
         background: var(--primary-accent-hover, #4a9ee6);
-        transform: translateY(-1px);
         box-shadow: $shadow-medium;
-    }
-    
-    &:active {
-        transform: translateY(0);
     }
     
     &:disabled {
@@ -704,7 +688,6 @@
         
         &:hover {
             border-color: var(--primary-accent);
-            transform: translateY(-2px);
             box-shadow: var(--shadow-medium);
         }
         
@@ -952,7 +935,6 @@
     &:hover {
         border-color: $primary-accent;
         background: $hover-bg;
-        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
@@ -1042,7 +1024,6 @@
         transition: all 0.2s ease;
 
         &:hover {
-            transform: scale(1.1);
             box-shadow: 0 0 8px rgba($primary-accent, 0.4);
         }
     }
@@ -1057,7 +1038,6 @@
         transition: all 0.2s ease;
 
         &:hover {
-            transform: scale(1.1);
             box-shadow: 0 0 8px rgba($primary-accent, 0.4);
         }
     }

@@ -86,11 +86,6 @@
             
             &:hover {
                 background: rgba(255, 255, 255, 0.3);
-                transform: scale(1.1);
-            }
-            
-            &:active {
-                transform: scale(0.95);
             }
         }
     }
@@ -454,7 +449,6 @@
             transition: all 0.3s ease;
             
             &:hover {
-                transform: translateY(-2px);
                 box-shadow: 0 8px 24px rgba(100, 181, 246, 0.1);
                 border-color: var(--border-accent, rgba(100, 181, 246, 0.2));
             }
@@ -644,7 +638,6 @@
             transition: all 0.3s ease;
             
             &:hover {
-                transform: translateY(-2px);
                 box-shadow: 0 8px 24px rgba(100, 181, 246, 0.1);
                 border-color: var(--border-accent, rgba(100, 181, 246, 0.2));
             }
@@ -793,7 +786,6 @@
                     &:hover {
                         background: var(--accent-bg, #404040);
                         border-color: var(--border-accent, rgba(100, 181, 246, 0.2));
-                        transform: translateX(4px);
                     }
 
                     .friend-avatar {
@@ -869,7 +861,6 @@
                 
                 &:hover {
                     background: var(--primary-accent-hover, #4a9ee6);
-                    transform: translateY(-2px);
                     box-shadow: 0 8px 16px rgba(100, 181, 246, 0.3);
                 }
             }
@@ -880,7 +871,6 @@
                 
                 &:hover {
                     background: var(--secondary-accent-hover, #d32f2f);
-                    transform: translateY(-2px);
                     box-shadow: 0 8px 16px rgba(229, 115, 115, 0.3);
                 }
             }
@@ -891,13 +881,8 @@
                 
                 &:hover {
                     background: var(--error-color-hover, #d32f2f);
-                    transform: translateY(-2px);
                     box-shadow: 0 8px 16px rgba(229, 115, 115, 0.3);
                 }
-            }
-            
-            &:active {
-                transform: translateY(0);
             }
         }
     }
