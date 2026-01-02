@@ -356,16 +356,3 @@
         line-height: 1.5;
     }
 }
-
-// Устаревшие классы для обратной совместимости
-.no-server-state {
-    @extend .server-header__no-server-state;
-}
-
-.no-server-icon {
-    @extend .server-header__no-server-icon;
-}
-
-.no-server-text {
-    @extend .server-header__no-server-text;
-}
