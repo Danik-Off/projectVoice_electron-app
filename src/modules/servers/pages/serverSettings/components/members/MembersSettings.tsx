@@ -6,8 +6,8 @@ import { serverMembersService, Permissions, hasPermission } from '../../../../..
 import { roleService } from '../../../../services/roleService';
 import type { ServerMember } from '../../../../../../modules/servers';
 import type { Role } from '../../../../types/role';
-import MemberRoleManager from './MemberRoleManager';
-import MemberContextMenu from '../../../../components/MemberContextMenu';
+import MemberRow from './MemberRow';
+import MemberRolesModal from './MemberRolesModal';
 import { serverStore } from '../../../../../../modules/servers';
 import { notificationStore, authStore } from '../../../../../../core';
 import './MembersSettings.scss';
@@ -27,14 +27,10 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
     const [members, setMembers] = useState<ServerMember[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(false);
-    const [selectedMember, setSelectedMember] = useState<ServerMember | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<SortOption>('name');
     const [filterBy, setFilterBy] = useState<FilterOption>('all');
-    const [contextMenu, setContextMenu] = useState<{
-        member: ServerMember;
-        position: { x: number; y: number };
-    } | null>(null);
+    const [selectedMemberForRoles, setSelectedMemberForRoles] = useState<ServerMember | null>(null);
 
     const server = serverStore.currentServer;
     const currentUser = authStore.user;
@@ -75,37 +71,10 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
         }
     }, [server?.id, t]);
 
-
-    const handleRemoveMember = async (memberId: number) => {
-        if (!server?.id) return;
-        
-        try {
-            await serverMembersService.removeMember(server.id, memberId);
-            await loadMembers(); // Перезагружаем список участников
-            
-            notificationStore.addNotification(
-                t('serverSettings.memberRemoved'),
-                'success',
-                3000
-            );
-        } catch (error) {
-            console.error('Error removing member:', error);
-            notificationStore.addNotification(
-                t('serverSettings.memberRemoveError'),
-                'error',
-                5000
-            );
-        }
-    };
-
     useEffect(() => {
         loadMembers();
         loadRoles();
     }, [loadMembers, loadRoles]);
-
-    const handleRoleChange = () => {
-        loadMembers();
-    };
 
     // Фильтрация и сортировка участников
     const filteredAndSortedMembers = useMemo(() => {
@@ -152,22 +121,36 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
         return filtered;
     }, [members, searchQuery, sortBy, filterBy]);
 
-    const handleContextMenu = useCallback((e: React.MouseEvent, member: ServerMember) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // Группировка участников по ролям для лучшей визуализации
+    const groupedMembers = useMemo(() => {
+        const groups: Record<string, ServerMember[]> = {};
         
-        // Не показываем меню для себя
-        if (member.userId === currentUser?.id) return;
-        
-        setContextMenu({
-            member,
-            position: { x: e.clientX, y: e.clientY }
+        filteredAndSortedMembers.forEach(member => {
+            const groupKey = member.role === 'owner' ? 'owner' : 
+                           member.highestRole?.name || member.role;
+            
+            if (!groups[groupKey]) {
+                groups[groupKey] = [];
+            }
+            groups[groupKey].push(member);
         });
-    }, [currentUser?.id]);
 
-    const canKick = hasPermission(currentUserPermissions, Permissions.KICK_MEMBERS);
-    const canBan = hasPermission(currentUserPermissions, Permissions.BAN_MEMBERS);
-    const canManageRoles = hasPermission(currentUserPermissions, Permissions.MANAGE_ROLES);
+        // Сортируем группы: сначала владельцы, потом по позиции ролей
+        const sortedGroups = Object.entries(groups).sort(([keyA], [keyB]) => {
+            if (keyA === 'owner') return -1;
+            if (keyB === 'owner') return 1;
+            
+            const roleA = roles.find(r => r.name === keyA);
+            const roleB = roles.find(r => r.name === keyB);
+            
+            if (roleA && roleB) {
+                return roleB.position - roleA.position;
+            }
+            return keyA.localeCompare(keyB);
+        });
+
+        return sortedGroups;
+    }, [filteredAndSortedMembers, roles]);
 
     return (
         <div className="settings-section">
@@ -177,184 +160,119 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
             </div>
             
             <div className="section-content">
-                <div className="settings-card">
-                    <div className="card-header">
-                        <div className="header-content">
-                            <div className="icon-container">
-                                👥
+                {loading ? (
+                    <div className="loading-state">
+                        <div className="loading-spinner"></div>
+                        <p>{t('serverSettings.loadingMembers')}</p>
+                    </div>
+                ) : (
+                    <div className="members-management-container">
+                        {/* Панель управления */}
+                        <div className="members-controls">
+                            <div className="search-box">
+                                <input
+                                    type="text"
+                                    placeholder={t('serverSettings.searchMembers') || 'Поиск участников...'}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="search-input"
+                                />
+                                <span className="search-icon">🔍</span>
                             </div>
-                            <div className="header-text">
-                                <h3>{t('serverSettings.serverMembers')}</h3>
-                                <p>{t('serverSettings.serverMembersDescription')}</p>
+                            
+                            <div className="controls-row">
+                                <div className="filter-group">
+                                    <label>{t('serverSettings.sortBy') || 'Сортировать:'}</label>
+                                    <select 
+                                        value={sortBy} 
+                                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                                        className="filter-select"
+                                    >
+                                        <option value="name">{t('serverSettings.sortByName') || 'По имени'}</option>
+                                        <option value="role">{t('serverSettings.sortByRole') || 'По роли'}</option>
+                                        <option value="joined">{t('serverSettings.sortByJoined') || 'По дате вступления'}</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="filter-group">
+                                    <label>{t('serverSettings.filterBy') || 'Фильтр:'}</label>
+                                    <select 
+                                        value={filterBy} 
+                                        onChange={(e) => setFilterBy(e.target.value as FilterOption)}
+                                        className="filter-select"
+                                    >
+                                        <option value="all">{t('serverSettings.allMembers') || 'Все участники'}</option>
+                                        <option value="owner">{t('serverSettings.owners') || 'Владельцы'}</option>
+                                        <option value="admin">{t('serverSettings.admins') || 'Администраторы'}</option>
+                                        <option value="moderator">{t('serverSettings.moderators') || 'Модераторы'}</option>
+                                        <option value="member">{t('serverSettings.membersFilter') || 'Участники'}</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="members-count-badge">
+                                    <span className="count-number">{filteredAndSortedMembers.length}</span>
+                                    <span className="count-total">/ {members.length}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div className="card-content">
-                        {loading ? (
-                            <div className="loading-state">
-                                <div className="loading-spinner"></div>
-                                <p>{t('serverSettings.loadingMembers')}</p>
-                            </div>
-                        ) : (
-                            <div className="members-settings-content">
-                                {/* Панель управления */}
-                                <div className="members-controls">
-                                    <div className="search-box">
-                                        <input
-                                            type="text"
-                                            placeholder={t('serverSettings.searchMembers') || 'Поиск участников...'}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="search-input"
-                                        />
-                                        <span className="search-icon">🔍</span>
-                                    </div>
-                                    
-                                    <div className="filters-row">
-                                        <div className="filter-group">
-                                            <label>{t('serverSettings.sortBy') || 'Сортировать:'}</label>
-                                            <select 
-                                                value={sortBy} 
-                                                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                                                className="filter-select"
-                                            >
-                                                <option value="name">{t('serverSettings.sortByName') || 'По имени'}</option>
-                                                <option value="role">{t('serverSettings.sortByRole') || 'По роли'}</option>
-                                                <option value="joined">{t('serverSettings.sortByJoined') || 'По дате вступления'}</option>
-                                            </select>
-                                        </div>
-                                        
-                                        <div className="filter-group">
-                                            <label>{t('serverSettings.filterBy') || 'Фильтр:'}</label>
-                                            <select 
-                                                value={filterBy} 
-                                                onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-                                                className="filter-select"
-                                            >
-                                                <option value="all">{t('serverSettings.allMembers') || 'Все участники'}</option>
-                                                <option value="owner">{t('serverSettings.owners') || 'Владельцы'}</option>
-                                                <option value="admin">{t('serverSettings.admins') || 'Администраторы'}</option>
-                                                <option value="moderator">{t('serverSettings.moderators') || 'Модераторы'}</option>
-                                                <option value="member">{t('serverSettings.membersFilter') || 'Участники'}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="members-count">
-                                        {t('serverSettings.membersCount') || 'Участников'}: {filteredAndSortedMembers.length} / {members.length}
-                                    </div>
-                                </div>
 
-                                <div className="members-management">
-                                    <div className="members-list-section">
-                                        <div className="members-list">
-                                            {filteredAndSortedMembers.length === 0 ? (
-                                                <div className="empty-members">
-                                                    <p>{t('serverSettings.noMembersFound') || 'Участники не найдены'}</p>
-                                                </div>
-                                            ) : (
-                                                filteredAndSortedMembers.map(member => (
-                                                    <div
-                                                        key={member.id}
-                                                        className={`member-item ${selectedMember?.id === member.id ? 'selected' : ''}`}
-                                                        onClick={() => setSelectedMember(member)}
-                                                        onContextMenu={(e) => handleContextMenu(e, member)}
-                                                    >
-                                                        {member.user && (
-                                                            <>
-                                                                <div className="member-avatar-wrapper">
-                                                                    <img
-                                                                        src={member.user.profilePicture || '/default-avatar.png'}
-                                                                        alt={member.user.username}
-                                                                        className="member-avatar"
-                                                                    />
-                                                                    {member.role === 'owner' && (
-                                                                        <span className="owner-indicator" title={t('serverMembers.owner') || 'Владелец'}>👑</span>
-                                                                    )}
-                                                                </div>
-                                                                <div className="member-info">
-                                                                    <div className="member-name-row">
-                                                                        <span 
-                                                                            className="member-name"
-                                                                            style={{
-                                                                                color: member.highestRole?.color
-                                                                            }}
-                                                                        >
-                                                                            {member.nickname || member.user.username}
-                                                                        </span>
-                                                                        {(canKick || canBan || canManageRoles) && member.userId !== currentUser?.id && (
-                                                                            <span className="actions-hint">ПКМ для действий</span>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="member-meta">
-                                                                        <span className="member-role">
-                                                                            {member.highestRole?.name || member.role}
-                                                                        </span>
-                                                                        {member.nickname && (
-                                                                            <span className="member-username">
-                                                                                @{member.user.username}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                ))
-                                            )}
-                                        </div>
-                                    </div>
-                                    
-                                    {selectedMember && server?.id && (
-                                        <div className="member-role-section">
-                                            <div className="section-header-small">
-                                                <h4>
-                                                    {t('serverSettings.manageRolesFor') || 'Управление ролями для'}: {selectedMember.user?.username}
-                                                </h4>
-                                                <button
-                                                    className="close-button"
-                                                    onClick={() => setSelectedMember(null)}
-                                                >
-                                                    ×
-                                                </button>
-                                            </div>
-                                            <MemberRoleManager
-                                                member={selectedMember}
-                                                serverId={server.id}
-                                                roles={roles}
-                                                onRoleChange={handleRoleChange}
-                                            />
-                                        </div>
-                                    )}
-                                    
-                                    {!selectedMember && (
-                                        <div className="select-member-hint">
-                                            <div className="hint-icon">👆</div>
-                                            <p>{t('serverSettings.selectMemberToManageRoles') || 'Выберите участника для управления ролями'}</p>
-                                            <p className="hint-subtitle">
-                                                {t('serverSettings.rightClickForActions') || 'Или используйте правый клик для быстрых действий'}
-                                            </p>
-                                        </div>
-                                    )}
+                        {/* Список участников с группировкой */}
+                        <div className="members-list-container">
+                            {filteredAndSortedMembers.length === 0 ? (
+                                <div className="empty-state">
+                                    <div className="empty-icon">👥</div>
+                                    <h3>{t('serverSettings.noMembersFound') || 'Участники не найдены'}</h3>
+                                    <p>{t('serverSettings.tryDifferentSearch') || 'Попробуйте изменить параметры поиска или фильтра'}</p>
                                 </div>
-                            </div>
-                        )}
+                            ) : (
+                                groupedMembers.map(([groupName, groupMembers]) => {
+                                    const groupRole = roles.find(r => r.name === groupName);
+                                    const groupColor = groupRole?.color || 
+                                        (groupName === 'owner' ? '#faa61a' : 
+                                         groupName === 'admin' ? '#ed4245' : 
+                                         groupName === 'moderator' ? '#5865f2' : undefined);
+
+                                    return (
+                                        <div key={groupName} className="members-group">
+                                            <div className="group-header">
+                                                <div 
+                                                    className="group-color-bar"
+                                                    style={{ backgroundColor: groupColor || '#5865f2' }}
+                                                />
+                                                <h3 className="group-title">{groupName}</h3>
+                                                <span className="group-count">({groupMembers.length})</span>
+                                            </div>
+                                            <div className="group-members">
+                                                {groupMembers.map(member => (
+                                                    <MemberRow
+                                                        key={member.id}
+                                                        member={member}
+                                                        serverId={server?.id || 0}
+                                                        roles={roles}
+                                                        currentUserPermissions={currentUserPermissions}
+                                                        currentUserId={currentUser?.id}
+                                                        onUpdate={loadMembers}
+                                                        onManageRoles={setSelectedMemberForRoles}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             
-            {contextMenu && server?.id && (
-                <MemberContextMenu
-                    member={contextMenu.member}
+            {selectedMemberForRoles && server?.id && (
+                <MemberRolesModal
+                    isOpen={!!selectedMemberForRoles}
+                    member={selectedMemberForRoles}
                     serverId={server.id}
-                    currentUserPermissions={currentUserPermissions}
-                    onClose={() => setContextMenu(null)}
-                    onMemberUpdate={() => {
-                        loadMembers();
-                        setContextMenu(null);
-                    }}
-                    position={contextMenu.position}
+                    roles={roles}
+                    onClose={() => setSelectedMemberForRoles(null)}
+                    onUpdate={loadMembers}
                 />
             )}
         </div>
