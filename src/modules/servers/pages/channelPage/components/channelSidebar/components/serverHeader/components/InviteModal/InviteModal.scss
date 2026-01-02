@@ -1,303 +1,228 @@
 @use '../../../../../../../../../../styles/main' as *;
 
+// Блок: invite-modal-overlay (основной фон модального окна)
 .invite-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: $modal-overlay;
+    background: var(--modal-overlay);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: $z-index-modal;
     backdrop-filter: blur(5px);
-    animation: fadeIn $animation-duration ease-out;
 }
 
+// Блок: invite-modal (контейнер модального окна)
 .invite-modal {
-    background: $modal-bg;
-    border-radius: $border-radius-large;
+    background: var(--modal-bg);
+    border-radius: var(--border-radius-large);
     max-width: $modal-width;
     width: 90%;
-    box-shadow: $shadow-heavy;
-    border: $separator-height solid $modal-border;
-    animation: modalSlideIn $animation-duration ease-out;
+    box-shadow: var(--shadow-heavy);
+    border: $separator-height solid var(--modal-border);
     overflow: hidden;
 
-    .modal-header {
+    // Элемент: invite-modal__header (заголовок модального окна)
+    &__header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: $spacing-lg $modal-padding;
-        border-bottom: $separator-height solid $border-primary;
-        background: linear-gradient(135deg, $secondary-bg 0%, $primary-bg 100%);
+        padding: var(--spacing-lg) $modal-padding;
+        border-bottom: $separator-height solid var(--border-primary);
+        background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+    }
 
-        .modal-title {
-            display: flex;
-            align-items: center;
-            gap: $spacing-sm;
+    // Элемент: invite-modal__title (заголовок)
+    &__title {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
 
-            .modal-icon {
-                font-size: $icon-size-large;
-                animation: bounce 2s infinite;
-            }
+    // Элемент: invite-modal__icon (иконка)
+    &__icon {
+        font-size: $icon-size-large;
+    }
 
-            h3 {
-                margin: 0;
-                font-size: $spacing-lg;
-                font-weight: 700;
-                color: $text-primary;
-                background: linear-gradient(135deg, $text-primary 0%, $primary-accent 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
-        }
+    // Элемент: invite-modal__close (кнопка закрытия)
+    &__close {
+        width: $avatar-size-small;
+        height: $avatar-size-small;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: $icon-size-large;
+        cursor: pointer;
+        border-radius: var(--border-radius-small);
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        .modal-close {
-            width: $avatar-size-small;
-            height: $avatar-size-small;
-            border: none;
-            background: transparent;
-            color: $text-secondary;
-            font-size: $icon-size-large;
-            cursor: pointer;
-            border-radius: $border-radius-small;
-            transition: all $animation-duration $animation-timing;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            &:hover {
-                background: $hover-bg;
-                color: $text-primary;
-                transform: rotate(90deg);
-            }
+        &:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
         }
     }
 
-    .modal-content {
+    // Элемент: invite-modal__content (содержимое модального окна)
+    &__content {
         padding: $modal-padding;
+    }
 
-        .server-preview {
-            display: flex;
-            align-items: center;
-            gap: $spacing-md;
-            padding: $spacing-md;
-            background: $secondary-bg;
-            border-radius: $border-radius;
-            margin-bottom: $spacing-lg;
-            border: $separator-height solid $border-primary;
-            transition: all $animation-duration $animation-timing;
+    // Элемент: invite-modal__server-preview (превью сервера)
+    &__server-preview {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: var(--secondary-bg);
+        border-radius: var(--border-radius);
+        margin-bottom: var(--spacing-lg);
+        border: $separator-height solid var(--border-primary);
+    }
 
-            &:hover {
-                transform: translateY(-$hover-lift);
-                box-shadow: $shadow-medium;
-            }
+    // Элемент: invite-modal__server-preview-icon (иконка сервера)
+    &__server-preview-icon {
+        width: $avatar-size-large;
+        height: $avatar-size-large;
+        border-radius: var(--border-radius);
+        background: var(--gradient-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $icon-size-large;
+        font-weight: 700;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-medium);
 
-            .server-preview-icon {
-                width: $avatar-size-large;
-                height: $avatar-size-large;
-                border-radius: $border-radius;
-                background: $gradient-primary;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: $icon-size-large;
-                font-weight: 700;
-                color: $text-primary;
-                box-shadow: $shadow-medium;
+        img {
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            object-fit: cover;
+        }
+    }
 
-                img {
-                    width: 100%;
-                    height: 100%;
-                    border-radius: $border-radius;
-                    object-fit: cover;
-                }
-            }
+    // Элемент: invite-modal__server-preview-info (информация о сервере)
+    &__server-preview-info {
+        flex: 1;
 
-            .server-preview-info {
-                flex: 1;
-
-                h4 {
-                    margin: 0 0 4px 0;
-                    font-size: 16px;
-                    font-weight: 700;
-                    color: $text-primary;
-                }
-
-                p {
-                    margin: 0;
-                    font-size: 13px;
-                    color: $text-secondary;
-                    font-weight: 500;
-                }
-            }
+        h4 {
+            margin: 0 0 var(--spacing-xs) 0;
+            font-size: $font-size-md;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .invite-section {
-            label {
-                display: block;
-                margin-bottom: 8px;
-                font-size: 14px;
-                font-weight: 700;
-                color: $text-primary;
-            }
+        p {
+            margin: 0;
+            font-size: $font-size-sm;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+    }
 
-            .invite-link-container {
-                display: flex;
-                gap: 12px;
-                margin-bottom: 24px;
+    // Элемент: invite-modal__invite-section (секция приглашения)
+    &__invite-section {
+        label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: $font-size-md;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+    }
 
-                .invite-link-input {
-                    flex: 1;
-                    padding: 12px 16px;
-                    border: 1px solid $border-primary;
-                    border-radius: 8px;
-                    background: $secondary-bg;
-                    color: $text-primary;
-                    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-                    font-size: 13px;
-                    outline: none;
-                    transition: all 0.3s ease;
+    // Элемент: invite-modal__link-container (контейнер ссылки)
+    &__link-container {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
 
-                    &:focus {
-                        border-color: $primary-accent;
-                        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-                    }
+    // Элемент: invite-modal__link-input (поле ввода ссылки)
+    &__link-input {
+        flex: 1;
+        padding: var(--spacing-md);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--border-radius);
+        background: var(--secondary-bg);
+        color: var(--text-primary);
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: $font-size-sm;
+        outline: none;
 
-                    &::placeholder {
-                        color: $text-secondary;
-                    }
-                }
-
-                .copy-button {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 12px 16px;
-                    background: $primary-accent;
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    font-weight: 600;
-                    transition: all 0.3s ease;
-                    white-space: nowrap;
-                    position: relative;
-                    overflow: hidden;
-
-                    &::before {
-                        content: '';
-                        position: absolute;
-                        top: 0;
-                        left: -100%;
-                        width: 100%;
-                        height: 100%;
-                        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-                        transition: left 0.5s ease;
-                    }
-
-                    &:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-
-                        &::before {
-                            left: 100%;
-                        }
-                    }
-
-                    &:active {
-                        transform: translateY(0);
-                    }
-
-                    .copy-icon {
-                        font-size: 16px;
-                        transition: transform 0.3s ease;
-                    }
-
-                    .copy-text {
-                        font-weight: 600;
-                    }
-
-                    &:hover .copy-icon {
-                        transform: scale(1.1);
-                    }
-                }
-            }
+        &:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
         }
 
-        .modal-footer {
-            text-align: center;
+        &::placeholder {
+            color: var(--text-secondary);
+        }
+    }
 
-            .close-button {
-                padding: 12px 32px;
-                background: $secondary-bg;
-                color: $text-primary;
-                border: 1px solid $border-primary;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 600;
-                transition: all 0.3s ease;
+    // Элемент: invite-modal__copy-button (кнопка копирования)
+    &__copy-button {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md);
+        background: var(--primary-accent);
+        color: #ffffff;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: $font-size-md;
+        font-weight: 600;
+        white-space: nowrap;
 
-                &:hover {
-                    background: $hover-bg;
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                }
-            }
+        &:hover {
+            background: var(--primary-accent-hover);
+            box-shadow: var(--shadow-medium);
+        }
+
+        &:active {
+            transform: scale(0.98);
+        }
+    }
+
+    // Элемент: invite-modal__copy-icon (иконка копирования)
+    &__copy-icon {
+        font-size: $icon-size;
+    }
+
+    // Элемент: invite-modal__copy-text (текст копирования)
+    &__copy-text {
+        font-weight: 600;
+    }
+
+    // Элемент: invite-modal__footer (подвал модального окна)
+    &__footer {
+        text-align: center;
+    }
+
+    // Элемент: invite-modal__close-button (кнопка закрытия)
+    &__close-button {
+        padding: var(--spacing-md) var(--spacing-xl);
+        background: var(--secondary-bg);
+        color: var(--text-primary);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: $font-size-md;
+        font-weight: 600;
+
+        &:hover {
+            background: var(--hover-bg);
+            box-shadow: var(--shadow-medium);
+        }
+
+        &:active {
+            transform: scale(0.98);
         }
     }
 }
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-3px); }
-    60% { transform: translateY(-1px); }
-}
-
-@media (max-width: 768px) {
-    .invite-modal {
-        width: 95%;
-        margin: 16px;
-
-        .modal-content {
-            padding: 20px;
-
-            .invite-link-container {
-                flex-direction: column;
-                gap: 8px;
-
-                .copy-button {
-                    justify-content: center;
-                }
-            }
-        }
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    .invite-modal {
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-}
-

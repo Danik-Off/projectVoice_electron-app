@@ -33,32 +33,37 @@ const NoConnectionModal: React.FC = observer(() => {
     return (
         <div className="no-connection-modal-overlay" onClick={handleClose}>
             <div className="no-connection-modal" onClick={e => e.stopPropagation()}>
-                <div className="modal-header" style={isManualSettings ? { background: 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)' } : {}}>
-                    <div className="icon">🔌</div>
-                    <h2>{isManualSettings ? t('connection.serverSettings') : t('connection.noConnection')}</h2>
+                <div 
+                    className="no-connection-modal__header" 
+                    style={isManualSettings ? { background: 'linear-gradient(135deg, var(--success-accent) 0%, var(--tertiary-accent) 100%)' } : {}}
+                >
+                    <div className="no-connection-modal__header-icon">🔌</div>
+                    <h2 className="no-connection-modal__header-title">
+                        {isManualSettings ? t('connection.serverSettings') : t('connection.noConnection')}
+                    </h2>
                 </div>
                 
-                <div className="modal-content">
-                    <p className="message">
+                <div className="no-connection-modal__content">
+                    <p className="no-connection-modal__message">
                         {isManualSettings 
                             ? t('connection.serverSettingsDescription')
                             : t('connection.noConnectionDescription')}
                     </p>
 
-                    <div className="current-server">
-                        <span className="label">{t('connection.currentAddress')}</span>
-                        <code className="url">{connectionStore.serverUrl}</code>
+                    <div className="no-connection-modal__current-server">
+                        <span className="no-connection-modal__current-server-label">{t('connection.currentAddress')}</span>
+                        <code className="no-connection-modal__current-server-url">{connectionStore.serverUrl}</code>
                     </div>
 
                     {!isEditing ? (
                         <button 
-                            className="edit-button"
+                            className="no-connection-modal__edit-button"
                             onClick={() => setIsEditing(true)}
                         >
                             {t('connection.editAddress')}
                         </button>
                     ) : (
-                        <div className="edit-section">
+                        <div className="no-connection-modal__edit-section">
                             <label htmlFor="server-url">{t('connection.newAddress')}</label>
                             <input 
                                 id="server-url"
@@ -66,14 +71,20 @@ const NoConnectionModal: React.FC = observer(() => {
                                 value={newUrl}
                                 onChange={(e) => setNewUrl(e.target.value)}
                                 placeholder={t('connection.placeholder')}
-                                className="server-input"
+                                className="no-connection-modal__edit-section-input"
                                 autoFocus
                             />
-                            <div className="button-group">
-                                <button className="save-button" onClick={handleSave}>
+                            <div className="no-connection-modal__edit-section-button-group">
+                                <button 
+                                    className="no-connection-modal__edit-section-button-group-save-button" 
+                                    onClick={handleSave}
+                                >
                                     {t('connection.saveAndRestart')}
                                 </button>
-                                <button className="cancel-button" onClick={handleClose}>
+                                <button 
+                                    className="no-connection-modal__edit-section-button-group-cancel-button" 
+                                    onClick={handleClose}
+                                >
                                     {t('connection.cancel')}
                                 </button>
                             </div>
@@ -82,17 +93,21 @@ const NoConnectionModal: React.FC = observer(() => {
                 </div>
                 
                 {!isManualSettings && (
-                    <div className="modal-footer">
-                        <div className="retry-status">
-                            <span className="spinner"></span>
+                    <div className="no-connection-modal__footer">
+                        <div className="no-connection-modal__retry-status">
+                            <span className="no-connection-modal__retry-status-spinner"></span>
                             {t('connection.retryStatus')}
                         </div>
                     </div>
                 )}
 
                 {isManualSettings && !isEditing && (
-                    <div className="modal-footer">
-                        <button className="cancel-button" style={{ width: '100%' }} onClick={handleClose}>
+                    <div className="no-connection-modal__footer">
+                        <button 
+                            className="no-connection-modal__edit-section-button-group-cancel-button" 
+                            style={{ width: '100%' }} 
+                            onClick={handleClose}
+                        >
                             {t('connection.close')}
                         </button>
                     </div>

@@ -1,219 +1,202 @@
+@use '../styles/main' as *;
+
+// Блок: no-connection-modal-overlay (основной фон модального окна)
 .no-connection-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    background: var(--modal-overlay);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
+    z-index: $z-index-modal;
     backdrop-filter: blur(8px);
-    animation: fadeIn 0.3s ease-out;
 }
 
+// Блок: no-connection-modal (контейнер модального окна)
 .no-connection-modal {
-    background: var(--bg-primary, #1e1e1e);
-    border-radius: 16px;
+    background: var(--modal-bg);
+    border-radius: var(--border-radius-large);
     padding: 0;
     max-width: 480px;
     width: 90%;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color, #333);
-    animation: modalSlideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--modal-border);
     overflow: hidden;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes modalSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-    color: white;
-    padding: 32px 24px;
+// Элемент: no-connection-modal__header (заголовок модального окна)
+.no-connection-modal__header {
+    background: linear-gradient(135deg, var(--tertiary-bg) 0%, var(--accent-bg) 100%);
+    color: #ffffff;
+    padding: var(--spacing-xl) var(--spacing-lg);
     text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-primary);
+
+    // Элемент: no-connection-modal__header-icon (иконка)
+    &-icon {
+        font-size: $icon-size-xl;
+        margin-bottom: var(--spacing-md);
+    }
+
+    // Элемент: no-connection-modal__header-title (заголовок)
+    &-title {
+        margin: 0;
+        font-size: $font-size-lg;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
 }
 
-.modal-header .icon {
-    font-size: 56px;
-    margin-bottom: 16px;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+// Элемент: no-connection-modal__content (содержимое модального окна)
+.no-connection-modal__content {
+    padding: var(--spacing-lg) var(--spacing-xl);
 }
 
-.modal-header h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-.modal-content {
-    padding: 24px 32px;
-}
-
-.message {
-    font-size: 15px;
+// Элемент: no-connection-modal__message (сообщение)
+.no-connection-modal__message {
+    font-size: $font-size-md;
     line-height: 1.6;
-    color: var(--text-secondary, #b9bbbe);
-    margin-bottom: 24px;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
     text-align: center;
 }
 
-.current-server {
-    background: var(--bg-secondary, #2f3136);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 24px;
-    border: 1px solid var(--border-color, #333);
+// Элемент: no-connection-modal__current-server (текущий сервер)
+.no-connection-modal__current-server {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid var(--border-primary);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--spacing-sm);
 
-    .label {
-        font-size: 12px;
-        color: var(--text-muted, #72767d);
+    // Элемент: no-connection-modal__label (метка)
+    &-label {
+        font-size: $font-size-sm;
+        color: var(--text-muted);
         text-transform: uppercase;
         font-weight: 600;
     }
 
-    .url {
+    // Элемент: no-connection-modal__url (URL)
+    &-url {
         font-family: 'Fira Code', 'Courier New', monospace;
-        font-size: 14px;
-        color: var(--text-primary, #ffffff);
+        font-size: $font-size-sm;
+        color: var(--text-primary);
         word-break: break-all;
     }
 }
 
-.edit-button {
+// Элемент: no-connection-modal__edit-button (кнопка редактирования)
+.no-connection-modal__edit-button {
     width: 100%;
     background: transparent;
-    color: var(--text-link, #00aff4);
-    border: 1px solid var(--text-link, #00aff4);
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 14px;
+    color: var(--primary-accent);
+    border: 1px solid var(--primary-accent);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    font-size: $font-size-md;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
 
     &:hover {
-        background: rgba(0, 175, 244, 0.1);
+        background: var(--hover-bg);
     }
 }
 
-.edit-section {
+// Элемент: no-connection-modal__edit-section (секция редактирования)
+.no-connection-modal__edit-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    animation: fadeIn 0.2s ease-out;
+    gap: var(--spacing-md);
 
     label {
-        font-size: 13px;
-        color: var(--text-primary, #ffffff);
+        font-size: $font-size-sm;
+        color: var(--text-primary);
         font-weight: 500;
     }
 
-    .server-input {
-        background: var(--bg-tertiary, #202225);
-        border: 1px solid var(--border-color, #333);
-        border-radius: 8px;
-        padding: 12px;
-        color: white;
-        font-size: 14px;
+    // Элемент: no-connection-modal__edit-section-input (поле ввода сервера)
+    &-input {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-md);
+        color: var(--text-primary);
+        font-size: $font-size-md;
         outline: none;
-        transition: border-color 0.2s;
 
         &:focus {
-            border-color: var(--text-link, #00aff4);
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
         }
     }
 
-    .button-group {
+    // Элемент: no-connection-modal__edit-section-button-group (группа кнопок)
+    &-button-group {
         display: flex;
-        gap: 12px;
-        margin-top: 8px;
+        gap: var(--spacing-md);
+        margin-top: var(--spacing-sm);
 
         button {
             flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-size: $font-size-md;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
             border: none;
         }
 
-        .save-button {
-            background: #5865f2;
-            color: white;
+        // Элемент: no-connection-modal__edit-section-button-group-save-button (кнопка сохранения)
+        &-save-button {
+            background: var(--primary-accent);
+            color: #ffffff;
 
             &:hover {
-                background: #4752c4;
+                background: var(--primary-accent-hover);
             }
         }
 
-        .cancel-button {
+        // Элемент: no-connection-modal__edit-section-button-group-cancel-button (кнопка отмены)
+        &-cancel-button {
             background: transparent;
-            color: var(--text-primary, #ffffff);
-            border: 1px solid var(--border-color, #333);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
 
             &:hover {
-                background: rgba(255, 255, 255, 0.05);
+                background: var(--tertiary-bg);
             }
         }
     }
 }
 
-.modal-footer {
-    padding: 0 32px 32px;
+// Элемент: no-connection-modal__footer (подвал модального окна)
+.no-connection-modal__footer {
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
 }
 
-.retry-status {
+// Элемент: no-connection-modal__retry-status (статус повторной попытки)
+.no-connection-modal__retry-status {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    color: var(--text-muted, #72767d);
-    font-size: 13px;
+    gap: var(--spacing-sm);
+    color: var(--text-muted);
+    font-size: $font-size-sm;
 
-    .spinner {
+    // Элемент: no-connection-modal__spinner (спиннер)
+    &-spinner {
         width: 16px;
         height: 16px;
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-top-color: var(--text-link, #00aff4);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+        border: 2px solid var(--border-primary);
+        border-top-color: var(--primary-accent);
+        border-radius: var(--border-radius-round);
     }
 }
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-@media (max-width: 480px) {
-    .no-connection-modal {
-        width: 95%;
-    }
-    
-    .modal-content {
-        padding: 20px;
-    }
-}
-
