@@ -9,7 +9,6 @@ import { notificationStore, authStore } from '../../../../../../../../core';
 import { inviteService } from '../../../../../../../invite';
 import serverStore from '../../../../../../store/serverStore';
 import InviteModal from './components/InviteModal/InviteModal';
-import CopyTooltip from './components/CopyTooltip/CopyTooltip';
 import { getRoleIcon, getRoleColor } from './utils/roleHelpers';
 
 
@@ -100,10 +99,10 @@ const ServerHeader: React.FC = observer(() => {
 
     if (!currentServer) {
         return (
-            <div className="server-header">
-                <div className="no-server-state">
-                    <div className="no-server-icon">🏠</div>
-                    <span className="no-server-text">{t('serverHeader.selectServer')}</span>
+            <div className="server-header server-header--no-server">
+                <div className="server-header__no-server-state">
+                    <div className="server-header__no-server-icon">🏠</div>
+                    <span className="server-header__no-server-text">{t('serverHeader.selectServer')}</span>
                 </div>
             </div>
         );
@@ -112,68 +111,64 @@ const ServerHeader: React.FC = observer(() => {
     return (
         <>
             <div className="server-header">
-                <div className="server-info">
-                    <div className="server-icon-container">
-                        <div className="server-icon">
+                <div className="server-header__info">
+                    <div className="server-header__info-left">
+                        <div>
                             {currentServer.icon ? (
                                 <img 
                                     src={currentServer.icon} 
                                     alt={`${currentServer.name} icon`} 
                                 />
                             ) : (
-                                <span className="server-icon-text">
+                                <span>
                                     {currentServer.name.charAt(0).toUpperCase()}
                                 </span>
                             )}
                         </div>
-                        <div className="server-status-indicator online"></div>
-                    </div>
-                    
-                    <div className="server-details">
-                        <h2 className="server-name" title={currentServer.name}>
-                            {currentServer.name}
-                        </h2>
-                        <div className="server-meta">
-                            <div 
-                                className="server-role"
-                                style={{ '--role-color': getRoleColor(userRole) } as React.CSSProperties}
-                            >
-                                <span className="role-icon">{getRoleIcon(userRole)}</span>
-                                <span className="role-text">{t(`serverHeader.roles.${userRole}`)}</span>
-                            </div>
-                            {currentServer.members && (
-                                <div className="member-count">
-                                    <span className="member-icon">👥</span>
-                                    <span className="member-text">{currentServer.members.length}</span>
-                                </div>
-                            )}
+                        <div className="server-header__info-right">
+                            <h2 title={currentServer.name}>
+                                {currentServer.name}
+                            </h2>
                         </div>
+                    </div>
+                    <div className="server-header__meta">
+                        <div 
+                            className="server-header__role"
+                            style={{ '--role-color': getRoleColor(userRole) } as React.CSSProperties}
+                        >
+                            <span>{getRoleIcon(userRole)}</span>
+                            <span>{t(`serverHeader.roles.${userRole}`)}</span>
+                        </div>
+                        {currentServer.members && (
+                            <div className="server-header__members">
+                                <span>👥</span>
+                                <span>{currentServer.members.length}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="server-actions">
+                <div className="server-header__actions">
                     {canInvite && (
                         <button 
-                            className="action-button share-button"
                             onClick={handleShare}
                             disabled={isCreatingInvite}
                             title={t('serverHeader.inviteMembers')}
                         >
                             {isCreatingInvite ? (
-                                <div className="loading-spinner"></div>
+                                <div></div>
                             ) : (
-                                <span className="share-icon">📤</span>
+                                <span>📤</span>
                             )}
                         </button>
                     )}
                     
                     {canEditServer && (
                         <button 
-                            className="action-button settings-button"
                             onClick={handleEditServer}
                             title={t('serverHeader.serverSettings')}
                         >
-                            <span className="settings-icon">⚙️</span>
+                            <span>⚙️</span>
                         </button>
                     )}
                 </div>
@@ -189,11 +184,6 @@ const ServerHeader: React.FC = observer(() => {
                 onCopy={copyInviteLink}
             />
 
-            {/* Tooltip для уведомления о копировании */}
-            <CopyTooltip 
-                show={showTooltip}
-                tooltipRef={tooltipRef}
-            />
         </>
     );
 });
