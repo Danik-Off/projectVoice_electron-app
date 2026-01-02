@@ -8,6 +8,7 @@ import type { ServerMember } from '../../../../../../modules/servers';
 import type { Role } from '../../../../types/role';
 import MemberRow from './MemberRow';
 import MemberRolesModal from './MemberRolesModal';
+import MemberContextMenu from '../../../../components/MemberContextMenu';
 import { serverStore } from '../../../../../../modules/servers';
 import { notificationStore, authStore } from '../../../../../../core';
 import './MembersSettings.scss';
@@ -31,6 +32,10 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
     const [sortBy, setSortBy] = useState<SortOption>('name');
     const [filterBy, setFilterBy] = useState<FilterOption>('all');
     const [selectedMemberForRoles, setSelectedMemberForRoles] = useState<ServerMember | null>(null);
+    const [contextMenu, setContextMenu] = useState<{
+        member: ServerMember;
+        position: { x: number; y: number };
+    } | null>(null);
 
     const server = serverStore.currentServer;
     const currentUser = authStore.user;
@@ -152,6 +157,29 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
         return sortedGroups;
     }, [filteredAndSortedMembers, roles]);
 
+    const handleContextMenu = useCallback((e: React.MouseEvent, member: ServerMember) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Не показываем меню для себя
+        if (member.userId === currentUser?.id) {
+            return;
+        }
+        
+        if (!server?.id) {
+            return;
+        }
+        
+        // Убеждаемся, что позиция корректна
+        const x = Math.min(e.clientX, window.innerWidth - 250); // Оставляем место для меню
+        const y = Math.min(e.clientY, window.innerHeight - 200); // Оставляем место для меню
+        
+        setContextMenu({
+            member,
+            position: { x, y }
+        });
+    }, [currentUser?.id, server?.id]);
+
     return (
         <div className="settings-section">
             <div className="section-header">
@@ -253,6 +281,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
                                                         currentUserId={currentUser?.id}
                                                         onUpdate={loadMembers}
                                                         onManageRoles={setSelectedMemberForRoles}
+                                                        onContextMenu={handleContextMenu}
                                                     />
                                                 ))}
                                             </div>
@@ -273,6 +302,23 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
                     roles={roles}
                     onClose={() => setSelectedMemberForRoles(null)}
                     onUpdate={loadMembers}
+                />
+            )}
+            
+            {contextMenu && server?.id && (
+                <MemberContextMenu
+                    key={`context-menu-${contextMenu.member.id}`}
+                    member={contextMenu.member}
+                    serverId={server.id}
+                    currentUserPermissions={currentUserPermissions}
+                    onClose={() => {
+                        setContextMenu(null);
+                    }}
+                    onMemberUpdate={() => {
+                        loadMembers();
+                        setContextMenu(null);
+                    }}
+                    position={contextMenu.position}
                 />
             )}
         </div>

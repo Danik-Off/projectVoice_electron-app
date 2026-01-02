@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverMembersService, Permissions, hasPermission } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
@@ -14,6 +14,7 @@ interface MemberRowProps {
     currentUserId?: number;
     onUpdate: () => void;
     onManageRoles: (member: ServerMember) => void;
+    onContextMenu?: (e: React.MouseEvent, member: ServerMember) => void;
 }
 
 const MemberRow: React.FC<MemberRowProps> = ({
@@ -23,7 +24,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
     currentUserPermissions,
     currentUserId,
     onUpdate,
-    onManageRoles
+    onManageRoles,
+    onContextMenu
 }) => {
     const { t } = useTranslation();
     const [isMuted, setIsMuted] = useState(member.isMuted || false);
@@ -127,11 +129,44 @@ const MemberRow: React.FC<MemberRowProps> = ({
         }
     };
 
+    const handleClick = useCallback((e: React.MouseEvent) => {
+        // Если клик по кнопке действия, не открываем контекстное меню
+        if ((e.target as HTMLElement).closest('.action-btn')) {
+            return;
+        }
+        
+        // Если есть права на управление ролями и это не текущий пользователь, открываем модальное окно
+        if (canManageRoles && !isCurrentUser && onManageRoles) {
+            onManageRoles(member);
+        }
+    }, [canManageRoles, isCurrentUser, onManageRoles, member]);
+
+    const handleContextMenuClick = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Не показываем меню для себя
+        if (isCurrentUser) {
+            return;
+        }
+        
+        // Проверяем, есть ли хотя бы одно право на модерацию
+        if (!hasModerationRights) {
+            return;
+        }
+        
+        if (onContextMenu) {
+            onContextMenu(e, member);
+        }
+    }, [isCurrentUser, hasModerationRights, onContextMenu, member]);
+
     return (
         <div 
-            className={`member-row ${isCurrentUser ? 'current-user' : ''}`}
+            className={`member-row ${isCurrentUser ? 'current-user' : ''} ${canManageRoles && !isCurrentUser ? 'clickable' : ''}`}
             onMouseEnter={() => setShowActions(true)}
             onMouseLeave={() => setShowActions(false)}
+            onClick={handleClick}
+            onContextMenu={handleContextMenuClick}
         >
             <div className="member-row-main">
                 <div className="member-avatar-section">

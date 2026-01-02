@@ -16,6 +16,19 @@
         border-color: rgba(88, 101, 242, 0.3);
     }
 
+    &.clickable {
+        cursor: pointer;
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
     .member-row-main {
         display: flex;
         align-items: center;

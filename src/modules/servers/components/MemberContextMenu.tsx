@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { serverMembersService, Permissions, hasPermission } from '../index';
 import { notificationStore } from '../../../core';
+import { roleService } from '../services/roleService';
 import type { ServerMember } from '../services/serverMembersService';
+import type { Role } from '../types/role';
+import MemberRolesModal from '../pages/serverSettings/components/members/MemberRolesModal';
 import './MemberContextMenu.scss';
 
 interface MemberContextMenuProps {
@@ -67,30 +70,69 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     const { t } = useTranslation();
     const menuRef = useRef<HTMLDivElement>(null);
     const [showBanModal, setShowBanModal] = useState(false);
+    const [showRolesModal, setShowRolesModal] = useState(false);
+    const [roles, setRoles] = useState<Role[]>([]);
+    const [loadingRoles, setLoadingRoles] = useState(false);
     const [isMuted, setIsMuted] = useState(member.isMuted || false);
     const [isDeafened, setIsDeafened] = useState(member.isDeafened || false);
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                onClose();
-            }
-        };
+        let cleanup: (() => void) | null = null;
+        
+        // Небольшая задержка перед добавлением обработчика, чтобы не закрыть меню сразу после открытия
+        const timeoutId = setTimeout(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                    onClose();
+                }
+            };
 
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                onClose();
-            }
-        };
+            const handleEscape = (event: KeyboardEvent) => {
+                if (event.key === 'Escape') {
+                    onClose();
+                }
+            };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        document.addEventListener('keydown', handleEscape);
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscape);
+
+            cleanup = () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+                document.removeEventListener('keydown', handleEscape);
+            };
+        }, 100);
 
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('keydown', handleEscape);
+            clearTimeout(timeoutId);
+            if (cleanup) {
+                cleanup();
+            }
         };
     }, [onClose]);
+
+    // Загрузка ролей при открытии меню управления ролями
+    useEffect(() => {
+        if (showRolesModal && roles.length === 0 && !loadingRoles) {
+            loadRoles();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showRolesModal]);
+
+    const loadRoles = async () => {
+        setLoadingRoles(true);
+        try {
+            const rolesData = await roleService.getRoles(serverId);
+            setRoles(rolesData);
+        } catch (error) {
+            console.error('Error loading roles:', error);
+            notificationStore.addNotification(
+                t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей',
+                'error'
+            );
+        } finally {
+            setLoadingRoles(false);
+        }
+    };
 
     // Проверка прав
     const canKick = hasPermission(currentUserPermissions, Permissions.KICK_MEMBERS);
@@ -179,9 +221,16 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     };
 
     // Если нет прав на модерацию, не показываем меню
-    if (!canKick && !canBan && !canMute && !canDeafen && !canManageRoles) {
+    // Но если меню было открыто, показываем его (возможно, права изменились)
+    const hasAnyPermission = canKick || canBan || canMute || canDeafen || canManageRoles;
+    
+    if (!hasAnyPermission) {
         return null;
     }
+
+    // Убеждаемся, что позиция корректна и меню не выходит за границы экрана
+    const menuX = Math.min(position.x, window.innerWidth - 250);
+    const menuY = Math.min(position.y, window.innerHeight - 200);
 
     return (
         <>
@@ -190,9 +239,9 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                 className="member-context-menu"
                 style={{
                     position: 'fixed',
-                    left: `${position.x}px`,
-                    top: `${position.y}px`,
-                    zIndex: 1000
+                    left: `${menuX}px`,
+                    top: `${menuY}px`,
+                    zIndex: 10000
                 }}
             >
                 <div className="context-menu-header">
@@ -219,6 +268,22 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                         <span className="icon">🔨</span>
                         {t('serverMembers.ban') || 'Забанить'}
                     </button>
+                )}
+                
+                {canManageRoles && (
+                    <>
+                        <div className="context-menu-divider" />
+                        <button 
+                            className="context-menu-item"
+                            onClick={() => {
+                                setShowRolesModal(true);
+                                onClose();
+                            }}
+                        >
+                            <span className="icon">🎭</span>
+                            {t('serverSettings.manageRoles') || 'Управление ролями'}
+                        </button>
+                    </>
                 )}
                 
                 {(canMute || canDeafen) && (
@@ -255,6 +320,20 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                 onClose={() => setShowBanModal(false)}
                 onConfirm={handleBan}
             />
+            
+            {showRolesModal && (
+                <MemberRolesModal
+                    isOpen={showRolesModal}
+                    member={member}
+                    serverId={serverId}
+                    roles={roles}
+                    onClose={() => setShowRolesModal(false)}
+                    onUpdate={() => {
+                        onMemberUpdate?.();
+                        setShowRolesModal(false);
+                    }}
+                />
+            )}
         </>
     );
 };
