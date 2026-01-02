@@ -34,47 +34,53 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
     return (
         <div className="blocked-server-modal-overlay">
             <div className="blocked-server-modal">
-                <div className="modal-header">
-                    <div className="icon">🏠🚫</div>
-                    <h2>Сервер заблокирован</h2>
+                <div className="blocked-server-modal__header">
+                    <div className="blocked-server-modal__header-icon">🏠🚫</div>
+                    <h2 className="blocked-server-modal__header-title">Сервер заблокирован</h2>
                 </div>
                 
-                <div className="modal-content">
-                    <div className="server-info">
-                        <h3>Сервер: <span className="server-name">{serverName}</span></h3>
+                <div className="blocked-server-modal__content">
+                    <div className="blocked-server-modal__server-info">
+                        <h3 className="blocked-server-modal__server-info-name">
+                            Сервер: <span className="blocked-server-modal__server-info-name--highlighted">{serverName}</span>
+                        </h3>
                     </div>
                     
-                    <p className="message">
+                    <p className="blocked-server-modal__message">
                         Этот сервер был заблокирован администрацией.
                     </p>
                     
                     {reason && (
-                        <div className="reason-section">
-                            <h3>Причина блокировки:</h3>
-                            <p className="reason">{reason}</p>
+                        <div className="blocked-server-modal__reason-section">
+                            <h3 className="blocked-server-modal__reason-section-title">Причина блокировки:</h3>
+                            <p className="blocked-server-modal__reason-section-text">{reason}</p>
                         </div>
                     )}
                     
                     {blockedAt && (
-                        <div className="details-section">
-                            <p><strong>Дата блокировки:</strong> {formatDate(blockedAt)}</p>
+                        <div className="blocked-server-modal__details-section">
+                            <p className="blocked-server-modal__details-section-item">
+                                <strong>Дата блокировки:</strong> {formatDate(blockedAt)}
+                            </p>
                             {blockedBy && (
-                                <p><strong>Заблокирован:</strong> {blockedBy}</p>
+                                <p className="blocked-server-modal__details-section-item">
+                                    <strong>Заблокирован:</strong> {blockedBy}
+                                </p>
                             )}
                         </div>
                     )}
                     
-                    <div className="contact-info">
-                        <p>
+                    <div className="blocked-server-modal__contact-info">
+                        <p className="blocked-server-modal__contact-info-text">
                             Если вы считаете, что блокировка была применена по ошибке, 
                             обратитесь к администрации системы.
                         </p>
                     </div>
                 </div>
                 
-                <div className="modal-footer">
+                <div className="blocked-server-modal__footer">
                     <button 
-                        className="close-button"
+                        className="blocked-server-modal__close-button"
                         onClick={onClose}
                     >
                         Понятно

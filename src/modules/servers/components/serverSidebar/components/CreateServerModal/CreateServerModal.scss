@@ -1,0 +1,148 @@
+@use '../../../../../../styles/main' as *;
+
+// Блок: create-server-form (форма создания сервера)
+.create-server-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+
+    // Элемент: create-server-form__field (поле формы)
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    // Элемент: create-server-form__label (метка поля)
+    &__label {
+        font-size: $font-size-md;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+    }
+
+    // Элемент: create-server-form__required (обязательное поле)
+    &__required {
+        color: var(--error-color);
+        font-weight: 700;
+    }
+
+    // Элемент: create-server-form__input (поле ввода)
+    &__input {
+        width: 100%;
+        height: $input-height;
+        padding: 0 var(--spacing-md);
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: var(--border-radius);
+        font-size: $font-size-md;
+        color: var(--text-primary);
+        outline: none;
+
+        &:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        &::placeholder {
+            color: var(--text-disabled);
+        }
+    }
+
+    // Элемент: create-server-form__checkbox-label (метка чекбокса)
+    &__checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        font-size: $font-size-md;
+        color: var(--text-primary);
+        cursor: pointer;
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-accent);
+        }
+
+        span {
+            user-select: none;
+        }
+    }
+
+    // Элемент: create-server-form__future-features (будущие функции)
+    &__future-features {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        background: var(--tertiary-bg);
+        border-radius: var(--border-radius);
+        border: 1px dashed var(--border-secondary);
+    }
+
+    // Элемент: create-server-form__actions (действия формы)
+    &__actions {
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: flex-end;
+        padding-top: var(--spacing-md);
+        border-top: 1px solid var(--border-primary);
+    }
+
+    // Элемент: create-server-form__button (кнопка)
+    &__button {
+        min-width: 100px;
+        height: $button-height;
+        padding: 0 var(--spacing-lg);
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: $font-size-md;
+        font-weight: 600;
+        cursor: pointer;
+        outline: none;
+        user-select: none;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        // Модификатор: create-server-form__button--primary
+        &--primary {
+            background: var(--primary-accent);
+            color: #ffffff;
+
+            &:hover:not(:disabled) {
+                background: var(--primary-accent-hover);
+            }
+
+            &:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+        }
+
+        // Модификатор: create-server-form__button--secondary
+        &--secondary {
+            background: var(--button-secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+
+            &:hover:not(:disabled) {
+                background: var(--button-secondary-hover);
+            }
+
+            &:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+        }
+    }
+}
+

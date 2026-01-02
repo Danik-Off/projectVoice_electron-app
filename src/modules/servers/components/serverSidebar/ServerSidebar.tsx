@@ -1,21 +1,22 @@
-// src/components/ServerSidebar/ServerSidebar.tsx
 import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authStore } from '../../../../core';
 import BlockedServerModal from '../../../../components/BlockedServerModal';
+import CreateServerModal from './components/CreateServerModal/CreateServerModal';
 import type { Server } from '../../../../types/server';
-import './ServerSidebar.scss';
-import { useNavigate, useLocation } from 'react-router-dom';
 import ServerItem from '../../../../app/layout/components/serverSlidebar/serverItem/ServerItem';
 import serverStore from '../../store/serverStore';
+import './ServerSidebar.scss';
 
 interface ServerSidebarProps {
-    onOpenModal: () => void;
+    onOpenModal?: () => void;
 }
 
 const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [blockedServer, setBlockedServer] = useState<{
         name: string;
         reason?: string;
@@ -26,7 +27,6 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
     const handleSetting = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Settings button clicked');
         navigate('/settings');
     };
 
@@ -43,13 +43,10 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
                 blockedBy: server.blockedByUser?.username
             });
         } else {
-            //  открыть сервер
             navigate(`/server/${server.id}`);
         }
     };
 
-    // Определяем, находимся ли мы на главной странице
-    // Кнопка "Домой" должна быть активна только когда мы НЕ на главной
     const isOnHomePage = location.pathname === '/' || 
                         location.pathname === '/main' || 
                         location.pathname === '/welcome' ||
@@ -59,27 +56,18 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
         serverStore.fetchServers();
     }, []);
 
-    // Добавляем логирование для отладки
-    console.log('ServerSidebar - servers count:', serverStore.servers.length);
-    console.log('ServerSidebar - servers:', serverStore.servers);
-    console.log('ServerSidebar - current path:', location.pathname);
-    console.log('ServerSidebar - isOnHomePage:', isOnHomePage);
-    console.log('ServerSidebar - home button active:', !isOnHomePage);
-
     return (
         <aside className="servers">
-            {/* Верхняя закрепленная часть - главная кнопка */}
             <div className="servers__header">
                 <div 
-                    className={`server home ${isOnHomePage ? 'active' : ''}`} 
+                    className={`servers__server servers__server--home ${isOnHomePage ? 'servers__server--active' : ''}`} 
                     onClick={() => navigate('/')}
                 >
-                    <div className="server-icon">🏠</div>
+                    <div className="servers__server-icon">🏠</div>
                 </div>
-                <div className="server-separator"></div>
+                <div className="servers__separator"></div>
             </div>
             
-            {/* Скроллируемый список серверов */}
             <div className="servers__list">
                 {serverStore.servers.map((server) => (
                     <ServerItem 
@@ -88,37 +76,38 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
                         onClick={() => handleServerClick(server)}
                     />
                 ))}
-                <div className="server-separator"></div>
-                <div className="server add" onClick={onOpenModal}>
-                    <div className="server-icon">+</div>
+                <div className="servers__separator"></div>
+                <div className="servers__server servers__server--add" onClick={() => {
+                    setIsCreateModalOpen(true);
+                    onOpenModal?.();
+                }}>
+                    <div className="servers__server-icon">+</div>
                 </div>
             </div>
             
-            {/* Нижняя закрепленная часть - настройки и админка */}
             <div className="servers__footer">
                 <div className="servers__footer-separator"></div>
                 <div 
-                    className="server settings" 
+                    className="servers__server servers__server--settings" 
                     onClick={handleSetting}
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            handleSetting(e as React.MouseEvent);
+                            navigate('/settings');
                         }
                     }}
                 >
-                    <div className="server-icon">⚙️</div>
+                    <div className="servers__server-icon">⚙️</div>
                 </div>
                 {authStore.user?.role === 'admin' && (
-                    <div className="server admin" onClick={handleAdminPanel}>
-                        <div className="server-icon">👑</div>
+                    <div className="servers__server servers__server--admin" onClick={handleAdminPanel}>
+                        <div className="servers__server-icon">👑</div>
                     </div>
                 )}
             </div>
 
-            {/* Модальное окно заблокированного сервера */}
             <BlockedServerModal
                 isOpen={!!blockedServer}
                 onClose={() => setBlockedServer(null)}
@@ -126,6 +115,11 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
                 reason={blockedServer?.reason}
                 blockedAt={blockedServer?.blockedAt}
                 blockedBy={blockedServer?.blockedBy}
+            />
+
+            <CreateServerModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
             />
         </aside>
     );

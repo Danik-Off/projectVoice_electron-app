@@ -32,43 +32,47 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
     return (
         <div className="blocked-account-modal-overlay">
             <div className="blocked-account-modal">
-                <div className="modal-header">
-                    <div className="icon">🚫</div>
-                    <h2>Аккаунт заблокирован</h2>
+                <div className="blocked-account-modal__header">
+                    <div className="blocked-account-modal__header-icon">🚫</div>
+                    <h2 className="blocked-account-modal__header-title">Аккаунт заблокирован</h2>
                 </div>
                 
-                <div className="modal-content">
-                    <p className="message">
+                <div className="blocked-account-modal__content">
+                    <p className="blocked-account-modal__message">
                         Ваш аккаунт был заблокирован администрацией.
                     </p>
                     
                     {reason && (
-                        <div className="reason-section">
-                            <h3>Причина блокировки:</h3>
-                            <p className="reason">{reason}</p>
+                        <div className="blocked-account-modal__reason-section">
+                            <h3 className="blocked-account-modal__reason-section-title">Причина блокировки:</h3>
+                            <p className="blocked-account-modal__reason-section-text">{reason}</p>
                         </div>
                     )}
                     
                     {blockedAt && (
-                        <div className="details-section">
-                            <p><strong>Дата блокировки:</strong> {formatDate(blockedAt)}</p>
+                        <div className="blocked-account-modal__details-section">
+                            <p className="blocked-account-modal__details-section-item">
+                                <strong>Дата блокировки:</strong> {formatDate(blockedAt)}
+                            </p>
                             {blockedBy && (
-                                <p><strong>Заблокирован:</strong> {blockedBy}</p>
+                                <p className="blocked-account-modal__details-section-item">
+                                    <strong>Заблокирован:</strong> {blockedBy}
+                                </p>
                             )}
                         </div>
                     )}
                     
-                    <div className="contact-info">
-                        <p>
+                    <div className="blocked-account-modal__contact-info">
+                        <p className="blocked-account-modal__contact-info-text">
                             Если вы считаете, что блокировка была применена по ошибке, 
                             обратитесь к администрации системы.
                         </p>
                     </div>
                 </div>
                 
-                <div className="modal-footer">
+                <div className="blocked-account-modal__footer">
                     <button 
-                        className="close-button"
+                        className="blocked-account-modal__close-button"
                         onClick={onClose}
                     >
                         Понятно

@@ -256,9 +256,7 @@
 .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
 .disabled\:pointer-events-none:disabled { pointer-events: none; }
 
-// Утилиты для анимаций
-.animate-on-hover { @extend .animate-on-hover; }
-.animate-on-click { @extend .animate-on-click; }
+// Утилиты для анимаций (убраны для упрощения)
 
 // Утилиты для скроллбаров
 .scrollbar-thin {

@@ -1,174 +1,155 @@
+@use '../styles/main' as *;
+
+// Блок: blocked-account-modal-overlay (основной фон модального окна)
 .blocked-account-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: var(--modal-overlay);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: $z-index-modal;
     backdrop-filter: blur(5px);
 }
 
+// Блок: blocked-account-modal (контейнер модального окна)
 .blocked-account-modal {
-    background: var(--bg-primary);
-    border-radius: 12px;
+    background: var(--modal-bg);
+    border-radius: var(--border-radius-large);
     padding: 0;
     max-width: 500px;
     width: 90%;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border-color);
-    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--modal-border);
 }
 
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-50px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-    color: white;
-    padding: 24px;
-    border-radius: 12px 12px 0 0;
+// Элемент: blocked-account-modal__header (заголовок модального окна)
+.blocked-account-modal__header {
+    background: linear-gradient(135deg, var(--error-color) 0%, var(--error-color-hover) 100%);
+    color: #ffffff;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
     text-align: center;
     position: relative;
+
+    // Элемент: blocked-account-modal__icon (иконка)
+    &-icon {
+        font-size: $icon-size-xl;
+        margin-bottom: var(--spacing-md);
+    }
+
+    // Элемент: blocked-account-modal__title (заголовок)
+    &-title {
+        margin: 0;
+        font-size: $font-size-xl;
+        font-weight: 600;
+    }
 }
 
-.modal-header .icon {
-    font-size: 48px;
-    margin-bottom: 16px;
+// Элемент: blocked-account-modal__content (содержимое модального окна)
+.blocked-account-modal__content {
+    padding: var(--spacing-lg);
 }
 
-.modal-header h2 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-}
-
-.modal-content {
-    padding: 24px;
-}
-
-.message {
-    font-size: 16px;
+// Элемент: blocked-account-modal__message (сообщение)
+.blocked-account-modal__message {
+    font-size: $font-size-md;
     line-height: 1.6;
     color: var(--text-primary);
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-lg);
     text-align: center;
 }
 
-.reason-section {
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-    border-left: 4px solid #e74c3c;
+// Элемент: blocked-account-modal__reason-section (секция с причиной)
+.blocked-account-modal__reason-section {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid var(--error-color);
+
+    // Элемент: blocked-account-modal__reason-title (заголовок причины)
+    &-title {
+        margin: 0 0 var(--spacing-sm) 0;
+        font-size: $font-size-sm;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    // Элемент: blocked-account-modal__reason-text (текст причины)
+    &-text {
+        margin: 0;
+        font-size: $font-size-md;
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
 }
 
-.reason-section h3 {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+// Элемент: blocked-account-modal__details-section (секция с деталями)
+.blocked-account-modal__details-section {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+
+    // Элемент: blocked-account-modal__details-item (элемент деталей)
+    &-item {
+        margin: var(--spacing-sm) 0;
+        font-size: $font-size-sm;
+        color: var(--text-secondary);
+
+        strong {
+            color: var(--text-primary);
+        }
+    }
 }
 
-.reason {
-    margin: 0;
-    font-size: 16px;
-    color: var(--text-primary);
-    line-height: 1.5;
+// Элемент: blocked-account-modal__contact-info (информация для связи)
+.blocked-account-modal__contact-info {
+    background: linear-gradient(135deg, var(--warning-accent) 0%, var(--warning-color) 100%);
+    color: #ffffff;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    text-align: center;
+
+    // Элемент: blocked-account-modal__contact-text (текст контакта)
+    &-text {
+        margin: 0;
+        font-size: $font-size-sm;
+        line-height: 1.5;
+    }
 }
 
-.details-section {
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 20px;
-}
-
-.details-section p {
-    margin: 8px 0;
-    font-size: 14px;
-    color: var(--text-secondary);
-}
-
-.details-section strong {
-    color: var(--text-primary);
-}
-
-.contact-info {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: white;
-    border-radius: 8px;
-    padding: 16px;
+// Элемент: blocked-account-modal__footer (подвал модального окна)
+.blocked-account-modal__footer {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
     text-align: center;
 }
 
-.contact-info p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.modal-footer {
-    padding: 16px 24px 24px;
-    text-align: center;
-}
-
-.close-button {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    color: white;
+// Элемент: blocked-account-modal__close-button (кнопка закрытия)
+.blocked-account-modal__close-button {
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+    color: #ffffff;
     border: none;
-    border-radius: 8px;
-    padding: 12px 32px;
-    font-size: 16px;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: $font-size-md;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
     min-width: 120px;
-}
 
-.close-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3);
-}
+    &:hover {
+        background: linear-gradient(135deg, var(--primary-accent-hover) 0%, var(--primary-accent) 100%);
+        box-shadow: var(--shadow-medium);
+    }
 
-.close-button:active {
-    transform: translateY(0);
+    &:active {
+        transform: scale(0.98);
+    }
 }
-
-// Адаптивность
-@media (max-width: 768px) {
-    .blocked-account-modal {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .modal-header {
-        padding: 20px;
-    }
-    
-    .modal-header h2 {
-        font-size: 20px;
-    }
-    
-    .modal-content {
-        padding: 20px;
-    }
-    
-    .modal-footer {
-        padding: 16px 20px 20px;
-    }
-} 

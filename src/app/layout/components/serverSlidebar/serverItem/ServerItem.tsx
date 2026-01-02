@@ -19,18 +19,13 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
 
     // Определяем классы для различных состояний сервера
     const getServerClasses = () => {
-        const baseClasses = ['server'];
+        const baseClasses = ['servers__server'];
         
-        if (isActive) {baseClasses.push('active');}
-        if (server.isBlocked) {baseClasses.push('blocked');}
-        if (server.hasNotifications) {baseClasses.push('has-notifications');}
-        if (server.connectionError) {baseClasses.push('connection-error');}
-        if (server.maintenance) {baseClasses.push('maintenance');}
-        
-        // Добавляем специальные классы для VoiceVerse дизайна
-        if (server.isBlocked) {baseClasses.push('animate-pulse');}
-        if (server.connectionError) {baseClasses.push('animate-shake');}
-        if (server.maintenance) {baseClasses.push('animate-rotate');}
+        if (isActive) {baseClasses.push('servers__server--active');}
+        if (server.isBlocked) {baseClasses.push('servers__server--blocked');}
+        if (server.hasNotifications) {baseClasses.push('servers__server--has-notifications');}
+        if (server.connectionError) {baseClasses.push('servers__server--connection-error');}
+        if (server.maintenance) {baseClasses.push('servers__server--maintenance');}
         
         return baseClasses.join(' ');
     };
@@ -68,12 +63,12 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
                 <img 
                     src={serverIcon} 
                     alt={`${server.name} icon`} 
-                    className="server-icon" 
+                    className="servers__server-icon" 
                     style={getIconStyles()}
                 />
             ) : (
                 <div 
-                    className="server-icon"
+                    className="servers__server-icon"
                     style={getIconStyles()}
                 >
                     {serverNameInitial}
