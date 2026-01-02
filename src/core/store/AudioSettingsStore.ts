@@ -372,22 +372,36 @@ class AudioSettingsStore {
         try {
             console.log('AudioSettingsStore: Applying all audio settings...');
             
-            // Если есть активный поток, обновляем настройки в реальном времени
-            if (this._stream && this._stream.getAudioTracks().length > 0) {
-                this.updateRealtimeSettings();
-                // Обновляем WebRTC поток через roomStore
-                const store = await getRoomStore();
-                if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
-                    (store as VoiceRoomStore).webRTCClient.resendlocalStream();
-                }
-                console.log('AudioSettingsStore: All settings applied to existing stream');
+            // Обновляем медиа поток с новыми настройками
+            await this.updateMediaStream(true);
+            
+            // Если пользователь подключен к голосовому каналу, переподключаемся
+            const store = await getRoomStore();
+            const voiceStore = store as VoiceRoomStore;
+            
+            if (voiceStore.currentVoiceChannel) {
+                console.log('AudioSettingsStore: Reconnecting to voice channel with new settings...');
+                const currentChannel = voiceStore.currentVoiceChannel;
+                
+                // Отключаемся от текущего канала
+                voiceStore.disconnectToRoom();
+                
+                // Небольшая задержка для корректного отключения
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Переподключаемся с новыми настройками
+                voiceStore.connectToRoom(currentChannel.id, currentChannel.name);
+                console.log('AudioSettingsStore: Reconnected to voice channel with new settings');
             } else {
-                // Если нет активного потока, создаем новый
-                await this.updateMediaStream(true);
-                console.log('AudioSettingsStore: New stream created with all settings');
+                // Если не подключен к каналу, просто обновляем WebRTC поток
+                if (voiceStore.webRTCClient?.resendlocalStream) {
+                    voiceStore.webRTCClient.resendlocalStream();
+                }
+                console.log('AudioSettingsStore: Settings applied (not connected to voice channel)');
             }
         } catch (error) {
             console.error('AudioSettingsStore: Error applying all settings:', error);
+            throw error;
         }
     }
 
@@ -404,6 +418,7 @@ class AudioSettingsStore {
         this.bitrate = 256;
         this.latency = 50;
         this.channelCount = 2;
+        this.audioQuality = 'high';
         
         // Сбрасываем дополнительные настройки
         this.voiceEnhancement = true;
@@ -417,7 +432,7 @@ class AudioSettingsStore {
         this.voiceIsolation = true;
         this.dynamicRangeCompression = 0.2;
         
-        // Применяем настройки
+        // Применяем настройки (включая переподключение если нужно)
         await this.applyAllSettings();
         
         console.log('AudioSettingsStore: Settings reset to defaults');

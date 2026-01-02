@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { audioSettingsStore } from '../../../core';
+import { audioSettingsStore, notificationStore } from '../../../core';
 import roomStore from '../store/roomStore';
 import MicrophoneVisualizer from './MicrophoneVisualizer';
 import './audioSettings.scss';
@@ -768,19 +768,64 @@ const AudioSettings: React.FC = observer(() => {
                                 <div className="button-group">
                                     <button 
                                         className="settings-button settings-button--test"
-                                        onClick={() => audioSettingsStore.applyAllSettings()}
+                                        onClick={async () => {
+                                            try {
+                                                if (roomStore.currentVoiceChannel) {
+                                                    await audioSettingsStore.applyAllSettings();
+                                                    notificationStore.addNotification(
+                                                        'Настройки применены. Переподключение к голосовому каналу...',
+                                                        'success'
+                                                    );
+                                                } else {
+                                                    await audioSettingsStore.applyAllSettings();
+                                                    notificationStore.addNotification(
+                                                        'Настройки применены',
+                                                        'success'
+                                                    );
+                                                }
+                                            } catch (error) {
+                                                console.error('Error applying settings:', error);
+                                                notificationStore.addNotification(
+                                                    'Ошибка при применении настроек',
+                                                    'error'
+                                                );
+                                            }
+                                        }}
                                     >
                                         Применить настройки
                                     </button>
                                     <button 
                                         className="settings-button settings-button--danger"
-                                        onClick={() => audioSettingsStore.resetToDefaults()}
+                                        onClick={async () => {
+                                            try {
+                                                await audioSettingsStore.resetToDefaults();
+                                                if (roomStore.currentVoiceChannel) {
+                                                    notificationStore.addNotification(
+                                                        'Настройки сброшены. Переподключение к голосовому каналу...',
+                                                        'success'
+                                                    );
+                                                } else {
+                                                    notificationStore.addNotification(
+                                                        'Настройки сброшены',
+                                                        'success'
+                                                    );
+                                                }
+                                            } catch (error) {
+                                                console.error('Error resetting settings:', error);
+                                                notificationStore.addNotification(
+                                                    'Ошибка при сбросе настроек',
+                                                    'error'
+                                                );
+                                            }
+                                        }}
                                     >
                                         Сбросить настройки
                                     </button>
                                 </div>
                                 <div className="setting-description">
-                                    Применить текущие настройки или вернуть к значениям по умолчанию
+                                    {roomStore.currentVoiceChannel 
+                                        ? 'Применение настроек переподключит вас к голосовому каналу'
+                                        : 'Применить текущие настройки или вернуть к значениям по умолчанию'}
                                 </div>
                             </div>
                         </div>
