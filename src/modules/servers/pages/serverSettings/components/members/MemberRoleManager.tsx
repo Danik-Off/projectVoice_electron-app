@@ -26,7 +26,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
     useEffect(() => {
         // Загружаем текущие роли участника
         if (member.roles && Array.isArray(member.roles)) {
-            const roleIds = member.roles.map((r: any) => 
+            const roleIds = member.roles.map((r: Role | number) => 
                 typeof r === 'object' ? r.id : r
             );
             setSelectedRoles(roleIds);
@@ -60,7 +60,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
     };
 
     const memberRoleIds = member.roles 
-        ? member.roles.map((r: any) => typeof r === 'object' ? r.id : r)
+        ? member.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r)
         : [];
 
     // Сортируем роли по позиции (больше = выше в иерархии)

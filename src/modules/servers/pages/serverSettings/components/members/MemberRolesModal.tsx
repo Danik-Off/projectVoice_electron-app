@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { roleService } from '../../../../services/roleService';
 import { serverMembersService } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
 import type { ServerMember } from '../../../../../../modules/servers';
@@ -30,7 +29,7 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({
 
     useEffect(() => {
         if (member && member.roles) {
-            const roleIds = member.roles.map((r: any) => 
+            const roleIds = member.roles.map((r: Role | number) => 
                 typeof r === 'object' ? r.id : r
             );
             setSelectedRoleIds(roleIds);

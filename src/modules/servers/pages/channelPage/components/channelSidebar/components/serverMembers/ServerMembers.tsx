@@ -37,7 +37,6 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(({
     } | null>(null);
 
     const currentUser = authStore.user;
-    const currentUserMember = members.find(member => member.userId === currentUser?.id);
     
     // Используем права вместо ролей для проверки доступа
     const canManageMembers = hasPermission(currentUserPermissions, Permissions.MANAGE_GUILD) ||
@@ -50,16 +49,6 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(({
             ...prev,
             [role]: !prev[role]
         }));
-    };
-
-    const getRoleIcon = (role: string) => {
-        switch (role) {
-            case 'owner': return '👑';
-            case 'admin': return '⚡';
-            case 'moderator': return '🛡️';
-            case 'member': return '👤';
-            default: return '👤';
-        }
     };
 
     // Группируем участников по ролям (используя highestRole если есть)

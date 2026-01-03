@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import { notificationStore } from '../../../../../../core';
 import './IntegrationsSettings.scss';
+
+interface Integration {
+    id: string;
+    name: string;
+    type: string;
+}
 
 const IntegrationsSettings: React.FC = observer(() => {
     const { t } = useTranslation();
-    const { serverId } = useParams<{ serverId: string }>();
-    const [integrations] = useState<any[]>([]);
+    const [integrations] = useState<Integration[]>([]);
 
     return (
         <div className="settings-section">

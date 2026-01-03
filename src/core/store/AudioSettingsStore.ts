@@ -1,7 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { notificationStore } from './NotificationStore';
+import type { VoiceRoomStore } from '../../modules/voice/store/roomStore';
 // Динамический импорт roomStore для избежания циклических зависимостей
-let roomStore: any;
+let roomStore: VoiceRoomStore | null = null;
 const getRoomStore = async () => {
     if (!roomStore) {
         const roomStoreModule = await import('../../modules/voice/store/roomStore');
