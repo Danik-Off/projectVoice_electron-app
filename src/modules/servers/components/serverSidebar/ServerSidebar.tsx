@@ -9,10 +9,7 @@ import ServerItem from '../../../../app/layout/components/serverSlidebar/serverI
 import serverStore from '../../store/serverStore';
 import './ServerSidebar.scss';
 
-interface ServerSidebarProps {
-}
-
-const ServerSidebar: React.FC<ServerSidebarProps> = observer(() => {
+const ServerSidebar: React.FC = observer(() => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

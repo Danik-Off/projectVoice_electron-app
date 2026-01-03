@@ -27,7 +27,8 @@ const AuthPage: React.FC = observer(() => {
                 navigate('/');
             }
         }
-    }, [authStore.isAuthenticated, redirect, navigate]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [redirect, navigate]);
 
     // Проверяем, заблокирован ли аккаунт
     useEffect(() => {

@@ -336,7 +336,7 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.isSpeakerMuted ? 0 : 100}
-                                        onChange={(e) => {
+                                        onChange={() => {
                                             // Громкость вывода управляется через mute/unmute
                                             // Можно добавить отдельное поле в store если нужно
                                         }}

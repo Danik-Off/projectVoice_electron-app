@@ -54,7 +54,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
 
     // Получаем все роли участника
     const memberRoles = member.roles 
-        ? roles.filter(r => member.roles!.some((mr: any) => (typeof mr === 'object' ? mr.id : mr) === r.id))
+        ? roles.filter(r => member.roles!.some((mr: Role | number) => (typeof mr === 'object' ? mr.id : mr) === r.id))
         : [];
 
     const handleKick = async () => {

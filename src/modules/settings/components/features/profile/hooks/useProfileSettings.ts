@@ -45,7 +45,8 @@ export const useProfileSettings = () => {
             setEditForm(userData);
             setOriginalForm(userData);
         }
-    }, [authStore.user]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Валидация формы профиля
     const validateProfileForm = (): boolean => {

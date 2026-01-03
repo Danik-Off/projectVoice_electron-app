@@ -83,7 +83,7 @@ const RolesSettings: React.FC = observer(() => {
             // Вычисляем разрешения на основе ролей пользователя
             if (userMember.roles && Array.isArray(userMember.roles) && userMember.roles.length > 0) {
                 // Находим роли пользователя среди всех ролей сервера
-                const userRoleIds = userMember.roles.map((r: any) => 
+                const userRoleIds = userMember.roles.map((r: Role | number) => 
                     typeof r === 'object' ? r.id : r
                 );
                 

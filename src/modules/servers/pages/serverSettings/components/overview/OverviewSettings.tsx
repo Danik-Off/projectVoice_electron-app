@@ -54,7 +54,7 @@ const OverviewSettings: React.FC = observer(() => {
                 let channelsCount = 0;
                 try {
                     const { channelsStore } = await import('../../../../../../modules/channels');
-                    const channels = channelsStore.channels.filter((ch: any) => ch.serverId === parseInt(serverId));
+                    const channels = channelsStore.channels.filter((ch: { serverId: number }) => ch.serverId === parseInt(serverId));
                     channelsCount = channels.length;
                 } catch (error) {
                     console.error('Error loading channels:', error);

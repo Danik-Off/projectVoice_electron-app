@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import { serverMembersService, Permissions, hasPermission } from '../../../../../../modules/servers';
+import { serverMembersService } from '../../../../../../modules/servers';
 import { roleService } from '../../../../services/roleService';
 import type { ServerMember } from '../../../../../../modules/servers';
 import type { Role } from '../../../../types/role';
@@ -24,7 +23,6 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
     currentUserPermissions = 0n 
 }) => {
     const { t } = useTranslation();
-    const { serverId } = useParams<{ serverId: string }>();
     const [members, setMembers] = useState<ServerMember[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(false);
@@ -103,11 +101,12 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
         // Сортировка
         filtered.sort((a, b) => {
             switch (sortBy) {
-                case 'name':
+                case 'name': {
                     const nameA = (a.nickname || a.user?.username || '').toLowerCase();
                     const nameB = (b.nickname || b.user?.username || '').toLowerCase();
                     return nameA.localeCompare(nameB);
-                case 'role':
+                }
+                case 'role': {
                     const roleOrder = { owner: 0, admin: 1, moderator: 2, member: 3 };
                     const roleA = roleOrder[a.role as keyof typeof roleOrder] ?? 4;
                     const roleB = roleOrder[b.role as keyof typeof roleOrder] ?? 4;
@@ -116,6 +115,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({
                     const nameA2 = (a.nickname || a.user?.username || '').toLowerCase();
                     const nameB2 = (b.nickname || b.user?.username || '').toLowerCase();
                     return nameA2.localeCompare(nameB2);
+                }
                 case 'joined':
                     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
                 default:

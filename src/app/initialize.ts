@@ -2,7 +2,7 @@
  * Инициализация приложения
  * Регистрация всех модулей и плагинов
  */
-import { moduleManager, pluginManager, enableMobX, apiClient } from '../core';
+import { moduleManager, pluginManager, enableMobX } from '../core';
 import { infoService } from '../services/infoService';
 
 // Modules

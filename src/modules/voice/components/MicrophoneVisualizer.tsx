@@ -15,25 +15,6 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
     const [audioLevel, setAudioLevel] = useState(0);
     const [isMonitoring, setIsMonitoring] = useState(false);
 
-    useEffect(() => {
-        const shouldMonitor = isActive && 
-            audioSettingsStore.stream && 
-            !audioSettingsStore.isMicrophoneMuted &&
-            audioSettingsStore.stream.getAudioTracks().length > 0 &&
-            audioSettingsStore.stream.getAudioTracks()[0].enabled;
-
-        if (!shouldMonitor) {
-            stopMonitoring();
-            return;
-        }
-
-        startMonitoring();
-
-        return () => {
-            stopMonitoring();
-        };
-    }, [isActive, audioSettingsStore.stream, audioSettingsStore.isMicrophoneMuted]);
-
     const startMonitoring = async () => {
         if (!audioSettingsStore.stream || isMonitoring) return;
 
@@ -165,6 +146,26 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
         if (level > 0.3) return '#44ff44'; // Зеленый - нормально
         return '#8888ff'; // Синий - тихо
     };
+
+    useEffect(() => {
+        const shouldMonitor = isActive && 
+            audioSettingsStore.stream && 
+            !audioSettingsStore.isMicrophoneMuted &&
+            audioSettingsStore.stream.getAudioTracks().length > 0 &&
+            audioSettingsStore.stream.getAudioTracks()[0].enabled;
+
+        if (!shouldMonitor) {
+            stopMonitoring();
+            return;
+        }
+
+        startMonitoring();
+
+        return () => {
+            stopMonitoring();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isActive, audioSettingsStore.stream, audioSettingsStore.isMicrophoneMuted]);
 
     const drawLevelMeter = (ctx: CanvasRenderingContext2D, level: number, width: number, height: number) => {
         const barWidth = 4;
