@@ -10,10 +10,9 @@ import serverStore from '../../store/serverStore';
 import './ServerSidebar.scss';
 
 interface ServerSidebarProps {
-    onOpenModal?: () => void;
 }
 
-const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) => {
+const ServerSidebar: React.FC<ServerSidebarProps> = observer(() => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -79,7 +78,6 @@ const ServerSidebar: React.FC<ServerSidebarProps> = observer(({ onOpenModal }) =
                 <div className="servers__separator"></div>
                 <div className="servers__server servers__server--add" onClick={() => {
                     setIsCreateModalOpen(true);
-                    onOpenModal?.();
                 }}>
                     <div className="servers__server-icon">+</div>
                 </div>

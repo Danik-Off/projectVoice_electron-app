@@ -1,18 +1,14 @@
 import { Outlet } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import ServerSidebar from '../../modules/servers/components/serverSidebar/ServerSidebar';
 import VoiceControls from '../../modules/servers/pages/channelPage/components/channelSidebar/components/voiceControls/VoiceControls';
 import { UserProfileProvider } from '../../components/UserProfileProvider';
 import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
 import voiceRoomStore from '../../modules/voice/store/roomStore';
 
-import './Main.scss'; // Main CSS for layout
-import ServerCreateModal from './components/serverSlidebar/serverCreateModal/ServerCreateModal';
+import './Main.scss';
 
 const Layout = observer(() => {
-    const [isModalOpen, setModalOpen] = useState(false);
-    
     // Проверяем подключение к голосовому каналу напрямую из store
     const isConnectedToVoice = voiceRoomStore.currentVoiceChannel !== null;
     const currentChannel = voiceRoomStore.currentVoiceChannel;
@@ -28,14 +24,12 @@ const Layout = observer(() => {
             <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`}>
                 <ToastNotifications />
                 {shouldShowVoiceControls && <VoiceControls />}
-                <ServerSidebar onOpenModal={() => setModalOpen(true)} />
+                <ServerSidebar />
                 <div className="content-page">
                     <div className="content-wrapper">
                         <Outlet />
                     </div>
                 </div>
-
-                <ServerCreateModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
             </div>
         </UserProfileProvider>
     );
