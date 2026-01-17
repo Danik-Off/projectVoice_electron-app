@@ -5,9 +5,9 @@ import { audioSettingsStore } from '../core';
 import participantVolumeStore from '../store/ParticipantVolumeStore';
 import voiceActivityService from '../services/VoiceActivityService';
 class WebRTCClient {
-    public sendSignal: null | ((signal: Signal) => void) = null;
+    public sendSignal: null | ((signal: Signal)=> void) = null;
 
-    public changeState: null | ((id: string, signal: Event) => void) = null;
+    public changeState: null | ((id: string, signal: Event)=> void) = null;
 
     private readonly remoteStreams: Map<string, MediaStream> = new Map();
     private readonly peerConnections: Map<string, RTCPeerConnection> = new Map();
@@ -18,18 +18,18 @@ class WebRTCClient {
 
     private localStream: MediaStream | null = null;
 
-    //управление Медиа
+    // управление Медиа
     public async initializeMedia() {
         console.log('WebRTCClient: Initializing media...');
         // Инициализируем VoiceActivity сервис
         voiceActivityService.initialize();
-        
+
         // Проверяем, есть ли уже поток
         if (audioSettingsStore.stream && audioSettingsStore.stream.getAudioTracks().length > 0) {
             console.log('WebRTCClient: Stream already exists, setting up VoiceActivity immediately');
             this.setupLocalVoiceActivity();
         }
-        
+
         reaction(
             () => audioSettingsStore.stream,
             (val) => {
@@ -37,18 +37,18 @@ class WebRTCClient {
                 console.log('🚀 ~ WebRTCClient ~ reaction triggered ~ tracks:', val?.getAudioTracks().length || 0);
                 this.resendlocalStream();
                 this.setupLocalVoiceActivity();
-            },
+            }
         );
     }
 
-    //Логика подключения
+    // Логика подключения
     public createPeerConnection(id: string) {
         console.log('создание peerConnection c id', id);
         const newPeerConnection = new RTCPeerConnection({
-            iceServers: iceServers,
+            iceServers,
             iceCandidatePoolSize: 10, // Увеличиваем пул кандидатов для лучшего соединения
             bundlePolicy: 'max-bundle', // Оптимизируем соединение
-            rtcpMuxPolicy: 'require', // Обязательное мультиплексирование RTCP
+            rtcpMuxPolicy: 'require' // Обязательное мультиплексирование RTCP
         });
 
         newPeerConnection.onicecandidate = (event) => {
@@ -64,7 +64,7 @@ class WebRTCClient {
             this.sendSignal({
                 to: id,
                 type: 'candidate',
-                candidate: event.candidate,
+                candidate: event.candidate
             });
         };
 
@@ -93,13 +93,13 @@ class WebRTCClient {
             // Создаем offer с оптимизированными параметрами для высокого качества звука
             const offer = await peerConnection.createOffer({
                 offerToReceiveAudio: true,
-                offerToReceiveVideo: false,
+                offerToReceiveVideo: false
             });
-            
+
             // Модифицируем SDP для максимального качества звука
             const modifiedSdp = this.optimizeSdpForHighQualityAudio(offer.sdp || '');
             const optimizedOffer: RTCSessionDescriptionInit = { type: offer.type, sdp: modifiedSdp };
-            
+
             await peerConnection.setLocalDescription(optimizedOffer);
             const sdp = optimizedOffer.sdp;
 
@@ -116,7 +116,7 @@ class WebRTCClient {
             this.sendSignal({
                 to: id,
                 type: 'offer',
-                sdp: sdp,
+                sdp
             });
         } catch (error) {
             console.error('Ошибка при создании предложения:', error);
@@ -133,13 +133,13 @@ class WebRTCClient {
         try {
             // Создаем answer с оптимизированными параметрами
             const answer = await peerConnection.createAnswer({
-                voiceActivityDetection: true,
+                voiceActivityDetection: true
             });
-            
+
             // Модифицируем SDP для максимального качества звука
             const modifiedSdp = this.optimizeSdpForHighQualityAudio(answer.sdp || '');
             const optimizedAnswer = { ...answer, sdp: modifiedSdp };
-            
+
             await peerConnection.setLocalDescription(optimizedAnswer);
             const sdp = optimizedAnswer.sdp;
 
@@ -155,7 +155,7 @@ class WebRTCClient {
             this.sendSignal({
                 to: id,
                 type: 'answer',
-                sdp: sdp,
+                sdp
             });
         } catch (error) {
             console.error('Ошибка при создании ответа:', error);
@@ -174,20 +174,24 @@ class WebRTCClient {
             case 'offer': {
                 // Оптимизируем входящий SDP
                 const optimizedOfferSdp = this.optimizeSdpForHighQualityAudio(sdp);
-                await peerConnection.setRemoteDescription(new RTCSessionDescription({ 
-                    type, 
-                    sdp: optimizedOfferSdp 
-                }));
+                await peerConnection.setRemoteDescription(
+                    new RTCSessionDescription({
+                        type,
+                        sdp: optimizedOfferSdp
+                    })
+                );
                 await this.createAnswer(from);
                 break;
             }
             case 'answer': {
                 // Оптимизируем входящий SDP
                 const optimizedAnswerSdp = this.optimizeSdpForHighQualityAudio(sdp);
-                await peerConnection.setRemoteDescription(new RTCSessionDescription({ 
-                    type, 
-                    sdp: optimizedAnswerSdp 
-                }));
+                await peerConnection.setRemoteDescription(
+                    new RTCSessionDescription({
+                        type,
+                        sdp: optimizedAnswerSdp
+                    })
+                );
                 break;
             }
             case 'candidate':
@@ -199,65 +203,57 @@ class WebRTCClient {
     // Метод для оптимизации SDP с максимальными параметрами качества звука
     private optimizeSdpForHighQualityAudio(sdp: string): string {
         let optimizedSdp = sdp;
-        
+
         // Приоритет кодека Opus с максимальным битрейтом
-        optimizedSdp = optimizedSdp.replace(
-            /m=audio (\d+) RTP\/SAVPF ([\d\s]+)/,
-            (_match, port, codecs) => {
-                // Устанавливаем Opus как приоритетный кодек
-                const opusCodec = '111'; // Opus кодек
-                const newCodecs = `${opusCodec} ${codecs.replace(opusCodec, '').trim()}`;
-                return `m=audio ${port} RTP/SAVPF ${newCodecs}`;
-            }
-        );
-        
+        optimizedSdp = optimizedSdp.replace(/m=audio (\d+) RTP\/SAVPF ([\d\s]+)/, (_match, port, codecs) => {
+            // Устанавливаем Opus как приоритетный кодек
+            const opusCodec = '111'; // Opus кодек
+            const newCodecs = `${opusCodec} ${codecs.replace(opusCodec, '').trim()}`;
+            return `m=audio ${port} RTP/SAVPF ${newCodecs}`;
+        });
+
         // Настройки Opus кодека для максимального качества
-        optimizedSdp = optimizedSdp.replace(
-            /a=fmtp:111 (.+)/,
-            () => {
-                // Устанавливаем максимальные параметры качества для Opus
-                const optimizedParams = [
-                    'minptime=10',           // Минимальное время пакета
-                    'useinbandfec=1',         // Включаем FEC для восстановления пакетов
-                    'stereo=1',               // Включаем стерео если поддерживается
-                    'sprop-stereo=1',        // Поддержка стерео
-                    'maxplaybackrate=48000', // Максимальная частота дискретизации
-                    'maxaveragebitrate=256000', // Максимальный битрейт
-                    'cbr=0',                 // Переменный битрейт для лучшего качества
-                    'dtx=0',                 // Отключаем DTX для постоянного качества
-                    'application=voip'        // Оптимизация для VoIP
-                ].join(';');
-                return `a=fmtp:111 ${optimizedParams}`;
-            }
-        );
-        
+        optimizedSdp = optimizedSdp.replace(/a=fmtp:111 (.+)/, () => {
+            // Устанавливаем максимальные параметры качества для Opus
+            const optimizedParams = [
+                'minptime=10', // Минимальное время пакета
+                'useinbandfec=1', // Включаем FEC для восстановления пакетов
+                'stereo=1', // Включаем стерео если поддерживается
+                'sprop-stereo=1', // Поддержка стерео
+                'maxplaybackrate=48000', // Максимальная частота дискретизации
+                'maxaveragebitrate=256000', // Максимальный битрейт
+                'cbr=0', // Переменный битрейт для лучшего качества
+                'dtx=0', // Отключаем DTX для постоянного качества
+                'application=voip' // Оптимизация для VoIP
+            ].join(';');
+            return `a=fmtp:111 ${optimizedParams}`;
+        });
+
         // Добавляем параметры для высокого качества если их нет
         if (!optimizedSdp.includes('a=fmtp:111')) {
-            const opusFmtp = 'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1;maxplaybackrate=48000;maxaveragebitrate=256000;cbr=0;dtx=0;application=voip';
+            const opusFmtp =
+                'a=fmtp:111 minptime=10;useinbandfec=1;stereo=1;sprop-stereo=1;maxplaybackrate=48000;maxaveragebitrate=256000;cbr=0;dtx=0;application=voip';
             optimizedSdp = optimizedSdp.replace(/(a=rtcp-fb:111 .+)/, `$1\n${opusFmtp}`);
         }
-        
+
         // Настройки для уменьшения задержки
-        optimizedSdp = optimizedSdp.replace(
-            /a=rtcp-fb:111 (.+)/,
-            () => {
-                const enhancedParams = [
-                    'goog-remb',     // Google REMB для адаптивного битрейта
-                    'transport-cc', // Transport-wide congestion control
-                    'ccm fir',      // Codec Control Messages
-                    'nack',         // Negative acknowledgments
-                    'nack pli'      // Picture Loss Indication
-                ].join(' ');
-                return `a=rtcp-fb:111 ${enhancedParams}`;
-            }
-        );
-        
+        optimizedSdp = optimizedSdp.replace(/a=rtcp-fb:111 (.+)/, () => {
+            const enhancedParams = [
+                'goog-remb', // Google REMB для адаптивного битрейта
+                'transport-cc', // Transport-wide congestion control
+                'ccm fir', // Codec Control Messages
+                'nack', // Negative acknowledgments
+                'nack pli' // Picture Loss Indication
+            ].join(' ');
+            return `a=rtcp-fb:111 ${enhancedParams}`;
+        });
+
         // Настройки для лучшего качества звука
         optimizedSdp = optimizedSdp.replace(
             /a=extmap:(\d+) urn:ietf:params:rtp-hdrext:ssrc-audio-level/,
             'a=extmap:$1 urn:ietf:params:rtp-hdrext:ssrc-audio-level'
         );
-        
+
         // Добавляем расширения для улучшения качества
         if (!optimizedSdp.includes('urn:ietf:params:rtp-hdrext:ssrc-audio-level')) {
             optimizedSdp = optimizedSdp.replace(
@@ -265,12 +261,12 @@ class WebRTCClient {
                 '$1\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level'
             );
         }
-        
+
         console.log('SDP оптимизирован для высокого качества звука');
         return optimizedSdp;
     }
 
-    //логика работы с потоками
+    // логика работы с потоками
     private addRemoteStream(track: MediaStreamTrack, id: string): void {
         console.log('попытка добавить поток', id);
         let remoteStream = this.remoteStreams.get(id);
@@ -278,25 +274,25 @@ class WebRTCClient {
             remoteStream = new MediaStream();
             this.remoteStreams.set(id, remoteStream);
             console.log('Удалённый поток добавлен для пользователя:', id);
-            
+
             // Создаем аудио контекст для этого участника
             const audioContext = new AudioContext();
             const gainNode = audioContext.createGain();
-            
+
             // Устанавливаем начальную громкость
             const initialVolume = participantVolumeStore.getParticipantVolume(id);
             gainNode.gain.value = initialVolume / 100;
-            
+
             this.audioContexts.set(id, audioContext);
             this.gainNodes.set(id, gainNode);
-            
+
             // Создаем аудио элемент, но не добавляем его в DOM
             // Используем только для получения потока
             const audioElement = document.createElement('audio');
             audioElement.srcObject = remoteStream;
             audioElement.autoplay = true;
             audioElement.muted = true; // Всегда muted, используем только Web Audio API
-            
+
             // Добавляем обработчик для события loadedmetadata
             audioElement.addEventListener('loadedmetadata', () => {
                 console.log('Аудио метаданные загружены для участника:', id);
@@ -306,7 +302,7 @@ class WebRTCClient {
                     this.setupAudioProcessing(id, currentStream);
                 }
             });
-            
+
             // Не добавляем в DOM, используем только для Web Audio API
             this.remoteAudioElements.set(id, audioElement); // Сохраняем ссылку
         } else {
@@ -315,7 +311,7 @@ class WebRTCClient {
 
         // Добавляем трек в поток
         remoteStream.addTrack(track);
-        
+
         // Проверяем, есть ли аудио треки в потоке, и только тогда создаем источник
         if (remoteStream.getAudioTracks().length > 0 && !this.audioContexts.get(id)?.state.includes('closed')) {
             this.setupAudioProcessing(id, remoteStream);
@@ -326,7 +322,7 @@ class WebRTCClient {
     private setupAudioProcessing(id: string, remoteStream: MediaStream): void {
         const audioContext = this.audioContexts.get(id);
         const gainNode = this.gainNodes.get(id);
-        
+
         if (!audioContext || !gainNode) {
             console.error('AudioContext или GainNode не найдены для участника:', id);
             return;
@@ -348,14 +344,14 @@ class WebRTCClient {
             // Создаем источник только если его еще нет и контекст активен
             if (!audioContext.state.includes('closed')) {
                 const source = audioContext.createMediaStreamSource(remoteStream);
-                
+
                 // Прямое подключение без эффектов для максимального качества
                 source.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                
+
                 this.audioSources.set(id, source);
                 console.log('Аудио обработка настроена для участника (без эффектов):', id);
-                
+
                 // Настраиваем VoiceActivity для удаленного участника
                 this.setupRemoteVoiceActivity(id, remoteStream);
             }
@@ -369,7 +365,7 @@ class WebRTCClient {
         if (audioSettingsStore.stream) {
             const newAudioTrack = audioSettingsStore.stream.getAudioTracks()[0];
             console.log('WebRTCClient: New audio track:', newAudioTrack?.label, 'enabled:', newAudioTrack?.enabled);
-            
+
             this.peerConnections.forEach((peerConnection, socketId) => {
                 const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
                 if (sender && newAudioTrack) {
@@ -392,7 +388,7 @@ class WebRTCClient {
         console.log('add-local-stream', peerConnection);
         if (audioSettingsStore.stream && peerConnection) {
             audioSettingsStore.stream.getTracks().forEach((track) => {
-                //Если существет локальный стрим и пир для подключения то рассылаем стрим
+                // Если существет локальный стрим и пир для подключения то рассылаем стрим
                 peerConnection.addTrack(track, audioSettingsStore.stream!);
                 track.enabled = !audioSettingsStore.isMicrophoneMuted;
             });
@@ -470,7 +466,7 @@ class WebRTCClient {
     }
     // когда мы сами отключаемся
     public disconect() {
-        //закрываем потоки
+        // закрываем потоки
         this.peerConnections.forEach((peerConnection) => {
             peerConnection.close();
         });
@@ -480,7 +476,7 @@ class WebRTCClient {
             audioSettingsStore.stream.getTracks().forEach((track) => track.stop());
         }
 
-        //тормозим стримы
+        // тормозим стримы
         this.remoteStreams.forEach((stream) => {
             stream.getTracks().forEach((track) => track.stop());
         });
@@ -499,7 +495,7 @@ class WebRTCClient {
 
         // Очищаем store громкости
         participantVolumeStore.resetAllVolumes();
-        
+
         // Очищаем VoiceActivity сервис
         voiceActivityService.cleanup();
     }
@@ -507,7 +503,10 @@ class WebRTCClient {
     // Настройка VoiceActivity для локального потока
     private setupLocalVoiceActivity(): void {
         if (audioSettingsStore.stream) {
-            console.log('Setting up local VoiceActivity, stream tracks:', audioSettingsStore.stream.getAudioTracks().length);
+            console.log(
+                'Setting up local VoiceActivity, stream tracks:',
+                audioSettingsStore.stream.getAudioTracks().length
+            );
             voiceActivityService.startMonitoring('local', audioSettingsStore.stream);
             console.log('VoiceActivity настроен для локального потока');
         } else {
@@ -533,4 +532,3 @@ class WebRTCClient {
 }
 
 export default WebRTCClient;
-

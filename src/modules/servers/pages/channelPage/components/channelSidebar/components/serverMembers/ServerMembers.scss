@@ -183,7 +183,11 @@
                         }
 
                         &:hover {
-                            background: linear-gradient(135deg, rgba(114, 137, 218, 0.1) 0%, rgba(88, 101, 242, 0.1) 100%);
+                            background: linear-gradient(
+                                135deg,
+                                rgba(114, 137, 218, 0.1) 0%,
+                                rgba(88, 101, 242, 0.1) 100%
+                            );
                             border-color: var(--accent-color);
                         }
 
@@ -226,7 +230,6 @@
                                 left: 100%;
                             }
                         }
-
                     }
                 }
             }
@@ -255,4 +258,4 @@
         opacity: 1;
         transform: translateY(0);
     }
-} 
+}

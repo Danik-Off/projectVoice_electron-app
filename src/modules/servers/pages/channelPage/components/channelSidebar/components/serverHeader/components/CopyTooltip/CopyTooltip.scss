@@ -15,7 +15,9 @@
     font-weight: 600;
     box-shadow: 0 4px 16px rgba(67, 181, 129, 0.3);
     z-index: 1001;
-    animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-in 1.7s forwards;
+    animation:
+        slideInRight 0.3s ease-out,
+        fadeOut 0.3s ease-in 1.7s forwards;
 
     .tooltip-icon {
         font-size: 16px;
@@ -50,9 +52,19 @@
 }
 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-3px); }
-    60% { transform: translateY(-1px); }
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-3px);
+    }
+    60% {
+        transform: translateY(-1px);
+    }
 }
 
 @media (max-width: 768px) {
@@ -72,4 +84,3 @@
         padding: 8px 12px;
     }
 }
-

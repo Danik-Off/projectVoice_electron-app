@@ -5,7 +5,7 @@ import { notificationStore } from '../../../core';
 import { roleService } from '../services/roleService';
 import type { ServerMember } from '../services/serverMembersService';
 import type { Role } from '../types/role';
-import MemberRolesModal from '../pages/serverSettings/components/members/MemberRolesModal';
+import MemberRolesModal from '../pages/serverSettings/components/members/components/MemberRolesModal';
 import './MemberContextMenu.scss';
 
 interface MemberContextMenuProps {
@@ -27,7 +27,9 @@ const BanModal: React.FC<BanModalProps> = ({ isOpen, onClose, onConfirm }) => {
     const { t } = useTranslation();
     const [reason, setReason] = useState('');
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="ban-modal-overlay" onClick={onClose}>
@@ -44,11 +46,11 @@ const BanModal: React.FC<BanModalProps> = ({ isOpen, onClose, onConfirm }) => {
                     <button onClick={onClose} className="cancel-btn">
                         {t('common.cancel') || 'Отмена'}
                     </button>
-                    <button 
+                    <button
                         onClick={() => {
                             onConfirm(reason);
                             setReason('');
-                        }} 
+                        }}
                         className="confirm-btn"
                     >
                         {t('serverMembers.ban') || 'Забанить'}
@@ -78,7 +80,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 
     useEffect(() => {
         let cleanup: (() => void) | null = null;
-        
+
         // Небольшая задержка перед добавлением обработчика, чтобы не закрыть меню сразу после открытия
         const timeoutId = setTimeout(() => {
             const handleClickOutside = (event: MouseEvent) => {
@@ -125,10 +127,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
             setRoles(rolesData);
         } catch (error) {
             console.error('Error loading roles:', error);
-            notificationStore.addNotification(
-                t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей',
-                'error'
-            );
+            notificationStore.addNotification(t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей', 'error');
         } finally {
             setLoadingRoles(false);
         }
@@ -144,10 +143,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     const handleKick = async () => {
         try {
             await serverMembersService.kickMember(serverId, member.id);
-            notificationStore.addNotification(
-                t('serverMembers.memberKicked') || 'Участник исключен',
-                'success'
-            );
+            notificationStore.addNotification(t('serverMembers.memberKicked') || 'Участник исключен', 'success');
             onMemberUpdate?.();
             onClose();
         } catch (error) {
@@ -162,19 +158,13 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     const handleBan = async (reason: string) => {
         try {
             await serverMembersService.banMember(serverId, member.id, reason || undefined);
-            notificationStore.addNotification(
-                t('serverMembers.memberBanned') || 'Участник забанен',
-                'success'
-            );
+            notificationStore.addNotification(t('serverMembers.memberBanned') || 'Участник забанен', 'success');
             onMemberUpdate?.();
             setShowBanModal(false);
             onClose();
         } catch (error) {
             console.error('Error banning member:', error);
-            notificationStore.addNotification(
-                t('serverMembers.banError') || 'Ошибка при бане участника',
-                'error'
-            );
+            notificationStore.addNotification(t('serverMembers.banError') || 'Ошибка при бане участника', 'error');
         }
     };
 
@@ -184,9 +174,9 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
             await serverMembersService.updateVoiceSettings(serverId, member.id, newMuted, isDeafened);
             setIsMuted(newMuted);
             notificationStore.addNotification(
-                newMuted 
-                    ? (t('serverMembers.memberMuted') || 'Участник заглушен')
-                    : (t('serverMembers.memberUnmuted') || 'Участник разглушен'),
+                newMuted
+                    ? t('serverMembers.memberMuted') || 'Участник заглушен'
+                    : t('serverMembers.memberUnmuted') || 'Участник разглушен',
                 'success'
             );
             onMemberUpdate?.();
@@ -206,8 +196,8 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
             setIsDeafened(newDeafened);
             notificationStore.addNotification(
                 newDeafened
-                    ? (t('serverMembers.memberDeafened') || 'Участнику отключен звук')
-                    : (t('serverMembers.memberUndeafened') || 'Участнику включен звук'),
+                    ? t('serverMembers.memberDeafened') || 'Участнику отключен звук'
+                    : t('serverMembers.memberUndeafened') || 'Участнику включен звук',
                 'success'
             );
             onMemberUpdate?.();
@@ -223,7 +213,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     // Если нет прав на модерацию, не показываем меню
     // Но если меню было открыто, показываем его (возможно, права изменились)
     const hasAnyPermission = canKick || canBan || canMute || canDeafen || canManageRoles;
-    
+
     if (!hasAnyPermission) {
         return null;
     }
@@ -234,7 +224,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 
     return (
         <>
-            <div 
+            <div
                 ref={menuRef}
                 className="member-context-menu"
                 style={{
@@ -247,33 +237,27 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                 <div className="context-menu-header">
                     <span className="member-name">{member.nickname || member.user?.username}</span>
                 </div>
-                
+
                 <div className="context-menu-divider" />
-                
+
                 {canKick && (
-                    <button 
-                        className="context-menu-item danger"
-                        onClick={handleKick}
-                    >
+                    <button className="context-menu-item danger" onClick={handleKick}>
                         <span className="icon">👢</span>
                         {t('serverMembers.kick') || 'Исключить'}
                     </button>
                 )}
-                
+
                 {canBan && (
-                    <button 
-                        className="context-menu-item danger"
-                        onClick={() => setShowBanModal(true)}
-                    >
+                    <button className="context-menu-item danger" onClick={() => setShowBanModal(true)}>
                         <span className="icon">🔨</span>
                         {t('serverMembers.ban') || 'Забанить'}
                     </button>
                 )}
-                
+
                 {canManageRoles && (
                     <>
                         <div className="context-menu-divider" />
-                        <button 
+                        <button
                             className="context-menu-item"
                             onClick={() => {
                                 setShowRolesModal(true);
@@ -285,28 +269,20 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                         </button>
                     </>
                 )}
-                
+
                 {(canMute || canDeafen) && (
                     <>
                         <div className="context-menu-divider" />
                         {canMute && (
                             <label className="context-menu-item checkbox">
-                                <input
-                                    type="checkbox"
-                                    checked={isMuted}
-                                    onChange={handleMuteToggle}
-                                />
+                                <input type="checkbox" checked={isMuted} onChange={handleMuteToggle} />
                                 <span className="icon">🔇</span>
                                 {t('serverMembers.mute') || 'Заглушить'}
                             </label>
                         )}
                         {canDeafen && (
                             <label className="context-menu-item checkbox">
-                                <input
-                                    type="checkbox"
-                                    checked={isDeafened}
-                                    onChange={handleDeafenToggle}
-                                />
+                                <input type="checkbox" checked={isDeafened} onChange={handleDeafenToggle} />
                                 <span className="icon">🔊</span>
                                 {t('serverMembers.deafen') || 'Отключить звук'}
                             </label>
@@ -314,13 +290,9 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                     </>
                 )}
             </div>
-            
-            <BanModal
-                isOpen={showBanModal}
-                onClose={() => setShowBanModal(false)}
-                onConfirm={handleBan}
-            />
-            
+
+            <BanModal isOpen={showBanModal} onClose={() => setShowBanModal(false)} onConfirm={handleBan} />
+
             {showRolesModal && (
                 <MemberRolesModal
                     isOpen={showRolesModal}
@@ -339,4 +311,3 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 };
 
 export default MemberContextMenu;
-

@@ -13,14 +13,13 @@ export const inviteModule: IModule = {
         {
             path: '/invite/:token',
             component: InvitePage,
-            protected: false,
-        },
+            protected: false
+        }
     ],
     async initialize() {
         console.log('Invite module initialized');
     },
     async destroy() {
         console.log('Invite module destroyed');
-    },
+    }
 };
-

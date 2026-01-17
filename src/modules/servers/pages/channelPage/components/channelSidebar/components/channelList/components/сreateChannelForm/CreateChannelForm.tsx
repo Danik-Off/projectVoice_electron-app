@@ -5,7 +5,6 @@ import type { Channel } from '../../../../../../../../../../types/channel';
 import { channelsStore } from '../../../../../../../../../channels';
 import serverStore from '../../../../../../../../store/serverStore';
 
-
 interface CreateChannelFormProps {
     onClose: () => void;
 }
@@ -20,7 +19,9 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
     const handleCreateChannel = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!channelName.trim() || !serverStore.currentServer) return;
+        if (!channelName.trim() || !serverStore.currentServer) {
+            return;
+        }
 
         setIsLoading(true);
         try {
@@ -28,11 +29,11 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
                 serverId: serverStore.currentServer.id,
                 name: channelName.trim(),
                 type: channelType,
-                description: description.trim(),
+                description: description.trim()
             };
 
             await channelsStore.createChannel(serverStore.currentServer.id, newChannel);
-            
+
             setChannelName('');
             setDescription('');
             onClose();
@@ -52,13 +53,7 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
     };
 
     return (
-        <Modal
-            isOpen={true}
-            onClose={handleClose}
-            title={t('createChannelForm.title')}
-            size="medium"
-            icon="📝"
-        >
+        <Modal isOpen={true} onClose={handleClose} title={t('createChannelForm.title')} size="medium" icon="📝">
             <form onSubmit={handleCreateChannel}>
                 <div className="form-group">
                     <label className="form-label">
@@ -93,9 +88,7 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
                 </div>
 
                 <div className="form-group">
-                    <label className="form-label">
-                        {t('createChannelForm.description')}
-                    </label>
+                    <label className="form-label">{t('createChannelForm.description')}</label>
                     <input
                         type="text"
                         placeholder={t('createChannelForm.descriptionPlaceholder')}
@@ -107,19 +100,10 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
                 </div>
 
                 <div className="modal-actions">
-                    <button 
-                        type="button" 
-                        className="cancel-button"
-                        onClick={handleClose}
-                        disabled={isLoading}
-                    >
+                    <button type="button" className="cancel-button" onClick={handleClose} disabled={isLoading}>
                         {t('createChannelForm.cancel')}
                     </button>
-                    <button 
-                        type="submit" 
-                        className="submit-button"
-                        disabled={!channelName.trim() || isLoading}
-                    >
+                    <button type="submit" className="submit-button" disabled={!channelName.trim() || isLoading}>
                         {isLoading ? 'Создание...' : t('createChannelForm.create')}
                     </button>
                 </div>

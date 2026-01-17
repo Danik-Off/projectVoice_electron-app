@@ -9,11 +9,11 @@
     background: var(--bg-secondary, #2f3136);
     border-radius: 12px;
     border: 1px solid var(--border-color, #40444b);
-    
+
     .search-box {
         position: relative;
         margin-bottom: 16px;
-        
+
         .search-input {
             width: 100%;
             padding: 12px 40px 12px 16px;
@@ -23,18 +23,18 @@
             color: var(--text-primary, #ffffff);
             font-size: 14px;
             transition: all 0.2s;
-            
+
             &:focus {
                 outline: none;
                 border-color: var(--accent-color, #5865f2);
                 box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
             }
-            
+
             &::placeholder {
                 color: var(--text-secondary, #b9bbbe);
             }
         }
-        
+
         .search-icon {
             position: absolute;
             right: 12px;
@@ -45,20 +45,20 @@
             font-size: 16px;
         }
     }
-    
+
     .controls-row {
         display: flex;
         gap: 16px;
         align-items: flex-end;
         flex-wrap: wrap;
-        
+
         .filter-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
             flex: 1;
             min-width: 180px;
-            
+
             label {
                 font-size: 12px;
                 font-weight: 600;
@@ -66,7 +66,7 @@
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
-            
+
             .filter-select {
                 padding: 10px 14px;
                 background: var(--bg-primary, #202225);
@@ -76,24 +76,24 @@
                 font-size: 14px;
                 cursor: pointer;
                 transition: all 0.2s;
-                
+
                 &:hover {
                     border-color: var(--accent-color, #5865f2);
                 }
-                
+
                 &:focus {
                     outline: none;
                     border-color: var(--accent-color, #5865f2);
                     box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
                 }
-                
+
                 option {
                     background: var(--bg-primary, #202225);
                     color: var(--text-primary, #ffffff);
                 }
             }
         }
-        
+
         .members-count-badge {
             display: flex;
             align-items: center;
@@ -103,11 +103,11 @@
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
-            
+
             .count-number {
                 color: var(--accent-color, #5865f2);
             }
-            
+
             .count-total {
                 color: var(--text-secondary, #b9bbbe);
             }
@@ -193,5 +193,3 @@
         font-size: 14px;
     }
 }
-
-

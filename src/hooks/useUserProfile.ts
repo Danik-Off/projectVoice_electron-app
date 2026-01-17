@@ -8,4 +8,3 @@ export const useUserProfile = () => {
     }
     return context;
 };
-

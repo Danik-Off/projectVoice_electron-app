@@ -11,7 +11,6 @@ import serverStore from '../../../../../../store/serverStore';
 import InviteModal from './components/InviteModal/InviteModal';
 import { getRoleIcon, getRoleColor } from './utils/roleHelpers';
 
-
 const ServerHeader: React.FC = observer(() => {
     const { t } = useTranslation();
     const currentServer = serverStore.currentServer;
@@ -34,27 +33,29 @@ const ServerHeader: React.FC = observer(() => {
     }, [showTooltip]);
 
     const handleShare = async () => {
-        if (!currentServer) return;
-        
+        if (!currentServer) {
+            return;
+        }
+
         setIsCreatingInvite(true);
         try {
             console.log('🎯 ServerHeader: Создание приглашения для сервера', currentServer.id);
-            
+
             // Используем правильный сервис для создания приглашения
             const invite = await inviteService.createInvite(currentServer.id);
-            
+
             console.log('🎯 ServerHeader: Приглашение создано', invite);
-            
+
             // Формируем ссылку для приглашения
             const inviteUrl = `${window.location.origin}/invite/${invite.token}`;
             setInviteLink(inviteUrl);
             setShowInviteModal(true);
-            
+
             notificationStore.addNotification(t('serverHeader.notifications.inviteCreated'), 'success');
         } catch (error) {
             console.error('🎯 ServerHeader: Ошибка создания приглашения:', error);
             notificationStore.addNotification(
-                error instanceof Error ? error.message : t('serverHeader.notifications.inviteCreateError'), 
+                error instanceof Error ? error.message : t('serverHeader.notifications.inviteCreateError'),
                 'error'
             );
         } finally {
@@ -89,9 +90,7 @@ const ServerHeader: React.FC = observer(() => {
     // Проверяем права пользователя на сервере
     const currentUserId = authStore.user?.id;
     const isOwner = currentServer?.ownerId === currentUserId;
-    const userMember = currentServer?.members?.find(
-        (member: ServerMember) => member.userId === currentUserId
-    );
+    const userMember = currentServer?.members?.find((member: ServerMember) => member.userId === currentUserId);
     const userRole = userMember?.role || (isOwner ? 'owner' : 'member');
 
     const canInvite = ['owner', 'admin', 'moderator'].includes(userRole);
@@ -115,24 +114,17 @@ const ServerHeader: React.FC = observer(() => {
                     <div className="server-header__info-left">
                         <div>
                             {currentServer.icon ? (
-                                <img 
-                                    src={currentServer.icon} 
-                                    alt={`${currentServer.name} icon`} 
-                                />
+                                <img src={currentServer.icon} alt={`${currentServer.name} icon`} />
                             ) : (
-                                <span>
-                                    {currentServer.name.charAt(0).toUpperCase()}
-                                </span>
+                                <span>{currentServer.name.charAt(0).toUpperCase()}</span>
                             )}
                         </div>
                         <div className="server-header__info-right">
-                            <h2 title={currentServer.name}>
-                                {currentServer.name}
-                            </h2>
+                            <h2 title={currentServer.name}>{currentServer.name}</h2>
                         </div>
                     </div>
                     <div className="server-header__meta">
-                        <div 
+                        <div
                             className="server-header__role"
                             style={{ '--role-color': getRoleColor(userRole) } as React.CSSProperties}
                         >
@@ -150,24 +142,17 @@ const ServerHeader: React.FC = observer(() => {
 
                 <div className="server-header__actions">
                     {canInvite && (
-                        <button 
+                        <button
                             onClick={handleShare}
                             disabled={isCreatingInvite}
                             title={t('serverHeader.inviteMembers')}
                         >
-                            {isCreatingInvite ? (
-                                <div></div>
-                            ) : (
-                                <span>📤</span>
-                            )}
+                            {isCreatingInvite ? <div></div> : <span>📤</span>}
                         </button>
                     )}
-                    
+
                     {canEditServer && (
-                        <button 
-                            onClick={handleEditServer}
-                            title={t('serverHeader.serverSettings')}
-                        >
+                        <button onClick={handleEditServer} title={t('serverHeader.serverSettings')}>
                             <span>⚙️</span>
                         </button>
                     )}
@@ -175,7 +160,7 @@ const ServerHeader: React.FC = observer(() => {
             </div>
 
             {/* Модальное окно с приглашением */}
-            <InviteModal 
+            <InviteModal
                 isOpen={showInviteModal}
                 onClose={closeInviteModal}
                 serverName={currentServer.name}
@@ -183,7 +168,6 @@ const ServerHeader: React.FC = observer(() => {
                 inviteLink={inviteLink}
                 onCopy={copyInviteLink}
             />
-
         </>
     );
 });

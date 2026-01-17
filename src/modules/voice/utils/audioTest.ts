@@ -33,11 +33,11 @@ class AudioQualityTester {
                 sampleRate: 48000,
                 latencyHint: 'interactive'
             });
-            
+
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = 2048;
             this.analyser.smoothingTimeConstant = 0.8;
-            
+
             console.log('AudioQualityTester: Инициализирован');
         } catch (error) {
             console.error('AudioQualityTester: Ошибка инициализации:', error);
@@ -50,7 +50,7 @@ class AudioQualityTester {
      */
     public async testDefaultSettings(): Promise<AudioTestResult> {
         console.log('AudioQualityTester: Тестирование базовых настроек...');
-        
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -65,8 +65,8 @@ class AudioQualityTester {
 
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'default');
-            
-            stream.getTracks().forEach(track => track.stop());
+
+            stream.getTracks().forEach((track) => track.stop());
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования базовых настроек:', error);
@@ -79,7 +79,7 @@ class AudioQualityTester {
      */
     public async testAudioQuality(): Promise<AudioTestResult> {
         console.log('AudioQualityTester: Тестирование высокого качества...');
-        
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -88,14 +88,14 @@ class AudioQualityTester {
                     autoGainControl: true,
                     sampleRate: 48000,
                     sampleSize: 32,
-                    channelCount: 2,
+                    channelCount: 2
                 }
             });
 
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'high');
-            
-            stream.getTracks().forEach(track => track.stop());
+
+            stream.getTracks().forEach((track) => track.stop());
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования высокого качества:', error);
@@ -108,7 +108,7 @@ class AudioQualityTester {
      */
     public async testProfessionalQuality(): Promise<AudioTestResult> {
         console.log('AudioQualityTester: Тестирование профессионального качества...');
-        
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -124,8 +124,8 @@ class AudioQualityTester {
 
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'professional');
-            
-            stream.getTracks().forEach(track => track.stop());
+
+            stream.getTracks().forEach((track) => track.stop());
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования профессионального качества:', error);
@@ -163,18 +163,20 @@ class AudioQualityTester {
      * Измерение задержки аудио
      */
     private async measureLatency(): Promise<number> {
-        if (!this.audioContext) return 0;
-        
+        if (!this.audioContext) {
+            return 0;
+        }
+
         const startTime = performance.now();
         const oscillator = this.audioContext.createOscillator();
         const analyser = this.audioContext.createAnalyser();
-        
+
         oscillator.connect(analyser);
         analyser.connect(this.audioContext.destination);
-        
+
         oscillator.start();
         oscillator.stop(this.audioContext.currentTime + 0.1);
-        
+
         const endTime = performance.now();
         return endTime - startTime;
     }
@@ -183,13 +185,15 @@ class AudioQualityTester {
      * Расчет битрейта
      */
     private calculateBitrate(): number {
-        if (!this.audioContext) return 0;
-        
+        if (!this.audioContext) {
+            return 0;
+        }
+
         // Примерный расчет битрейта на основе настроек
         const sampleRate = this.audioContext.sampleRate;
         const bitDepth = 24; // Предполагаемая разрядность
         const channels = 2; // Стерео
-        
+
         return (sampleRate * bitDepth * channels) / 1000; // kbps
     }
 
@@ -197,25 +201,29 @@ class AudioQualityTester {
      * Измерение отношения сигнал/шум
      */
     private async measureSNR(): Promise<number> {
-        if (!this.analyser) return 0;
-        
+        if (!this.analyser) {
+            return 0;
+        }
+
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
-        
+
         this.analyser.getByteFrequencyData(dataArray);
-        
+
         // Простой расчет SNR
         let signalSum = 0;
         let noiseSum = 0;
-        
+
         for (let i = 0; i < bufferLength; i++) {
-            if (i < bufferLength * 0.1) { // Низкие частоты - шум
+            if (i < bufferLength * 0.1) {
+                // Низкие частоты - шум
                 noiseSum += dataArray[i];
-            } else { // Высокие частоты - сигнал
+            } else {
+                // Высокие частоты - сигнал
                 signalSum += dataArray[i];
             }
         }
-        
+
         return signalSum > 0 ? 20 * Math.log10(signalSum / noiseSum) : 0;
     }
 
@@ -223,13 +231,15 @@ class AudioQualityTester {
      * Измерение частотной характеристики
      */
     private async measureFrequencyResponse(): Promise<number[]> {
-        if (!this.analyser) return [];
-        
+        if (!this.analyser) {
+            return [];
+        }
+
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
-        
+
         this.analyser.getByteFrequencyData(dataArray);
-        
+
         // Конвертируем в массив чисел
         return Array.from(dataArray);
     }
@@ -238,24 +248,27 @@ class AudioQualityTester {
      * Измерение уровня искажений
      */
     private async measureDistortion(): Promise<number> {
-        if (!this.analyser) return 0;
-        
+        if (!this.analyser) {
+            return 0;
+        }
+
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
-        
+
         this.analyser.getByteFrequencyData(dataArray);
-        
+
         // Простой расчет искажений на основе гармоник
         let totalPower = 0;
         let harmonicPower = 0;
-        
+
         for (let i = 0; i < bufferLength; i++) {
             totalPower += dataArray[i];
-            if (i % 2 === 0) { // Четные гармоники
+            if (i % 2 === 0) {
+                // Четные гармоники
                 harmonicPower += dataArray[i];
             }
         }
-        
+
         return totalPower > 0 ? (harmonicPower / totalPower) * 100 : 0;
     }
 
@@ -263,22 +276,24 @@ class AudioQualityTester {
      * Измерение джиттера
      */
     private async measureJitter(): Promise<number> {
-        if (!this.audioContext) return 0;
-        
+        if (!this.audioContext) {
+            return 0;
+        }
+
         const measurements: number[] = [];
         const numMeasurements = 10;
-        
+
         for (let i = 0; i < numMeasurements; i++) {
             const startTime = performance.now();
-            await new Promise(resolve => setTimeout(resolve, 1));
+            await new Promise((resolve) => setTimeout(resolve, 1));
             const endTime = performance.now();
             measurements.push(endTime - startTime);
         }
-        
+
         // Расчет стандартного отклонения как меры джиттера
         const mean = measurements.reduce((a, b) => a + b) / measurements.length;
         const variance = measurements.reduce((a, b) => a + Math.pow(b - mean, 2)) / measurements.length;
-        
+
         return Math.sqrt(variance);
     }
 
@@ -288,7 +303,7 @@ class AudioQualityTester {
     private evaluateQuality(metrics: AudioQualityMetrics, testType: string): AudioTestResult {
         let score = 0;
         const recommendations: string[] = [];
-        
+
         // Оценка задержки (0-25 баллов)
         if (metrics.latency < 50) {
             score += 25;
@@ -300,7 +315,7 @@ class AudioQualityTester {
             score += 5;
             recommendations.push('Высокая задержка аудио. Рекомендуется уменьшить размер буфера.');
         }
-        
+
         // Оценка битрейта (0-25 баллов)
         if (metrics.bitrate >= 256) {
             score += 25;
@@ -312,7 +327,7 @@ class AudioQualityTester {
             score += 5;
             recommendations.push('Низкий битрейт. Рекомендуется увеличить качество аудио.');
         }
-        
+
         // Оценка SNR (0-25 баллов)
         if (metrics.signalToNoiseRatio > 20) {
             score += 25;
@@ -324,7 +339,7 @@ class AudioQualityTester {
             score += 5;
             recommendations.push('Низкое отношение сигнал/шум. Проверьте микрофон и окружение.');
         }
-        
+
         // Оценка искажений (0-25 баллов)
         if (metrics.distortionLevel < 5) {
             score += 25;
@@ -336,16 +351,16 @@ class AudioQualityTester {
             score += 5;
             recommendations.push('Высокий уровень искажений. Проверьте настройки аудио.');
         }
-        
+
         const result: AudioTestResult = {
             overallScore: score,
             metrics,
             recommendations,
             passed: score >= 80
         };
-        
+
         console.log(`AudioQualityTester: Тест ${testType} завершен. Оценка: ${score}/100`);
-        
+
         return result;
     }
 

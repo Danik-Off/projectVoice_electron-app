@@ -336,7 +336,8 @@
 }
 
 @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
         transform: translateY(0px) rotate(0deg);
     }
     33% {
@@ -354,14 +355,14 @@
 }
 
 // Темная тема
-[data-theme="dark"] {
+[data-theme='dark'] {
     .invite-page {
         background: linear-gradient(135deg, $primary-bg 0%, $secondary-bg 100%);
     }
 }
 
 // Светлая тема
-[data-theme="light"] {
+[data-theme='light'] {
     .invite-page {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }

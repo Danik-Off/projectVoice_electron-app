@@ -43,7 +43,7 @@ export const Permissions = {
     USE_EXTERNAL_STICKERS: 1n << 37n,
     SEND_MESSAGES_IN_THREADS: 1n << 38n,
     USE_EMBEDDED_ACTIVITIES: 1n << 39n,
-    MODERATE_MEMBERS: 1n << 40n,
+    MODERATE_MEMBERS: 1n << 40n
 } as const;
 
 /**
@@ -90,7 +90,7 @@ export const PermissionNames: Record<keyof typeof Permissions, string> = {
     USE_EXTERNAL_STICKERS: 'Использовать внешние стикеры',
     SEND_MESSAGES_IN_THREADS: 'Отправлять сообщения в ветках',
     USE_EMBEDDED_ACTIVITIES: 'Использовать встроенные активности',
-    MODERATE_MEMBERS: 'Модерировать участников',
+    MODERATE_MEMBERS: 'Модерировать участников'
 };
 
 /**
@@ -107,21 +107,15 @@ export const PermissionGroups = {
         'READ_MESSAGE_HISTORY',
         'MENTION_EVERYONE',
         'ADD_REACTIONS',
-        'USE_EXTERNAL_EMOJIS',
+        'USE_EXTERNAL_EMOJIS'
     ] as const,
-    MEMBER: [
-        'KICK_MEMBERS',
-        'BAN_MEMBERS',
-        'MODERATE_MEMBERS',
-        'CHANGE_NICKNAME',
-        'MANAGE_NICKNAMES',
-    ] as const,
+    MEMBER: ['KICK_MEMBERS', 'BAN_MEMBERS', 'MODERATE_MEMBERS', 'CHANGE_NICKNAME', 'MANAGE_NICKNAMES'] as const,
     CHANNEL: [
         'MANAGE_CHANNELS',
         'MANAGE_THREADS',
         'CREATE_PUBLIC_THREADS',
         'CREATE_PRIVATE_THREADS',
-        'SEND_MESSAGES_IN_THREADS',
+        'SEND_MESSAGES_IN_THREADS'
     ] as const,
     VOICE: [
         'CONNECT',
@@ -132,7 +126,7 @@ export const PermissionGroups = {
         'USE_VAD',
         'PRIORITY_SPEAKER',
         'STREAM',
-        'REQUEST_TO_SPEAK',
+        'REQUEST_TO_SPEAK'
     ] as const,
     ADVANCED: [
         'ADMINISTRATOR',
@@ -144,10 +138,7 @@ export const PermissionGroups = {
         'MANAGE_EMOJIS_AND_STICKERS',
         'MANAGE_EVENTS',
         'USE_APPLICATION_COMMANDS',
-        'USE_EMBEDDED_ACTIVITIES',
+        'USE_EMBEDDED_ACTIVITIES'
     ] as const,
-    INVITE: [
-        'CREATE_INSTANT_INVITE',
-    ] as const,
+    INVITE: ['CREATE_INSTANT_INVITE'] as const
 } as const;
-

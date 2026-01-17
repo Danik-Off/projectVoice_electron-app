@@ -58,41 +58,44 @@ const ProfileDemo: React.FC = () => {
     ];
 
     return (
-        <div style={{ 
-            padding: '20px', 
-            maxWidth: '800px', 
-            margin: '0 auto',
-            fontFamily: 'Arial, sans-serif'
-        }}>
+        <div
+            style={{
+                padding: '20px',
+                maxWidth: '800px',
+                margin: '0 auto',
+                fontFamily: 'Arial, sans-serif'
+            }}
+        >
             <h1>Демонстрация модального окна профиля</h1>
             <p>Нажмите на любой аватар, чтобы открыть профиль пользователя</p>
-            
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
-                gap: '20px',
-                marginTop: '30px'
-            }}>
+
+            <div
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '20px',
+                    marginTop: '30px'
+                }}
+            >
                 {testUsers.map((user) => (
-                    <div key={user.id} style={{
-                        padding: '20px',
-                        border: '1px solid #ccc',
-                        borderRadius: '12px',
-                        textAlign: 'center',
-                        backgroundColor: '#f9f9f9'
-                    }}>
+                    <div
+                        key={user.id}
+                        style={{
+                            padding: '20px',
+                            border: '1px solid #ccc',
+                            borderRadius: '12px',
+                            textAlign: 'center',
+                            backgroundColor: '#f9f9f9'
+                        }}
+                    >
                         <div style={{ marginBottom: '15px' }}>
-                            <ClickableAvatar
-                                user={user}
-                                size="large"
-                                onClick={() => openProfile(user, false)}
-                            />
+                            <ClickableAvatar user={user} size="large" onClick={() => openProfile(user, false)} />
                         </div>
                         <h3 style={{ margin: '0 0 10px 0' }}>{user.username}</h3>
                         <p style={{ margin: '0 0 5px 0', color: '#666' }}>#{user.tag}</p>
                         <p style={{ margin: '0 0 5px 0', color: '#666' }}>Роль: {user.role}</p>
                         <p style={{ margin: '0 0 5px 0', color: '#666' }}>Статус: {user.status}</p>
-                        <button 
+                        <button
                             onClick={() => openProfile(user, false)}
                             style={{
                                 padding: '8px 16px',
@@ -110,22 +113,20 @@ const ProfileDemo: React.FC = () => {
                 ))}
             </div>
 
-            <div style={{ 
-                marginTop: '40px', 
-                padding: '20px', 
-                backgroundColor: '#e9ecef', 
-                borderRadius: '12px' 
-            }}>
+            <div
+                style={{
+                    marginTop: '40px',
+                    padding: '20px',
+                    backgroundColor: '#e9ecef',
+                    borderRadius: '12px'
+                }}
+            >
                 <h2>Тестирование собственного профиля</h2>
                 <p>Нажмите на аватар ниже, чтобы открыть свой профиль:</p>
                 <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                    <ClickableAvatar
-                        user={testUsers[0]}
-                        size="large"
-                        onClick={() => openProfile(testUsers[0], true)}
-                    />
+                    <ClickableAvatar user={testUsers[0]} size="large" onClick={() => openProfile(testUsers[0], true)} />
                     <p style={{ marginTop: '10px' }}>
-                        <button 
+                        <button
                             onClick={() => openProfile(testUsers[0], true)}
                             style={{
                                 padding: '10px 20px',
@@ -143,20 +144,32 @@ const ProfileDemo: React.FC = () => {
                 </div>
             </div>
 
-            <div style={{ 
-                marginTop: '40px', 
-                padding: '20px', 
-                backgroundColor: '#fff3cd', 
-                borderRadius: '12px',
-                border: '1px solid #ffeaa7'
-            }}>
+            <div
+                style={{
+                    marginTop: '40px',
+                    padding: '20px',
+                    backgroundColor: '#fff3cd',
+                    borderRadius: '12px',
+                    border: '1px solid #ffeaa7'
+                }}
+            >
                 <h2>Инструкции по использованию</h2>
                 <ul style={{ lineHeight: '1.6' }}>
-                    <li><strong>Клик по аватару:</strong> Открывает модальное окно профиля пользователя</li>
-                    <li><strong>Вкладки:</strong> Переключение между обзором, активностью, серверами и друзьями</li>
-                    <li><strong>Действия:</strong> Кнопки для отправки сообщения, добавления в друзья, блокировки</li>
-                    <li><strong>Адаптивность:</strong> Модальное окно корректно отображается на всех устройствах</li>
-                    <li><strong>Темы:</strong> Поддержка светлой и темной темы</li>
+                    <li>
+                        <strong>Клик по аватару:</strong> Открывает модальное окно профиля пользователя
+                    </li>
+                    <li>
+                        <strong>Вкладки:</strong> Переключение между обзором, активностью, серверами и друзьями
+                    </li>
+                    <li>
+                        <strong>Действия:</strong> Кнопки для отправки сообщения, добавления в друзья, блокировки
+                    </li>
+                    <li>
+                        <strong>Адаптивность:</strong> Модальное окно корректно отображается на всех устройствах
+                    </li>
+                    <li>
+                        <strong>Темы:</strong> Поддержка светлой и темной темы
+                    </li>
                 </ul>
             </div>
         </div>

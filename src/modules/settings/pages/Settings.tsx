@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import './Settings.scss';
 import { observer } from 'mobx-react-lite';
 import {
@@ -41,20 +41,14 @@ const Settings = observer(() => {
     return (
         <div className="settings-page">
             <SettingsHeader />
-            
+
             <div className="settings-container">
-                <SettingsNavigation 
-                    activeTab={activeTab} 
-                    onTabChange={setActiveTab} 
-                />
-                
-                <div className="settings-main">
-                    {renderTabContent()}
-                </div>
+                <SettingsNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+                <div className="settings-main">{renderTabContent()}</div>
             </div>
         </div>
     );
 });
 
 export default Settings;
-

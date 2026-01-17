@@ -14,19 +14,18 @@ export const serversModule: IModule = {
         {
             path: 'server/:serverId',
             component: ChannelPage,
-            protected: true,
+            protected: true
         },
         {
             path: 'server/:serverId/settings',
             component: ServerSettings,
-            protected: true,
-        },
+            protected: true
+        }
     ],
     async initialize() {
         console.log('Servers module initialized');
     },
     async destroy() {
         console.log('Servers module destroyed');
-    },
+    }
 };
-

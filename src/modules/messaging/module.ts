@@ -13,8 +13,8 @@ export const messagingModule: IModule = {
         {
             path: 'server/:serverId/textRoom/:roomId',
             component: MessageList,
-            protected: true,
-        },
+            protected: true
+        }
     ],
     async initialize() {
         console.log('Messaging module initialized');
@@ -23,6 +23,5 @@ export const messagingModule: IModule = {
     async destroy() {
         console.log('Messaging module destroyed');
         // Отключение от сокетов
-    },
+    }
 };
-

@@ -11,17 +11,12 @@ interface InviteModalProps {
     onCopy: () => void;
 }
 
-const InviteModal: React.FC<InviteModalProps> = ({
-    isOpen,
-    onClose,
-    serverName,
-    serverIcon,
-    inviteLink,
-    onCopy
-}) => {
+const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, serverName, serverIcon, inviteLink, onCopy }) => {
     const { t } = useTranslation();
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="invite-modal-overlay" onClick={onClose}>
@@ -35,7 +30,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
                         <span>×</span>
                     </button>
                 </div>
-                
+
                 <div className="invite-modal__content">
                     <div className="invite-modal__server-preview">
                         <div className="invite-modal__server-preview-icon">
@@ -50,19 +45,19 @@ const InviteModal: React.FC<InviteModalProps> = ({
                             <p>{t('serverHeader.inviteSubtitle')}</p>
                         </div>
                     </div>
-                    
+
                     <div className="invite-modal__invite-section">
                         <label>{t('serverHeader.inviteLinkLabel')}</label>
                         <div className="invite-modal__link-container">
-                            <input 
-                                type="text" 
-                                value={inviteLink} 
-                                readOnly 
+                            <input
+                                type="text"
+                                value={inviteLink}
+                                readOnly
                                 className="invite-modal__link-input"
                                 placeholder={t('serverHeader.inviteLinkPlaceholder')}
                             />
-                            <button 
-                                onClick={onCopy} 
+                            <button
+                                onClick={onCopy}
                                 className="invite-modal__copy-button"
                                 title={t('serverHeader.copyLink')}
                             >
@@ -71,7 +66,7 @@ const InviteModal: React.FC<InviteModalProps> = ({
                             </button>
                         </div>
                     </div>
-                    
+
                     <div className="invite-modal__footer">
                         <button onClick={onClose} className="invite-modal__close-button">
                             {t('serverHeader.done')}
@@ -84,4 +79,3 @@ const InviteModal: React.FC<InviteModalProps> = ({
 };
 
 export default InviteModal;
-

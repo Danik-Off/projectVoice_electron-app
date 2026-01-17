@@ -8,4 +8,3 @@ import { examplePlugin } from './plugin';
 pluginManager.register(examplePlugin);
 
 export { examplePlugin };
-

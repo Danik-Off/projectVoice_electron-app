@@ -48,9 +48,7 @@ export const removeToken = (): void => {
 /**
  * Проверяет, есть ли токен в localStorage
  */
-export const hasToken = (): boolean => {
-    return getToken() !== null;
-};
+export const hasToken = (): boolean => getToken() !== null;
 
 /**
  * Сохраняет данные пользователя в localStorage
@@ -91,4 +89,3 @@ export const removeUser = (): void => {
         console.error('❌ Failed to remove user data from localStorage:', error);
     }
 };
-

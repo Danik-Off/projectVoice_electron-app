@@ -1,4 +1,4 @@
-import { apiClient } from '../utils/apiClient';
+import { apiClient } from '../core';
 
 export interface ServerMember {
     id: number;
@@ -16,28 +16,36 @@ export interface ServerMember {
 
 class ServerMembersService {
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
-        return await apiClient(`/serverMembers/${serverId}/members`, { 
-            method: 'GET' 
+        return await apiClient(`/serverMembers/${serverId}/members`, {
+            method: 'GET'
         });
     }
 
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members/${memberId}`, { 
-            method: 'PUT' 
-        }, { role });
+        return await apiClient(
+            `/serverMembers/${serverId}/members/${memberId}`,
+            {
+                method: 'PUT'
+            },
+            { role }
+        );
     }
 
     async removeMember(serverId: number, memberId: number): Promise<void> {
-        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, { 
-            method: 'DELETE' 
+        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
+            method: 'DELETE'
         });
     }
 
     async addMember(serverId: number, userId: number, role: string = 'member'): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members`, { 
-            method: 'POST' 
-        }, { userId, role });
+        return await apiClient(
+            `/serverMembers/${serverId}/members`,
+            {
+                method: 'POST'
+            },
+            { userId, role }
+        );
     }
 }
 
-export const serverMembersService = new ServerMembersService(); 
+export const serverMembersService = new ServerMembersService();

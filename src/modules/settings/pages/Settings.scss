@@ -16,7 +16,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: 
+        background:
             radial-gradient(circle at 20% 80%, rgba($primary-accent, 0.1) 0%, transparent 50%),
             radial-gradient(circle at 80% 20%, rgba($success-accent, 0.1) 0%, transparent 50%);
         pointer-events: none;
@@ -127,7 +127,6 @@
     font-size: 14px;
     font-weight: 500;
     text-align: left;
-    width: 100%;
 
     &:hover {
         background: $hover-bg;
@@ -181,7 +180,7 @@
 // Унифицированные стили для всех настроек
 .settings-section {
     margin-bottom: $spacing-xl;
-    
+
     .section-header {
         text-align: center;
         margin-bottom: $spacing-lg;
@@ -189,14 +188,14 @@
         background: $secondary-bg;
         border-radius: $border-radius;
         border: 1px solid $border-primary;
-        
+
         h2 {
             font-size: 24px;
             font-weight: 600;
             color: $text-primary;
             margin: 0 0 $spacing-sm 0;
         }
-        
+
         p {
             color: $text-secondary;
             font-size: 16px;
@@ -204,7 +203,7 @@
             line-height: 1.5;
         }
     }
-    
+
     .section-content {
         background: $primary-bg;
         border: 1px solid $border-primary;
@@ -222,15 +221,15 @@
     overflow: hidden;
     transition: all $animation-duration ease;
     margin-bottom: $spacing-lg;
-    
+
     &:hover {
         box-shadow: $shadow-medium;
     }
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
+
     .card-header {
         background: $secondary-bg;
         padding: $spacing-md;
@@ -238,12 +237,12 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        
+
         .header-content {
             display: flex;
             align-items: center;
             gap: $spacing-md;
-            
+
             .icon-container {
                 width: 48px;
                 height: 48px;
@@ -253,13 +252,13 @@
                 align-items: center;
                 justify-content: center;
                 color: white;
-                
+
                 svg {
                     width: 24px;
                     height: 24px;
                 }
             }
-            
+
             .header-text {
                 h3 {
                     font-size: 18px;
@@ -267,7 +266,7 @@
                     margin: 0 0 $spacing-xs 0;
                     font-weight: 600;
                 }
-                
+
                 p {
                     color: $text-secondary;
                     font-size: 14px;
@@ -275,13 +274,13 @@
                 }
             }
         }
-        
+
         .header-actions {
             display: flex;
             gap: $spacing-sm;
         }
     }
-    
+
     .card-content {
         padding: $spacing-md;
     }
@@ -294,11 +293,11 @@
     background: $tertiary-bg;
     border-radius: $border-radius;
     border: 1px solid $border-secondary;
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
+
     .setting-label {
         display: flex;
         align-items: center;
@@ -307,14 +306,14 @@
         font-weight: 500;
         color: $text-primary;
         font-size: 16px;
-        
+
         svg {
             width: 20px;
             height: 20px;
             color: $primary-accent;
         }
     }
-    
+
     .setting-control {
         .setting-description {
             font-size: 14px;
@@ -337,13 +336,13 @@
     color: $text-primary;
     font-size: 16px;
     transition: all $animation-duration ease;
-    
+
     &:focus {
         outline: none;
         border-color: $primary-accent;
         box-shadow: 0 0 0 2px rgba($primary-accent, 0.2);
     }
-    
+
     &:hover {
         border-color: $primary-accent;
     }
@@ -356,7 +355,7 @@
     background: $border-secondary;
     outline: none;
     transition: all $animation-duration ease;
-    
+
     &::-webkit-slider-thumb {
         appearance: none;
         width: 20px;
@@ -366,12 +365,12 @@
         cursor: pointer;
         box-shadow: $shadow-light;
         transition: all $animation-duration ease;
-        
+
         &:hover {
             box-shadow: $shadow-medium;
         }
     }
-    
+
     &::-moz-range-thumb {
         width: 20px;
         height: 20px;
@@ -398,34 +397,34 @@
     font-weight: 500;
     font-size: 14px;
     transition: all $animation-duration ease;
-    
+
     &:hover:not(:disabled) {
         background: var(--primary-accent-hover, #4a9ee6);
         box-shadow: $shadow-medium;
     }
-    
+
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
         transform: none;
     }
-    
+
     &.secondary {
         background: $secondary-accent;
-        
+
         &:hover:not(:disabled) {
             background: var(--secondary-accent-hover, #d32f2f);
         }
     }
-    
+
     &.danger {
         background: $error-color;
-        
+
         &:hover:not(:disabled) {
             background: var(--error-color-hover, #d32f2f);
         }
     }
-    
+
     svg {
         width: 16px;
         height: 16px;
@@ -438,11 +437,11 @@
     align-items: center;
     gap: $spacing-sm;
     cursor: pointer;
-    
-    input[type="checkbox"] {
+
+    input[type='checkbox'] {
         display: none;
     }
-    
+
     .toggle-switch {
         width: 48px;
         height: 24px;
@@ -450,7 +449,7 @@
         border-radius: 12px;
         position: relative;
         transition: all $animation-duration ease;
-        
+
         &::after {
             content: '';
             position: absolute;
@@ -464,15 +463,15 @@
             box-shadow: $shadow-light;
         }
     }
-    
+
     input:checked + .toggle-switch {
         background: $primary-accent;
-        
+
         &::after {
             transform: translateX(24px);
         }
     }
-    
+
     .toggle-label {
         color: $text-primary;
         font-weight: 500;
@@ -488,16 +487,16 @@
     gap: $spacing-sm;
     cursor: pointer;
     margin-bottom: $spacing-sm;
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
-    input[type="radio"],
-    input[type="checkbox"] {
+
+    input[type='radio'],
+    input[type='checkbox'] {
         display: none;
     }
-    
+
     .radio-mark,
     .checkmark {
         width: 20px;
@@ -507,7 +506,7 @@
         position: relative;
         transition: all $animation-duration ease;
         flex-shrink: 0;
-        
+
         &::after {
             content: '';
             position: absolute;
@@ -522,10 +521,10 @@
             transition: opacity $animation-duration ease;
         }
     }
-    
+
     .checkmark {
         border-radius: 4px;
-        
+
         &::after {
             width: 6px;
             height: 10px;
@@ -536,17 +535,17 @@
             transform: translate(-50%, -60%) rotate(45deg);
         }
     }
-    
+
     input:checked + .radio-mark,
     input:checked + .checkmark {
         border-color: $primary-accent;
         background: $primary-accent;
-        
+
         &::after {
             opacity: 1;
         }
     }
-    
+
     .radio-label,
     .checkbox-label {
         color: $text-primary;
@@ -563,10 +562,10 @@
     border-radius: $border-radius;
     padding: $spacing-md;
     margin-top: $spacing-lg;
-    
+
     .info-header {
         margin-bottom: $spacing-sm;
-        
+
         h4 {
             font-size: 16px;
             color: $text-primary;
@@ -574,7 +573,7 @@
             font-weight: 600;
         }
     }
-    
+
     .info-content {
         .info-row {
             display: flex;
@@ -582,26 +581,26 @@
             align-items: center;
             padding: $spacing-xs 0;
             border-bottom: 1px solid $border-secondary;
-            
+
             &:last-child {
                 border-bottom: none;
             }
-            
+
             .info-label {
                 color: $text-secondary;
                 font-size: 14px;
             }
-            
+
             .info-value {
                 color: $text-primary;
                 font-weight: 500;
                 font-size: 14px;
-                
+
                 &.status-active {
                     color: $success-color;
                     font-weight: 600;
                 }
-                
+
                 &.status-inactive {
                     color: $error-color;
                     font-weight: 600;
@@ -616,15 +615,15 @@
     display: grid;
     gap: $spacing-lg;
     margin-bottom: $spacing-lg;
-    
+
     &.two-columns {
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     }
-    
+
     &.three-columns {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
-    
+
     &.four-columns {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
@@ -636,7 +635,7 @@
     gap: $spacing-xs;
     margin-bottom: $spacing-lg;
     border-bottom: 1px solid $border-primary;
-    
+
     .tab-button {
         padding: $spacing-sm $spacing-md;
         border: none;
@@ -648,12 +647,12 @@
         font-size: 14px;
         font-weight: 500;
         border-bottom: 2px solid transparent;
-        
+
         &:hover {
             color: $text-primary;
             background: $hover-bg;
         }
-        
+
         &.active {
             color: $primary-accent;
             background: $primary-bg;
@@ -665,14 +664,14 @@
 // Стили для селектора тем
 .theme-selector {
     width: 100%;
-    
+
     .theme-options {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: $spacing-md;
         margin-bottom: $spacing-md;
     }
-    
+
     .theme-option {
         position: relative;
         border: 2px solid var(--border-primary);
@@ -685,25 +684,25 @@
         flex-direction: column;
         align-items: center;
         gap: $spacing-sm;
-        
+
         &:hover {
             border-color: var(--primary-accent);
             box-shadow: var(--shadow-medium);
         }
-        
+
         &.active {
             border-color: var(--primary-accent);
             background: var(--primary-accent);
             color: white;
             box-shadow: var(--glow-primary);
-            
+
             .theme-name {
                 color: white;
                 font-weight: 600;
             }
         }
     }
-    
+
     .theme-preview {
         width: 60px;
         height: 40px;
@@ -711,67 +710,67 @@
         position: relative;
         overflow: hidden;
         border: 1px solid rgba(0, 0, 0, 0.1);
-        
+
         .preview-header,
         .preview-sidebar,
         .preview-content {
             position: absolute;
         }
-        
+
         .preview-header {
             top: 0;
             left: 0;
             right: 0;
             height: 8px;
         }
-        
+
         .preview-sidebar {
             top: 8px;
             left: 0;
             width: 16px;
             bottom: 0;
         }
-        
+
         .preview-content {
             top: 8px;
             left: 16px;
             right: 0;
             bottom: 0;
         }
-        
+
         &.light-preview {
             background: #ffffff;
-            
+
             .preview-header {
                 background: #f8f9fa;
             }
-            
+
             .preview-sidebar {
                 background: #e9ecef;
             }
-            
+
             .preview-content {
                 background: #ffffff;
             }
         }
-        
+
         &.dark-preview {
             background: #1a1a1a;
-            
+
             .preview-header {
                 background: #2a2a2a;
             }
-            
+
             .preview-sidebar {
                 background: #333333;
             }
-            
+
             .preview-content {
                 background: #1a1a1a;
             }
         }
     }
-    
+
     .theme-name {
         font-size: 14px;
         font-weight: 500;
@@ -779,11 +778,11 @@
         text-align: center;
         transition: color $animation-duration ease;
     }
-    
+
     .theme-option:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-        
+
         &:hover {
             transform: none;
             border-color: var(--border-primary);
@@ -798,30 +797,30 @@
     border-radius: $border-radius;
     padding: $spacing-md;
     margin-top: $spacing-md;
-    
+
     .info-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: $spacing-sm;
-        
+
         &:last-child {
             margin-bottom: 0;
         }
     }
-    
+
     .info-label {
         font-size: 14px;
         color: var(--text-secondary);
         font-weight: 500;
     }
-    
+
     .info-value {
         font-size: 14px;
         color: var(--text-primary);
         font-weight: 600;
     }
-    
+
     .info-badge {
         background: var(--primary-accent);
         color: white;
@@ -836,20 +835,20 @@
 @media (max-width: 768px) {
     .settings-header {
         padding: $spacing-md;
-        
+
         .settings-title {
             font-size: 24px;
         }
     }
-    
+
     .settings-main {
         padding: $spacing-md;
     }
-    
+
     .settings-content {
         max-width: 100%;
     }
-    
+
     .settings-grid {
         &.two-columns,
         &.three-columns,
@@ -857,25 +856,25 @@
             grid-template-columns: 1fr;
         }
     }
-    
+
     .settings-tabs {
         flex-wrap: wrap;
-        
+
         .tab-button {
             flex: 1;
             text-align: center;
         }
     }
-    
+
     .theme-selector {
         .theme-options {
             grid-template-columns: 1fr;
             gap: $spacing-sm;
         }
-        
+
         .theme-option {
             padding: $spacing-sm;
-            
+
             .theme-preview {
                 width: 50px;
                 height: 32px;
@@ -973,7 +972,7 @@
     font-weight: 500;
     color: $text-primary;
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
         width: 18px;
         height: 18px;
         accent-color: $primary-accent;
@@ -1084,4 +1083,3 @@
         border-color: #e9ecef;
     }
 }
-

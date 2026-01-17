@@ -1,10 +1,10 @@
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { getCookie } from './cookie';
 import { BASE_URL } from '../configs/apiConfig';
 import { connectionStore } from '../core/store/ConnectionStore';
 
 class SocketClient {
-
     private token: string;
     private socket: Socket | null;
 
@@ -43,7 +43,7 @@ class SocketClient {
         });
     }
 
-    public socketOn(ev: string, listner: (data: unknown) => void) {
+    public socketOn(ev: string, listner: (data: unknown)=> void) {
         if (this.socket) {
             this.socket.on(ev, listner);
         }

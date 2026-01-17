@@ -125,7 +125,7 @@ $border-radius-medium: 12px;
         gap: $spacing-md;
         cursor: pointer;
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
             display: none;
         }
 
@@ -152,7 +152,7 @@ $border-radius-medium: 12px;
             }
         }
 
-        input[type="checkbox"]:checked + .toggle-switch {
+        input[type='checkbox']:checked + .toggle-switch {
             background: var(--primary-accent);
             border-color: var(--primary-accent);
 

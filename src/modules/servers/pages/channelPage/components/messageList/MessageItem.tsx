@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { observer } from 'mobx-react';
 import type { Message } from '../../../../../../types/message';
-import { messageStore } from '../../../../../../modules/messaging';
-import { authStore } from '../../../../../../core';
+import { authStore, eventBus, MESSAGING_COMMANDS } from '../../../../../../core';
 import { useUserProfile } from '../../../../../../hooks/useUserProfile';
 import ClickableAvatar from '../../../../../../components/ClickableAvatar';
 import './MessageItem.scss';
@@ -12,7 +10,7 @@ interface MessageItemProps {
     isFirstInGroup?: boolean;
 }
 
-const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGroup = false }) => {
+const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = false }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(message.content);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -23,23 +21,27 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     const { openProfile } = useUserProfile();
 
     const currentUser = authStore.user;
-    const canEdit = messageStore.canEditMessage(message);
-    const canDelete = messageStore.canDeleteMessage(message);
+    // Проверка прав на редактирование/удаление
+    const canEdit =
+        currentUser?.id === message.userId || currentUser?.role === 'admin' || currentUser?.role === 'moderator';
+    const canDelete =
+        currentUser?.id === message.userId || currentUser?.role === 'admin' || currentUser?.role === 'moderator';
     const isOwnMessage = currentUser?.id === message.userId;
 
     useEffect(() => {
         if (isEditing && editInputRef.current) {
             editInputRef.current.focus();
-            editInputRef.current.setSelectionRange(editInputRef.current.value.length, editInputRef.current.value.length);
+            editInputRef.current.setSelectionRange(
+                editInputRef.current.value.length,
+                editInputRef.current.value.length
+            );
         }
     }, [isEditing]);
 
-    useEffect(() => {
-        return () => {
-            if (actionsTimeoutRef.current) {
-                clearTimeout(actionsTimeoutRef.current);
-            }
-        };
+    useEffect(() => () => {
+        if (actionsTimeoutRef.current) {
+            clearTimeout(actionsTimeoutRef.current);
+        }
     }, []);
 
     const handleEdit = () => {
@@ -51,11 +53,14 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     const handleSave = async () => {
         if (editContent.trim() && editContent !== message.content) {
             try {
-                await messageStore.updateMessage(message.id, editContent);
+                // Отправляем команду через eventBus
+                eventBus.emit(MESSAGING_COMMANDS.UPDATE_MESSAGE, {
+                    messageId: message.id,
+                    content: editContent
+                });
                 setIsEditing(false);
             } catch (error) {
                 console.error('Ошибка обновления сообщения:', error);
-                // Здесь можно добавить уведомление об ошибке
             }
         } else {
             setIsEditing(false);
@@ -71,11 +76,13 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
         if (window.confirm('Вы уверены, что хотите удалить это сообщение?')) {
             setIsDeleting(true);
             try {
-                await messageStore.deleteMessage(message.id);
+                // Отправляем команду через eventBus
+                eventBus.emit(MESSAGING_COMMANDS.DELETE_MESSAGE, {
+                    messageId: message.id
+                });
             } catch (error) {
                 console.error('Ошибка удаления сообщения:', error);
                 setIsDeleting(false);
-                // Здесь можно добавить уведомление об ошибке
             }
         }
     };
@@ -106,32 +113,34 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
         const date = new Date(dateString);
         const now = new Date();
         const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-        
+
         if (diffInHours < 24) {
-            return date.toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+            return date.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
             });
-        } else if (diffInHours < 168) { // 7 дней
-            return date.toLocaleDateString('ru-RU', { 
+        } if (diffInHours < 168) {
+            // 7 дней
+            return date.toLocaleDateString('ru-RU', {
                 weekday: 'short',
                 month: 'short',
                 day: 'numeric'
             });
-        } else {
-            return date.toLocaleDateString('ru-RU', { 
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
         }
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
     };
 
-
-
     const getStatusIcon = () => {
-        if (message.isDeleted) return '🗑️';
-        if (message.isEdited) return '✏️';
+        if (message.isDeleted) {
+            return '🗑️';
+        }
+        if (message.isEdited) {
+            return '✏️';
+        }
         return '✓';
     };
 
@@ -146,7 +155,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     }
 
     return (
-        <div 
+        <div
             className={`message-item ${isOwnMessage ? 'own-message' : ''} ${isDeleting ? 'deleting' : ''}`}
             ref={messageRef}
             onMouseEnter={handleMouseEnter}
@@ -167,16 +176,19 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                     size="medium"
                     onClick={() => {
                         if (message.user) {
-                            openProfile({
-                                id: message.user.id || 0,
-                                username: message.user.username || 'Unknown',
-                                email: `${message.user.username || 'unknown'}@temp.com`,
-                                profilePicture: message.user.avatar,
-                                role: 'member',
-                                isActive: true,
-                                createdAt: new Date().toISOString(),
-                                status: 'online'
-                            }, false);
+                            openProfile(
+                                {
+                                    id: message.user.id || 0,
+                                    username: message.user.username || 'Unknown',
+                                    email: `${message.user.username || 'unknown'}@temp.com`,
+                                    profilePicture: message.user.avatar,
+                                    role: 'member',
+                                    isActive: true,
+                                    createdAt: new Date().toISOString(),
+                                    status: 'online'
+                                },
+                                false
+                            );
                         }
                     }}
                     className="message-avatar"
@@ -186,9 +198,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
             <div className="message-content">
                 {isFirstInGroup && (
                     <div className="message-header">
-                        <span className="message-author">
-                            {message.user?.username || 'Неизвестный пользователь'}
-                        </span>
+                        <span className="message-author">{message.user?.username || 'Неизвестный пользователь'}</span>
                         <span className="message-time">
                             {formatTime(message.createdAt)}
                             {message.isEdited && <span className="edit-indicator"> (изменено)</span>}
@@ -243,7 +253,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                 {(canEdit || canDelete) && showActions && (
                     <div className="message-actions">
                         {canEdit && (
-                            <button 
+                            <button
                                 className="action-btn edit-btn"
                                 onClick={handleEdit}
                                 title="Редактировать"
@@ -253,7 +263,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             </button>
                         )}
                         {canDelete && (
-                            <button 
+                            <button
                                 className="action-btn delete-btn"
                                 onClick={handleDelete}
                                 title="Удалить"
@@ -267,6 +277,6 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
             </div>
         </div>
     );
-});
+};
 
-export default MessageItem; 
+export default MessageItem;

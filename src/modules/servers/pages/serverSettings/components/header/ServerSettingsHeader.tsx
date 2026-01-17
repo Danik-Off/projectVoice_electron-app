@@ -18,7 +18,7 @@ const ServerSettingsHeader: React.FC<ServerSettingsHeaderProps> = ({ serverName 
         <div className="settings-header">
             <div className="header-content">
                 <button className="back-button" onClick={handleBackToServer}>
-                     {t('serverSettings.backToServer')}
+                    {t('serverSettings.backToServer')}
                 </button>
                 <div className="header-text">
                     <h1 className="settings-title">

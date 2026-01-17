@@ -12,7 +12,7 @@ const AppearanceSettings: React.FC = observer(() => {
     useEffect(() => {
         const savedFollowSystem = localStorage.getItem('followSystem') === 'true';
         setFollowSystem(savedFollowSystem);
-        
+
         if (savedFollowSystem) {
             // Если включено следование системе, применяем системную тему
             themeStore.applySystemTheme();
@@ -23,7 +23,7 @@ const AppearanceSettings: React.FC = observer(() => {
         const newFollowSystem = !followSystem;
         setFollowSystem(newFollowSystem);
         localStorage.setItem('followSystem', newFollowSystem.toString());
-        
+
         if (newFollowSystem) {
             // Если включаем следование системе, применяем системную тему
             themeStore.applySystemTheme();
@@ -38,7 +38,9 @@ const AppearanceSettings: React.FC = observer(() => {
 
     // Слушаем изменения системной темы
     useEffect(() => {
-        if (!followSystem) return;
+        if (!followSystem) {
+            return;
+        }
 
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const handleChange = () => {
@@ -57,22 +59,20 @@ const AppearanceSettings: React.FC = observer(() => {
                 <h2>{t('settingsPage.appearance.title')}</h2>
                 <p>{t('settingsPage.appearance.description')}</p>
             </div>
-            
+
             <div className="section-content">
                 {/* Основная настройка темы */}
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🎨
-                            </div>
+                            <div className="icon-container">🎨</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.appearance.theme.title')}</h3>
                                 <p>{t('settingsPage.appearance.theme.description')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         {/* Переключатель системной темы */}
                         <div className="setting-group">
@@ -83,11 +83,7 @@ const AppearanceSettings: React.FC = observer(() => {
                             </div>
                             <div className="setting-control">
                                 <div className="settings-toggle">
-                                    <input
-                                        type="checkbox"
-                                        checked={followSystem}
-                                        onChange={handleSystemThemeToggle}
-                                    />
+                                    <input type="checkbox" checked={followSystem} onChange={handleSystemThemeToggle} />
                                     <span className="toggle-switch"></span>
                                     <span className="toggle-label">
                                         {t('settingsPage.appearance.theme.followSystem')}
@@ -123,7 +119,7 @@ const AppearanceSettings: React.FC = observer(() => {
                                                 ☀️ {t('settingsPage.appearance.theme.light')}
                                             </span>
                                         </button>
-                                        
+
                                         <button
                                             className={`theme-option ${themeStore.currentTheme === 'dark' ? 'active' : ''}`}
                                             onClick={() => handleThemeChange('dark')}
@@ -148,17 +144,14 @@ const AppearanceSettings: React.FC = observer(() => {
                             <div className="info-item">
                                 <span className="info-label">{t('settingsPage.appearance.theme.currentTheme')}:</span>
                                 <span className="info-value">
-                                    {themeStore.currentTheme === 'dark' ? 
-                                        `🌙 ${t('settingsPage.appearance.theme.dark')}` : 
-                                        `☀️ ${t('settingsPage.appearance.theme.light')}`
-                                    }
+                                    {themeStore.currentTheme === 'dark'
+                                        ? `🌙 ${t('settingsPage.appearance.theme.dark')}`
+                                        : `☀️ ${t('settingsPage.appearance.theme.light')}`}
                                 </span>
                             </div>
                             {followSystem && (
                                 <div className="info-item">
-                                    <span className="info-badge">
-                                        🔄 {t('settingsPage.appearance.theme.autoSync')}
-                                    </span>
+                                    <span className="info-badge">🔄 {t('settingsPage.appearance.theme.autoSync')}</span>
                                 </div>
                             )}
                         </div>

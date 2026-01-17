@@ -23,7 +23,7 @@ class ChannelsStore {
             this.loading = true;
             this.error = null;
         });
-        
+
         try {
             const data: Channel[] = await channelService.getByServer(serverId);
             runInAction(() => {
@@ -36,7 +36,7 @@ class ChannelsStore {
                 this.loading = false;
             });
         }
-        console.log("ok")
+        console.log('ok');
     }
 
     // Create a new channel in the current server
@@ -44,7 +44,7 @@ class ChannelsStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             const newChannel: Channel = await channelService.create(serverId, channelData);
             runInAction(() => {
@@ -64,7 +64,7 @@ class ChannelsStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             await channelService.delete(serverId, channelId);
             runInAction(() => {

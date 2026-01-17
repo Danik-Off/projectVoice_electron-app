@@ -10,7 +10,9 @@ interface CopyTooltipProps {
 const CopyTooltip: React.FC<CopyTooltipProps> = ({ show, tooltipRef }) => {
     const { t } = useTranslation();
 
-    if (!show) return null;
+    if (!show) {
+        return null;
+    }
 
     return (
         <div className="copy-tooltip" ref={tooltipRef}>
@@ -21,4 +23,3 @@ const CopyTooltip: React.FC<CopyTooltipProps> = ({ show, tooltipRef }) => {
 };
 
 export default CopyTooltip;
-

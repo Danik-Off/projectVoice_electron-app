@@ -12,13 +12,12 @@ import type { Channel } from '../../../../../../../../types/channel';
 import { channelsStore } from '../../../../../../../channels';
 import serverStore from '../../../../../../store/serverStore';
 
-
 const ChannelList: React.FC = observer(() => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const params = useParams();
     const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
-    
+
     const currentChannelId = params.channelId;
 
     // Загрузка данных о каналах при монтировании компонента
@@ -36,7 +35,9 @@ const ChannelList: React.FC = observer(() => {
 
     const handleNavigate = (channel: Channel) => {
         const serverId = serverStore.currentServer?.id;
-        if (!serverId) return;
+        if (!serverId) {
+            return;
+        }
         let newPath = '';
         if (channel.type === 'voice') {
             newPath = `/server/${serverId}/voiceRoom/${channel.id}`;
@@ -56,24 +57,25 @@ const ChannelList: React.FC = observer(() => {
         const baseClass = 'channel-list__item';
         const typeClass = channel.type === 'voice' ? 'voice-channel' : 'text-channel';
         const activeClass = currentChannelId === String(channel.id) ? 'active' : '';
-        const connectedClass = channel.type === 'voice' && voiceRoomStore.currentVoiceChannel?.id === channel.id ? 'connected' : '';
-        
+        const connectedClass =
+            channel.type === 'voice' && voiceRoomStore.currentVoiceChannel?.id === channel.id ? 'connected' : '';
+
         return [baseClass, typeClass, activeClass, connectedClass].filter(Boolean).join(' ');
     };
 
     const channelList = (
         <div className="channel-list">
             <button className="button" onClick={() => setIsFormVisible(!isFormVisible)}>
-                {t('channelsPage.channelList.' + (isFormVisible ? 'cancel' : 'create') + 'Btn')}
+                {t(`channelsPage.channelList.${  isFormVisible ? 'cancel' : 'create'  }Btn`)}
             </button>
-            
+
             <h2>{t('channelsPage.channelList.textTitle')}</h2>
             {textChannels.length > 0 ? (
                 <ul className="channel-list__items">
                     {textChannels.map((channel: Channel) => (
-                        <li 
-                            key={channel.id} 
-                            onClick={() => handleNavigate(channel)} 
+                        <li
+                            key={channel.id}
+                            onClick={() => handleNavigate(channel)}
                             className={getChannelClasses(channel)}
                             title={channel.name}
                         >
@@ -89,9 +91,9 @@ const ChannelList: React.FC = observer(() => {
             {voiceChannels.length > 0 ? (
                 <ul className="channel-list__items">
                     {voiceChannels.map((channel: Channel) => (
-                        <li 
-                            key={channel.id} 
-                            onClick={() => handleNavigate(channel)} 
+                        <li
+                            key={channel.id}
+                            onClick={() => handleNavigate(channel)}
                             className={getChannelClasses(channel)}
                             title={channel.name}
                         >
@@ -118,4 +120,3 @@ const ChannelList: React.FC = observer(() => {
 });
 
 export default ChannelList;
-

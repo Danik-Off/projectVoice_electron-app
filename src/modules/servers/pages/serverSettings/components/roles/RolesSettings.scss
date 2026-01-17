@@ -8,7 +8,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 24px;
-    
+
     .header-content {
         h2 {
             margin: 0 0 8px 0;
@@ -16,14 +16,14 @@
             font-weight: 600;
             color: var(--text-primary, #ffffff);
         }
-        
+
         p {
             margin: 0;
             color: var(--text-secondary, #b9bbbe);
             font-size: 14px;
         }
     }
-    
+
     .create-role-button {
         background: var(--accent-color, #5865f2);
         color: #ffffff;
@@ -34,7 +34,7 @@
         font-weight: 500;
         cursor: pointer;
         transition: background-color 0.2s;
-        
+
         &:hover {
             background: var(--accent-hover, #4752c4);
         }
@@ -62,26 +62,26 @@
     background: var(--bg-secondary, #2f3136);
     border: 2px dashed var(--border-color, #40444b);
     border-radius: 8px;
-    
+
     .empty-icon {
         font-size: 64px;
         margin-bottom: 16px;
         opacity: 0.5;
     }
-    
+
     h3 {
         margin: 0 0 8px 0;
         font-size: 20px;
         font-weight: 600;
         color: var(--text-primary, #ffffff);
     }
-    
+
     p {
         margin: 0 0 24px 0;
         font-size: 14px;
         line-height: 1.5;
     }
-    
+
     .create-first-role-button {
         background: var(--accent-color, #5865f2);
         color: #ffffff;
@@ -92,13 +92,13 @@
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
-        
+
         &:hover {
             background: var(--accent-hover, #4752c4);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
         }
-        
+
         &:active {
             transform: translateY(0);
         }
@@ -112,7 +112,7 @@
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.2s;
-    
+
     &:hover {
         border-color: var(--accent-color, #5865f2);
     }
@@ -133,19 +133,19 @@
 
 .role-header {
     flex: 1;
-    
+
     .role-name {
         margin: 0 0 8px 0;
         font-size: 18px;
         font-weight: 600;
         color: var(--text-primary, #ffffff);
     }
-    
+
     .role-badges {
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
-        
+
         .badge {
             background: var(--bg-tertiary, #202225);
             color: var(--text-secondary, #b9bbbe);
@@ -153,7 +153,7 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: 500;
-            
+
             &.position {
                 background: var(--accent-color, #5865f2);
                 color: #ffffff;
@@ -166,7 +166,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    
+
     .action-button {
         padding: 8px 16px;
         border: none;
@@ -175,30 +175,29 @@
         font-weight: 500;
         cursor: pointer;
         transition: all 0.2s;
-        
+
         &.edit {
             background: var(--bg-tertiary, #202225);
             color: var(--text-primary, #ffffff);
-            
+
             &:hover {
                 background: var(--bg-quaternary, #18191c);
             }
         }
-        
+
         &.delete {
             background: #ed4245;
             color: #ffffff;
-            
+
             &:hover {
                 background: #c03537;
             }
         }
     }
-    
+
     .no-permissions {
         color: var(--text-secondary, #b9bbbe);
         font-size: 12px;
         font-style: italic;
     }
 }
-

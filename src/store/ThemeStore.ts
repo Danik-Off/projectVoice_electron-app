@@ -36,19 +36,19 @@ class ThemeStore {
 
     private applyTheme() {
         const root = document.documentElement;
-        
+
         // Удаляем предыдущие классы тем
         root.classList.remove('theme-light', 'theme-dark');
-        
+
         // Добавляем нужный класс темы
         root.classList.add(`theme-${this.currentTheme}`);
-        
+
         // Устанавливаем атрибут data-theme для дополнительной совместимости
         root.setAttribute('data-theme', this.currentTheme);
-        
+
         // Применяем тему к body для обратной совместимости
         document.body.className = `theme-${this.currentTheme}`;
-        
+
         console.log(`Applied theme: ${this.currentTheme}`);
     }
 
@@ -72,4 +72,4 @@ class ThemeStore {
     }
 }
 
-export const themeStore = new ThemeStore(); 
+export const themeStore = new ThemeStore();

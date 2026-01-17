@@ -13,4 +13,4 @@ const TestInvitePage: React.FC = () => {
     );
 };
 
-export default TestInvitePage; 
+export default TestInvitePage;

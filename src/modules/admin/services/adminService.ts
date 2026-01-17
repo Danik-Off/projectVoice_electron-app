@@ -117,11 +117,21 @@ class AdminService {
 
     async getUsers(filters: UserFilters = {}): Promise<UsersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) params.append('page', filters.page.toString());
-        if (filters.limit) params.append('limit', filters.limit.toString());
-        if (filters.search) params.append('search', filters.search);
-        if (filters.role) params.append('role', filters.role);
-        if (filters.status) params.append('status', filters.status);
+        if (filters.page) {
+            params.append('page', filters.page.toString());
+        }
+        if (filters.limit) {
+            params.append('limit', filters.limit.toString());
+        }
+        if (filters.search) {
+            params.append('search', filters.search);
+        }
+        if (filters.role) {
+            params.append('role', filters.role);
+        }
+        if (filters.status) {
+            params.append('status', filters.status);
+        }
 
         return await apiClient(`/admin/users?${params.toString()}`, { method: 'GET' });
     }
@@ -140,10 +150,18 @@ class AdminService {
 
     async getServers(filters: ServerFilters = {}): Promise<ServersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) params.append('page', filters.page.toString());
-        if (filters.limit) params.append('limit', filters.limit.toString());
-        if (filters.search) params.append('search', filters.search);
-        if (filters.status) params.append('status', filters.status);
+        if (filters.page) {
+            params.append('page', filters.page.toString());
+        }
+        if (filters.limit) {
+            params.append('limit', filters.limit.toString());
+        }
+        if (filters.search) {
+            params.append('search', filters.search);
+        }
+        if (filters.status) {
+            params.append('status', filters.status);
+        }
 
         return await apiClient(`/admin/servers?${params.toString()}`, { method: 'GET' });
     }
@@ -170,4 +188,3 @@ class AdminService {
 }
 
 export const adminService = new AdminService();
-

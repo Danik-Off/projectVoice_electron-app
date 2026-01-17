@@ -8,7 +8,6 @@
     bottom: 0;
     z-index: 5;
     flex-shrink: 0;
-
 }
 
 .message-input-wrapper {
@@ -216,11 +215,11 @@
 
 .character-count {
     font-weight: 500;
-    
+
     &.warning {
         color: #f39c12;
     }
-    
+
     &.error {
         color: #e74c3c;
     }
@@ -244,7 +243,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.6;
     }
     50% {
@@ -253,7 +253,9 @@
 }
 
 @keyframes typing {
-    0%, 60%, 100% {
+    0%,
+    60%,
+    100% {
         transform: translateY(0);
     }
     30% {
@@ -262,7 +264,7 @@
 }
 
 // Темная тема
-[data-theme="dark"] {
+[data-theme='dark'] {
     .message-input-wrapper {
         background: var(--background-secondary);
         border-color: var(--border-color);
@@ -274,7 +276,7 @@
 }
 
 // Светлая тема
-[data-theme="light"] {
+[data-theme='light'] {
     .message-input-wrapper {
         background: #f8f9fa;
         border-color: #e9ecef;
@@ -283,4 +285,4 @@
     .input-footer {
         background: rgba(0, 0, 0, 0.02);
     }
-} 
+}

@@ -20,29 +20,27 @@ const GeneralSettings: React.FC = () => {
                 <h2>{t('settingsPage.general.title')}</h2>
                 <p>{t('settingsPage.general.description')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🌐
-                            </div>
+                            <div className="icon-container">🌐</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.general.language.title')}</h3>
                                 <p>{t('settingsPage.general.language.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.general.language.label')}</span>
                             </label>
                             <div className="setting-control">
-                                <select 
-                                    className="settings-select" 
+                                <select
+                                    className="settings-select"
                                     value={i18n.language}
                                     onChange={handleLanguageChange}
                                 >
@@ -60,21 +58,19 @@ const GeneralSettings: React.FC = () => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🔌
-                            </div>
+                            <div className="icon-container">🔌</div>
                             <div className="header-text">
                                 <h3>{t('connection.serverSettings')}</h3>
                                 <p>{t('connection.serverSettingsDescription')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <div className="setting-control">
-                                <button 
-                                    className="edit-button" 
+                                <button
+                                    className="edit-button"
                                     onClick={handleOpenServerSettings}
                                     style={{
                                         width: '100%',
@@ -101,6 +97,3 @@ const GeneralSettings: React.FC = () => {
 };
 
 export default GeneralSettings;
-
-
-

@@ -124,7 +124,6 @@ $border-radius-medium: 12px;
         }
     }
 
-
     // Settings Toggle
     .settings-toggle {
         display: flex;
@@ -132,7 +131,7 @@ $border-radius-medium: 12px;
         gap: $spacing-sm;
         cursor: pointer;
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
             display: none;
         }
 
@@ -158,7 +157,7 @@ $border-radius-medium: 12px;
             }
         }
 
-        input[type="checkbox"]:checked + .toggle-switch {
+        input[type='checkbox']:checked + .toggle-switch {
             background: var(--primary-accent);
             border-color: var(--primary-accent);
 
@@ -183,7 +182,7 @@ $border-radius-medium: 12px;
         cursor: pointer;
         padding: $spacing-sm 0;
 
-        input[type="checkbox"] {
+        input[type='checkbox'] {
             display: none;
         }
 
@@ -198,7 +197,7 @@ $border-radius-medium: 12px;
             flex-shrink: 0;
         }
 
-        input[type="checkbox"]:checked + .checkmark {
+        input[type='checkbox']:checked + .checkmark {
             background: var(--primary-accent);
             border-color: var(--primary-accent);
 
@@ -382,7 +381,7 @@ $border-radius-medium: 12px;
             background: var(--accent-bg);
         }
 
-        input[type="radio"] {
+        input[type='radio'] {
             accent-color: var(--primary-accent);
         }
 

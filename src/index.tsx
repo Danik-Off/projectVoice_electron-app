@@ -21,7 +21,7 @@ initializeApp()
     .then(() => {
         console.log('✅ App initialized, creating router...');
         const router = createRouter();
-        
+
         const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
         root.render(
             // <React.StrictMode>

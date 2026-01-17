@@ -18,9 +18,9 @@ class AuthStore {
     public loading = false;
 
     public isAuthenticated = false;
-    public user: { 
+    public user: {
         id: number;
-        username: string; 
+        username: string;
         email: string;
         role: string;
         isActive: boolean;
@@ -40,9 +40,9 @@ class AuthStore {
         // Проверка наличия токена в cookies при инициализации
         this.token = getCookie('token');
         this.isAuthenticated = this.token !== null;
-        
+
         console.log('AuthStore constructor - token:', this.token, 'isAuthenticated:', this.isAuthenticated);
-        
+
         // Загружаем данные пользователя, если есть токен
         if (this.token) {
             this.loadUserData();
@@ -61,7 +61,7 @@ class AuthStore {
 
             this.isAuthenticated = true;
             this.loading = false;
-            
+
             // Перенаправление после успешного входа
             if (redirect) {
                 window.location.href = redirect;
@@ -81,7 +81,7 @@ class AuthStore {
                 console.log('No token available for loadUserData');
                 return;
             }
-            
+
             console.log('Loading user data with token:', this.token);
             const userData = await authService.getMe();
             console.log('User data loaded:', userData);
@@ -98,8 +98,8 @@ class AuthStore {
     public async register(username: string, email: string, password: string, redirect?: string | null): Promise<void> {
         try {
             this.loading = true;
-            const data = await authService.register( email,username, password);
-            
+            const data = await authService.register(email, username, password);
+
             // После успешной регистрации получаем информацию о пользователе
             const userData = await authService.getMe();
             this.user = userData;
@@ -110,7 +110,7 @@ class AuthStore {
 
             this.isAuthenticated = true;
             this.loading = false;
-            
+
             // Перенаправление после успешной регистрации
             if (redirect) {
                 window.location.href = redirect;

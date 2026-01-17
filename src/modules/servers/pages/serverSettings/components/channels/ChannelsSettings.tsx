@@ -1,12 +1,27 @@
-import React from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { channelsStore } from '../../../../../../modules/channels';
+import { eventBus, CHANNELS_EVENTS } from '../../../../../../core';
 import type { Channel } from '../../../../../../types/channel';
+import type { ChannelsLoadedEvent } from '../../../../../../core/events/events';
 
-const ChannelsSettings: React.FC = observer(() => {
+interface ChannelsSettingsProps {
+    currentUserPermissions?: string | bigint;
+}
+
+const ChannelsSettings: React.FC<ChannelsSettingsProps> = () => {
     const { t } = useTranslation();
-    const channels = channelsStore.channels;
+    const [channels, setChannels] = useState<Channel[]>([]);
+
+    // Подписка на события загрузки каналов
+    useEffect(() => {
+        const unsubscribe = eventBus.on<ChannelsLoadedEvent>(CHANNELS_EVENTS.CHANNELS_LOADED, (data) => {
+            if (data) {
+                setChannels(data.channels as Channel[]);
+            }
+        });
+
+        return unsubscribe;
+    }, []);
 
     const textChannels = channels.filter((channel: Channel) => channel.type === 'text');
     const voiceChannels = channels.filter((channel: Channel) => channel.type === 'voice');
@@ -17,21 +32,19 @@ const ChannelsSettings: React.FC = observer(() => {
                 <h2>{t('serverSettings.channels')}</h2>
                 <p>{t('serverSettings.channelsDescription')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                📝
-                            </div>
+                            <div className="icon-container">📝</div>
                             <div className="header-text">
                                 <h3>{t('serverSettings.serverChannels')}</h3>
                                 <p>{t('serverSettings.serverChannelsDescription')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         {/* Текстовые каналы */}
                         <div className="channel-category">
@@ -77,6 +90,6 @@ const ChannelsSettings: React.FC = observer(() => {
             </div>
         </div>
     );
-});
+};
 
 export default ChannelsSettings;

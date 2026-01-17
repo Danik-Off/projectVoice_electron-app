@@ -18,13 +18,13 @@ const ProfileSettings: React.FC = observer(() => {
         editForm,
         passwordForm,
         validationErrors,
-        
+
         // Сеттеры
         setEditForm,
         setPasswordForm,
         setValidationErrors,
         setShowLogoutConfirm,
-        
+
         // Обработчики
         handleEdit,
         handleSave,

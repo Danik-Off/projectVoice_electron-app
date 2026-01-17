@@ -32,7 +32,9 @@ class MessageStore {
 
     // Загрузка сообщений
     async loadMessages(page: number = 1, append: boolean = false) {
-        if (!this.currentChannelId) return;
+        if (!this.currentChannelId) {
+            return;
+        }
 
         try {
             this.loading = true;
@@ -52,7 +54,7 @@ class MessageStore {
                 } else {
                     this.messages = response.messages;
                 }
-                
+
                 this.currentPage = response.page;
                 this.totalPages = response.totalPages;
                 this.totalMessages = response.total;
@@ -79,7 +81,9 @@ class MessageStore {
 
     // Отправка нового сообщения
     async sendMessage(content: string) {
-        if (!this.currentChannelId || !content.trim()) return;
+        if (!this.currentChannelId || !content.trim()) {
+            return;
+        }
 
         try {
             const messageData: CreateMessageRequest = {
@@ -106,7 +110,9 @@ class MessageStore {
 
     // Обновление сообщения
     async updateMessage(messageId: number, content: string) {
-        if (!content.trim()) return;
+        if (!content.trim()) {
+            return;
+        }
 
         try {
             const updateData: UpdateMessageRequest = {
@@ -116,7 +122,7 @@ class MessageStore {
             const updatedMessage = await messageService.updateMessage(messageId, updateData);
 
             runInAction(() => {
-                const index = this.messages.findIndex(msg => msg.id === messageId);
+                const index = this.messages.findIndex((msg) => msg.id === messageId);
                 if (index !== -1) {
                     this.messages[index] = { ...this.messages[index], ...updatedMessage, isEdited: true };
                 }
@@ -138,7 +144,7 @@ class MessageStore {
             await messageService.deleteMessage(messageId);
 
             runInAction(() => {
-                const index = this.messages.findIndex(msg => msg.id === messageId);
+                const index = this.messages.findIndex((msg) => msg.id === messageId);
                 if (index !== -1) {
                     this.messages[index] = { ...this.messages[index], isDeleted: true };
                 }
@@ -155,7 +161,9 @@ class MessageStore {
 
     // Поиск сообщений
     async searchMessages(query: string) {
-        if (!this.currentChannelId || !query.trim()) return;
+        if (!this.currentChannelId || !query.trim()) {
+            return;
+        }
 
         try {
             this.loading = true;
@@ -202,7 +210,7 @@ class MessageStore {
     // Обновление сообщения в реальном времени
     updateMessageRealtime(message: Message) {
         runInAction(() => {
-            const index = this.messages.findIndex(msg => msg.id === message.id);
+            const index = this.messages.findIndex((msg) => msg.id === message.id);
             if (index !== -1) {
                 this.messages[index] = { ...this.messages[index], ...message, isEdited: true };
             }
@@ -212,7 +220,7 @@ class MessageStore {
     // Удаление сообщения в реальном времени
     deleteMessageRealtime(messageId: number) {
         runInAction(() => {
-            const index = this.messages.findIndex(msg => msg.id === messageId);
+            const index = this.messages.findIndex((msg) => msg.id === messageId);
             if (index !== -1) {
                 this.messages[index] = { ...this.messages[index], isDeleted: true };
             }
@@ -222,12 +230,20 @@ class MessageStore {
 
     // Проверка, может ли пользователь редактировать сообщение
     canEditMessage(message: Message): boolean {
-        return authStore.user?.id === message.userId || authStore.user?.role === 'admin' || authStore.user?.role === 'moderator';
+        return (
+            authStore.user?.id === message.userId ||
+            authStore.user?.role === 'admin' ||
+            authStore.user?.role === 'moderator'
+        );
     }
 
     // Проверка, может ли пользователь удалить сообщение
     canDeleteMessage(message: Message): boolean {
-        return authStore.user?.id === message.userId || authStore.user?.role === 'admin' || authStore.user?.role === 'moderator';
+        return (
+            authStore.user?.id === message.userId ||
+            authStore.user?.role === 'admin' ||
+            authStore.user?.role === 'moderator'
+        );
     }
 
     // Очистка состояния
@@ -244,4 +260,4 @@ class MessageStore {
     }
 }
 
-export const messageStore = new MessageStore(); 
+export const messageStore = new MessageStore();

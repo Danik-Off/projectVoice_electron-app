@@ -21,7 +21,7 @@ class ServerStore {
             this.loading = true;
             this.error = null;
         });
-        
+
         try {
             const data: Server[] = await serverService.get();
             runInAction(() => {
@@ -45,7 +45,7 @@ class ServerStore {
             this.loading = true;
             this.error = null;
         });
-        
+
         try {
             const data: Server = await serverService.getBy(id);
             runInAction(() => {
@@ -74,7 +74,7 @@ class ServerStore {
             this.loading = true;
             this.error = null;
         });
-        
+
         try {
             const newServer: Server = await serverService.create(serverData);
             console.log('🚀 ~ ServerStore ~ createServer ~ newServer:', newServer);
@@ -94,12 +94,12 @@ class ServerStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             const updatedServer: Server = await serverService.update(id, updatedData);
             runInAction(() => {
-                this.servers = this.servers.map((server) => (server.id === id ? updatedServer : server));
-                
+                this.servers = this.servers.map((server) => server.id === id ? updatedServer : server);
+
                 // Обновляем currentServer если он был обновлен
                 if (this.currentServer && this.currentServer.id === id) {
                     this.currentServer = updatedServer;
@@ -118,7 +118,7 @@ class ServerStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             await serverService.delete(id);
             runInAction(() => {

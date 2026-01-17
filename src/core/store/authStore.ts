@@ -1,5 +1,6 @@
 import { makeAutoObservable, configure } from 'mobx';
 import { authService } from '../../modules/auth/services/authService';
+import { userService } from '../../modules/auth/services/userService';
 import { saveToken, getToken, removeToken, saveUser, getUser, removeUser } from '../../shared/utils/storage';
 import { notificationStore } from './NotificationStore';
 
@@ -7,9 +8,9 @@ class AuthStore {
     public loading = false;
 
     public isAuthenticated = false;
-    public user: { 
+    public user: {
         id: number;
-        username: string; 
+        username: string;
         email: string;
         role: string;
         isActive: boolean;
@@ -37,28 +38,28 @@ class AuthStore {
     private restoreAuthFromCookie(): void {
         const savedToken = getToken();
         const savedUser = getUser();
-        
+
         console.log('🔐 Restoring auth from localStorage...');
         console.log('📦 Token exists:', !!savedToken);
         console.log('📦 User data exists:', !!savedUser);
-        
+
         if (savedToken) {
             // Восстанавливаем токен и устанавливаем авторизацию СИНХРОННО
             this.token = savedToken;
             this.isAuthenticated = true;
-            
+
             // Восстанавливаем данные пользователя из localStorage, если они есть
             if (savedUser) {
                 this.user = savedUser;
                 console.log('✅ User data restored from localStorage:', savedUser.username, 'role:', savedUser.role);
             }
-            
+
             console.log('✅ Auth restored from localStorage - token present, isAuthenticated:', this.isAuthenticated);
-            console.log('✅ Token restored:', this.token.substring(0, 20) + '...');
-            
+            console.log('✅ Token restored:', `${this.token.substring(0, 20)  }...`);
+
             // Загружаем актуальные данные пользователя асинхронно
             // НЕ вызываем logout при ошибке - пользователь должен выйти вручную
-            this.loadUserData().catch(error => {
+            this.loadUserData().catch((error) => {
                 // Ошибка уже обработана в loadUserData
                 // Авторизация сохраняется даже при ошибке загрузки данных
                 console.error('❌ Error loading user data on init:', error);
@@ -72,31 +73,36 @@ class AuthStore {
             removeUser(); // Очищаем данные пользователя
             console.log('❌ No token in localStorage - user not authenticated');
         }
-        
-        console.log('🔐 Auth restoration complete. isAuthenticated:', this.isAuthenticated, 'user:', this.user?.username);
+
+        console.log(
+            '🔐 Auth restoration complete. isAuthenticated:',
+            this.isAuthenticated,
+            'user:',
+            this.user?.username
+        );
     }
 
     public async login(email: string, password: string, redirect?: string | null): Promise<string> {
         try {
             this.loading = true;
             const data = await authService.login(email, password);
-            
+
             if (!data || !data.token) {
                 throw new Error('Invalid response from server');
             }
-            
+
             this.user = data.user;
             this.token = data.token;
 
             // Сохранение токена и данных пользователя в localStorage
             saveToken(data.token);
             saveUser(data.user);
-            
+
             console.log('Login successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.isAuthenticated = true;
             this.loading = false;
-            
+
             // Возвращаем путь для редиректа (компонент сам выполнит навигацию)
             return redirect || '/';
         } catch (error) {
@@ -112,63 +118,86 @@ class AuthStore {
                 console.log('No token available for loadUserData');
                 return;
             }
-            
+
             console.log('Loading user data with token:', this.token);
             const userData = await authService.getMe();
             console.log('User data loaded:', userData);
             this.user = userData;
             this.isAuthenticated = true;
-            
+
             // Сохраняем данные пользователя в localStorage
             saveUser(userData);
         } catch (error) {
             console.error('Failed to load user data:', error);
-            
-            // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
-            // Сохраняем авторизацию даже при ошибке загрузки данных
-            // Пользователь останется авторизованным до ручного выхода
+
+            // Проверяем, является ли это ошибкой недействительного токена
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const isTokenError =
+                errorMessage.includes('Недействительный токен') ||
+                errorMessage.includes('invalid token') ||
+                errorMessage.includes('token expired') ||
+                errorMessage.includes('unauthorized');
+
+            // Если токен недействителен и был удален из localStorage, выполняем logout
+            if (isTokenError && !getToken()) {
+                console.log('Token was cleared due to invalid token error, logging out...');
+                this.logout();
+                return;
+            }
+
+            // Для других ошибок показываем уведомление, но не разлогиниваем
             notificationStore.addNotification('notifications.serverDataLoadError', 'error');
-            
-            // Сохраняем isAuthenticated = true, даже если не удалось загрузить данные
-            // Это позволяет пользователю оставаться авторизованным после перезагрузки
-            this.isAuthenticated = true;
+
+            // Сохраняем isAuthenticated = true только если токен еще есть
+            // Если токена нет, значит он был очищен apiClient и нужно выйти
+            if (getToken()) {
+                this.isAuthenticated = true;
+            } else {
+                console.log('Token was removed, logging out...');
+                this.logout();
+            }
         }
     }
 
-    public async register(username: string, email: string, password: string, redirect?: string | null): Promise<string> {
+    public async register(
+        username: string,
+        email: string,
+        password: string,
+        redirect?: string | null
+    ): Promise<string> {
         try {
             this.loading = true;
             // ВНИМАНИЕ: authService.register принимает (email, username, password)
             const data = await authService.register(email, username, password);
-            
+
             if (!data || !data.token) {
                 console.error('Registration response missing token:', data);
                 throw new Error('Invalid response from server: token missing');
             }
-            
+
             // Сначала сохраняем токен, чтобы последующие запросы (getMe) могли его использовать
             this.token = data.token;
             saveToken(data.token);
-            
+
             // Если в ответе регистрации нет данных пользователя, получаем их через getMe
             // Если они есть (data.user), используем их
             let userData = data.user;
-            
+
             if (!userData) {
                 console.log('User data missing in register response, fetching via getMe...');
                 userData = await authService.getMe();
             }
-            
+
             this.user = userData;
             this.isAuthenticated = true;
 
             // Сохранение данных пользователя в localStorage
             saveUser(userData);
-            
+
             console.log('Registration successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.loading = false;
-            
+
             // Возвращаем путь для редиректа (компонент сам выполнит навигацию)
             return redirect || '/';
         } catch (error) {
@@ -189,10 +218,14 @@ class AuthStore {
                 // Если токен восстановлен из localStorage, обновляем авторизацию
                 this.isAuthenticated = true;
             } else {
-                // Токен удален из localStorage - НЕ выходим автоматически
-                // Пользователь должен выйти вручную через кнопку
-                console.warn('Token removed from localStorage, but keeping authentication until manual logout');
-                // Оставляем isAuthenticated = true, чтобы пользователь не был разлогинен
+                // Токен удален из localStorage - это может быть из-за ошибки "Недействительный токен"
+                // Выполняем logout, чтобы очистить состояние
+                console.warn('Token removed from localStorage, likely due to invalid token error. Logging out...');
+                // Не вызываем logout здесь напрямую, чтобы избежать рекурсии
+                // Вместо этого просто очищаем состояние
+                this.token = null;
+                this.isAuthenticated = false;
+                this.user = null;
             }
         }
         return this.token;
@@ -210,6 +243,48 @@ class AuthStore {
         // Перенаправление после выхода
         window.location.href = '/auth';
     }
+
+    /**
+     * Обновление профиля пользователя
+     */
+    public async updateProfile(profileData: { username: string; email: string }): Promise<boolean> {
+        try {
+            if (!this.user || !this.isAuthenticated) {
+                throw new Error('User not authenticated');
+            }
+
+            const updatedUser = await userService.updateProfile(this.user.id, profileData);
+
+            if (updatedUser) {
+                // Обновляем данные пользователя в store
+                this.user = { ...this.user, ...updatedUser };
+                // Сохраняем обновленные данные в localStorage
+                saveUser(this.user);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Failed to update profile', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Изменение пароля пользователя
+     */
+    public async changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+        try {
+            if (!this.user || !this.isAuthenticated) {
+                throw new Error('User not authenticated');
+            }
+
+            const success = await userService.changePassword(this.user.id, oldPassword, newPassword);
+            return success;
+        } catch (error) {
+            console.error('Failed to change password', error);
+            throw error;
+        }
+    }
 }
 
 export const authStore = new AuthStore();
@@ -224,4 +299,3 @@ export function enableMobX() {
         disableErrorBoundaries: true
     });
 }
-

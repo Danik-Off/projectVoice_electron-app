@@ -13,20 +13,30 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
     const location = useLocation();
     const serverIcon = server.icon || '';
     const serverNameInitial = server.name.charAt(0).toUpperCase();
-    
+
     // Проверяем, является ли текущий сервер активным
     const isActive = location.pathname.includes(`/server/${server.id}`);
 
     // Определяем классы для различных состояний сервера
     const getServerClasses = () => {
         const baseClasses = ['servers__server'];
-        
-        if (isActive) {baseClasses.push('servers__server--active');}
-        if (server.isBlocked) {baseClasses.push('servers__server--blocked');}
-        if (server.hasNotifications) {baseClasses.push('servers__server--has-notifications');}
-        if (server.connectionError) {baseClasses.push('servers__server--connection-error');}
-        if (server.maintenance) {baseClasses.push('servers__server--maintenance');}
-        
+
+        if (isActive) {
+            baseClasses.push('servers__server--active');
+        }
+        if (server.isBlocked) {
+            baseClasses.push('servers__server--blocked');
+        }
+        if (server.hasNotifications) {
+            baseClasses.push('servers__server--has-notifications');
+        }
+        if (server.connectionError) {
+            baseClasses.push('servers__server--connection-error');
+        }
+        if (server.maintenance) {
+            baseClasses.push('servers__server--maintenance');
+        }
+
         return baseClasses.join(' ');
     };
 
@@ -53,47 +63,29 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
     };
 
     return (
-        <div 
-            className={getServerClasses()} 
-            onClick={handleClick}
-            title={server.name}
-            data-server-id={server.id}
-        >
+        <div className={getServerClasses()} onClick={handleClick} title={server.name} data-server-id={server.id}>
             {serverIcon ? (
-                <img 
-                    src={serverIcon} 
-                    alt={`${server.name} icon`} 
-                    className="servers__server-icon" 
+                <img
+                    src={serverIcon}
+                    alt={`${server.name} icon`}
+                    className="servers__server-icon"
                     style={getIconStyles()}
                 />
             ) : (
-                <div 
-                    className="servers__server-icon"
-                    style={getIconStyles()}
-                >
+                <div className="servers__server-icon" style={getIconStyles()}>
                     {serverNameInitial}
                 </div>
             )}
-            
+
             {/* Индикатор состояния сервера */}
-            {server.isBlocked && (
-                <div className="server-status-indicator blocked">
-                    🚫
-                </div>
-            )}
-            
-            {server.connectionError && !server.isBlocked && (
-                <div className="server-status-indicator error">
-                    ⚠️
-                </div>
-            )}
-            
+            {server.isBlocked && <div className="server-status-indicator blocked">🚫</div>}
+
+            {server.connectionError && !server.isBlocked && <div className="server-status-indicator error">⚠️</div>}
+
             {server.maintenance && !server.isBlocked && !server.connectionError && (
-                <div className="server-status-indicator maintenance">
-                    🔧
-                </div>
+                <div className="server-status-indicator maintenance">🔧</div>
             )}
-            
+
             {/* Счетчик уведомлений */}
             {server.notificationCount && server.notificationCount > 0 && (
                 <div className="notification-badge">

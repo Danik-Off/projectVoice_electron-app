@@ -23,7 +23,7 @@ import '../plugins/example-plugin';
  */
 export async function initializeApp() {
     console.log('🚀 Starting application initialization...');
-    
+
     try {
         // Включаем MobX
         console.log('📦 Enabling MobX...');
@@ -40,7 +40,7 @@ export async function initializeApp() {
             { name: 'admin', module: adminModule },
             { name: 'invite', module: inviteModule },
             { name: 'settings', module: settingsModule },
-            { name: 'messaging', module: messagingModule },
+            { name: 'messaging', module: messagingModule }
         ];
 
         modules.forEach(({ name, module }) => {
@@ -99,10 +99,10 @@ export async function initializeApp() {
  */
 export async function destroyApp() {
     console.log('🛑 Starting application destruction...');
-    
+
     try {
         const startTime = Date.now();
-        
+
         // Уничтожаем плагины
         console.log('🔌 Destroying plugins...');
         await pluginManager.destroyAll();
@@ -120,4 +120,3 @@ export async function destroyApp() {
         throw error;
     }
 }
-

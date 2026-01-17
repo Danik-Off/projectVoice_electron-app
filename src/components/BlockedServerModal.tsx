@@ -18,18 +18,17 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
     blockedAt,
     blockedBy
 }) => {
+    if (!isOpen) {
+        return null;
+    }
 
-    if (!isOpen) return null;
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('ru-RU', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+    const formatDate = (dateString: string) => new Date(dateString).toLocaleString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     return (
         <div className="blocked-server-modal-overlay">
@@ -38,25 +37,24 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
                     <div className="blocked-server-modal__header-icon">🏠🚫</div>
                     <h2 className="blocked-server-modal__header-title">Сервер заблокирован</h2>
                 </div>
-                
+
                 <div className="blocked-server-modal__content">
                     <div className="blocked-server-modal__server-info">
                         <h3 className="blocked-server-modal__server-info-name">
-                            Сервер: <span className="blocked-server-modal__server-info-name--highlighted">{serverName}</span>
+                            Сервер:{' '}
+                            <span className="blocked-server-modal__server-info-name--highlighted">{serverName}</span>
                         </h3>
                     </div>
-                    
-                    <p className="blocked-server-modal__message">
-                        Этот сервер был заблокирован администрацией.
-                    </p>
-                    
+
+                    <p className="blocked-server-modal__message">Этот сервер был заблокирован администрацией.</p>
+
                     {reason && (
                         <div className="blocked-server-modal__reason-section">
                             <h3 className="blocked-server-modal__reason-section-title">Причина блокировки:</h3>
                             <p className="blocked-server-modal__reason-section-text">{reason}</p>
                         </div>
                     )}
-                    
+
                     {blockedAt && (
                         <div className="blocked-server-modal__details-section">
                             <p className="blocked-server-modal__details-section-item">
@@ -69,20 +67,17 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
                             )}
                         </div>
                     )}
-                    
+
                     <div className="blocked-server-modal__contact-info">
                         <p className="blocked-server-modal__contact-info-text">
-                            Если вы считаете, что блокировка была применена по ошибке, 
-                            обратитесь к администрации системы.
+                            Если вы считаете, что блокировка была применена по ошибке, обратитесь к администрации
+                            системы.
                         </p>
                     </div>
                 </div>
-                
+
                 <div className="blocked-server-modal__footer">
-                    <button 
-                        className="blocked-server-modal__close-button"
-                        onClick={onClose}
-                    >
+                    <button className="blocked-server-modal__close-button" onClick={onClose}>
                         Понятно
                     </button>
                 </div>
@@ -91,4 +86,4 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
     );
 };
 
-export default BlockedServerModal; 
+export default BlockedServerModal;

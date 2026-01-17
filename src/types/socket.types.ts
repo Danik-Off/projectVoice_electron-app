@@ -11,10 +11,10 @@ export const SocketClientState = {
     PEER_CONNECTION_CREATING: 'peer_connection_creating',
     PEER_CONNECTION_ESTABLISHED: 'peer_connection_established',
     PEER_CONNECTION_CLOSED: 'peer_connection_closed',
-    SIGNALING_ERROR: 'signaling_error',
+    SIGNALING_ERROR: 'signaling_error'
 } as const;
 
-export type SocketClientState = typeof SocketClientState[keyof typeof SocketClientState];
+export type SocketClientState = (typeof SocketClientState)[keyof typeof SocketClientState];
 
 export const stateMessages: { [key in SocketClientState]: string } = {
     [SocketClientState.INIT]: 'Состояние инициализировано.',
@@ -29,5 +29,5 @@ export const stateMessages: { [key in SocketClientState]: string } = {
     [SocketClientState.PEER_CONNECTION_CREATING]: 'Создание соединения с пользователем...',
     [SocketClientState.PEER_CONNECTION_ESTABLISHED]: 'Соединение с пользователем установлено.',
     [SocketClientState.PEER_CONNECTION_CLOSED]: 'Соединение с пользователем закрыто.',
-    [SocketClientState.SIGNALING_ERROR]: 'Ошибка сигнальной связи.',
+    [SocketClientState.SIGNALING_ERROR]: 'Ошибка сигнальной связи.'
 };

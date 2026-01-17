@@ -1,18 +1,30 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { observer } from 'mobx-react';
-import { messageStore } from '../../../../../../modules/messaging';
+import { eventBus, MESSAGING_COMMANDS, CHANNELS_EVENTS } from '../../../../../../core';
 import './MessageInput.scss';
+import type { ChannelSelectedEvent } from '../../../../../../core/events/events';
 
-const MessageInput: React.FC = observer(() => {
+const MessageInput: React.FC = () => {
     const [message, setMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
+    const [currentChannelId, setCurrentChannelId] = useState<number | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const typingTimeoutRef = useRef<number | null>(null);
+
+    // Подписка на выбор канала
+    useEffect(() => {
+        const unsubscribe = eventBus.on<ChannelSelectedEvent>(CHANNELS_EVENTS.CHANNEL_SELECTED, (data) => {
+            if (data) {
+                setCurrentChannelId(data.channel.id);
+            }
+        });
+
+        return unsubscribe;
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value;
         setMessage(value);
-        
+
         // Автоматическое изменение высоты textarea
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
@@ -47,25 +59,28 @@ const MessageInput: React.FC = observer(() => {
         }
     };
 
-    const sendMessage = async () => {
-        if (!message.trim()) return;
+    const sendMessage = () => {
+        if (!message.trim() || !currentChannelId) {
+            return;
+        }
 
-        try {
-            await messageStore.sendMessage(message);
-            setMessage('');
-            
-            // Сброс высоты textarea
-            if (textareaRef.current) {
-                textareaRef.current.style.height = 'auto';
-            }
+        // Отправляем команду через eventBus
+        eventBus.emit(MESSAGING_COMMANDS.SEND_MESSAGE, {
+            content: message.trim(),
+            channelId: currentChannelId
+        });
 
-            // Сброс индикатора печати
-            setIsTyping(false);
-            if (typingTimeoutRef.current) {
-                clearTimeout(typingTimeoutRef.current);
-            }
-        } catch (error) {
-            console.error('Ошибка отправки сообщения:', error);
+        setMessage('');
+
+        // Сброс высоты textarea
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
+
+        // Сброс индикатора печати
+        setIsTyping(false);
+        if (typingTimeoutRef.current) {
+            clearTimeout(typingTimeoutRef.current);
         }
     };
 
@@ -73,14 +88,14 @@ const MessageInput: React.FC = observer(() => {
         sendMessage();
     };
 
-    useEffect(() => {
+    useEffect(() =>
         // Очистка таймера при размонтировании
-        return () => {
+        () => {
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);
             }
-        };
-    }, []);
+        },
+    []);
 
     return (
         <div className="message-input-container">
@@ -98,7 +113,7 @@ const MessageInput: React.FC = observer(() => {
                     />
                     <div className="input-actions">
                         <div className="message-actions">
-                            <button 
+                            <button
                                 className="action-btn emoji-btn"
                                 title="Эмодзи"
                                 onClick={() => {
@@ -108,7 +123,7 @@ const MessageInput: React.FC = observer(() => {
                             >
                                 😊
                             </button>
-                            <button 
+                            <button
                                 className="action-btn attachment-btn"
                                 title="Прикрепить файл"
                                 onClick={() => {
@@ -119,31 +134,25 @@ const MessageInput: React.FC = observer(() => {
                                 📎
                             </button>
                         </div>
-                        <button 
+                        <button
                             className={`send-btn ${message.trim() ? 'active' : ''}`}
                             onClick={handleSendClick}
                             disabled={!message.trim()}
                             title="Отправить сообщение"
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                             </svg>
                         </button>
                     </div>
                 </div>
                 <div className="input-footer">
-                    <span className="character-count">
-                        {message.length}/2000
-                    </span>
-                    {isTyping && (
-                        <span className="typing-indicator">
-                            Печатает...
-                        </span>
-                    )}
+                    <span className="character-count">{message.length}/2000</span>
+                    {isTyping && <span className="typing-indicator">Печатает...</span>}
                 </div>
             </div>
         </div>
     );
-});
+};
 
-export default MessageInput; 
+export default MessageInput;

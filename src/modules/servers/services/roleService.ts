@@ -12,7 +12,7 @@ export const roleService = {
      */
     getRoles: async (serverId: number): Promise<Role[]> => {
         const roles = await apiClient<Role[]>(`/servers/${serverId}/roles`, {
-            method: 'GET',
+            method: 'GET'
         });
         // Сортировка по позиции (больше = выше в иерархии)
         return roles.sort((a, b) => b.position - a.position);
@@ -24,11 +24,13 @@ export const roleService = {
      * @param roleData - данные роли
      * @returns созданная роль
      */
-    createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> => {
-        return await apiClient<Role>(`/servers/${serverId}/roles`, {
-            method: 'POST',
-        }, roleData);
-    },
+    createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> => await apiClient<Role>(
+            `/servers/${serverId}/roles`,
+            {
+                method: 'POST'
+            },
+            roleData
+    ),
 
     /**
      * Обновить роль
@@ -37,15 +39,13 @@ export const roleService = {
      * @param roleData - данные для обновления
      * @returns обновленная роль
      */
-    updateRole: async (
-        serverId: number,
-        roleId: number,
-        roleData: UpdateRoleRequest
-    ): Promise<Role> => {
-        return await apiClient<Role>(`/servers/${serverId}/roles/${roleId}`, {
-            method: 'PATCH',
-        }, roleData);
-    },
+    updateRole: async (serverId: number, roleId: number, roleData: UpdateRoleRequest): Promise<Role> => await apiClient<Role>(
+            `/servers/${serverId}/roles/${roleId}`,
+            {
+                method: 'PATCH'
+            },
+            roleData
+    ),
 
     /**
      * Удалить роль
@@ -54,7 +54,7 @@ export const roleService = {
      */
     deleteRole: async (serverId: number, roleId: number): Promise<void> => {
         await apiClient(`/servers/${serverId}/roles/${roleId}`, {
-            method: 'DELETE',
+            method: 'DELETE'
         });
     },
 
@@ -64,17 +64,10 @@ export const roleService = {
      * @param memberId - ID участника
      * @param roleId - ID роли
      */
-    assignRoleToMember: async (
-        serverId: number,
-        memberId: number,
-        roleId: number
-    ): Promise<void> => {
-        await apiClient(
-            `/servers/${serverId}/roles/members/${memberId}/roles/${roleId}`,
-            {
-                method: 'POST',
-            }
-        );
+    assignRoleToMember: async (serverId: number, memberId: number, roleId: number): Promise<void> => {
+        await apiClient(`/servers/${serverId}/roles/members/${memberId}/roles/${roleId}`, {
+            method: 'POST'
+        });
     },
 
     /**
@@ -83,17 +76,9 @@ export const roleService = {
      * @param memberId - ID участника
      * @param roleId - ID роли
      */
-    removeRoleFromMember: async (
-        serverId: number,
-        memberId: number,
-        roleId: number
-    ): Promise<void> => {
-        await apiClient(
-            `/servers/${serverId}/roles/members/${memberId}/roles/${roleId}`,
-            {
-                method: 'DELETE',
-            }
-        );
-    },
+    removeRoleFromMember: async (serverId: number, memberId: number, roleId: number): Promise<void> => {
+        await apiClient(`/servers/${serverId}/roles/members/${memberId}/roles/${roleId}`, {
+            method: 'DELETE'
+        });
+    }
 };
-

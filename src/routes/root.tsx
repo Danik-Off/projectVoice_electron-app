@@ -6,7 +6,7 @@ import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-do
 import { moduleManager } from '../core';
 import { ProtectedRoute, AdminRoute } from '../modules/auth';
 import Layout from '../app/layout/Main';
-import WelcomePage from '../modules/servers/pages/welcomePage/WelcomePage';
+import WelcomePage from '../modules/servers/welcomePage/WelcomePage';
 import ProfileDemo from '../components/ProfileDemo';
 import Auth from '../modules/auth/pages/Auth';
 import NotFound from '../app/routes/NotFound';
@@ -18,64 +18,80 @@ import NotFound from '../app/routes/NotFound';
 export function createRouter() {
     // Получаем все маршруты из зарегистрированных модулей
     const moduleRoutes = moduleManager.getRoutes();
-    
-    console.log('📋 Module routes loaded:', moduleRoutes.map(r => ({ 
-        path: r.path, 
-        moduleId: r.moduleId,
-        protected: r.protected,
-        admin: r.admin 
-    })));
+
+    console.log(
+        '📋 Module routes loaded:',
+        moduleRoutes.map((r) => ({
+            path: r.path,
+            moduleId: r.moduleId,
+            protected: r.protected,
+            admin: r.admin
+        }))
+    );
 
     // Разделяем маршруты на категории
-    const publicRoutes = moduleRoutes.filter(route => 
-        route.path === '/auth' || route.path === '/invite/:token'
-    );
-    
+    const publicRoutes = moduleRoutes.filter((route) => route.path === '/auth' || route.path === '/invite/:token');
+
     // Маршруты сервера (вложенные в server/:serverId)
-    const serverChildRoutes = moduleRoutes.filter(route => 
-        route.path.startsWith('server/:serverId/') && 
-        route.path !== 'server/:serverId' &&
-        route.path !== 'server/:serverId/settings'
-    );
-    
-    // Основной маршрут сервера
-    const serverMainRoute = moduleRoutes.find(route => route.path === 'server/:serverId');
-    
-    // Настройки сервера (вложенные в server/:serverId)
-    const serverSettingsRoute = moduleRoutes.find(route => route.path === 'server/:serverId/settings');
-    
-    // Остальные защищенные маршруты (settings, admin и т.д.)
-    const otherProtectedRoutes = moduleRoutes.filter(route => 
-        !route.path.includes('server/:serverId') && 
-        route.path !== '/' && 
-        route.path !== '/auth' && 
-        route.path !== '/invite/:token'
+    const serverChildRoutes = moduleRoutes.filter(
+        (route) =>
+            route.path.startsWith('server/:serverId/') &&
+            route.path !== 'server/:serverId' &&
+            route.path !== 'server/:serverId/settings'
     );
 
-    console.log('🔓 Public routes:', publicRoutes.map(r => r.path));
+    // Основной маршрут сервера
+    const serverMainRoute = moduleRoutes.find((route) => route.path === 'server/:serverId');
+
+    // Настройки сервера (вложенные в server/:serverId)
+    const serverSettingsRoute = moduleRoutes.find((route) => route.path === 'server/:serverId/settings');
+
+    // Остальные защищенные маршруты (settings, admin и т.д.)
+    const otherProtectedRoutes = moduleRoutes.filter(
+        (route) =>
+            !route.path.includes('server/:serverId') &&
+            route.path !== '/' &&
+            route.path !== '/auth' &&
+            route.path !== '/invite/:token'
+    );
+
+    console.log(
+        '🔓 Public routes:',
+        publicRoutes.map((r) => r.path)
+    );
     console.log('🖥️ Server main route:', serverMainRoute?.path);
-    console.log('🖥️ Server child routes:', serverChildRoutes.map(r => r.path));
+    console.log(
+        '🖥️ Server child routes:',
+        serverChildRoutes.map((r) => r.path)
+    );
     console.log('⚙️ Server settings route:', serverSettingsRoute?.path);
-    console.log('🔒 Other protected routes:', otherProtectedRoutes.map(r => r.path));
+    console.log(
+        '🔒 Other protected routes:',
+        otherProtectedRoutes.map((r) => r.path)
+    );
 
     // Создаем структуру маршрутов
     const routes = [
         // Публичные маршруты (должны быть первыми, вне Layout)
-        ...publicRoutes.map(route => {
+        ...publicRoutes.map((route) => {
             const RouteComponent = route.component;
             return {
                 path: route.path,
                 element: <RouteComponent />,
-                errorElement: <NotFound />,
+                errorElement: <NotFound />
             };
         }),
-        
+
         // Fallback для /auth, если модуль не зарегистрировал маршрут
-        ...(publicRoutes.find(r => r.path === '/auth') ? [] : [{
-            path: '/auth',
-            element: <Auth />,
-            errorElement: <NotFound />,
-        }]),
+        ...publicRoutes.find((r) => r.path === '/auth')
+            ? []
+            : [
+                    {
+                        path: '/auth',
+                        element: <Auth />,
+                        errorElement: <NotFound />
+                    }
+                ],
 
         // Главный защищенный маршрут с Layout
         {
@@ -90,65 +106,72 @@ export function createRouter() {
                 // Главная страница (WelcomePage)
                 {
                     index: true,
-                    element: <WelcomePage />,
+                    element: <WelcomePage />
                 },
-                
+
                 // Маршруты сервера с вложенными дочерними маршрутами
-                ...(serverMainRoute ? [{
-                    path: 'server/:serverId',
-                    element: (() => {
-                        const ServerComponent = serverMainRoute.component;
-                        return <ServerComponent />;
-                    })(),
-                    children: [
-                        // Вложенные маршруты сервера (textRoom, voiceRoom)
-                        ...serverChildRoutes.map(route => {
-                            // Убираем префикс 'server/:serverId/' из пути
-                            const childPath = route.path.replace(/^server\/:serverId\//, '');
-                            const RouteComponent = route.component;
-                            return {
-                                path: childPath,
-                                element: route.protected !== false ? (
-                                    <ProtectedRoute>
-                                        <RouteComponent />
-                                    </ProtectedRoute>
-                                ) : (
-                                    <RouteComponent />
-                                ),
-                            };
-                        }),
-                        // Настройки сервера
-                        ...(serverSettingsRoute ? [{
-                            path: 'settings',
-                            element: (() => {
-                                const SettingsComponent = serverSettingsRoute.component;
-                                return serverSettingsRoute.protected !== false ? (
-                                    <ProtectedRoute>
-                                        <SettingsComponent />
-                                    </ProtectedRoute>
-                                ) : (
-                                    <SettingsComponent />
-                                );
-                            })(),
-                        }] : []),
-                    ],
-                }] : []),
-                
+                ...serverMainRoute
+                    ? [
+                            {
+                                path: 'server/:serverId',
+                                element: (() => {
+                                    const ServerComponent = serverMainRoute.component;
+                                    return <ServerComponent />;
+                                })(),
+                                children: [
+                                    // Вложенные маршруты сервера (textRoom, voiceRoom)
+                                    ...serverChildRoutes.map((route) => {
+                                        // Убираем префикс 'server/:serverId/' из пути
+                                        const childPath = route.path.replace(/^server\/:serverId\//, '');
+                                        const RouteComponent = route.component;
+                                        return {
+                                            path: childPath,
+                                            element:
+                                              route.protected !== false ? (
+                                                  <ProtectedRoute>
+                                                      <RouteComponent />
+                                                  </ProtectedRoute>
+                                              ) : (
+                                                  <RouteComponent />
+                                              )
+                                        };
+                                    }),
+                                    // Настройки сервера
+                                    ...serverSettingsRoute
+                                        ? [
+                                                {
+                                                    path: 'settings',
+                                                    element: (() => {
+                                                        const SettingsComponent = serverSettingsRoute.component;
+                                                        return serverSettingsRoute.protected !== false ? (
+                                                        <ProtectedRoute>
+                                                            <SettingsComponent />
+                                                        </ProtectedRoute>
+                                                        ) : (
+                                                        <SettingsComponent />
+                                                        );
+                                                    })()
+                                                }
+                                            ]
+                                        : []
+                                ]
+                            }
+                        ]
+                    : [],
+
                 // Демо страница профиля
                 {
                     path: 'profile-demo',
-                    element: <ProfileDemo />,
+                    element: <ProfileDemo />
                 },
-                
+
                 // Остальные защищенные маршруты из модулей (settings, admin и т.д.)
-                ...otherProtectedRoutes.map(route => {
+                ...otherProtectedRoutes.map((route) => {
                     // Убираем ведущий слеш из пути для относительных маршрутов
-                    const cleanPath = route.path.startsWith('/') 
-                        ? route.path.substring(1) 
-                        : route.path;
-                    
+                    const cleanPath = route.path.startsWith('/') ? route.path.substring(1) : route.path;
+
                     const RouteComponent = route.component;
-                    
+
                     return {
                         path: cleanPath,
                         element: route.admin ? (
@@ -161,30 +184,33 @@ export function createRouter() {
                             </ProtectedRoute>
                         ) : (
                             <RouteComponent />
-                        ),
+                        )
                     };
                 }),
-                
+
                 // Catch-all для 404 внутри защищенных маршрутов
                 {
                     path: '*',
-                    element: <NotFound />,
-                },
-            ],
+                    element: <NotFound />
+                }
+            ]
         },
-        
+
         // Глобальный catch-all для всех остальных маршрутов (должен быть последним)
         {
             path: '*',
-            element: <Navigate to="/" replace />,
-        },
+            element: <Navigate to="/" replace />
+        }
     ];
 
     console.log('✅ Router created with', routes.length, 'top-level routes');
-    console.log('📊 Routes structure:', routes.map(r => ({ 
-        path: r.path, 
-        hasChildren: !!(r as RouteObject).children 
-    })));
+    console.log(
+        '📊 Routes structure:',
+        routes.map((r) => ({
+            path: r.path,
+            hasChildren: !!(r as RouteObject).children
+        }))
+    );
 
     return createBrowserRouter(routes);
 }

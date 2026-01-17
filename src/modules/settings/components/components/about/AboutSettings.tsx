@@ -11,21 +11,19 @@ const AboutSettings: React.FC = () => {
                 <h2>{t('settingsPage.about.title')}</h2>
                 <p>{t('settingsPage.about.description')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🎯
-                            </div>
+                            <div className="icon-container">🎯</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.about.appInfo.title')}</h3>
                                 <p>{t('settingsPage.about.appInfo.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="settings-info">
                             <div className="info-header">
@@ -38,7 +36,9 @@ const AboutSettings: React.FC = () => {
                                 </div>
                                 <div className="info-row">
                                     <span className="info-label">{t('settingsPage.about.appInfo.build')}</span>
-                                    <span className="info-value">{versionInfo.buildDate} ({versionInfo.gitHash})</span>
+                                    <span className="info-value">
+                                        {versionInfo.buildDate} ({versionInfo.gitHash})
+                                    </span>
                                 </div>
                                 <div className="info-row">
                                     <span className="info-label">{t('settingsPage.about.appInfo.developer')}</span>
@@ -56,16 +56,14 @@ const AboutSettings: React.FC = () => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                📖
-                            </div>
+                            <div className="icon-container">📖</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.about.descriptionSection.title')}</h3>
                                 <p>{t('settingsPage.about.descriptionSection.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <div className="setting-control">
@@ -83,16 +81,14 @@ const AboutSettings: React.FC = () => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🔗
-                            </div>
+                            <div className="icon-container">🔗</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.about.links.title')}</h3>
                                 <p>{t('settingsPage.about.links.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
@@ -112,7 +108,7 @@ const AboutSettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.about.links.community')}</span>

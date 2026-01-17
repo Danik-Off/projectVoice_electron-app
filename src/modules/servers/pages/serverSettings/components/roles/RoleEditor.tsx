@@ -3,11 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import type { Role, CreateRoleRequest, UpdateRoleRequest } from '../../../../types/role';
 import { Permissions, PermissionNames, PermissionGroups } from '../../../../constants/permissions';
-import {
-    combinePermissions,
-    permissionsToString,
-    stringToPermissions,
-} from '../../../../utils/permissions';
+import { combinePermissions, permissionsToString, stringToPermissions } from '../../../../utils/permissions';
 import './RoleEditor.scss';
 
 interface RoleEditorProps {
@@ -33,11 +29,11 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
             setColor(role.color || '#5865F2');
             setIsHoisted(role.isHoisted || false);
             setIsMentionable(role.isMentionable || false);
-            
+
             // Загружаем разрешения
             const perms = stringToPermissions(role.permissions);
             const permSet = new Set<bigint>();
-            Object.values(Permissions).forEach(perm => {
+            Object.values(Permissions).forEach((perm) => {
                 if ((perms & perm) === perm) {
                     permSet.add(perm);
                 }
@@ -74,14 +70,14 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
     };
 
     const toggleAllInGroup = (group: readonly string[]) => {
-        const groupPerms = group.map(key => Permissions[key as keyof typeof Permissions]);
-        const allSelected = groupPerms.every(perm => selectedPermissions.has(perm));
-        
+        const groupPerms = group.map((key) => Permissions[key as keyof typeof Permissions]);
+        const allSelected = groupPerms.every((perm) => selectedPermissions.has(perm));
+
         const newSet = new Set(selectedPermissions);
         if (allSelected) {
-            groupPerms.forEach(perm => newSet.delete(perm));
+            groupPerms.forEach((perm) => newSet.delete(perm));
         } else {
-            groupPerms.forEach(perm => newSet.add(perm));
+            groupPerms.forEach((perm) => newSet.add(perm));
         }
         setSelectedPermissions(newSet);
     };
@@ -100,7 +96,7 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
                 color,
                 permissions: permissionsToString(combinedPerms),
                 isHoisted,
-                isMentionable,
+                isMentionable
             };
 
             await onSave(roleData);
@@ -112,14 +108,18 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="role-editor-overlay" onClick={onClose}>
             <div className="role-editor-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="role-editor-header">
                     <h2>{role ? t('serverSettings.editRole') : t('serverSettings.createRole')}</h2>
-                    <button className="close-button" onClick={onClose}>×</button>
+                    <button className="close-button" onClick={onClose}>
+                        ×
+                    </button>
                 </div>
 
                 <div className="role-editor-content">
@@ -139,11 +139,7 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
                         <label className="role-editor-label">
                             {t('serverSettings.roleColor') || 'Цвет роли'}
                             <div className="color-picker-container">
-                                <input
-                                    type="color"
-                                    value={color}
-                                    onChange={(e) => setColor(e.target.value)}
-                                />
+                                <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
                                 <input
                                     type="text"
                                     value={color}
@@ -176,30 +172,27 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
                     {/* Разрешения */}
                     <div className="role-editor-section">
                         <h3>{t('serverSettings.permissions') || 'Разрешения'}</h3>
-                        
+
                         {Object.entries(PermissionGroups).map(([groupName, groupKeys]) => (
                             <div key={groupName} className="permission-group">
-                                <div 
-                                    className="permission-group-header"
-                                    onClick={() => toggleGroup(groupName)}
-                                >
+                                <div className="permission-group-header" onClick={() => toggleGroup(groupName)}>
                                     <span>{groupName}</span>
-                                    <span className="toggle-icon">
-                                        {expandedGroups.has(groupName) ? '▼' : '▶'}
-                                    </span>
+                                    <span className="toggle-icon">{expandedGroups.has(groupName) ? '▼' : '▶'}</span>
                                 </div>
-                                
+
                                 {expandedGroups.has(groupName) && (
                                     <div className="permission-group-content">
                                         <button
                                             className="toggle-all-button"
                                             onClick={() => toggleAllInGroup(groupKeys)}
                                         >
-                                            {groupKeys.every(key => 
+                                            {groupKeys.every((key) =>
                                                 selectedPermissions.has(Permissions[key as keyof typeof Permissions])
-                                            ) ? 'Снять все' : 'Выбрать все'}
+                                            )
+                                                ? 'Снять все'
+                                                : 'Выбрать все'}
                                         </button>
-                                        
+
                                         <div className="permissions-list">
                                             {groupKeys.map((key) => {
                                                 const perm = Permissions[key as keyof typeof Permissions];
@@ -211,7 +204,9 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
                                                             checked={isSelected}
                                                             onChange={() => togglePermission(perm)}
                                                         />
-                                                        <span>{PermissionNames[key as keyof typeof PermissionNames]}</span>
+                                                        <span>
+                                                            {PermissionNames[key as keyof typeof PermissionNames]}
+                                                        </span>
                                                     </label>
                                                 );
                                             })}
@@ -227,11 +222,7 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
                     <button className="cancel-button" onClick={onClose}>
                         {t('common.cancel') || 'Отмена'}
                     </button>
-                    <button 
-                        className="save-button" 
-                        onClick={handleSave}
-                        disabled={saving || !name.trim()}
-                    >
+                    <button className="save-button" onClick={handleSave} disabled={saving || !name.trim()}>
                         {saving ? t('common.saving') || 'Сохранение...' : t('common.save') || 'Сохранить'}
                     </button>
                 </div>
@@ -241,4 +232,3 @@ const RoleEditor: React.FC<RoleEditorProps> = observer(({ role, isOpen, onClose,
 });
 
 export default RoleEditor;
-

@@ -13,6 +13,5 @@ export type {
     ServersResponse,
     LogsResponse,
     BlockServerRequest,
-    UpdateUserRequest,
+    UpdateUserRequest
 } from './services/adminService';
-

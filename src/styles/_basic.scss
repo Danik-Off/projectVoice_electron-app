@@ -11,7 +11,9 @@ input {
     background-color: var(--input-bg);
     color: var(--text-primary);
     font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
     &::placeholder {
         color: var(--text-disabled);
@@ -32,7 +34,7 @@ input {
 
     &.error {
         border-color: var(--error-color);
-        
+
         &:focus {
             box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
         }
@@ -78,7 +80,9 @@ textarea {
     font-family: inherit;
     resize: vertical;
     min-height: 100px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
     &::placeholder {
         color: var(--text-disabled);
@@ -99,7 +103,7 @@ textarea {
 
     &.error {
         border-color: var(--error-color);
-        
+
         &:focus {
             box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
         }
@@ -117,7 +121,9 @@ select {
     color: var(--text-primary);
     font-size: 1rem;
     cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
 
     &:focus {
         outline: none;
@@ -134,7 +140,7 @@ select {
 
     &.error {
         border-color: var(--error-color);
-        
+
         &:focus {
             box-shadow: 0 0 0 2px rgba(var(--error-color-rgb), 0.2);
         }

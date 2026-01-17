@@ -13,8 +13,8 @@ export const voiceModule: IModule = {
         {
             path: 'server/:serverId/voiceRoom/:roomId',
             component: VoiceRoom,
-            protected: true,
-        },
+            protected: true
+        }
     ],
     async initialize() {
         console.log('Voice module initialized');
@@ -23,6 +23,5 @@ export const voiceModule: IModule = {
     async destroy() {
         console.log('Voice module destroyed');
         // Очистка WebRTC соединений, отключение от сокетов
-    },
+    }
 };
-

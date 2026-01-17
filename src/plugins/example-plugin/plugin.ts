@@ -16,6 +16,5 @@ export const examplePlugin: IPlugin = {
     async destroy() {
         console.log('Example plugin destroyed');
         // Очистка ресурсов при удалении плагина
-    },
+    }
 };
-

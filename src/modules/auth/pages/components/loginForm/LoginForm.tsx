@@ -13,9 +13,11 @@ const LoginForm: React.FC = () => {
 
     const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        
-        if (isSubmitting) return; // Защита от повторной отправки
-        
+
+        if (isSubmitting) {
+            return;
+        } // Защита от повторной отправки
+
         const formData = event.currentTarget.elements as typeof event.currentTarget.elements & {
             email: HTMLInputElement;
             password: HTMLInputElement;
@@ -25,7 +27,7 @@ const LoginForm: React.FC = () => {
         const password = formData.password.value;
 
         setIsSubmitting(true);
-        
+
         try {
             const redirectPath = await authStore.login(email, password, redirect);
             // Редирект через React Router
@@ -50,13 +52,7 @@ const LoginForm: React.FC = () => {
     return (
         <form onSubmit={handleLogin} className="auth-form">
             <div className="input-group">
-                <input 
-                    type="email" 
-                    name="email" 
-                    placeholder={t('authPage.email')} 
-                    className="auth-input" 
-                    required 
-                />
+                <input type="email" name="email" placeholder={t('authPage.email')} className="auth-input" required />
             </div>
             <div className="input-group">
                 <input
@@ -67,8 +63,8 @@ const LoginForm: React.FC = () => {
                     required
                 />
             </div>
-            <button 
-                type="submit" 
+            <button
+                type="submit"
                 className={`auth-button ${isSubmitting ? 'auth-button--loading' : ''}`}
                 disabled={isSubmitting}
             >
@@ -77,9 +73,9 @@ const LoginForm: React.FC = () => {
                         <span className="spinner"></span>
                         {t('authPage.loginButton.loading')}
                     </>
-                ) : (
-                    t("authPage.btnLogin")
-                )}
+                ) :
+                        t('authPage.btnLogin')
+                }
             </button>
         </form>
     );

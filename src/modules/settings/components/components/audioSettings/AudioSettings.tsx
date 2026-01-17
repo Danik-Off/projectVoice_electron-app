@@ -14,7 +14,7 @@ const AudioSettings: React.FC = observer(() => {
     // Инициализируем микрофон при открытии настроек аудио
     useEffect(() => {
         console.log('AudioSettings: Checking microphone initialization for audio settings...');
-        
+
         // Проверяем, нужен ли микрофон и не инициализирован ли он уже
         if (!audioSettingsStore.isMicrophoneNeeded()) {
             console.log('AudioSettings: Initializing microphone for audio settings...');
@@ -22,7 +22,7 @@ const AudioSettings: React.FC = observer(() => {
         } else {
             console.log('AudioSettings: Microphone already initialized, skipping initialization');
         }
-        
+
         // Очищаем микрофон при закрытии настроек аудио
         return () => {
             console.log('AudioSettings: Cleaning up microphone after closing audio settings...');
@@ -67,7 +67,7 @@ const AudioSettings: React.FC = observer(() => {
             };
 
             const currentSettingsString = JSON.stringify(currentSettings);
-            
+
             // Инициализируем базовые настройки при первом запуске
             if (!isInitialized) {
                 lastSettings = currentSettingsString;
@@ -75,7 +75,7 @@ const AudioSettings: React.FC = observer(() => {
                 console.log('AudioSettings: Initial settings captured, auto-reconnect disabled for first check');
                 return;
             }
-            
+
             // Проверяем, действительно ли настройки изменились
             if (currentSettingsString !== lastSettings && roomStore.currentVoiceChannel) {
                 lastSettings = currentSettingsString;
@@ -94,19 +94,19 @@ const AudioSettings: React.FC = observer(() => {
         if (roomStore.currentVoiceChannel && !isReconnectingRef.current) {
             isReconnectingRef.current = true;
             const currentChannel = roomStore.currentVoiceChannel;
-            
+
             console.log('AudioSettings: Starting auto-reconnect to channel:', currentChannel.name);
-            
+
             try {
                 // Отключаемся от текущего канала
                 roomStore.disconnectToRoom();
-                
+
                 // Небольшая задержка для корректного отключения
                 setTimeout(() => {
                     // Переподключаемся с новыми настройками
                     roomStore.connectToRoom(currentChannel.id, currentChannel.name);
                     console.log('AudioSettings: Auto-reconnect completed');
-                    
+
                     // Сбрасываем флаг переподключения через 3 секунды
                     setTimeout(() => {
                         isReconnectingRef.current = false;
@@ -126,134 +126,125 @@ const AudioSettings: React.FC = observer(() => {
                 <p>{t('settingsPage.audio.description')}</p>
             </div>
 
-
             <div className="section-content">
                 {/* Input Device Settings */}
-                    <div className="settings-card">
-                        <div className="card-header">
-                            <div className="header-content">
-                            <div className="icon-container">
-                                🎤
-                            </div>
-                                <div className="header-text">
+                <div className="settings-card">
+                    <div className="card-header">
+                        <div className="header-content">
+                            <div className="icon-container">🎤</div>
+                            <div className="header-text">
                                 <h3>Устройства ввода</h3>
                                 <p>Настройка микрофона и параметров записи</p>
                             </div>
                         </div>
-                                    </div>
-                                    
+                    </div>
+
                     <div className="card-content">
                         {/* Microphone Selection */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Микрофон</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
-                                            <select
+                            <div className="setting-control">
+                                <select
                                     className="settings-select"
-                                                value={audioSettingsStore.selectedMicrophone?.deviceId || ''}
+                                    value={audioSettingsStore.selectedMicrophone?.deviceId || ''}
                                     onChange={(e) => audioSettingsStore.setMicrophone(e.target.value)}
-                                            >
-                                                <option value="">Выберите микрофон</option>
-                                                {audioSettingsStore.microphoneDevices.map((device) => (
-                                                    <option key={device.deviceId} value={device.deviceId}>
-                                                        {device.label || 'Неизвестное устройство'}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                <div className="setting-description">
-                                    Выберите устройство для записи голоса
-                                </div>
-                                        </div>
-                                    </div>
+                                >
+                                    <option value="">Выберите микрофон</option>
+                                    {audioSettingsStore.microphoneDevices.map((device) => (
+                                        <option key={device.deviceId} value={device.deviceId}>
+                                            {device.label || 'Неизвестное устройство'}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="setting-description">Выберите устройство для записи голоса</div>
+                            </div>
+                        </div>
 
                         {/* Input Volume */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Громкость ввода</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
+                            <div className="setting-control">
                                 <div className="volume-control">
-                                                    <input
-                                                        type="range"
-                                                        min="0"
+                                    <input
+                                        type="range"
+                                        min="0"
                                         max="200"
-                                                        value={audioSettingsStore.volume}
-                                                        onChange={(e) => audioSettingsStore.setVolume(Number(e.target.value))}
-                                                        className="settings-slider"
-                                                    />
+                                        value={audioSettingsStore.volume}
+                                        onChange={(e) => audioSettingsStore.setVolume(Number(e.target.value))}
+                                        className="settings-slider"
+                                    />
                                     <span className="volume-value">{audioSettingsStore.volume}%</span>
                                 </div>
                                 <div className="volume-visualizer">
                                     <div className="volume-bar">
-                                        <div 
-                                            className="volume-fill" 
+                                        <div
+                                            className="volume-fill"
                                             style={{ width: `${Math.min(audioSettingsStore.volume, 100)}%` }}
                                         />
                                         {audioSettingsStore.volume > 100 && (
-                                            <div 
-                                                className="volume-fill-over" 
+                                            <div
+                                                className="volume-fill-over"
                                                 style={{ width: `${Math.min(audioSettingsStore.volume - 100, 100)}%` }}
                                             />
                                         )}
                                     </div>
                                 </div>
-                                <div className="setting-description">
-                                    Уровень записи микрофона (0-200%)
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="setting-description">Уровень записи микрофона (0-200%)</div>
+                            </div>
+                        </div>
 
                         {/* Channel Selection */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Каналы записи</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
-                                            <div className="radio-group">
-                                                <label className="radio-item">
-                                                    <input
-                                                        type="radio"
-                                                        name="channel"
-                                                        value="mono"
-                                                        checked={audioSettingsStore.channelCount === 1}
-                                                        onChange={() => audioSettingsStore.setChannelCount('mono')}
-                                                    />
+                            <div className="setting-control">
+                                <div className="radio-group">
+                                    <label className="radio-item">
+                                        <input
+                                            type="radio"
+                                            name="channel"
+                                            value="mono"
+                                            checked={audioSettingsStore.channelCount === 1}
+                                            onChange={() => audioSettingsStore.setChannelCount('mono')}
+                                        />
                                         <span className="radio-label">Моно (1 канал)</span>
-                                                </label>
-                                                <label className="radio-item">
-                                                    <input
-                                                        type="radio"
-                                                        name="channel"
-                                                        value="stereo"
-                                                        checked={audioSettingsStore.channelCount === 2}
-                                                        onChange={() => audioSettingsStore.setChannelCount('stereo')}
-                                                    />
+                                    </label>
+                                    <label className="radio-item">
+                                        <input
+                                            type="radio"
+                                            name="channel"
+                                            value="stereo"
+                                            checked={audioSettingsStore.channelCount === 2}
+                                            onChange={() => audioSettingsStore.setChannelCount('stereo')}
+                                        />
                                         <span className="radio-label">Стерео (2 канала)</span>
-                                                </label>
-                                            </div>
-                                <div className="setting-description">
-                                    Количество аудио каналов для записи
+                                    </label>
                                 </div>
-                                        </div>
-                                    </div>
+                                <div className="setting-description">Количество аудио каналов для записи</div>
+                            </div>
+                        </div>
 
                         {/* Test Microphone */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Тестирование микрофона</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
-                                            <button 
-                                                className="settings-button settings-button--test"
+                            <div className="setting-control">
+                                <button
+                                    className="settings-button settings-button--test"
                                     onClick={async () => {
                                         setIsMicActive(true);
                                         await audioSettingsStore.testMicrophone();
@@ -261,53 +252,47 @@ const AudioSettings: React.FC = observer(() => {
                                     }}
                                 >
                                     {isMicActive ? 'Тестирование...' : 'Начать тест'}
-                                            </button>
-                                <div className="setting-description">
-                                    Проверьте работу микрофона
-                                </div>
+                                </button>
+                                <div className="setting-description">Проверьте работу микрофона</div>
                             </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Output Device Settings */}
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🔊
-                            </div>
+                            <div className="icon-container">🔊</div>
                             <div className="header-text">
                                 <h3>Устройства вывода</h3>
                                 <p>Настройка динамиков и параметров воспроизведения</p>
                             </div>
                         </div>
-                                    </div>
-                                    
+                    </div>
+
                     <div className="card-content">
                         {/* Speaker Selection */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Динамики</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
-                                            <select
+                            <div className="setting-control">
+                                <select
                                     className="settings-select"
-                                                value={audioSettingsStore.selectedSpeaker?.deviceId || ''}
-                                                onChange={(e) => audioSettingsStore.setSpeaker(e.target.value)}
-                                            >
-                                                <option value="">Выберите устройство</option>
-                                                {audioSettingsStore.speakerDevices.map((device) => (
-                                                    <option key={device.deviceId} value={device.deviceId}>
-                                                        {device.label || 'Неизвестное устройство'}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                <div className="setting-description">
-                                    Выберите устройство для воспроизведения
-                                </div>
+                                    value={audioSettingsStore.selectedSpeaker?.deviceId || ''}
+                                    onChange={(e) => audioSettingsStore.setSpeaker(e.target.value)}
+                                >
+                                    <option value="">Выберите устройство</option>
+                                    {audioSettingsStore.speakerDevices.map((device) => (
+                                        <option key={device.deviceId} value={device.deviceId}>
+                                            {device.label || 'Неизвестное устройство'}
+                                        </option>
+                                    ))}
+                                </select>
+                                <div className="setting-description">Выберите устройство для воспроизведения</div>
                             </div>
                         </div>
 
@@ -332,51 +317,44 @@ const AudioSettings: React.FC = observer(() => {
                                 </div>
                                 <div className="volume-visualizer">
                                     <div className="volume-bar">
-                                        <div 
-                                            className="volume-fill" 
-                                            style={{ width: '50%' }}
-                                        />
+                                        <div className="volume-fill" style={{ width: '50%' }} />
                                     </div>
                                 </div>
-                                <div className="setting-description">
-                                    Уровень воспроизведения (0-200%)
-                                </div>
-                                        </div>
-                                    </div>
+                                <div className="setting-description">Уровень воспроизведения (0-200%)</div>
+                            </div>
+                        </div>
 
                         {/* Speaker Mute */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Управление звуком</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
+                            <div className="setting-control">
                                 <div className="settings-toggle">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={!audioSettingsStore.isSpeakerMuted}
-                                                        onChange={() => audioSettingsStore.toggleSpeakerMute()}
-                                                    />
+                                    <input
+                                        type="checkbox"
+                                        checked={!audioSettingsStore.isSpeakerMuted}
+                                        onChange={() => audioSettingsStore.toggleSpeakerMute()}
+                                    />
                                     <span className="toggle-switch"></span>
                                     <span className="toggle-label">Включить звук</span>
                                 </div>
-                                <div className="setting-description">
-                                    Включение/отключение звука
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="setting-description">Включение/отключение звука</div>
+                            </div>
+                        </div>
 
                         {/* Test Speaker */}
-                                    <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
-                                        <label className="setting-label">
+                                <label className="setting-label">
                                     <span>Тестирование динамиков</span>
-                                        </label>
+                                </label>
                             </div>
-                                        <div className="setting-control">
-                                            <button 
-                                                className="settings-button settings-button--test"
+                            <div className="setting-control">
+                                <button
+                                    className="settings-button settings-button--test"
                                     onClick={async () => {
                                         setIsSpeakerActive(true);
                                         await audioSettingsStore.testSpeakers();
@@ -384,146 +362,138 @@ const AudioSettings: React.FC = observer(() => {
                                     }}
                                 >
                                     {isSpeakerActive ? 'Тестирование...' : 'Начать тест'}
-                                            </button>
-                                <div className="setting-description">
-                                    Проверьте работу динамиков
-                                </div>
+                                </button>
+                                <div className="setting-description">Проверьте работу динамиков</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Audio Processing Settings */}
-                    <div className="settings-card">
-                        <div className="card-header">
-                            <div className="header-content">
-                            <div className="icon-container">
-                                🎛️
-                            </div>
-                                <div className="header-text">
+                <div className="settings-card">
+                    <div className="card-header">
+                        <div className="header-content">
+                            <div className="icon-container">🎛️</div>
+                            <div className="header-text">
                                 <h3>Обработка звука</h3>
                                 <p>Основные алгоритмы обработки аудио</p>
                             </div>
                         </div>
                     </div>
-                    
-                        <div className="card-content">
+
+                    <div className="card-content">
                         {/* Basic Processing */}
-                            <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
                                     <span>Базовая обработка</span>
                                 </label>
                             </div>
-                                    <div className="setting-control">
-                                        <div className="checkbox-group">
+                            <div className="setting-control">
+                                <div className="checkbox-group">
                                     <label className="settings-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={audioSettingsStore.echoCancellation}
-                                                    onChange={(e) => audioSettingsStore.setEchoCancellation(e.target.checked)}
-                                                />
+                                        <input
+                                            type="checkbox"
+                                            checked={audioSettingsStore.echoCancellation}
+                                            onChange={(e) => audioSettingsStore.setEchoCancellation(e.target.checked)}
+                                        />
                                         <span className="checkmark"></span>
                                         <span className="checkbox-label">Подавление эха</span>
-                                            </label>
+                                    </label>
                                     <label className="settings-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={audioSettingsStore.noiseSuppression}
-                                                    onChange={(e) => audioSettingsStore.setNoiseSuppression(e.target.checked)}
-                                                />
+                                        <input
+                                            type="checkbox"
+                                            checked={audioSettingsStore.noiseSuppression}
+                                            onChange={(e) => audioSettingsStore.setNoiseSuppression(e.target.checked)}
+                                        />
                                         <span className="checkmark"></span>
                                         <span className="checkbox-label">Шумоподавление</span>
-                                            </label>
+                                    </label>
                                     <label className="settings-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={audioSettingsStore.autoGainControl}
-                                                    onChange={(e) => audioSettingsStore.setAutoGainControl(e.target.checked)}
-                                                />
+                                        <input
+                                            type="checkbox"
+                                            checked={audioSettingsStore.autoGainControl}
+                                            onChange={(e) => audioSettingsStore.setAutoGainControl(e.target.checked)}
+                                        />
                                         <span className="checkmark"></span>
                                         <span className="checkbox-label">Автоконтроль громкости</span>
-                                            </label>
+                                    </label>
                                 </div>
-                                <div className="setting-description">
-                                    Основные алгоритмы улучшения звука
-                                </div>
+                                <div className="setting-description">Основные алгоритмы улучшения звука</div>
                             </div>
                         </div>
 
                         {/* Advanced Processing */}
-                            <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
                                     <span>Расширенная обработка</span>
                                 </label>
                             </div>
-                                <div className="setting-control">
-                                    <div className="checkbox-group">
+                            <div className="setting-control">
+                                <div className="checkbox-group">
                                     <label className="settings-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={audioSettingsStore.voiceEnhancement}
-                                                onChange={(e) => audioSettingsStore.setVoiceEnhancement(e.target.checked)}
-                                            />
+                                        <input
+                                            type="checkbox"
+                                            checked={audioSettingsStore.voiceEnhancement}
+                                            onChange={(e) => audioSettingsStore.setVoiceEnhancement(e.target.checked)}
+                                        />
                                         <span className="checkmark"></span>
                                         <span className="checkbox-label">Улучшение голоса</span>
-                                        </label>
+                                    </label>
                                     <label className="settings-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={audioSettingsStore.voiceIsolation}
-                                                onChange={(e) => audioSettingsStore.setVoiceIsolation(e.target.checked)}
-                                            />
+                                        <input
+                                            type="checkbox"
+                                            checked={audioSettingsStore.voiceIsolation}
+                                            onChange={(e) => audioSettingsStore.setVoiceIsolation(e.target.checked)}
+                                        />
                                         <span className="checkmark"></span>
                                         <span className="checkbox-label">Изоляция голоса</span>
-                                        </label>
+                                    </label>
                                 </div>
-                                <div className="setting-description">
-                                    Дополнительные алгоритмы улучшения
-                                </div>
+                                <div className="setting-description">Дополнительные алгоритмы улучшения</div>
                             </div>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Audio Effects Settings */}
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                ✨
-                            </div>
+                            <div className="icon-container">✨</div>
                             <div className="header-text">
                                 <h3>Аудио эффекты</h3>
                                 <p>Дополнительные эффекты для улучшения звучания</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         {/* Voice Clarity */}
-                            <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
                                     <span>Четкость голоса</span>
                                 </label>
                             </div>
-                                <div className="setting-control">
+                            <div className="setting-control">
                                 <div className="slider-control">
                                     <input
                                         type="range"
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.voiceClarity * 100}
-                                        onChange={(e) => audioSettingsStore.setVoiceClarity(Number(e.target.value) / 100)}
+                                        onChange={(e) =>
+                                            audioSettingsStore.setVoiceClarity(Number(e.target.value) / 100)
+                                        }
                                         className="settings-slider"
                                     />
-                                    <span className="slider-value">{Math.round(audioSettingsStore.voiceClarity * 100)}%</span>
+                                    <span className="slider-value">
+                                        {Math.round(audioSettingsStore.voiceClarity * 100)}%
+                                    </span>
                                 </div>
-                                <div className="setting-description">
-                                    Улучшает разборчивость речи
-                                </div>
+                                <div className="setting-description">Улучшает разборчивость речи</div>
                             </div>
                         </div>
 
@@ -541,14 +511,16 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.backgroundNoiseReduction * 100}
-                                        onChange={(e) => audioSettingsStore.setBackgroundNoiseReduction(Number(e.target.value) / 100)}
+                                        onChange={(e) =>
+                                            audioSettingsStore.setBackgroundNoiseReduction(Number(e.target.value) / 100)
+                                        }
                                         className="settings-slider"
                                     />
-                                    <span className="slider-value">{Math.round(audioSettingsStore.backgroundNoiseReduction * 100)}%</span>
+                                    <span className="slider-value">
+                                        {Math.round(audioSettingsStore.backgroundNoiseReduction * 100)}%
+                                    </span>
                                 </div>
-                                <div className="setting-description">
-                                    Убирает фоновые звуки
-                                </div>
+                                <div className="setting-description">Убирает фоновые звуки</div>
                             </div>
                         </div>
 
@@ -569,36 +541,36 @@ const AudioSettings: React.FC = observer(() => {
                                         onChange={(e) => audioSettingsStore.setVoiceBoost(Number(e.target.value) / 100)}
                                         className="settings-slider"
                                     />
-                                    <span className="slider-value">{Math.round(audioSettingsStore.voiceBoost * 100)}%</span>
-                                        </div>
-                                <div className="setting-description">
-                                    Усиливает голосовые частоты
+                                    <span className="slider-value">
+                                        {Math.round(audioSettingsStore.voiceBoost * 100)}%
+                                    </span>
                                 </div>
-                                </div>
+                                <div className="setting-description">Усиливает голосовые частоты</div>
                             </div>
+                        </div>
 
                         {/* Bass Boost */}
-                            <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
                                     <span>Усиление басов</span>
                                 </label>
                             </div>
-                                <div className="setting-control">
+                            <div className="setting-control">
                                 <div className="slider-control">
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="100"
-                                                value={audioSettingsStore.bassBoost * 100}
-                                                onChange={(e) => audioSettingsStore.setBassBoost(Number(e.target.value) / 100)}
-                                                className="settings-slider"
-                                            />
-                                            <span className="slider-value">{Math.round(audioSettingsStore.bassBoost * 100)}%</span>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={audioSettingsStore.bassBoost * 100}
+                                        onChange={(e) => audioSettingsStore.setBassBoost(Number(e.target.value) / 100)}
+                                        className="settings-slider"
+                                    />
+                                    <span className="slider-value">
+                                        {Math.round(audioSettingsStore.bassBoost * 100)}%
+                                    </span>
                                 </div>
-                                <div className="setting-description">
-                                    Усиливает низкие частоты
-                                </div>
+                                <div className="setting-description">Усиливает низкие частоты</div>
                             </div>
                         </div>
 
@@ -608,22 +580,24 @@ const AudioSettings: React.FC = observer(() => {
                                 <label className="setting-label">
                                     <span>Усиление высоких частот</span>
                                 </label>
-                                        </div>
+                            </div>
                             <div className="setting-control">
                                 <div className="slider-control">
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max="100"
-                                                value={audioSettingsStore.trebleBoost * 100}
-                                                onChange={(e) => audioSettingsStore.setTrebleBoost(Number(e.target.value) / 100)}
-                                                className="settings-slider"
-                                            />
-                                            <span className="slider-value">{Math.round(audioSettingsStore.trebleBoost * 100)}%</span>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="100"
+                                        value={audioSettingsStore.trebleBoost * 100}
+                                        onChange={(e) =>
+                                            audioSettingsStore.setTrebleBoost(Number(e.target.value) / 100)
+                                        }
+                                        className="settings-slider"
+                                    />
+                                    <span className="slider-value">
+                                        {Math.round(audioSettingsStore.trebleBoost * 100)}%
+                                    </span>
                                 </div>
-                                <div className="setting-description">
-                                    Усиливает высокие частоты
-                                </div>
+                                <div className="setting-description">Усиливает высокие частоты</div>
                             </div>
                         </div>
                     </div>
@@ -633,16 +607,14 @@ const AudioSettings: React.FC = observer(() => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                ⚙️
-                            </div>
+                            <div className="icon-container">⚙️</div>
                             <div className="header-text">
                                 <h3>Качество звука</h3>
                                 <p>Технические параметры и качество звука</p>
-                                        </div>
-                                        </div>
+                            </div>
+                        </div>
                     </div>
-                    
+
                     <div className="card-content">
                         {/* Quality Presets */}
                         <div className="setting-group">
@@ -678,24 +650,22 @@ const AudioSettings: React.FC = observer(() => {
                                         <div className="preset-specs">48 кГц, 256 kbps</div>
                                     </button>
                                 </div>
-                                <div className="setting-description">
-                                    Выберите подходящий уровень качества
-                                    </div>
-                                </div>
+                                <div className="setting-description">Выберите подходящий уровень качества</div>
                             </div>
+                        </div>
 
                         {/* Technical Parameters */}
-                            <div className="setting-group">
+                        <div className="setting-group">
                             <div className="setting-header">
                                 <label className="setting-label">
                                     <span>Технические параметры</span>
                                 </label>
                             </div>
-                                <div className="setting-control">
+                            <div className="setting-control">
                                 <div className="advanced-controls">
                                     <div className="control-group">
                                         <label>Частота дискретизации</label>
-                                        <select 
+                                        <select
                                             className="settings-select"
                                             value={audioSettingsStore.sampleRate}
                                             onChange={(e) => audioSettingsStore.setSampleRate(Number(e.target.value))}
@@ -708,7 +678,7 @@ const AudioSettings: React.FC = observer(() => {
                                     </div>
                                     <div className="control-group">
                                         <label>Битрейт</label>
-                                        <select 
+                                        <select
                                             className="settings-select"
                                             value={audioSettingsStore.bitrate}
                                             onChange={(e) => audioSettingsStore.setBitrate(Number(e.target.value))}
@@ -721,7 +691,7 @@ const AudioSettings: React.FC = observer(() => {
                                     </div>
                                     <div className="control-group">
                                         <label>Задержка</label>
-                                        <select 
+                                        <select
                                             className="settings-select"
                                             value={audioSettingsStore.latency}
                                             onChange={(e) => audioSettingsStore.setLatency(Number(e.target.value))}
@@ -733,11 +703,9 @@ const AudioSettings: React.FC = observer(() => {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="setting-description">
-                                    Детальные настройки качества
-                                    </div>
-                                </div>
+                                <div className="setting-description">Детальные настройки качества</div>
                             </div>
+                        </div>
 
                         {/* Reset Settings */}
                         <div className="setting-group">
@@ -748,13 +716,13 @@ const AudioSettings: React.FC = observer(() => {
                             </div>
                             <div className="setting-control">
                                 <div className="button-group">
-                                    <button 
+                                    <button
                                         className="settings-button settings-button--test"
                                         onClick={() => audioSettingsStore.applyAllSettings()}
                                     >
                                         Применить настройки
                                     </button>
-                                    <button 
+                                    <button
                                         className="settings-button settings-button--danger"
                                         onClick={() => audioSettingsStore.resetToDefaults()}
                                     >

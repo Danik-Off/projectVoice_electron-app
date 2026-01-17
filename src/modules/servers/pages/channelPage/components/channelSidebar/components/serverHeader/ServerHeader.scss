@@ -70,9 +70,13 @@
                 border-radius: $border-radius-medium;
                 padding: 2px;
                 background: var(--gradient-primary);
-                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask:
+                    linear-gradient(#fff 0 0) content-box,
+                    linear-gradient(#fff 0 0);
                 -webkit-mask-composite: xor;
-                mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                mask:
+                    linear-gradient(#fff 0 0) content-box,
+                    linear-gradient(#fff 0 0);
                 mask-composite: exclude;
                 opacity: 0;
                 transition: opacity $animation-duration ease;
@@ -232,7 +236,10 @@
                 border-radius: 50%;
                 background: var(--primary-accent);
                 transform: translate(-50%, -50%);
-                transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+                transition:
+                    width 0.4s ease,
+                    height 0.4s ease,
+                    opacity 0.4s ease;
                 opacity: 0;
             }
 

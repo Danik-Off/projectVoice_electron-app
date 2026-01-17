@@ -20,6 +20,5 @@ export {
     removePermission,
     addPermission,
     canEditRole,
-    canDeleteRole,
+    canDeleteRole
 } from './utils/permissions';
-

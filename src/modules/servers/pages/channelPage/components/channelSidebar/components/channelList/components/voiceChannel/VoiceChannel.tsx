@@ -5,12 +5,6 @@ interface VoiceChannelProps {
     name: string;
 }
 
-const VoiceChannel: React.FC<VoiceChannelProps> = ({ name }) => {
-    return (
-        <div className="voice-channel">
-            {name}
-        </div>
-    );
-};
+const VoiceChannel: React.FC<VoiceChannelProps> = ({ name }) => <div className="voice-channel">{name}</div>;
 
 export default VoiceChannel;

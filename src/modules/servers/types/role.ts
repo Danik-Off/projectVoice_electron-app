@@ -43,4 +43,3 @@ export interface RoleHierarchy {
     canEdit: boolean;
     canDelete: boolean;
 }
-

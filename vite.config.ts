@@ -9,6 +9,9 @@ export default defineConfig({
       scss: {
         // Убираем автоматические импорты, так как они конфликтуют с существующими
         // additionalData: `@import "./src/styles/_colors.scss"; @import "./src/styles/_sizes.scss"; @import "./src/styles/_typography.scss"; @import "./src/styles/_utilities.scss"; @import "./src/styles/_animations.scss";`
+        api: 'modern-compiler',
+        // Добавляем путь для импорта стилей
+        includePaths: ['src']
       }
     }
   },

@@ -1,0 +1,68 @@
+@use '../../styles/main' as *;
+
+.ui-input {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+
+    &--full-width {
+        width: 100%;
+    }
+
+    &--error {
+        .ui-input__field {
+            border-color: var(--error-color);
+
+            &:focus {
+                border-color: var(--error-color);
+                box-shadow: 0 0 0 2px rgba(229, 115, 115, 0.2);
+            }
+        }
+    }
+
+    &__label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: $spacing-xs;
+    }
+
+    &__field {
+        width: 100%;
+        padding: $spacing-md;
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: $border-radius-medium;
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: all $animation-duration $animation-timing;
+        height: $input-height;
+
+        &:focus {
+            outline: none;
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &::placeholder {
+            color: var(--placeholder-text);
+        }
+    }
+
+    &__error {
+        font-size: 12px;
+        color: var(--error-color);
+        margin-top: $spacing-xs;
+    }
+
+    &__helper {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: $spacing-xs;
+    }
+}

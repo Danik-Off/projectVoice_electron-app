@@ -1,7 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { messageService } from '../services/messageService';
 import type { Message, CreateMessageRequest, UpdateMessageRequest, MessageFilters } from '../types/message';
-import { authStore } from '../../../core';
+import { authStore, eventBus, MESSAGING_EVENTS, MESSAGING_COMMANDS } from '../../../core';
+import type {
+    MessageCreatedEvent,
+    MessagesLoadedEvent,
+    SendMessageCommand,
+    UpdateMessageCommand,
+    DeleteMessageCommand
+} from '../../../core/events/events';
 
 class MessageStore {
     messages: Message[] = [];
@@ -16,6 +23,35 @@ class MessageStore {
 
     constructor() {
         makeAutoObservable(this);
+        this.setupCommandListeners();
+    }
+
+    private setupCommandListeners() {
+        // Подписка на команды от других модулей
+        eventBus.on<SendMessageCommand>(MESSAGING_COMMANDS.SEND_MESSAGE, async (data) => {
+            if (data) {
+                // Устанавливаем канал, если он указан в команде
+                if (data.channelId && data.channelId !== this.currentChannelId) {
+                    this.setCurrentChannel(data.channelId);
+                }
+                // Отправляем сообщение
+                if (this.currentChannelId) {
+                    await this.sendMessage(data.content);
+                }
+            }
+        });
+
+        eventBus.on<UpdateMessageCommand>(MESSAGING_COMMANDS.UPDATE_MESSAGE, async (data) => {
+            if (data) {
+                await this.updateMessage(data.messageId, { content: data.content });
+            }
+        });
+
+        eventBus.on<DeleteMessageCommand>(MESSAGING_COMMANDS.DELETE_MESSAGE, async (data) => {
+            if (data) {
+                await this.deleteMessage(data.messageId);
+            }
+        });
     }
 
     // Установка текущего канала
@@ -27,12 +63,18 @@ class MessageStore {
         this.totalMessages = 0;
         this.hasMore = true;
         this.searchQuery = '';
+
+        // Публикуем событие об изменении канала
+        eventBus.emit(MESSAGING_EVENTS.CHANNEL_CHANGED, { channelId });
+
         this.loadMessages();
     }
 
     // Загрузка сообщений
     async loadMessages(page: number = 1, append: boolean = false) {
-        if (!this.currentChannelId) return;
+        if (!this.currentChannelId) {
+            return;
+        }
 
         try {
             this.loading = true;
@@ -52,12 +94,23 @@ class MessageStore {
                 } else {
                     this.messages = response.messages;
                 }
-                
+
                 this.currentPage = response.page;
                 this.totalPages = response.totalPages;
                 this.totalMessages = response.total;
                 this.hasMore = response.page < response.totalPages;
             });
+
+            // Публикуем событие о загрузке сообщений
+            eventBus.emit(MESSAGING_EVENTS.MESSAGES_LOADED, {
+                channelId: this.currentChannelId!,
+                messages: response.messages.map((msg) => ({
+                    id: msg.id,
+                    content: msg.content,
+                    userId: msg.userId,
+                    createdAt: msg.createdAt
+                }))
+            } as MessagesLoadedEvent);
         } catch (error) {
             runInAction(() => {
                 this.error = 'Ошибка загрузки сообщений';
@@ -79,7 +132,9 @@ class MessageStore {
 
     // Отправка нового сообщения
     async sendMessage(content: string) {
-        if (!this.currentChannelId || !content.trim()) return;
+        if (!this.currentChannelId || !content.trim()) {
+            return;
+        }
 
         try {
             const messageData: CreateMessageRequest = {
@@ -94,6 +149,17 @@ class MessageStore {
                 this.totalMessages++;
             });
 
+            // Публикуем событие о создании сообщения
+            eventBus.emit(MESSAGING_EVENTS.MESSAGE_CREATED, {
+                message: {
+                    id: newMessage.id,
+                    channelId: newMessage.channelId,
+                    userId: newMessage.userId,
+                    content: newMessage.content,
+                    createdAt: newMessage.createdAt
+                }
+            } as MessageCreatedEvent);
+
             return newMessage;
         } catch (error) {
             runInAction(() => {
@@ -106,7 +172,9 @@ class MessageStore {
 
     // Обновление сообщения
     async updateMessage(messageId: number, content: string) {
-        if (!content.trim()) return;
+        if (!content.trim()) {
+            return;
+        }
 
         try {
             const updateData: UpdateMessageRequest = {
@@ -116,7 +184,7 @@ class MessageStore {
             const updatedMessage = await messageService.updateMessage(messageId, updateData);
 
             runInAction(() => {
-                const index = this.messages.findIndex(msg => msg.id === messageId);
+                const index = this.messages.findIndex((msg) => msg.id === messageId);
                 if (index !== -1) {
                     this.messages[index] = { ...this.messages[index], ...updatedMessage, isEdited: true };
                 }
@@ -138,7 +206,7 @@ class MessageStore {
             await messageService.deleteMessage(messageId);
 
             runInAction(() => {
-                const index = this.messages.findIndex(msg => msg.id === messageId);
+                const index = this.messages.findIndex((msg) => msg.id === messageId);
                 if (index !== -1) {
                     this.messages[index] = { ...this.messages[index], isDeleted: true };
                 }
@@ -155,7 +223,9 @@ class MessageStore {
 
     // Поиск сообщений
     async searchMessages(query: string) {
-        if (!this.currentChannelId || !query.trim()) return;
+        if (!this.currentChannelId || !query.trim()) {
+            return;
+        }
 
         try {
             this.loading = true;
@@ -202,7 +272,7 @@ class MessageStore {
     // Обновление сообщения в реальном времени
     updateMessageRealtime(message: Message) {
         runInAction(() => {
-            const index = this.messages.findIndex(msg => msg.id === message.id);
+            const index = this.messages.findIndex((msg) => msg.id === message.id);
             if (index !== -1) {
                 this.messages[index] = { ...this.messages[index], ...message, isEdited: true };
             }
@@ -212,7 +282,7 @@ class MessageStore {
     // Удаление сообщения в реальном времени
     deleteMessageRealtime(messageId: number) {
         runInAction(() => {
-            const index = this.messages.findIndex(msg => msg.id === messageId);
+            const index = this.messages.findIndex((msg) => msg.id === messageId);
             if (index !== -1) {
                 this.messages[index] = { ...this.messages[index], isDeleted: true };
             }
@@ -222,12 +292,20 @@ class MessageStore {
 
     // Проверка, может ли пользователь редактировать сообщение
     canEditMessage(message: Message): boolean {
-        return authStore.user?.id === message.userId || authStore.user?.role === 'admin' || authStore.user?.role === 'moderator';
+        return (
+            authStore.user?.id === message.userId ||
+            authStore.user?.role === 'admin' ||
+            authStore.user?.role === 'moderator'
+        );
     }
 
     // Проверка, может ли пользователь удалить сообщение
     canDeleteMessage(message: Message): boolean {
-        return authStore.user?.id === message.userId || authStore.user?.role === 'admin' || authStore.user?.role === 'moderator';
+        return (
+            authStore.user?.id === message.userId ||
+            authStore.user?.role === 'admin' ||
+            authStore.user?.role === 'moderator'
+        );
     }
 
     // Очистка состояния
@@ -244,4 +322,4 @@ class MessageStore {
     }
 }
 
-export const messageStore = new MessageStore(); 
+export const messageStore = new MessageStore();

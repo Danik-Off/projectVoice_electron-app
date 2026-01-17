@@ -19,7 +19,7 @@ const SettingsNavigation: React.FC<SettingsNavigationProps> = ({ activeTab, onTa
         // TODO: когда будет реализованы уведомления и приватность
         // { id: 'notifications', label: t('settingsPage.tabs.notifications'), icon: '🔔' },
         // { id: 'privacy', label: t('settingsPage.tabs.privacy'), icon: '🔒' },
-        { id: 'about', label: t('settingsPage.tabs.about'), icon: 'ℹ️' },
+        { id: 'about', label: t('settingsPage.tabs.about'), icon: 'ℹ️' }
     ];
 
     return (

@@ -36,4 +36,3 @@ const Layout = observer(() => {
 });
 
 export default Layout;
-

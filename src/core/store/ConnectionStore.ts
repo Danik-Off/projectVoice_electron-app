@@ -2,11 +2,12 @@ import { makeAutoObservable } from 'mobx';
 
 class ConnectionStore {
     private static STORAGE_KEY = 'projectvoice_server_url';
-    
-    public serverUrl: string = localStorage.getItem(ConnectionStore.STORAGE_KEY) || 
-                              import.meta.env.VITE_API_BASE_URL || 
-                              'http://localhost:5000';
-    
+
+    public serverUrl: string =
+        localStorage.getItem(ConnectionStore.STORAGE_KEY) ||
+        import.meta.env.VITE_API_BASE_URL ||
+        'http://localhost:5000';
+
     public isConnected: boolean = true;
     public lastError: string | null = null;
     public isAttemptingToConnect: boolean = false;
@@ -24,9 +25,9 @@ class ConnectionStore {
         // Убеждаемся, что URL имеет протокол
         let formattedUrl = url.trim();
         if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
-            formattedUrl = 'http://' + formattedUrl;
+            formattedUrl = `http://${  formattedUrl}`;
         }
-        
+
         // Убираем слеш в конце, если он есть
         if (formattedUrl.endsWith('/')) {
             formattedUrl = formattedUrl.slice(0, -1);
@@ -34,7 +35,7 @@ class ConnectionStore {
 
         this.serverUrl = formattedUrl;
         localStorage.setItem(ConnectionStore.STORAGE_KEY, formattedUrl);
-        
+
         // Перезагружаем страницу для применения новых настроек
         window.location.reload();
     }
@@ -59,4 +60,3 @@ class ConnectionStore {
 }
 
 export const connectionStore = new ConnectionStore();
-

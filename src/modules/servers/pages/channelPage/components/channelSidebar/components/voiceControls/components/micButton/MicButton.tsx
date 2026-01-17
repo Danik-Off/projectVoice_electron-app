@@ -7,8 +7,7 @@ interface MicButtonProps {
     onMicToggle: () => void;
 }
 
-const MicButton: React.FC<MicButtonProps> = ({ isMicOn, onMicToggle }) => {
-    return (
+const MicButton: React.FC<MicButtonProps> = ({ isMicOn, onMicToggle }) => (
         <button
             className={`mic-button ${isMicOn ? 'active' : 'inactive'}`}
             onClick={onMicToggle}
@@ -16,7 +15,6 @@ const MicButton: React.FC<MicButtonProps> = ({ isMicOn, onMicToggle }) => {
         >
             <MicIcon isMuted={!isMicOn}></MicIcon>
         </button>
-    );
-};
+);
 
 export default MicButton;

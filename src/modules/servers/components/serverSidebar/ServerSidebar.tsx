@@ -43,11 +43,12 @@ const ServerSidebar: React.FC = observer(() => {
         }
     };
 
-    const isOnHomePage = location.pathname === '/' || 
-                        location.pathname === '/main' || 
-                        location.pathname === '/welcome' ||
-                        location.pathname.startsWith('/auth');
-    
+    const isOnHomePage =
+        location.pathname === '/' ||
+        location.pathname === '/main' ||
+        location.pathname === '/welcome' ||
+        location.pathname.startsWith('/auth');
+
     useEffect(() => {
         serverStore.fetchServers();
     }, []);
@@ -55,35 +56,34 @@ const ServerSidebar: React.FC = observer(() => {
     return (
         <aside className="servers">
             <div className="servers__header">
-                <div 
-                    className={`servers__server servers__server--home ${isOnHomePage ? 'servers__server--active' : ''}`} 
+                <div
+                    className={`servers__server servers__server--home ${isOnHomePage ? 'servers__server--active' : ''}`}
                     onClick={() => navigate('/')}
                 >
                     <div className="servers__server-icon">🏠</div>
                 </div>
                 <div className="servers__separator"></div>
             </div>
-            
+
             <div className="servers__list">
                 {serverStore.servers.map((server) => (
-                    <ServerItem 
-                        key={server.id} 
-                        server={server} 
-                        onClick={() => handleServerClick(server)}
-                    />
+                    <ServerItem key={server.id} server={server} onClick={() => handleServerClick(server)} />
                 ))}
                 <div className="servers__separator"></div>
-                <div className="servers__server servers__server--add" onClick={() => {
-                    setIsCreateModalOpen(true);
-                }}>
+                <div
+                    className="servers__server servers__server--add"
+                    onClick={() => {
+                        setIsCreateModalOpen(true);
+                    }}
+                >
                     <div className="servers__server-icon">+</div>
                 </div>
             </div>
-            
+
             <div className="servers__footer">
                 <div className="servers__footer-separator"></div>
-                <div 
-                    className="servers__server servers__server--settings" 
+                <div
+                    className="servers__server servers__server--settings"
                     onClick={handleSetting}
                     role="button"
                     tabIndex={0}
@@ -112,13 +112,9 @@ const ServerSidebar: React.FC = observer(() => {
                 blockedBy={blockedServer?.blockedBy}
             />
 
-            <CreateServerModal
-                isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
-            />
+            <CreateServerModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
         </aside>
     );
 });
 
 export default ServerSidebar;
-

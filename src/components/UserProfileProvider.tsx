@@ -19,13 +19,7 @@ export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ childr
     return (
         <UserProfileContext.Provider value={contextValue}>
             {children}
-            <UserProfileModal
-                isOpen={isOpen}
-                onClose={closeProfile}
-                user={user}
-                isOwnProfile={isOwnProfile}
-            />
+            <UserProfileModal isOpen={isOpen} onClose={closeProfile} user={user} isOwnProfile={isOwnProfile} />
         </UserProfileContext.Provider>
     );
 };
-

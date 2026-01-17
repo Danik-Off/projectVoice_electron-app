@@ -5,9 +5,10 @@ import VoiceControls from './components/channelSidebar/components/voiceControls/
 import BlockedServerModal from '../../../../components/BlockedServerModal';
 import { useEffect, useState } from 'react';
 import { serverStore } from '../../../../modules/servers';
-import voiceRoomStore from '../../../../modules/voice/store/roomStore';
+import { eventBus, VOICE_EVENTS } from '../../../../core';
 import Spinner from '../../../../components/spinner/Spinner';
 import { observer } from 'mobx-react';
+import type { VoiceChannelConnectedEvent } from '../../../../core/events/events';
 
 const LoadingState: React.FC = () => (
     <div className="loading-state">
@@ -16,9 +17,7 @@ const LoadingState: React.FC = () => (
                 <Spinner />
             </div>
             <h2 className="loading-title">Загрузка сервера...</h2>
-            <p className="loading-description">
-                Подготавливаем все каналы и настройки для вас
-            </p>
+            <p className="loading-description">Подготавливаем все каналы и настройки для вас</p>
             <div className="loading-progress">
                 <div className="progress-bar">
                     <div className="progress-fill"></div>
@@ -30,10 +29,23 @@ const LoadingState: React.FC = () => (
 );
 
 const Page = observer(() => {
-    const isVoiceConnected = voiceRoomStore.currentVoiceChannel !== null;
-    
-    // Логирование для отладки
-    console.log('ChannelPage - isVoiceConnected:', isVoiceConnected, 'currentChannel:', voiceRoomStore.currentVoiceChannel);
+    const [isVoiceConnected, setIsVoiceConnected] = useState(false);
+
+    useEffect(() => {
+        // Подписка на события голосового канала
+        const unsubscribeConnected = eventBus.on<VoiceChannelConnectedEvent>(VOICE_EVENTS.CHANNEL_CONNECTED, () => {
+            setIsVoiceConnected(true);
+        });
+
+        const unsubscribeDisconnected = eventBus.on(VOICE_EVENTS.CHANNEL_DISCONNECTED, () => {
+            setIsVoiceConnected(false);
+        });
+
+        return () => {
+            unsubscribeConnected();
+            unsubscribeDisconnected();
+        };
+    }, []);
 
     return (
         <>
@@ -56,7 +68,7 @@ const ChannelPage = () => {
     const { serverId } = useParams<{ serverId: string }>();
     const navigate = useNavigate();
     const [showBlockedModal, setShowBlockedModal] = useState(false);
-    
+
     useEffect(() => {
         if (serverId) {
             const id = Number(serverId);

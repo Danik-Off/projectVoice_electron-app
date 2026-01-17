@@ -109,7 +109,9 @@
 
         &--speaking {
             border: 3px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), 0 4px 12px rgba(114, 137, 218, 0.3);
+            box-shadow:
+                0 0 20px rgba(0, 255, 0, 0.5),
+                0 4px 12px rgba(114, 137, 218, 0.3);
             animation: speakingGlow 1.5s ease-in-out infinite;
         }
     }
@@ -118,7 +120,6 @@
         min-width: 50px;
         display: flex;
         flex-direction: column;
-  
     }
 
     &__username {
@@ -133,13 +134,12 @@
     &__status {
         font-size: 11px;
         color: var(--text-muted);
-    
-        
+
         &--speaking {
             color: #00ff00;
         }
     }
-    
+
     &__volume-level {
         font-size: 10px;
         color: #00ff00;
@@ -332,12 +332,12 @@
         border-radius: 8px;
         background: var(--secondary-bg);
         transition: all 0.3s ease;
-        
+
         &:hover {
             background: var(--hover-bg);
         }
     }
-    
+
     &__participant-info {
         display: flex;
         flex-direction: column;
@@ -345,7 +345,7 @@
         flex: 1;
         min-width: 0;
     }
-    
+
     &__participant-name {
         font-size: 14px;
         font-weight: 500;
@@ -354,16 +354,15 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     &__participant-status {
         font-size: 11px;
-      
-        
+
         &--speaking {
             color: #00ff00;
         }
     }
-    
+
     &__participant-avatar {
         flex-shrink: 0;
         transition: all 0.3s ease;
@@ -479,7 +478,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.6;
     }
     50% {
@@ -488,7 +488,7 @@
 }
 
 // Темная тема
-[data-theme="dark"] {
+[data-theme='dark'] {
     .voice-controls {
         background: linear-gradient(135deg, $primary-bg 0%, $secondary-bg 100%);
         border-top-color: $border-primary;
@@ -496,7 +496,7 @@
 }
 
 // Светлая тема
-[data-theme="light"] {
+[data-theme='light'] {
     .voice-controls {
         background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         border-top-color: #e9ecef;
@@ -531,7 +531,8 @@
 }
 
 @keyframes speakingPulse {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
         opacity: 1;
     }
@@ -542,11 +543,16 @@
 }
 
 @keyframes speakingGlow {
-    0%, 100% {
-        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), 0 4px 12px rgba(114, 137, 218, 0.3);
+    0%,
+    100% {
+        box-shadow:
+            0 0 20px rgba(0, 255, 0, 0.5),
+            0 4px 12px rgba(114, 137, 218, 0.3);
     }
     50% {
-        box-shadow: 0 0 30px rgba(0, 255, 0, 0.8), 0 4px 12px rgba(114, 137, 218, 0.3);
+        box-shadow:
+            0 0 30px rgba(0, 255, 0, 0.8),
+            0 4px 12px rgba(114, 137, 218, 0.3);
     }
 }
 
@@ -697,7 +703,7 @@
     font-weight: 500;
     color: var(--text-primary);
 
-    input[type="checkbox"] {
+    input[type='checkbox'] {
         width: 18px;
         height: 18px;
         accent-color: var(--accent-color, #5865f2);

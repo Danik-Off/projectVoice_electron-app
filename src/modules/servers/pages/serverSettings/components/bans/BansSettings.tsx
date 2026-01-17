@@ -7,15 +7,21 @@ import { notificationStore } from '../../../../../../core';
 import type { BanInfo } from '../../../../../../modules/servers';
 import './BansSettings.scss';
 
-const BansSettings: React.FC = observer(() => {
+interface BansSettingsProps {
+    currentUserPermissions?: string | bigint;
+}
+
+const BansSettings: React.FC<BansSettingsProps> = observer(() => {
     const { t } = useTranslation();
     const { serverId } = useParams<{ serverId: string }>();
     const [bans, setBans] = useState<BanInfo[]>([]);
     const [loading, setLoading] = useState(false);
 
     const loadBans = useCallback(async () => {
-        if (!serverId) return;
-        
+        if (!serverId) {
+            return;
+        }
+
         setLoading(true);
         try {
             const bansData = await serverMembersService.getBans(parseInt(serverId));
@@ -36,8 +42,10 @@ const BansSettings: React.FC = observer(() => {
     }, [loadBans]);
 
     const handleUnban = async (userId: number) => {
-        if (!serverId) return;
-        
+        if (!serverId) {
+            return;
+        }
+
         if (!confirm(t('serverSettings.confirmUnban') || 'Вы уверены, что хотите разбанить этого пользователя?')) {
             return;
         }
@@ -45,10 +53,7 @@ const BansSettings: React.FC = observer(() => {
         try {
             await serverMembersService.unbanMember(parseInt(serverId), userId);
             await loadBans();
-            notificationStore.addNotification(
-                t('serverSettings.userUnbanned') || 'Пользователь разбанен',
-                'success'
-            );
+            notificationStore.addNotification(t('serverSettings.userUnbanned') || 'Пользователь разбанен', 'success');
         } catch (error) {
             console.error('Error unbanning user:', error);
             notificationStore.addNotification(
@@ -76,31 +81,35 @@ const BansSettings: React.FC = observer(() => {
                     <p>{t('serverSettings.bansDescription') || 'Управление забаненными пользователями'}</p>
                 </div>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🚫
-                            </div>
+                            <div className="icon-container">🚫</div>
                             <div className="header-text">
                                 <h3>{t('serverSettings.bannedUsers') || 'Забаненные пользователи'}</h3>
-                                <p>{t('serverSettings.bannedUsersDescription') || 'Список пользователей, забаненных на этом сервере'}</p>
+                                <p>
+                                    {t('serverSettings.bannedUsersDescription') ||
+                                        'Список пользователей, забаненных на этом сервере'}
+                                </p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         {bans.length === 0 ? (
                             <div className="empty-state">
                                 <div className="empty-icon">✅</div>
                                 <h3>{t('serverSettings.noBans') || 'Нет забаненных пользователей'}</h3>
-                                <p>{t('serverSettings.noBansDescription') || 'На этом сервере пока нет забаненных пользователей'}</p>
+                                <p>
+                                    {t('serverSettings.noBansDescription') ||
+                                        'На этом сервере пока нет забаненных пользователей'}
+                                </p>
                             </div>
                         ) : (
                             <div className="bans-list">
-                                {bans.map(ban => (
+                                {bans.map((ban) => (
                                     <div key={ban.id} className="ban-item">
                                         <div className="ban-user-info">
                                             {ban.user && (
@@ -114,11 +123,13 @@ const BansSettings: React.FC = observer(() => {
                                                         <span className="ban-username">{ban.user.username}</span>
                                                         {ban.reason && (
                                                             <span className="ban-reason">
-                                                                {t('serverSettings.banReason') || 'Причина'}: {ban.reason}
+                                                                {t('serverSettings.banReason') || 'Причина'}:{' '}
+                                                                {ban.reason}
                                                             </span>
                                                         )}
                                                         <span className="ban-date">
-                                                            {t('serverSettings.bannedAt') || 'Забанен'}: {new Date(ban.bannedAt).toLocaleDateString()}
+                                                            {t('serverSettings.bannedAt') || 'Забанен'}:{' '}
+                                                            {new Date(ban.bannedAt).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                 </>
@@ -142,4 +153,3 @@ const BansSettings: React.FC = observer(() => {
 });
 
 export default BansSettings;
-

@@ -3,7 +3,7 @@
 // Стили для серверов в списке (дополнительные стили для .servers__server)
 .servers__server {
     // Базовые стили уже определены в ServerSidebar.scss
-    
+
     // Стили для изображений серверов
     .servers__server-icon {
         width: 100%;
@@ -69,7 +69,6 @@
         &:hover .servers__server-icon {
             filter: grayscale(0.3) brightness(0.9);
         }
-
     }
 
     // Модификатор: servers__server--has-notifications (сервер с уведомлениями)

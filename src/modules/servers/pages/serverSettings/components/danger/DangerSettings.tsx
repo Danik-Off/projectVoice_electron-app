@@ -5,7 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { serverStore } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
 
-const DangerSettings: React.FC = observer(() => {
+interface DangerSettingsProps {
+    currentUserPermissions?: string | bigint;
+}
+
+const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -13,27 +17,21 @@ const DangerSettings: React.FC = observer(() => {
     const handleDeleteServer = async () => {
         try {
             const server = serverStore.currentServer;
-            if (!server?.id) return;
-            
+            if (!server?.id) {
+                return;
+            }
+
             // Здесь будет логика удаления сервера через API
             console.log('Deleting server:', server.id);
-            
+
             // Пока что просто показываем уведомление
-            notificationStore.addNotification(
-                t('serverSettings.serverDeleted'),
-                'success',
-                3000
-            );
-            
+            notificationStore.addNotification(t('serverSettings.serverDeleted'), 'success', 3000);
+
             // Переходим на главную страницу
             navigate('/');
         } catch (error) {
             console.error('Error deleting server:', error);
-            notificationStore.addNotification(
-                t('serverSettings.deleteError'),
-                'error',
-                5000
-            );
+            notificationStore.addNotification(t('serverSettings.deleteError'), 'error', 5000);
         }
     };
 
@@ -54,21 +52,19 @@ const DangerSettings: React.FC = observer(() => {
                 <h2>{t('serverSettings.dangerZone')}</h2>
                 <p>{t('serverSettings.dangerDescription')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                ⚠️
-                            </div>
+                            <div className="icon-container">⚠️</div>
                             <div className="header-text">
                                 <h3>{t('serverSettings.dangerZoneTitle')}</h3>
                                 <p>{t('serverSettings.dangerZoneDescription')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="danger-actions">
                             {dangerActions.map((action, index) => (
@@ -77,10 +73,7 @@ const DangerSettings: React.FC = observer(() => {
                                     <div className="danger-content">
                                         <h4 className="danger-title">{action.title}</h4>
                                         <p className="danger-description">{action.description}</p>
-                                        <button 
-                                            className={action.buttonClass}
-                                            onClick={action.onClick}
-                                        >
+                                        <button className={action.buttonClass} onClick={action.onClick}>
                                             {action.buttonText}
                                         </button>
                                     </div>
@@ -97,26 +90,17 @@ const DangerSettings: React.FC = observer(() => {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
                             <h3 className="modal-title">⚠️ {t('serverSettings.confirmDelete')}</h3>
-                            <button 
-                                className="modal-close"
-                                onClick={() => setShowDeleteConfirm(false)}
-                            >
+                            <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>
                                 ×
                             </button>
                         </div>
                         <div className="modal-content">
                             <p>{t('serverSettings.deleteWarning')}</p>
                             <div className="modal-actions">
-                                <button 
-                                    className="cancel-button"
-                                    onClick={() => setShowDeleteConfirm(false)}
-                                >
+                                <button className="cancel-button" onClick={() => setShowDeleteConfirm(false)}>
                                     {t('common.cancel')}
                                 </button>
-                                <button 
-                                    className="danger-button"
-                                    onClick={handleDeleteServer}
-                                >
+                                <button className="danger-button" onClick={handleDeleteServer}>
                                     {t('serverSettings.deleteServer')}
                                 </button>
                             </div>

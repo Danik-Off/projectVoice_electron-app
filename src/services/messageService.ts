@@ -1,12 +1,22 @@
-import { apiClient } from '../utils/apiClient';
-import type { Message, CreateMessageRequest, UpdateMessageRequest, MessageResponse, MessageFilters } from '../types/message';
+import { apiClient } from '../core';
+import type {
+    Message,
+    CreateMessageRequest,
+    UpdateMessageRequest,
+    MessageResponse,
+    MessageFilters
+} from '../types/message';
 
 class MessageService {
     // Получение сообщений канала с пагинацией
     async getMessages(filters: MessageFilters): Promise<MessageResponse> {
         const params = new URLSearchParams();
-        if (filters.page) params.append('page', filters.page.toString());
-        if (filters.limit) params.append('limit', filters.limit.toString());
+        if (filters.page) {
+            params.append('page', filters.page.toString());
+        }
+        if (filters.limit) {
+            params.append('limit', filters.limit.toString());
+        }
         params.append('channelId', filters.channelId.toString());
 
         return await apiClient(`/messages?${params.toString()}`, { method: 'GET' });

@@ -38,14 +38,14 @@ const InvitePage: React.FC = observer(() => {
 
     const fetchInviteData = useCallback(async () => {
         console.log('🎯 InvitePage: Получение данных приглашения для токена:', token);
-        
+
         try {
             // Используем сервис для получения данных приглашения
             const inviteData = await inviteService.getInvite(token!);
             console.log('🎯 InvitePage: Данные приглашения получены:', inviteData);
-            
+
             setInviteData(inviteData);
-            
+
             // Получаем данные сервера отдельно (пока что используем заглушку)
             // TODO: Добавить метод в inviteService для получения данных сервера
             setServerData({
@@ -79,12 +79,12 @@ const InvitePage: React.FC = observer(() => {
         setAccepting(true);
         try {
             console.log('🎯 InvitePage: Принятие приглашения с токеном:', token);
-            
+
             // Используем сервис для принятия приглашения
             await inviteService.acceptInvite(token!);
-            
+
             console.log('🎯 InvitePage: Приглашение принято успешно');
-            
+
             // Перенаправляем на сервер
             navigate(`/server/${serverData?.id}`);
             notificationStore.addNotification(t('invitePage.joinSuccess'), 'success');
@@ -161,34 +161,28 @@ const InvitePage: React.FC = observer(() => {
                     </div>
                     <div className="server-details">
                         <h2>{serverData.name}</h2>
-                        {serverData.description && (
-                            <p className="server-description">{serverData.description}</p>
-                        )}
+                        {serverData.description && <p className="server-description">{serverData.description}</p>}
                     </div>
                 </div>
 
                 <div className="invite-details">
                     <div className="invite-stat">
                         <span className="label">{t('invitePage.usesLabel')}</span>
-                        <span className="value">{inviteData.uses}/{inviteData.maxUses || '∞'}</span>
+                        <span className="value">
+                            {inviteData.uses}/{inviteData.maxUses || '∞'}
+                        </span>
                     </div>
                     {inviteData.expiresAt && (
                         <div className="invite-stat">
                             <span className="label">{t('invitePage.expiresLabel')}</span>
-                            <span className="value">
-                                {new Date(inviteData.expiresAt).toLocaleDateString()}
-                            </span>
+                            <span className="value">{new Date(inviteData.expiresAt).toLocaleDateString()}</span>
                         </div>
                     )}
                 </div>
 
                 <div className="invite-actions">
                     {isAuthenticated ? (
-                        <button 
-                            onClick={handleAcceptInvite} 
-                            disabled={accepting}
-                            className="btn-accept"
-                        >
+                        <button onClick={handleAcceptInvite} disabled={accepting} className="btn-accept">
                             {accepting ? t('invitePage.joining') : t('invitePage.joinServer')}
                         </button>
                     ) : (
@@ -205,4 +199,4 @@ const InvitePage: React.FC = observer(() => {
     );
 });
 
-export default InvitePage; 
+export default InvitePage;

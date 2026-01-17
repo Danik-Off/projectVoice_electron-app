@@ -1,4 +1,4 @@
-import { apiClient } from '../utils/apiClient';
+import { apiClient } from '../core';
 
 export interface Invite {
     id: number;
@@ -17,35 +17,39 @@ export interface CreateInviteResponse {
 
 class InviteService {
     async createInvite(serverId: number, options?: { maxUses?: number; expiresAt?: string }): Promise<Invite> {
-        const response = await apiClient(`/invite/${serverId}/invite`, { 
-            method: 'POST' 
-        }, options);
+        const response = await apiClient(
+            `/invite/${serverId}/invite`,
+            {
+                method: 'POST'
+            },
+            options
+        );
         return response.invite;
     }
 
     async getInvite(token: string): Promise<Invite> {
-        return await apiClient(`/invite/invite/${token}`, { 
-            method: 'GET' 
+        return await apiClient(`/invite/invite/${token}`, {
+            method: 'GET'
         });
     }
 
     async acceptInvite(token: string): Promise<void> {
-        await apiClient(`/invite/invite/${token}/accept`, { 
-            method: 'POST' 
+        await apiClient(`/invite/invite/${token}/accept`, {
+            method: 'POST'
         });
     }
 
     async deleteInvite(inviteId: number): Promise<void> {
-        await apiClient(`/invite/${inviteId}`, { 
-            method: 'DELETE' 
+        await apiClient(`/invite/${inviteId}`, {
+            method: 'DELETE'
         });
     }
 
     async getServerInvites(serverId: number): Promise<Invite[]> {
-        return await apiClient(`/invite/${serverId}/invites`, { 
-            method: 'GET' 
+        return await apiClient(`/invite/${serverId}/invites`, {
+            method: 'GET'
         });
     }
 }
 
-export const inviteService = new InviteService(); 
+export const inviteService = new InviteService();

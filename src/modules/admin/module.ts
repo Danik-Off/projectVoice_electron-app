@@ -14,14 +14,13 @@ export const adminModule: IModule = {
             path: 'admin',
             component: AdminPanel,
             protected: true,
-            admin: true,
-        },
+            admin: true
+        }
     ],
     async initialize() {
         console.log('Admin module initialized');
     },
     async destroy() {
         console.log('Admin module destroyed');
-    },
+    }
 };
-

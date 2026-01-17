@@ -58,27 +58,35 @@ export interface BanInfo {
 
 class ServerMembersService {
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
-        return await apiClient(`/serverMembers/${serverId}/members`, { 
-            method: 'GET' 
+        return await apiClient(`/serverMembers/${serverId}/members`, {
+            method: 'GET'
         });
     }
 
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members/${memberId}`, { 
-            method: 'PUT' 
-        }, { role });
+        return await apiClient(
+            `/serverMembers/${serverId}/members/${memberId}`,
+            {
+                method: 'PUT'
+            },
+            { role }
+        );
     }
 
     async removeMember(serverId: number, memberId: number): Promise<void> {
-        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, { 
-            method: 'DELETE' 
+        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
+            method: 'DELETE'
         });
     }
 
     async addMember(serverId: number, userId: number, role: string = 'member'): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members`, { 
-            method: 'POST' 
-        }, { userId, role });
+        return await apiClient(
+            `/serverMembers/${serverId}/members`,
+            {
+                method: 'POST'
+            },
+            { userId, role }
+        );
     }
 
     /**
@@ -103,32 +111,44 @@ class ServerMembersService {
      * Забанить участника
      */
     async banMember(serverId: number, memberId: number, reason?: string): Promise<void> {
-        await apiClient(`/serverMembers/${serverId}/members/${memberId}/ban`, {
-            method: 'POST'
-        }, { reason });
+        await apiClient(
+            `/serverMembers/${serverId}/members/${memberId}/ban`,
+            {
+                method: 'POST'
+            },
+            { reason }
+        );
     }
 
     /**
      * Обновить голосовые настройки участника (Mute/Deafen)
      */
     async updateVoiceSettings(
-        serverId: number, 
-        memberId: number, 
-        isMuted?: boolean, 
+        serverId: number,
+        memberId: number,
+        isMuted?: boolean,
         isDeafened?: boolean
     ): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members/${memberId}/voice`, {
-            method: 'PATCH'
-        }, { isMuted, isDeafened });
+        return await apiClient(
+            `/serverMembers/${serverId}/members/${memberId}/voice`,
+            {
+                method: 'PATCH'
+            },
+            { isMuted, isDeafened }
+        );
     }
 
     /**
      * Обновить роли участника
      */
     async updateMemberRoles(serverId: number, memberId: number, roleIds: number[]): Promise<ServerMember> {
-        return await apiClient(`/serverMembers/${serverId}/members/${memberId}/roles`, {
-            method: 'PUT'
-        }, { roleIds });
+        return await apiClient(
+            `/serverMembers/${serverId}/members/${memberId}/roles`,
+            {
+                method: 'PUT'
+            },
+            { roleIds }
+        );
     }
 
     /**
@@ -151,4 +171,3 @@ class ServerMembersService {
 }
 
 export const serverMembersService = new ServerMembersService();
-

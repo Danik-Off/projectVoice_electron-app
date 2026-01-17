@@ -9,25 +9,18 @@ interface BlockedAccountModalProps {
     blockedBy?: string;
 }
 
-const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
-    isOpen,
-    onClose,
-    reason,
-    blockedAt,
-    blockedBy
-}) => {
+const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({ isOpen, onClose, reason, blockedAt, blockedBy }) => {
+    if (!isOpen) {
+        return null;
+    }
 
-    if (!isOpen) return null;
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString('ru-RU', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+    const formatDate = (dateString: string) => new Date(dateString).toLocaleString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
     return (
         <div className="blocked-account-modal-overlay">
@@ -36,19 +29,17 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
                     <div className="blocked-account-modal__header-icon">🚫</div>
                     <h2 className="blocked-account-modal__header-title">Аккаунт заблокирован</h2>
                 </div>
-                
+
                 <div className="blocked-account-modal__content">
-                    <p className="blocked-account-modal__message">
-                        Ваш аккаунт был заблокирован администрацией.
-                    </p>
-                    
+                    <p className="blocked-account-modal__message">Ваш аккаунт был заблокирован администрацией.</p>
+
                     {reason && (
                         <div className="blocked-account-modal__reason-section">
                             <h3 className="blocked-account-modal__reason-section-title">Причина блокировки:</h3>
                             <p className="blocked-account-modal__reason-section-text">{reason}</p>
                         </div>
                     )}
-                    
+
                     {blockedAt && (
                         <div className="blocked-account-modal__details-section">
                             <p className="blocked-account-modal__details-section-item">
@@ -61,20 +52,17 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
                             )}
                         </div>
                     )}
-                    
+
                     <div className="blocked-account-modal__contact-info">
                         <p className="blocked-account-modal__contact-info-text">
-                            Если вы считаете, что блокировка была применена по ошибке, 
-                            обратитесь к администрации системы.
+                            Если вы считаете, что блокировка была применена по ошибке, обратитесь к администрации
+                            системы.
                         </p>
                     </div>
                 </div>
-                
+
                 <div className="blocked-account-modal__footer">
-                    <button 
-                        className="blocked-account-modal__close-button"
-                        onClick={onClose}
-                    >
+                    <button className="blocked-account-modal__close-button" onClick={onClose}>
                         Понятно
                     </button>
                 </div>
@@ -83,4 +71,4 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
     );
 };
 
-export default BlockedAccountModal; 
+export default BlockedAccountModal;

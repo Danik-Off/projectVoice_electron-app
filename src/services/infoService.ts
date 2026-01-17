@@ -26,4 +26,3 @@ class InfoService {
 }
 
 export const infoService = new InfoService();
-

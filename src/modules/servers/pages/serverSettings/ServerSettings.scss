@@ -16,7 +16,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: 
+        background:
             radial-gradient(circle at 20% 80%, rgba(100, 181, 246, 0.1) 0%, transparent 50%),
             radial-gradient(circle at 80% 20%, rgba(129, 199, 132, 0.1) 0%, transparent 50%);
         pointer-events: none;
@@ -123,7 +123,7 @@
 // Унифицированные стили для всех настроек
 .settings-section {
     margin-bottom: var(--spacing-xl);
-    
+
     .section-header {
         text-align: center;
         margin-bottom: var(--spacing-lg);
@@ -131,7 +131,7 @@
         background: var(--secondary-bg);
         border-radius: var(--border-radius-medium);
         border: 1px solid var(--border-primary);
-        
+
         h2 {
             font-size: $font-size-3xl;
             font-weight: 700;
@@ -142,7 +142,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         p {
             color: var(--text-secondary);
             font-size: $font-size-lg;
@@ -150,7 +150,7 @@
             line-height: 1.5;
         }
     }
-    
+
     .section-content {
         background: var(--primary-bg);
         border: 1px solid var(--border-primary);
@@ -168,15 +168,15 @@
     overflow: hidden;
     transition: all $animation-duration ease;
     margin-bottom: var(--spacing-lg);
-    
+
     &:hover {
         box-shadow: var(--shadow-medium);
     }
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
+
     .card-header {
         background: var(--secondary-bg);
         padding: var(--spacing-md);
@@ -184,12 +184,12 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        
+
         .header-content {
             display: flex;
             align-items: center;
             gap: var(--spacing-md);
-            
+
             .icon-container {
                 width: $avatar-size-large;
                 height: $avatar-size-large;
@@ -201,7 +201,7 @@
                 color: white;
                 font-size: $font-size-xl;
             }
-            
+
             .header-text {
                 h3 {
                     font-size: $font-size-lg;
@@ -209,7 +209,7 @@
                     margin: 0 0 var(--spacing-xs) 0;
                     font-weight: 600;
                 }
-                
+
                 p {
                     color: var(--text-secondary);
                     font-size: $font-size-sm;
@@ -217,13 +217,13 @@
                 }
             }
         }
-        
+
         .header-actions {
             display: flex;
             gap: var(--spacing-sm);
         }
     }
-    
+
     .card-content {
         padding: var(--spacing-md);
     }
@@ -236,25 +236,25 @@
     background: var(--secondary-bg);
     border-radius: var(--border-radius-small);
     border: 1px solid var(--border-primary);
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
+
     .setting-header {
         margin-bottom: var(--spacing-sm);
-        
+
         .setting-label {
             font-weight: 600;
             color: var(--text-primary);
             font-size: $font-size-md;
-            
+
             .required {
                 color: var(--secondary-accent);
             }
         }
     }
-    
+
     .setting-control {
         .setting-input,
         .setting-textarea {
@@ -266,18 +266,18 @@
             color: var(--text-primary);
             font-size: $font-size-md;
             transition: all $animation-duration $animation-timing;
-            
+
             &:focus {
                 outline: none;
                 border-color: var(--primary-accent);
                 box-shadow: 0 0 0 $focus-ring-width rgba(100, 181, 246, 0.1);
             }
-            
+
             &::placeholder {
                 color: var(--text-muted);
             }
         }
-        
+
         .setting-textarea {
             resize: vertical;
             min-height: 80px;
@@ -293,7 +293,7 @@
         gap: var(--spacing-md);
         justify-content: flex-end;
         margin-top: var(--spacing-lg);
-        
+
         .save-button {
             background: var(--gradient-secondary);
             color: white;
@@ -304,12 +304,12 @@
             font-weight: 600;
             transition: all $animation-duration $animation-timing;
             box-shadow: var(--shadow-light);
-            
+
             &:hover {
                 box-shadow: var(--shadow-medium);
             }
         }
-        
+
         .cancel-button {
             background: transparent;
             color: var(--text-primary);
@@ -319,7 +319,7 @@
             cursor: pointer;
             font-weight: 600;
             transition: all $animation-duration $animation-timing;
-            
+
             &:hover {
                 background: var(--secondary-bg);
                 border-color: var(--primary-accent);
@@ -332,7 +332,7 @@
 .server-info {
     display: grid;
     gap: var(--spacing-md);
-    
+
     .info-item {
         display: flex;
         justify-content: space-between;
@@ -341,13 +341,13 @@
         background: var(--secondary-bg);
         border-radius: var(--border-radius-small);
         border: 1px solid var(--border-primary);
-        
+
         .info-label {
             font-weight: 600;
             color: var(--text-muted);
             font-size: $font-size-sm;
         }
-        
+
         .info-value {
             color: var(--text-primary);
             font-weight: 500;
@@ -359,29 +359,29 @@
 .roles-list {
     display: grid;
     gap: var(--spacing-md);
-    
+
     .role-item {
         padding: var(--spacing-md);
         background: var(--secondary-bg);
         border-radius: var(--border-radius-small);
         border: 1px solid var(--border-primary);
-        
+
         .role-header {
             margin-bottom: var(--spacing-sm);
-            
+
             .role-name {
                 font-size: $font-size-lg;
                 font-weight: 700;
                 color: var(--primary-accent);
                 margin: 0 0 var(--spacing-xs) 0;
             }
-            
+
             .role-description {
                 color: var(--text-secondary);
                 margin: 0;
             }
         }
-        
+
         .role-permissions {
             .permissions-title {
                 font-size: $font-size-sm;
@@ -389,17 +389,17 @@
                 color: var(--text-primary);
                 margin: 0 0 var(--spacing-xs) 0;
             }
-            
+
             .permissions-list {
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                
+
                 .permission-item {
                     color: var(--text-secondary);
                     font-size: $font-size-sm;
                     margin-bottom: var(--spacing-xs);
-                    
+
                     &:last-child {
                         margin-bottom: 0;
                     }
@@ -412,22 +412,22 @@
 // Каналы
 .channel-category {
     margin-bottom: var(--spacing-lg);
-    
+
     &:last-child {
         margin-bottom: 0;
     }
-    
+
     .category-title {
         font-size: $font-size-lg;
         font-weight: 600;
         color: var(--text-primary);
         margin: 0 0 var(--spacing-md) 0;
     }
-    
+
     .channels-list {
         display: grid;
         gap: var(--spacing-sm);
-        
+
         .channel-item {
             display: flex;
             align-items: center;
@@ -436,24 +436,24 @@
             border-radius: var(--border-radius-small);
             border: 1px solid var(--border-primary);
             transition: all $animation-duration $animation-timing;
-            
+
             &:hover {
                 box-shadow: var(--shadow-light);
                 border-color: var(--primary-accent);
             }
-            
+
             .channel-icon {
                 margin-right: var(--spacing-sm);
                 font-size: $font-size-md;
                 color: var(--primary-accent);
             }
-            
+
             .channel-name {
                 flex: 1;
                 font-weight: 500;
                 color: var(--text-primary);
             }
-            
+
             .channel-type {
                 color: var(--text-muted);
                 font-size: $font-size-xs;
@@ -478,33 +478,33 @@
         border: 1px solid rgba(229, 115, 115, 0.3);
         border-radius: var(--border-radius-medium);
         transition: all $animation-duration $animation-timing;
-        
+
         &:hover {
             box-shadow: var(--shadow-medium);
             border-color: rgba(229, 115, 115, 0.5);
         }
-        
+
         .danger-icon {
             font-size: $font-size-xl;
             flex-shrink: 0;
         }
-        
+
         .danger-content {
             flex: 1;
-            
+
             .danger-title {
                 font-size: $font-size-lg;
                 font-weight: 700;
                 color: var(--secondary-accent);
                 margin: 0 0 var(--spacing-sm) 0;
             }
-            
+
             .danger-description {
                 color: var(--text-secondary);
                 margin: 0 0 var(--spacing-md) 0;
                 line-height: 1.5;
             }
-            
+
             .danger-button {
                 background: var(--gradient-secondary);
                 color: white;
@@ -515,7 +515,7 @@
                 font-weight: 600;
                 transition: all $animation-duration $animation-timing;
                 box-shadow: var(--shadow-light);
-                
+
                 &:hover {
                     box-shadow: var(--shadow-medium);
                 }
@@ -525,7 +525,8 @@
 }
 
 // Состояния загрузки и ошибки
-.loading, .error {
+.loading,
+.error {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -559,18 +560,18 @@
 .empty-state {
     text-align: center;
     padding: var(--spacing-2xl);
-    
+
     .empty-icon {
         font-size: $font-size-4xl;
         margin-bottom: var(--spacing-lg);
     }
-    
+
     h4 {
         font-size: $font-size-xl;
         color: var(--text-primary);
         margin: 0 0 var(--spacing-sm) 0;
     }
-    
+
     p {
         color: var(--text-secondary);
         margin: 0;
@@ -581,7 +582,7 @@
 .loading-state {
     text-align: center;
     padding: var(--spacing-xl);
-    
+
     .loading-spinner {
         width: 40px;
         height: 40px;
@@ -591,7 +592,7 @@
         animation: spin 1s linear infinite;
         margin: 0 auto var(--spacing-md);
     }
-    
+
     p {
         color: var(--text-secondary);
         margin: 0;
@@ -600,8 +601,12 @@
 
 // Анимации
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 // Модальное окно
@@ -626,43 +631,43 @@
     border: 1px solid var(--border-primary);
     max-width: 500px;
     width: 90%;
-    
+
     .modal-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: var(--spacing-lg) var(--spacing-xl);
         border-bottom: 1px solid var(--border-primary);
-        
+
         .modal-title {
             font-size: $font-size-xl;
             font-weight: 700;
             color: var(--text-primary);
             margin: 0;
         }
-        
+
         .modal-close {
             background: none;
             border: none;
             font-size: $font-size-2xl;
             color: var(--text-muted);
             cursor: pointer;
-            
+
             &:hover {
                 color: var(--text-primary);
             }
         }
     }
-    
+
     .modal-content {
         padding: var(--spacing-xl);
-        
+
         p {
             color: var(--text-secondary);
             margin: 0 0 var(--spacing-lg) 0;
             line-height: 1.5;
         }
-        
+
         .modal-actions {
             display: flex;
             gap: var(--spacing-md);

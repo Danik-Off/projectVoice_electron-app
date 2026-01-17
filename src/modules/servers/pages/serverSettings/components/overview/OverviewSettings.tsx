@@ -7,7 +7,11 @@ import { serverMembersService } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
 import './OverviewSettings.scss';
 
-const OverviewSettings: React.FC = observer(() => {
+interface OverviewSettingsProps {
+    currentUserPermissions?: string | bigint;
+}
+
+const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
     const { t } = useTranslation();
     const { serverId } = useParams<{ serverId: string }>();
     const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +19,7 @@ const OverviewSettings: React.FC = observer(() => {
     const [stats, setStats] = useState({
         membersCount: 0,
         channelsCount: 0,
-        rolesCount: 0,
+        rolesCount: 0
     });
     const [editForm, setEditForm] = useState({
         name: serverStore.currentServer?.name || '',
@@ -35,11 +39,13 @@ const OverviewSettings: React.FC = observer(() => {
 
     useEffect(() => {
         const loadStats = async () => {
-            if (!serverId) return;
+            if (!serverId) {
+                return;
+            }
             try {
                 // Загружаем участников
                 const members = await serverMembersService.getServerMembers(parseInt(serverId));
-                
+
                 // Загружаем роли
                 const { roleService } = await import('../../../../services/roleService');
                 let rolesCount = 0;
@@ -49,21 +55,23 @@ const OverviewSettings: React.FC = observer(() => {
                 } catch (error) {
                     console.error('Error loading roles:', error);
                 }
-                
+
                 // Загружаем каналы
                 let channelsCount = 0;
                 try {
                     const { channelsStore } = await import('../../../../../../modules/channels');
-                    const channels = channelsStore.channels.filter((ch: { serverId: number }) => ch.serverId === parseInt(serverId));
+                    const channels = channelsStore.channels.filter(
+                        (ch: { serverId: number }) => ch.serverId === parseInt(serverId)
+                    );
                     channelsCount = channels.length;
                 } catch (error) {
                     console.error('Error loading channels:', error);
                 }
-                
+
                 setStats({
                     membersCount: members.length,
                     channelsCount,
-                    rolesCount,
+                    rolesCount
                 });
             } catch (error) {
                 console.error('Error loading stats:', error);
@@ -89,8 +97,10 @@ const OverviewSettings: React.FC = observer(() => {
     };
 
     const handleSave = async () => {
-        if (!serverId || !server) return;
-        
+        if (!serverId || !server) {
+            return;
+        }
+
         if (!editForm.name.trim()) {
             notificationStore.addNotification(
                 t('serverSettings.serverNameRequired') || 'Название сервера обязательно',
@@ -103,7 +113,7 @@ const OverviewSettings: React.FC = observer(() => {
         try {
             await serverStore.updateServer(parseInt(serverId), {
                 name: editForm.name.trim(),
-                description: editForm.description.trim() || undefined,
+                description: editForm.description.trim() || undefined
             });
             setIsEditing(false);
             notificationStore.addNotification(
@@ -122,7 +132,7 @@ const OverviewSettings: React.FC = observer(() => {
     };
 
     const handleInputChange = (field: string, value: string) => {
-        setEditForm(prev => ({
+        setEditForm((prev) => ({
             ...prev,
             [field]: value
         }));
@@ -136,7 +146,7 @@ const OverviewSettings: React.FC = observer(() => {
                     <p>{t('serverSettings.overviewDescription') || 'Основная информация и статистика сервера'}</p>
                 </div>
             </div>
-            
+
             <div className="section-content">
                 {/* Статистика сервера */}
                 <div className="stats-grid">
@@ -167,9 +177,7 @@ const OverviewSettings: React.FC = observer(() => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                📊
-                            </div>
+                            <div className="icon-container">📊</div>
                             <div className="header-text">
                                 <h3>{t('serverSettings.serverInfo')}</h3>
                                 <p>{t('serverSettings.serverInfoDescription')}</p>
@@ -183,7 +191,7 @@ const OverviewSettings: React.FC = observer(() => {
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="card-content">
                         {!isEditing ? (
                             <div className="server-info">
@@ -193,7 +201,9 @@ const OverviewSettings: React.FC = observer(() => {
                                 </div>
                                 <div className="info-item">
                                     <label className="info-label">{t('serverSettings.serverDescription')}</label>
-                                    <span className="info-value">{server?.description || t('serverSettings.noDescription')}</span>
+                                    <span className="info-value">
+                                        {server?.description || t('serverSettings.noDescription')}
+                                    </span>
                                 </div>
                                 <div className="info-item">
                                     <label className="info-label">{t('serverSettings.serverId')}</label>
@@ -221,9 +231,7 @@ const OverviewSettings: React.FC = observer(() => {
 
                                 <div className="setting-group">
                                     <div className="setting-header">
-                                        <label className="setting-label">
-                                            {t('serverSettings.serverDescription')}
-                                        </label>
+                                        <label className="setting-label">{t('serverSettings.serverDescription')}</label>
                                     </div>
                                     <div className="setting-control">
                                         <textarea
@@ -237,22 +245,17 @@ const OverviewSettings: React.FC = observer(() => {
                                 </div>
 
                                 <div className="form-actions">
-                                    <button 
-                                        className="cancel-button" 
-                                        onClick={handleCancel}
-                                        disabled={loading}
-                                    >
+                                    <button className="cancel-button" onClick={handleCancel} disabled={loading}>
                                         {t('common.cancel')}
                                     </button>
-                                    <button 
-                                        className="save-button" 
+                                    <button
+                                        className="save-button"
                                         onClick={handleSave}
                                         disabled={loading || !editForm.name.trim()}
                                     >
-                                        {loading 
-                                            ? (t('common.saving') || 'Сохранение...')
-                                            : (t('common.save') || 'Сохранить')
-                                        }
+                                        {loading
+                                            ? t('common.saving') || 'Сохранение...'
+                                            : t('common.save') || 'Сохранить'}
                                     </button>
                                 </div>
                             </div>

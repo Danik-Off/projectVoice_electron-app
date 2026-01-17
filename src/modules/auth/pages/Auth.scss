@@ -8,8 +8,14 @@
     min-height: 100vh;
     background: var(--primary-bg);
     overflow: hidden;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    
+    font-family:
+        'Inter',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+
     // Фоновый градиент проекта
     &::before {
         content: '';
@@ -46,7 +52,7 @@
     background: var(--ripple-color);
     animation: float 6s ease-in-out infinite;
     backdrop-filter: blur(10px);
-    
+
     &.shape-1 {
         width: $avatar-size-large * 1.7;
         height: $avatar-size-large * 1.7;
@@ -55,7 +61,7 @@
         animation-delay: 0s;
         animation-duration: 8s;
     }
-    
+
     &.shape-2 {
         width: $avatar-size-large * 2.5;
         height: $avatar-size-large * 2.5;
@@ -64,7 +70,7 @@
         animation-delay: 1s;
         animation-duration: 10s;
     }
-    
+
     &.shape-3 {
         width: $avatar-size-large * 1.25;
         height: $avatar-size-large * 1.25;
@@ -73,7 +79,7 @@
         animation-delay: 2s;
         animation-duration: 6s;
     }
-    
+
     &.shape-4 {
         width: $avatar-size-large * 2;
         height: $avatar-size-large * 2;
@@ -82,7 +88,7 @@
         animation-delay: 3s;
         animation-duration: 12s;
     }
-    
+
     &.shape-5 {
         width: $avatar-size;
         height: $avatar-size;
@@ -94,7 +100,8 @@
 }
 
 @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
         transform: translateY(0px) rotate(0deg);
         opacity: 0.7;
     }
@@ -121,7 +128,7 @@
     border: 1px solid var(--border-primary);
     transition: box-shadow $animation-duration ease;
     animation: slideInUp 0.6s ease-out;
-    
+
     &:hover {
         box-shadow: var(--glow-primary);
     }
@@ -149,13 +156,15 @@
     justify-content: center;
     margin-bottom: $spacing-lg;
     animation: fadeInDown 0.8s ease-out;
-    
+
     .logo-icon {
         font-size: $icon-size-xl;
         margin-right: $spacing-md;
-        animation: pulse 2s infinite, bounce 1s ease-in-out 0.5s;
+        animation:
+            pulse 2s infinite,
+            bounce 1s ease-in-out 0.5s;
     }
-    
+
     .logo-text {
         font-size: 28px;
         font-weight: 700;
@@ -191,7 +200,11 @@
 }
 
 @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
         transform: translateY(0);
     }
     40% {
@@ -203,7 +216,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
     }
     50% {
@@ -244,11 +258,11 @@
 
 .auth-form {
     animation: fadeInUp 0.8s ease-out 0.8s both;
-    
+
     .input-group {
         position: relative;
         margin-bottom: $spacing-md;
-        
+
         &:last-of-type {
             margin-bottom: $spacing-lg;
         }
@@ -267,27 +281,27 @@
     font-weight: 500;
     transition: all $animation-duration ease;
     box-sizing: border-box;
-    
+
     &:focus {
         outline: none;
         border-color: var(--primary-accent);
         background: var(--tertiary-bg);
         box-shadow: var(--input-focus-shadow);
     }
-    
+
     &::placeholder {
         color: var(--text-disabled);
         font-weight: 400;
         transition: color $animation-duration ease;
     }
-    
+
     &:focus::placeholder {
         color: var(--primary-accent);
     }
-    
+
     &--error {
         border-color: var(--error-color);
-        
+
         &:focus {
             border-color: var(--error-color);
             box-shadow: 0 0 0 4px rgba(229, 115, 115, 0.2);
@@ -318,16 +332,16 @@
     transition: all $animation-duration ease;
     position: relative;
     overflow: hidden;
-    
+
     &:hover {
         box-shadow: var(--glow-primary);
         transform: translateY(-$hover-translate);
     }
-    
+
     &:active {
         transform: scale($active-scale);
     }
-    
+
     &::before {
         content: '';
         position: absolute;
@@ -338,11 +352,11 @@
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         transition: left 0.5s;
     }
-    
+
     &:hover::before {
         left: 100%;
     }
-    
+
     &:focus {
         outline: none;
         box-shadow: 0 0 0 $focus-ring-width var(--primary-accent);
@@ -358,7 +372,7 @@
     font-size: 14px;
     color: var(--text-secondary);
     margin: 0 0 $spacing-lg 0;
-    
+
     .switch-button {
         background: none;
         border: none;
@@ -370,7 +384,7 @@
         font-size: 14px;
         text-decoration: underline;
         transition: color $animation-duration ease;
-        
+
         &:hover {
             color: var(--secondary-accent);
         }
@@ -399,13 +413,13 @@
     font-size: 14px;
     font-weight: 500;
     transition: all $animation-duration ease;
-    
+
     &:hover {
         background: var(--button-primary-hover);
         border-color: var(--border-secondary);
         transform: translateY(calc(-1 * $hover-translate / 2));
     }
-    
+
     .language-icon,
     .theme-icon {
         font-size: $icon-size-small;
@@ -415,7 +429,7 @@
 .theme-toggle {
     padding: $spacing-md;
     min-width: auto;
-    
+
     .theme-icon {
         font-size: $icon-size;
     }
@@ -443,46 +457,47 @@
     .auth-content {
         padding: $spacing-md;
     }
-    
+
     .auth-card {
         padding: $spacing-xl $spacing-lg;
     }
-    
+
     .logo .logo-text {
         font-size: 24px;
     }
-    
+
     .auth-title {
         font-size: 20px;
     }
-    
+
     .auth-footer-controls {
         flex-direction: column;
         gap: $spacing-md;
     }
-    
+
     .language-toggle,
     .theme-toggle {
         padding: $spacing-sm $spacing-md;
         font-size: 13px;
     }
-    
+
     .shape {
         // Уменьшаем размеры фигур на мобильных
         &.shape-1 {
             width: $avatar-size;
             height: $avatar-size;
         }
-        
+
         &.shape-2 {
             width: $avatar-size-large;
             height: $avatar-size-large;
         }
-        
-        &.shape-3, &.shape-4, &.shape-5 {
+
+        &.shape-3,
+        &.shape-4,
+        &.shape-5 {
             width: $avatar-size-small;
             height: $avatar-size-small;
         }
     }
 }
-

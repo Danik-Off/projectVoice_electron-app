@@ -34,7 +34,7 @@ export class VoiceRoomStore {
         this.setupServerResponseListeners();
         this.setupWebRTCSenders();
         this.setupVoiceActivityListeners();
-        
+
         // Убираем автоматическую инициализацию аудио из конструктора
         // Аудио будет инициализироваться только при подключении к голосовому каналу
         console.log('VoiceRoomStore: Constructor initialized (audio will be initialized on voice channel join)');
@@ -45,30 +45,40 @@ export class VoiceRoomStore {
         if (this.currentVoiceChannel) {
             if (this.currentVoiceChannel.id === roomId) {
                 console.log('VoiceRoomStore: Already connected to this voice channel, just opening interface');
-                notificationStore.addNotification(`Вы уже подключены к голосовому каналу: ${this.currentVoiceChannel.name}`, 'info');
+                notificationStore.addNotification(
+                    `Вы уже подключены к голосовому каналу: ${this.currentVoiceChannel.name}`,
+                    'info'
+                );
                 return;
-            } else {
-                console.log('VoiceRoomStore: Switching from channel', this.currentVoiceChannel.id, 'to channel', roomId);
-                // Отключаемся от текущего канала перед подключением к новому
-                this.disconnectToRoom();
             }
+            console.log(
+                'VoiceRoomStore: Switching from channel',
+                this.currentVoiceChannel.id,
+                'to channel',
+                roomId
+            );
+            // Отключаемся от текущего канала перед подключением к новому
+            this.disconnectToRoom();
         }
-        
-        const token = getCookie('token'); //TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
+
+        const token = getCookie('token'); // TODO отказаться от токена здесь и отправлять его при завпросе на подключение к серверу
         this.socketClient.socketEmit('join-room', roomId, token);
-        
+
         // Инициализируем аудио только при подключении к голосовому каналу
         console.log('VoiceRoomStore: Initializing audio settings for voice channel...');
         audioSettingsStore.initMedia();
-        
+
         // Инициализируем WebRTC и VAS при подключении к голосовому каналу
         console.log('VoiceRoomStore: Initializing WebRTC and VAS for voice call...');
         this.webRTCClient.initializeMedia();
-        
+
         runInAction(() => {
             this.currentVoiceChannel = { id: roomId, name: channelName || `Voice Channel ${roomId}` };
         });
-        notificationStore.addNotification(`Подключились к голосовому каналу: ${channelName || `Voice Channel ${roomId}`}`, 'info');
+        notificationStore.addNotification(
+            `Подключились к голосовому каналу: ${channelName || `Voice Channel ${roomId}`}`,
+            'info'
+        );
     }
     // Проверка, подключен ли пользователь к голосовой комнате
     public isConnectedToVoiceChannel(): boolean {
@@ -83,19 +93,19 @@ export class VoiceRoomStore {
     public disconnectToRoom(): void {
         this.socketClient.socketEmit('leave-room');
         this.webRTCClient.disconect();
-        
+
         // Очищаем аудио ресурсы при отключении от голосового канала
         console.log('VoiceRoomStore: Cleaning up audio resources after voice call...');
         audioSettingsStore.cleanup();
-        
+
         // Очищаем VAS при отключении от голосового канала
         console.log('VoiceRoomStore: Cleaning up VAS after voice call...');
         voiceActivityService.cleanup();
-        
+
         runInAction(() => {
             this.currentVoiceChannel = null;
             // Сбрасываем состояние активности речи для всех участников
-            this.participants.forEach(participant => {
+            this.participants.forEach((participant) => {
                 participant.isSpeaking = false;
             });
         });
@@ -112,12 +122,12 @@ export class VoiceRoomStore {
             console.log('Соединение с Socket.IO установлено');
         });
         this.socketClient.socketOn('created', (room) => {
-            console.log(`Вы подключены `, room);
+            console.log('Вы подключены ', room);
             runInAction(() => {
                 // Исключаем локального пользователя из списка участников
                 // так как он отображается отдельно в UI
-                this.participants = room.participants.filter((participant: Participant) => 
-                    participant.socketId !== this.socketClient.getSocketId()
+                this.participants = room.participants.filter(
+                    (participant: Participant) => participant.socketId !== this.socketClient.getSocketId()
                 );
             });
         });
@@ -135,21 +145,27 @@ export class VoiceRoomStore {
                     });
                 }
             });
-            notificationStore.addNotification(`${user.userData?.username || 'Пользователь'} присоединился к голосовому каналу`, 'info');
+            notificationStore.addNotification(
+                `${user.userData?.username || 'Пользователь'} присоединился к голосовому каналу`,
+                'info'
+            );
         });
         this.socketClient.socketOn('user-disconnected', (socketId: string) => {
             console.log(`Пользователь отключен: ${socketId}`);
-            const disconnectedUser = this.participants.find(user => user.socketId === socketId);
+            const disconnectedUser = this.participants.find((user) => user.socketId === socketId);
             this.webRTCClient.disconnectPeer(socketId);
             runInAction(() => {
                 this.participants = this.participants.filter((user) => user.socketId !== socketId);
             });
             if (disconnectedUser) {
-                notificationStore.addNotification(`${disconnectedUser.userData?.username || 'Пользователь'} покинул голосовой канал`, 'info');
+                notificationStore.addNotification(
+                    `${disconnectedUser.userData?.username || 'Пользователь'} покинул голосовой канал`,
+                    'info'
+                );
             }
         });
         this.socketClient.socketOn('signal', (data) => {
-            console.log(`Сигнал`, data);
+            console.log('Сигнал', data);
             this.webRTCClient.handleSignal(data);
         });
         this.socketClient.socketOn('connect_error', (error) => {
@@ -172,17 +188,17 @@ export class VoiceRoomStore {
     private setupVoiceActivityListeners(): void {
         voiceActivityService.addCallback((event: VoiceActivityEvent) => {
             runInAction(() => {
-                const participant = this.participants.find(p => p.socketId === event.userId);
+                const participant = this.participants.find((p) => p.socketId === event.userId);
                 if (participant) {
                     participant.isSpeaking = event.isActive;
-                } 
+                }
             });
         });
     }
 
     // Получить состояние активности речи для участника
     public getParticipantSpeakingState(socketId: string): boolean {
-        const participant = this.participants.find(p => p.socketId === socketId);
+        const participant = this.participants.find((p) => p.socketId === socketId);
         return participant?.isSpeaking || false;
     }
 
@@ -203,4 +219,3 @@ export class VoiceRoomStore {
 }
 const voiceRoomStore = new VoiceRoomStore();
 export default voiceRoomStore;
-

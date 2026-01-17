@@ -14,17 +14,16 @@ export const authModule: IModule = {
         {
             path: '/auth',
             component: Auth,
-            protected: false,
-        },
+            protected: false
+        }
     ],
     async initialize() {
         console.log('Auth module initialized');
     },
     async destroy() {
         console.log('Auth module destroyed');
-    },
+    }
 };
 
 // Экспорт компонентов для использования в других модулях
 export { ProtectedRoute, AdminRoute };
-

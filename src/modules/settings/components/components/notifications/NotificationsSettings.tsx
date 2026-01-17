@@ -10,21 +10,19 @@ const NotificationsSettings: React.FC = () => {
                 <h2>{t('settingsPage.notifications.title')}</h2>
                 <p>{t('settingsPage.notifications.description')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🔔
-                            </div>
+                            <div className="icon-container">🔔</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.notifications.general.title')}</h3>
                                 <p>{t('settingsPage.notifications.general.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
@@ -41,7 +39,7 @@ const NotificationsSettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.notifications.general.sound')}</span>
@@ -63,16 +61,14 @@ const NotificationsSettings: React.FC = () => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                💬
-                            </div>
+                            <div className="icon-container">💬</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.notifications.chat.title')}</h3>
                                 <p>{t('settingsPage.notifications.chat.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
@@ -89,7 +85,7 @@ const NotificationsSettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.notifications.chat.mentions')}</span>
@@ -105,7 +101,7 @@ const NotificationsSettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.notifications.chat.voiceCalls')}</span>

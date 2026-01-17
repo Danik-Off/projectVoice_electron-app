@@ -134,7 +134,8 @@
 }
 
 // Состояния пустого чата
-.no-messages, .no-channel-selected {
+.no-messages,
+.no-channel-selected {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,7 +144,8 @@
     text-align: center;
     color: var(--text-muted);
 
-    .no-messages-content, .no-channel-content {
+    .no-messages-content,
+    .no-channel-content {
         max-width: 400px;
     }
 
@@ -190,7 +192,8 @@
 }
 
 // Состояние загрузки
-.loading-messages, .loading-more {
+.loading-messages,
+.loading-more {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -261,7 +264,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 10;
     backdrop-filter: blur(10px);
-    
+
     // Адаптация когда активны voice controls
     .with-voice-controls & {
         bottom: 100px; // 20px (обычный отступ) + 80px (высота VoiceControls)
@@ -313,12 +316,17 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes wave {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
     }
     50% {
@@ -327,7 +335,7 @@
 }
 
 // Темная тема
-[data-theme="dark"] {
+[data-theme='dark'] {
     .channel-header {
         background: var(--background-secondary);
         border-bottom-color: var(--border-color);
@@ -336,7 +344,7 @@
     .messages-container {
         &::-webkit-scrollbar-thumb {
             background: var(--background-tertiary);
-            
+
             &:hover {
                 background: var(--border-color);
             }
@@ -345,7 +353,7 @@
 }
 
 // Светлая тема
-[data-theme="light"] {
+[data-theme='light'] {
     .channel-header {
         background: #f8f9fa;
         border-bottom-color: #e9ecef;
@@ -354,10 +362,10 @@
     .messages-container {
         &::-webkit-scrollbar-thumb {
             background: #dee2e6;
-            
+
             &:hover {
                 background: #adb5bd;
             }
         }
     }
-} 
+}

@@ -10,12 +10,12 @@ i18n.use(LanguageDetector) // Автоматическое определени�
     .init({
         resources: {
             en: { translation: enTranslation },
-            ru: { translation: ruTranslation },
+            ru: { translation: ruTranslation }
         },
         fallbackLng: 'ru', // Язык по умолчанию, если нужный перевод не найден
         interpolation: {
-            escapeValue: false, // React уже экранирует значения
-        },
+            escapeValue: false // React уже экранирует значения
+        }
     });
 
 export default i18n;

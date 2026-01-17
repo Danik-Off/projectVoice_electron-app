@@ -19,7 +19,7 @@ const VoiceControl: React.FC = () => {
     };
     const handleVolumeChange = (newVolume: number): void => {
         setVolumeMic(newVolume);
-        //TODO реализовать регулировку громкости микрофона
+        // TODO реализовать регулировку громкости микрофона
     };
     return (
         <div className="voice-control">

@@ -23,7 +23,7 @@ export type Server = {
     icon?: string;
     channels?: Channel[];
     members?: ServerMember[];
-    
+
     // Состояния сервера
     isBlocked?: boolean;
     blockReason?: string;
@@ -33,25 +33,25 @@ export type Server = {
         id: number;
         username: string;
     };
-    
+
     // Новые состояния для VoiceVerse дизайна
     hasNotifications?: boolean;
     notificationCount?: number;
     connectionError?: boolean;
     maintenance?: boolean;
-    
+
     // Метаданные сервера
     memberCount?: number;
     onlineCount?: number;
     lastActivity?: string;
     isPrivate?: boolean;
     isVerified?: boolean;
-    
+
     // Настройки сервера
     allowInvites?: boolean;
     requireVerification?: boolean;
     maxMembers?: number;
-    
+
     // Статистика
     messageCount?: number;
     voiceChannelCount?: number;

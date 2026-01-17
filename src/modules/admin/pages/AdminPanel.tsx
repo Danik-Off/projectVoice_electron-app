@@ -85,7 +85,9 @@ const BlockServerModal: React.FC<BlockServerModalProps> = ({ isOpen, onClose, on
         onClose();
     };
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="modal-overlay">
@@ -279,44 +281,37 @@ const AdminPanel: React.FC = observer(() => {
         };
 
         return (
-            <span 
-                className="role-badge"
-                style={{ background: roleColors[role as keyof typeof roleColors] }}
-            >
+            <span className="role-badge" style={{ background: roleColors[role as keyof typeof roleColors] }}>
                 {role}
             </span>
         );
     };
 
-    const getStatusBadge = (isActive: boolean) => {
-        return (
-            <span 
+    const getStatusBadge = (isActive: boolean) => (
+            <span
                 className={`status-badge ${isActive ? 'active' : 'blocked'}`}
                 style={{
-                    background: isActive 
+                    background: isActive
                         ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
                         : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
                 }}
             >
                 {isActive ? 'Активен' : 'Заблокирован'}
             </span>
-        );
-    };
+    );
 
-    const getServerStatusBadge = (isBlocked: boolean) => {
-        return (
-            <span 
+    const getServerStatusBadge = (isBlocked: boolean) => (
+            <span
                 className={`status-badge ${isBlocked ? 'blocked' : 'active'}`}
                 style={{
-                    background: isBlocked 
+                    background: isBlocked
                         ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
                         : 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
                 }}
             >
                 {isBlocked ? 'Заблокирован' : 'Активен'}
             </span>
-        );
-    };
+    );
 
     if (loading) {
         return (
@@ -342,28 +337,16 @@ const AdminPanel: React.FC = observer(() => {
             </div>
 
             <div className="admin-nav">
-                <button 
-                    className={activeTab === 'dashboard' ? 'active' : ''}
-                    onClick={() => setActiveTab('dashboard')}
-                >
+                <button className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>
                     📊 Дашборд
                 </button>
-                <button 
-                    className={activeTab === 'users' ? 'active' : ''}
-                    onClick={() => setActiveTab('users')}
-                >
+                <button className={activeTab === 'users' ? 'active' : ''} onClick={() => setActiveTab('users')}>
                     👥 Пользователи
                 </button>
-                <button 
-                    className={activeTab === 'servers' ? 'active' : ''}
-                    onClick={() => setActiveTab('servers')}
-                >
+                <button className={activeTab === 'servers' ? 'active' : ''} onClick={() => setActiveTab('servers')}>
                     🏠 Серверы
                 </button>
-                <button 
-                    className={activeTab === 'logs' ? 'active' : ''}
-                    onClick={() => setActiveTab('logs')}
-                >
+                <button className={activeTab === 'logs' ? 'active' : ''} onClick={() => setActiveTab('logs')}>
                     📝 Логи
                 </button>
             </div>
@@ -423,15 +406,9 @@ const AdminPanel: React.FC = observer(() => {
                         <div className="quick-actions">
                             <h3>⚡ Быстрые действия</h3>
                             <div className="action-buttons">
-                                <button onClick={() => setActiveTab('users')}>
-                                    👥 Управление пользователями
-                                </button>
-                                <button onClick={() => setActiveTab('servers')}>
-                                    🏠 Просмотр серверов
-                                </button>
-                                <button onClick={loadStats}>
-                                    🔄 Обновить статистику
-                                </button>
+                                <button onClick={() => setActiveTab('users')}>👥 Управление пользователями</button>
+                                <button onClick={() => setActiveTab('servers')}>🏠 Просмотр серверов</button>
+                                <button onClick={loadStats}>🔄 Обновить статистику</button>
                             </div>
                         </div>
                     </div>
@@ -440,7 +417,7 @@ const AdminPanel: React.FC = observer(() => {
                 {activeTab === 'users' && (
                     <div className="users-management">
                         <h2>👥 Управление пользователями</h2>
-                        <UsersManagement 
+                        <UsersManagement
                             users={users}
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -462,7 +439,7 @@ const AdminPanel: React.FC = observer(() => {
                 {activeTab === 'servers' && (
                     <div className="servers-management">
                         <h2>🏠 Управление серверами</h2>
-                        <ServersManagement 
+                        <ServersManagement
                             servers={servers}
                             currentPage={currentPage}
                             totalPages={totalPages}
@@ -513,12 +490,12 @@ const UsersManagement: React.FC<{
     onDeleteUser: (userId: number) => void;
     getRoleBadge: (role: string) => JSX.Element;
     getStatusBadge: (isActive: boolean) => JSX.Element;
-}> = ({ 
-    users, 
-    currentPage, 
-    totalPages, 
-    searchTerm, 
-    roleFilter, 
+}> = ({
+    users,
+    currentPage,
+    totalPages,
+    searchTerm,
+    roleFilter,
     statusFilter,
     onSearchChange,
     onRoleFilterChange,
@@ -528,8 +505,7 @@ const UsersManagement: React.FC<{
     onDeleteUser,
     getRoleBadge,
     getStatusBadge
-}) => {
-    return (
+}) => (
         <>
             <div className="filters">
                 <input
@@ -588,10 +564,7 @@ const UsersManagement: React.FC<{
                                     >
                                         {user.isActive ? '🚫 Заблокировать' : '✅ Разблокировать'}
                                     </button>
-                                    <button
-                                        onClick={() => onDeleteUser(user.id)}
-                                        className="delete-btn"
-                                    >
+                                    <button onClick={() => onDeleteUser(user.id)} className="delete-btn">
                                         🗑️ Удалить
                                     </button>
                                 </td>
@@ -602,23 +575,18 @@ const UsersManagement: React.FC<{
             </div>
 
             <div className="pagination">
-                <button 
-                    onClick={() => onPageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                     Предыдущая
+                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+                    Предыдущая
                 </button>
-                <span>Страница {currentPage} из {totalPages}</span>
-                <button 
-                    onClick={() => onPageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
+                <span>
+                    Страница {currentPage} из {totalPages}
+                </span>
+                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
                     Следующая →
                 </button>
             </div>
         </>
-    );
-};
+);
 
 // Компонент управления серверами
 const ServersManagement: React.FC<{
@@ -634,11 +602,11 @@ const ServersManagement: React.FC<{
     onUnblockServer: (serverId: number) => void;
     onDeleteServer: (serverId: number) => void;
     getServerStatusBadge: (isBlocked: boolean) => JSX.Element;
-}> = ({ 
-    servers, 
-    currentPage, 
-    totalPages, 
-    searchTerm, 
+}> = ({
+    servers,
+    currentPage,
+    totalPages,
+    searchTerm,
     statusFilter,
     onSearchChange,
     onStatusFilterChange,
@@ -647,8 +615,7 @@ const ServersManagement: React.FC<{
     onUnblockServer,
     onDeleteServer,
     getServerStatusBadge
-}) => {
-    return (
+}) => (
         <>
             <div className="filters">
                 <input
@@ -666,81 +633,72 @@ const ServersManagement: React.FC<{
 
             <div className="table-container">
                 <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Название</th>
-                        <th>Описание</th>
-                        <th>Владелец</th>
-                        <th>Каналов</th>
-                        <th>Участников</th>
-                        <th>Дата создания</th>
-                        <th>Статус</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {servers.map((server) => (
-                        <tr key={server.id}>
-                            <td>{server.id}</td>
-                            <td>{server.name}</td>
-                            <td>{server.description || 'Нет описания'}</td>
-                            <td>{server.ownerId}</td>
-                            <td>{server.channels?.length || 0}</td>
-                            <td>{server.memberCount || 0}</td>
-                            <td>{new Date(server.createdAt).toLocaleDateString()}</td>
-                            <td>{getServerStatusBadge(server.isBlocked)}</td>
-                            <td>
-                                {server.isBlocked ? (
-                                    <button
-                                        onClick={() => onUnblockServer(server.id)}
-                                        className="unblock-btn"
-                                    >
-                                        ✅ Разблокировать
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => onBlockServer(server.id, server.name)}
-                                        className="block-btn"
-                                    >
-                                        🚫 Заблокировать
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => onDeleteServer(server.id)}
-                                    className="delete-btn"
-                                >
-                                    🗑️ Удалить
-                                </button>
-                            </td>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Название</th>
+                            <th>Описание</th>
+                            <th>Владелец</th>
+                            <th>Каналов</th>
+                            <th>Участников</th>
+                            <th>Дата создания</th>
+                            <th>Статус</th>
+                            <th>Действия</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {servers.map((server) => (
+                            <tr key={server.id}>
+                                <td>{server.id}</td>
+                                <td>{server.name}</td>
+                                <td>{server.description || 'Нет описания'}</td>
+                                <td>{server.ownerId}</td>
+                                <td>{server.channels?.length || 0}</td>
+                                <td>{server.memberCount || 0}</td>
+                                <td>{new Date(server.createdAt).toLocaleDateString()}</td>
+                                <td>{getServerStatusBadge(server.isBlocked)}</td>
+                                <td>
+                                    {server.isBlocked ? (
+                                        <button onClick={() => onUnblockServer(server.id)} className="unblock-btn">
+                                            ✅ Разблокировать
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={() => onBlockServer(server.id, server.name)}
+                                            className="block-btn"
+                                        >
+                                            🚫 Заблокировать
+                                        </button>
+                                    )}
+                                    <button onClick={() => onDeleteServer(server.id)} className="delete-btn">
+                                        🗑️ Удалить
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
-        <div className="pagination">
-            <button 
-                onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-            >
-                 Предыдущая
-            </button>
-            <span>Страница {currentPage} из {totalPages}</span>
-            <button 
-                onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-            >
-                Следующая →
-            </button>
-        </div>
+            <div className="pagination">
+                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+                    Предыдущая
+                </button>
+                <span>
+                    Страница {currentPage} из {totalPages}
+                </span>
+                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                    Следующая →
+                </button>
+            </div>
         </>
-    );
-};
+);
 
 // Компонент просмотра логов
 const LogsViewer: React.FC<{ logs: LogsResponse }> = ({ logs }) => {
-    if (!logs) return <div>Загрузка логов...</div>;
+    if (!logs) {
+        return <div>Загрузка логов...</div>;
+    }
 
     return (
         <div className="logs-content">
@@ -760,4 +718,4 @@ const LogsViewer: React.FC<{ logs: LogsResponse }> = ({ logs }) => {
     );
 };
 
-export default AdminPanel; 
+export default AdminPanel;

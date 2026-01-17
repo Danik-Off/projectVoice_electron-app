@@ -35,4 +35,4 @@ export interface MessageFilters {
     page?: number;
     limit?: number;
     channelId: number;
-} 
+}

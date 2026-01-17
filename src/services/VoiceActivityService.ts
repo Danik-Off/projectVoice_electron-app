@@ -14,7 +14,7 @@ class VoiceActivityService {
     private animationFrames: Map<string, number> = new Map();
     private isActive: Map<string, boolean> = new Map();
     private volumes: Map<string, number> = new Map();
-    
+
     public config = {
         localThreshold: 1300, // Порог громкости для локального пользователя
         remoteThreshold: 1000, // Порог громкости для удаленных пользователей
@@ -46,7 +46,7 @@ class VoiceActivityService {
     });
 
     private notifyCallbacks(event: VoiceActivityEvent): void {
-        this.callbacks.forEach(callback => {
+        this.callbacks.forEach((callback) => {
             try {
                 callback(event);
             } catch (error) {
@@ -57,7 +57,7 @@ class VoiceActivityService {
 
     public startMonitoring = action((userId: string, audioStream: MediaStream): void => {
         console.log(`VoiceActivityService: Starting monitoring for user: ${userId}`);
-        
+
         if (!this.audioContext) {
             console.error('VoiceActivityService: AudioContext not initialized');
             return;
@@ -75,18 +75,18 @@ class VoiceActivityService {
             const analyser = this.audioContext.createAnalyser();
             analyser.fftSize = 256;
             analyser.smoothingTimeConstant = 0.8;
-            
+
             source.connect(analyser);
-            
+
             const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
+
             this.analysers.set(userId, analyser);
             this.dataArrays.set(userId, dataArray);
             this.isActive.set(userId, false);
             this.volumes.set(userId, 0);
-            
+
             this.monitorUser(userId);
-            
+
             console.log(`VoiceActivityService: Monitoring started for user: ${userId}`);
         } catch (error) {
             console.error(`VoiceActivityService: Error starting monitoring for user ${userId}:`, error);
@@ -104,32 +104,32 @@ class VoiceActivityService {
         this.dataArrays.delete(userId);
         this.isActive.delete(userId);
         this.volumes.delete(userId);
-        
+
         console.log(`VoiceActivityService: Monitoring stopped for user: ${userId}`);
     });
 
     private monitorUser(userId: string): void {
         const analyser = this.analysers.get(userId);
         const dataArray = this.dataArrays.get(userId);
-        
+
         if (!analyser || !dataArray) {
             return;
         }
 
         const animate = () => {
             analyser.getByteFrequencyData(dataArray);
-            
+
             const volume = this.calculateVolume(dataArray);
             const smoothedVolume = this.smoothVolume(userId, volume);
-            
+
             // Используем разные пороги для локального и удаленных пользователей
             const threshold = userId === 'local' ? this.config.localThreshold : this.config.remoteThreshold;
             const isCurrentlyActive = smoothedVolume > threshold;
             const wasActive = this.isActive.get(userId) || false;
-            
+
             // Обертываем изменения observable значений в action
             this.updateUserState(userId, smoothedVolume, isCurrentlyActive);
-            
+
             if (isCurrentlyActive !== wasActive) {
                 const event: VoiceActivityEvent = {
                     userId,
@@ -137,10 +137,10 @@ class VoiceActivityService {
                     volume: smoothedVolume,
                     timestamp: Date.now()
                 };
-                
+
                 this.notifyCallbacks(event);
             }
-            
+
             const frameId = requestAnimationFrame(animate);
             this.updateAnimationFrame(userId, frameId);
         };
@@ -184,19 +184,19 @@ class VoiceActivityService {
         this.analysers.forEach((_, userId) => {
             this.stopMonitoring(userId);
         });
-        
+
         this.analysers.clear();
         this.dataArrays.clear();
         this.isActive.clear();
         this.volumes.clear();
         this.animationFrames.clear();
         this.callbacks = [];
-        
+
         if (this.audioContext) {
             this.audioContext.close();
             this.audioContext = null;
         }
-        
+
         console.log('VoiceActivityService: Cleaned up');
     });
 }

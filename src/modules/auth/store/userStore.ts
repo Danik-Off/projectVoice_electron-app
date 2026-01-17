@@ -1,68 +1,69 @@
-import { makeAutoObservable } from 'mobx';
-import { getToken } from '../../../shared/utils/storage';
-import { userService } from '../services/userService';
-import type { User } from '../../../types/user';
+/**
+ * UserStore - легковесная обертка над authStore для обратной совместимости
+ * Использует authStore из core вместо дублирования логики
+ *
+ * @deprecated Используйте authStore напрямую из core
+ */
+import { authStore } from '../../../core';
 
 class UserStore {
-    isAuthenticated = false;
-    currentUser: User | null = null;
-    token: string | null = null;
-
-    constructor() {
-        makeAutoObservable(this);
-        // Проверка наличия токена в localStorage при инициализации
-        this.token = getToken();
-        this.isAuthenticated = this.token !== null;
-    }
-
+    /**
+     * Получить данные пользователя
+     * @deprecated Используйте authStore.user напрямую
+     */
     async get(id: number | null) {
-        try {
-            if (this.isAuthenticated && this.token) {
-                const user = await userService.get(id);
-
-                if (user) {
-                    this.currentUser = user;
-                } else {
-                    console.warn('User not found');
-                }
-            } else {
-                console.warn('Not authenticated');
-            }
-        } catch (error) {
-            console.error('Failed to fetch user data', error);
+        // Если запрашивается текущий пользователь, используем authStore
+        if (id === null || (authStore.user && id === authStore.user.id)) {
+            // Обновляем данные пользователя из сервера
+            await authStore.loadUserData();
+            return authStore.user;
         }
+
+        // Для других пользователей можно добавить отдельный метод в authStore
+        // Пока возвращаем null, так как это не основная функциональность
+        console.warn('Getting other users is not supported. Use authStore.user for current user.');
+        return null;
     }
 
-    async updateProfile(profileData: { username: string; email: string }) {
-        try {
-            if (this.isAuthenticated && this.token && this.currentUser) {
-                const updatedUser = await userService.updateProfile(this.currentUser.id, profileData);
-                
-                if (updatedUser) {
-                    this.currentUser = { ...this.currentUser, ...updatedUser };
-                    return true;
-                }
-            }
-            return false;
-        } catch (error) {
-            console.error('Failed to update profile', error);
-            throw error;
-        }
+    /**
+     * Обновление профиля пользователя
+     * Делегирует вызов в authStore
+     */
+    async updateProfile(profileData: { username: string; email: string }): Promise<boolean> {
+        return await authStore.updateProfile(profileData);
     }
 
-    async changePassword(oldPassword: string, newPassword: string) {
-        try {
-            if (this.isAuthenticated && this.token && this.currentUser) {
-                const success = await userService.changePassword(this.currentUser.id, oldPassword, newPassword);
-                return success;
-            }
-            return false;
-        } catch (error) {
-            console.error('Failed to change password', error);
-            throw error;
-        }
+    /**
+     * Изменение пароля пользователя
+     * Делегирует вызов в authStore
+     */
+    async changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+        return await authStore.changePassword(oldPassword, newPassword);
+    }
+
+    /**
+     * Получить текущего пользователя
+     * @deprecated Используйте authStore.user напрямую
+     */
+    get currentUser() {
+        return authStore.user;
+    }
+
+    /**
+     * Проверка авторизации
+     * @deprecated Используйте authStore.isAuthenticated напрямую
+     */
+    get isAuthenticated() {
+        return authStore.isAuthenticated;
+    }
+
+    /**
+     * Получить токен
+     * @deprecated Используйте authStore.getToken() напрямую
+     */
+    get token() {
+        return authStore.getToken();
     }
 }
 
 export const userStore = new UserStore();
-

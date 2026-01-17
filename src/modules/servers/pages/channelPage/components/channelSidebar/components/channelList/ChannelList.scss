@@ -10,7 +10,7 @@
     flex-direction: column;
     gap: $spacing-sm;
     transition: all $animation-duration $animation-timing;
-    
+
     // Адаптация когда активны voice controls
     .with-voice-controls & {
         padding-bottom: $spacing-lg; // Дополнительный отступ снизу
@@ -306,7 +306,8 @@
 
 // Анимации
 @keyframes channelPulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.7;
     }
     50% {
@@ -325,7 +326,7 @@
 .channel-list__item.voice-channel.connected {
     background: $voice-active;
     color: $warning-accent;
-    
+
     &::before {
         background: $warning-accent;
         animation: channelPulse 2s ease-in-out infinite;

@@ -17,4 +17,3 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = observer(({ children }) =>
 });
 
 export default ProtectedRoute;
-

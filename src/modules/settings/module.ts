@@ -13,14 +13,13 @@ export const settingsModule: IModule = {
         {
             path: 'settings',
             component: Settings,
-            protected: true,
-        },
+            protected: true
+        }
     ],
     async initialize() {
         console.log('Settings module initialized');
     },
     async destroy() {
         console.log('Settings module destroyed');
-    },
+    }
 };
-

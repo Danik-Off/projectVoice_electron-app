@@ -9,7 +9,11 @@ interface Integration {
     type: string;
 }
 
-const IntegrationsSettings: React.FC = observer(() => {
+interface IntegrationsSettingsProps {
+    currentUserPermissions?: string | bigint;
+}
+
+const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = observer(() => {
     const { t } = useTranslation();
     const [integrations] = useState<Integration[]>([]);
 
@@ -18,7 +22,9 @@ const IntegrationsSettings: React.FC = observer(() => {
             <div className="section-header">
                 <div className="header-content">
                     <h2>{t('serverSettings.integrations') || 'Интеграции'}</h2>
-                    <p>{t('serverSettings.integrationsDescription') || 'Управление внешними интеграциями и вебхуками'}</p>
+                    <p>
+                        {t('serverSettings.integrationsDescription') || 'Управление внешними интеграциями и вебхуками'}
+                    </p>
                 </div>
             </div>
 
@@ -29,7 +35,10 @@ const IntegrationsSettings: React.FC = observer(() => {
                             <div className="icon-container">🔗</div>
                             <div className="header-text">
                                 <h3>{t('serverSettings.integrations.webhooks') || 'Вебхуки'}</h3>
-                                <p>{t('serverSettings.integrations.webhooksDesc') || 'Создавайте вебхуки для автоматизации'}</p>
+                                <p>
+                                    {t('serverSettings.integrations.webhooksDesc') ||
+                                        'Создавайте вебхуки для автоматизации'}
+                                </p>
                             </div>
                         </div>
                         <button className="add-button">
@@ -42,13 +51,12 @@ const IntegrationsSettings: React.FC = observer(() => {
                                 <div className="empty-icon">🔗</div>
                                 <p>{t('serverSettings.integrations.noWebhooks') || 'Вебхуки не найдены'}</p>
                                 <p className="empty-description">
-                                    {t('serverSettings.integrations.noWebhooksDesc') || 'Создайте вебхук для отправки сообщений на внешние сервисы'}
+                                    {t('serverSettings.integrations.noWebhooksDesc') ||
+                                        'Создайте вебхук для отправки сообщений на внешние сервисы'}
                                 </p>
                             </div>
                         ) : (
-                            <div className="integrations-list">
-                                {/* Список интеграций будет здесь */}
-                            </div>
+                            <div className="integrations-list">{/* Список интеграций будет здесь */}</div>
                         )}
                     </div>
                 </div>
@@ -68,7 +76,8 @@ const IntegrationsSettings: React.FC = observer(() => {
                             <div className="empty-icon">🤖</div>
                             <p>{t('serverSettings.integrations.noBots') || 'Боты не найдены'}</p>
                             <p className="empty-description">
-                                {t('serverSettings.integrations.noBotsDesc') || 'Добавьте ботов для расширения функциональности сервера'}
+                                {t('serverSettings.integrations.noBotsDesc') ||
+                                    'Добавьте ботов для расширения функциональности сервера'}
                             </p>
                         </div>
                     </div>
@@ -78,7 +87,10 @@ const IntegrationsSettings: React.FC = observer(() => {
                     <div className="info-icon">ℹ️</div>
                     <div className="info-content">
                         <h4>{t('serverSettings.integrations.infoTitle') || 'О интеграциях'}</h4>
-                        <p>{t('serverSettings.integrations.infoDesc') || 'Интеграции позволяют подключать внешние сервисы к вашему серверу для автоматизации и расширения функциональности.'}</p>
+                        <p>
+                            {t('serverSettings.integrations.infoDesc') ||
+                                'Интеграции позволяют подключать внешние сервисы к вашему серверу для автоматизации и расширения функциональности.'}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -87,4 +99,3 @@ const IntegrationsSettings: React.FC = observer(() => {
 });
 
 export default IntegrationsSettings;
-

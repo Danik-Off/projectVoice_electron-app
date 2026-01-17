@@ -1,0 +1,60 @@
+@use '../../../../../../../../styles/main' as *;
+
+.member-filters {
+    &__row {
+        display: flex;
+        align-items: center;
+        gap: $spacing-lg;
+        flex-wrap: wrap;
+    }
+
+    &__group {
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+    }
+
+    &__label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+
+    &__select {
+        padding: $spacing-sm $spacing-md;
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: $border-radius-small;
+        color: var(--text-primary);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all $animation-duration $animation-timing;
+
+        &:focus {
+            outline: none;
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
+        }
+    }
+
+    &__count {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: $spacing-xs;
+        padding: $spacing-sm $spacing-md;
+        background: var(--tertiary-bg);
+        border-radius: $border-radius-small;
+    }
+
+    &__count-number {
+        font-weight: 600;
+        color: var(--primary-accent);
+        font-size: 14px;
+    }
+
+    &__count-total {
+        color: var(--text-secondary);
+        font-size: 12px;
+    }
+}

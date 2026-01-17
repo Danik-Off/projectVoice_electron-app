@@ -117,21 +117,21 @@
 .modal__content {
     padding: var(--spacing-xl);
     overflow-y: auto;
-    
+
     // Кастомный скроллбар
     &::-webkit-scrollbar {
         width: $scrollbar-width;
     }
-    
+
     &::-webkit-scrollbar-track {
         background: var(--scrollbar-track);
         border-radius: var(--border-radius-small);
     }
-    
+
     &::-webkit-scrollbar-thumb {
         background: var(--scrollbar-thumb);
         border-radius: var(--border-radius-small);
-        
+
         &:hover {
             background: var(--scrollbar-thumb-hover);
         }

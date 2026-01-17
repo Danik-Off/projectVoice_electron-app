@@ -8,22 +8,22 @@ export const channelService = {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Content-Type': 'application/json'
+            }
         });
         return response;
     },
     // Получение списка каналов по ID сервера
     getByServer: async (serverId: number) => {
         const data = await apiClient(`/servers/${serverId}/channels`, {
-            method: 'GET',
+            method: 'GET'
         });
         return data;
     },
     // Получение канала по ID
     getById: async (serverId: number, channelId: number) => {
         const data = await apiClient(`/servers/${serverId}/channels/${channelId}`, {
-            method: 'GET',
+            method: 'GET'
         });
         return data;
     },
@@ -33,17 +33,16 @@ export const channelService = {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Content-Type': 'application/json'
+            }
         });
         return response;
     },
     // Удаление канала
     delete: async (serverId: number, channelId: number) => {
         const response = await apiClient(`/servers/${serverId}/channels/${channelId}`, {
-            method: 'DELETE',
+            method: 'DELETE'
         });
         return response;
-    },
+    }
 };
-

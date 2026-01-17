@@ -2,7 +2,9 @@
 export const getCookie = (name: string): string | null => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+    if (parts.length === 2) {
+        return parts.pop()?.split(';').shift() || null;
+    }
     return null;
 };
 // Метод для установки cookie
@@ -15,7 +17,7 @@ export const setCookie = (name: string, value: string, days: number): void => {
     }
     // Сохранение cookie с путём и SameSite для безопасности
     document.cookie = `${name}=${value || ''}${expires}; path=/; SameSite=Lax`;
-    
+
     // Проверка, что cookie действительно установлен
     const savedValue = getCookie(name);
     if (savedValue !== value) {

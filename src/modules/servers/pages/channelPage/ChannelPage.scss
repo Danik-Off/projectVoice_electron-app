@@ -20,7 +20,6 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-
     // Анимация появления VoiceControls
     .voice-controls {
         animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -61,7 +60,7 @@
             .channel-content {
                 height: 100%;
                 overflow: hidden;
-                
+
                 // Outlet (основной контент) должен учитывать высоту voice-controls
                 > *:first-child {
                     height: calc(100vh - 80px);
@@ -74,14 +73,14 @@
 }
 
 // Темная тема
-[data-theme="dark"] {
+[data-theme='dark'] {
     .channel-page {
         background: var(--background-primary);
     }
 }
 
 // Светлая тема
-[data-theme="light"] {
+[data-theme='light'] {
     .channel-page {
         background: var(--background-primary);
     }

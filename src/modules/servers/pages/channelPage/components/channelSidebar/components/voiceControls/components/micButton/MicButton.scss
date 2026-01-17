@@ -12,16 +12,16 @@
     transition: background-color 0.3s ease;
 
     &.active {
-        background-color: #3ba55c;  
+        background-color: #3ba55c;
         &:hover {
-            background-color: #4cae73;  // Немного темнее при наведении
+            background-color: #4cae73; // Немного темнее при наведении
         }
     }
 
     &.inactive {
-        background-color: #40444b;  
+        background-color: #40444b;
         &:hover {
-            background-color: #2f3136;  // Немного темнее при наведении
+            background-color: #2f3136; // Немного темнее при наведении
         }
     }
 
@@ -32,11 +32,11 @@
         transition: fill 0.3s ease;
 
         &.active {
-            fill: #fff;  // Белый цвет для активного состояния
+            fill: #fff; // Белый цвет для активного состояния
         }
 
         &.inactive {
-            fill: #b9bbbe;  // Серый цвет для неактивного состояния
+            fill: #b9bbbe; // Серый цвет для неактивного состояния
         }
     }
 
@@ -45,6 +45,6 @@
     }
 
     &:hover svg {
-        fill: #fff;  // Иконка становится белой при наведении
+        fill: #fff; // Иконка становится белой при наведении
     }
 }

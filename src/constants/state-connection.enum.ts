@@ -7,5 +7,4 @@ export const RTCConnectionState = {
     CLOSED: 'closed'
 } as const;
 
-export type RTCConnectionState = typeof RTCConnectionState[keyof typeof RTCConnectionState];
-
+export type RTCConnectionState = (typeof RTCConnectionState)[keyof typeof RTCConnectionState];

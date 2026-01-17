@@ -51,13 +51,12 @@ const Modal: React.FC<ModalProps> = ({
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+        return null;
+    }
 
     return (
-        <div 
-            className={`modal-overlay ${className}`}
-            onClick={handleOverlayClick}
-        >
+        <div className={`modal-overlay ${className}`} onClick={handleOverlayClick}>
             <div className={`modal modal--${size}`}>
                 <div className="modal__header">
                     <div className="modal__title">
@@ -65,18 +64,12 @@ const Modal: React.FC<ModalProps> = ({
                         <h2>{title}</h2>
                     </div>
                     {showCloseButton && (
-                        <button 
-                            className="modal__close-button"
-                            onClick={onClose}
-                            aria-label="Закрыть модальное окно"
-                        >
+                        <button className="modal__close-button" onClick={onClose} aria-label="Закрыть модальное окно">
                             <span className="modal__close-icon">×</span>
                         </button>
                     )}
                 </div>
-                <div className="modal__content">
-                    {children}
-                </div>
+                <div className="modal__content">{children}</div>
             </div>
         </div>
     );

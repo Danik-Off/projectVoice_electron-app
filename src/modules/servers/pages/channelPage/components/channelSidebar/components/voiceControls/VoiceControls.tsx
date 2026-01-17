@@ -10,12 +10,11 @@ import { audioSettingsStore } from '../../../../../../../../core';
 import participantVolumeStore from '../../../../../../../voice/store/ParticipantVolumeStore';
 import voiceRoomStore from '../../../../../../../voice/store/roomStore';
 
-
 const VoiceControls: React.FC = observer(() => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { serverId } = useParams<{ serverId: string }>();
-    
+
     // Убираем локальные состояния, используем данные из store
     const [showVolumeSlider] = useState<boolean>(false);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -26,16 +25,16 @@ const VoiceControls: React.FC = observer(() => {
     const currentVoiceChannel = voiceRoomStore.currentVoiceChannel;
     const participants = voiceRoomStore.participants;
     const isLocalSpeaking = voiceRoomStore.getLocalSpeakingState();
-    
+
     // Фильтруем участников, исключая текущего пользователя
-    const otherParticipants = participants.filter((participant: Participant) => 
-        participant.userData?.id !== currentUser?.id
+    const otherParticipants = participants.filter(
+        (participant: Participant) => participant.userData?.id !== currentUser?.id
     );
 
     const handleMicToggle = (): void => {
         audioSettingsStore.toggleMicrophoneMute();
         notificationStore.addNotification(
-            audioSettingsStore.isMicrophoneMuted ? t('voiceControls.micOff') : t('voiceControls.micOn'), 
+            audioSettingsStore.isMicrophoneMuted ? t('voiceControls.micOff') : t('voiceControls.micOn'),
             'info'
         );
     };
@@ -43,7 +42,7 @@ const VoiceControls: React.FC = observer(() => {
     const handleDeafenToggle = (): void => {
         audioSettingsStore.toggleSpeakerMute();
         notificationStore.addNotification(
-            audioSettingsStore.isSpeakerMuted ? t('voiceControls.deafenOn') : t('voiceControls.deafenOff'), 
+            audioSettingsStore.isSpeakerMuted ? t('voiceControls.deafenOn') : t('voiceControls.deafenOff'),
             'info'
         );
     };
@@ -51,7 +50,7 @@ const VoiceControls: React.FC = observer(() => {
     const handleDisconnect = (): void => {
         voiceRoomStore.disconnectToRoom();
         notificationStore.addNotification(t('voiceControls.disconnect'), 'info');
-        
+
         // Переходим на страницу сервера без голосовой комнаты
         if (serverId) {
             navigate(`/server/${serverId}`);
@@ -81,7 +80,9 @@ const VoiceControls: React.FC = observer(() => {
                         <div className="voice-controls__channel-icon">🔊</div>
                         <div className="voice-controls__channel-details">
                             <span className="voice-controls__channel-name">{currentVoiceChannel.name}</span>
-                            <span className="voice-controls__participant-count">{participants.length + 1} {t('voiceControls.participants')}</span>
+                            <span className="voice-controls__participant-count">
+                                {participants.length + 1} {t('voiceControls.participants')}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -98,47 +99,60 @@ const VoiceControls: React.FC = observer(() => {
                         )}
                         <div className="voice-controls__user-details">
                             <span className="voice-controls__username">{currentUser?.username || 'User'}</span>
-                            <span className={`voice-controls__status ${isLocalSpeaking ? 'voice-controls__status--speaking' : ''}`}>
-                                {isLocalSpeaking ? 'Говорит' : (audioSettingsStore.isMicrophoneMuted ? 'Микрофон выключен' : 'Молчит')}
+                            <span
+                                className={`voice-controls__status ${isLocalSpeaking ? 'voice-controls__status--speaking' : ''}`}
+                            >
+                                {isLocalSpeaking
+                                    ? 'Говорит'
+                                    : audioSettingsStore.isMicrophoneMuted
+                                        ? 'Микрофон выключен'
+                                        : 'Молчит'}
                             </span>
                         </div>
                     </div>
 
                     <div className="voice-controls__controls">
-                        <button 
+                        <button
                             className={`voice-controls__button ${audioSettingsStore.isMicrophoneMuted ? 'voice-controls__button--muted' : ''}`}
                             onClick={handleMicToggle}
-                            title={audioSettingsStore.isMicrophoneMuted ? t('voiceControls.micOn') : t('voiceControls.micOff')}
+                            title={
+                                audioSettingsStore.isMicrophoneMuted
+                                    ? t('voiceControls.micOn')
+                                    : t('voiceControls.micOff')
+                            }
                         >
                             {audioSettingsStore.isMicrophoneMuted ? '🔇' : '🎤'}
                         </button>
-                        
-                        <button 
+
+                        <button
                             className={`voice-controls__button ${audioSettingsStore.isSpeakerMuted ? 'voice-controls__button--deafened' : ''}`}
                             onClick={handleDeafenToggle}
-                            title={audioSettingsStore.isSpeakerMuted ? t('voiceControls.deafenOff') : t('voiceControls.deafenOn')}
+                            title={
+                                audioSettingsStore.isSpeakerMuted
+                                    ? t('voiceControls.deafenOff')
+                                    : t('voiceControls.deafenOn')
+                            }
                         >
                             {audioSettingsStore.isSpeakerMuted ? '🔇' : '🔊'}
                         </button>
-                        
-                        <button 
+
+                        <button
                             className="voice-controls__button voice-controls__button--settings"
                             onClick={() => setShowAudioSettingsModal(!showAudioSettingsModal)}
                             title="Настройки звука"
                         >
                             ⚙️
                         </button>
-                        
-                        
-                        <button 
+
+                        <button
                             className="voice-controls__button voice-controls__button--expand"
                             onClick={handleExpand}
-                            title={isExpanded ? "Свернуть" : "Развернуть"}
+                            title={isExpanded ? 'Свернуть' : 'Развернуть'}
                         >
                             {isExpanded ? '⬆️' : '⬇️'}
                         </button>
-                        
-                        <button 
+
+                        <button
                             className="voice-controls__button voice-controls__button--disconnect"
                             onClick={handleDisconnect}
                             title={t('voiceControls.disconnect')}
@@ -169,13 +183,16 @@ const VoiceControls: React.FC = observer(() => {
                                             size="small"
                                             onClick={() => {
                                                 if (participant.userData) {
-                                                    openProfile({
-                                                        ...participant.userData,
-                                                        email: `${participant.userData.username}@temp.com`,
-                                                        isActive: true,
-                                                        createdAt: new Date().toISOString(),
-                                                        status: 'online'
-                                                    }, false);
+                                                    openProfile(
+                                                        {
+                                                            ...participant.userData,
+                                                            email: `${participant.userData.username}@temp.com`,
+                                                            isActive: true,
+                                                            createdAt: new Date().toISOString(),
+                                                            status: 'online'
+                                                        },
+                                                        false
+                                                    );
                                                 }
                                             }}
                                             className={`voice-controls__participant-avatar ${participant.isSpeaking ? 'voice-controls__participant-avatar--speaking' : ''}`}
@@ -186,12 +203,14 @@ const VoiceControls: React.FC = observer(() => {
                                         <span className="voice-controls__participant-name">
                                             {participant.userData?.username || 'Unknown User'}
                                         </span>
-                                        <span className={`voice-controls__participant-status ${participant.isSpeaking ? 'voice-controls__participant-status--speaking' : ''}`}>
+                                        <span
+                                            className={`voice-controls__participant-status ${participant.isSpeaking ? 'voice-controls__participant-status--speaking' : ''}`}
+                                        >
                                             {participant.isSpeaking
                                                 ? 'Говорит'
-                                                : (participant.micToggle
+                                                : participant.micToggle
                                                     ? 'Молчит'
-                                                    : 'Микрофон выключен')}
+                                                    : 'Микрофон выключен'}
                                         </span>
                                     </div>
                                     <div className="voice-controls__participant-controls">
@@ -203,8 +222,15 @@ const VoiceControls: React.FC = observer(() => {
                                                 type="range"
                                                 min="0"
                                                 max="100"
-                                                value={participantVolumeStore.getParticipantVolume(participant.socketId)}
-                                                onChange={(e) => handleParticipantVolumeChange(participant.socketId, Number(e.target.value))}
+                                                value={participantVolumeStore.getParticipantVolume(
+                                                    participant.socketId
+                                                )}
+                                                onChange={(e) =>
+                                                    handleParticipantVolumeChange(
+                                                        participant.socketId,
+                                                        Number(e.target.value)
+                                                    )
+                                                }
                                                 className="voice-controls__volume-slider"
                                                 title={`Громкость ${participant.userData?.username || 'участника'}`}
                                             />
@@ -222,10 +248,10 @@ const VoiceControls: React.FC = observer(() => {
                         <div className="voice-controls__volume-section">
                             <h4 className="voice-controls__section-title">Громкость</h4>
                             <div className="voice-controls__volume-controls">
-                                <input 
-                                    type="range" 
-                                    min="0" 
-                                    max="100" 
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
                                     defaultValue="100"
                                     className="voice-controls__volume-slider"
                                 />
@@ -242,26 +268,26 @@ const VoiceControls: React.FC = observer(() => {
                     <div className="voice-controls__audio-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="voice-controls__audio-modal-header">
                             <h3>Настройки звука</h3>
-                            <button 
+                            <button
                                 className="voice-controls__audio-modal-close"
                                 onClick={() => setShowAudioSettingsModal(false)}
                             >
                                 ✕
                             </button>
                         </div>
-                        
+
                         <div className="voice-controls__audio-modal-content">
                             {/* Переключатель режимов */}
                             <div className="voice-controls__audio-section">
                                 <h4>⚙️ Режим настроек</h4>
                                 <div className="voice-controls__mode-switcher">
-                                    <button 
+                                    <button
                                         className={`voice-controls__mode-btn ${audioSettingsStore.settingsMode === 'simple' ? 'active' : ''}`}
                                         onClick={() => audioSettingsStore.setSettingsMode('simple')}
                                     >
                                         Простой
                                     </button>
-                                    <button 
+                                    <button
                                         className={`voice-controls__mode-btn ${audioSettingsStore.settingsMode === 'detailed' ? 'active' : ''}`}
                                         onClick={() => audioSettingsStore.setSettingsMode('detailed')}
                                     >
@@ -275,33 +301,41 @@ const VoiceControls: React.FC = observer(() => {
                                 <div className="voice-controls__audio-section">
                                     <h4>🎵 Качество звука</h4>
                                     <div className="voice-controls__quality-selector">
-                                        <button 
+                                        <button
                                             className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'low' ? 'active' : ''}`}
                                             onClick={() => audioSettingsStore.setAudioQuality('low')}
                                         >
                                             <div className="voice-controls__quality-title">Низкое</div>
-                                            <div className="voice-controls__quality-desc">Экономия трафика, базовая обработка</div>
+                                            <div className="voice-controls__quality-desc">
+                                                Экономия трафика, базовая обработка
+                                            </div>
                                         </button>
-                                        <button 
+                                        <button
                                             className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'medium' ? 'active' : ''}`}
                                             onClick={() => audioSettingsStore.setAudioQuality('medium')}
                                         >
                                             <div className="voice-controls__quality-title">Среднее</div>
-                                            <div className="voice-controls__quality-desc">Оптимальный баланс качества и производительности</div>
+                                            <div className="voice-controls__quality-desc">
+                                                Оптимальный баланс качества и производительности
+                                            </div>
                                         </button>
-                                        <button 
+                                        <button
                                             className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'high' ? 'active' : ''}`}
                                             onClick={() => audioSettingsStore.setAudioQuality('high')}
                                         >
                                             <div className="voice-controls__quality-title">Максимальное</div>
-                                            <div className="voice-controls__quality-desc">48kHz/24bit, 320kbps, минимальная задержка</div>
+                                            <div className="voice-controls__quality-desc">
+                                                48kHz/24bit, 320kbps, минимальная задержка
+                                            </div>
                                         </button>
-                                        <button 
+                                        <button
                                             className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'ultra' ? 'active' : ''}`}
                                             onClick={() => audioSettingsStore.setAudioQuality('ultra')}
                                         >
                                             <div className="voice-controls__quality-title">Ультра</div>
-                                            <div className="voice-controls__quality-desc">48kHz/32bit, 512kbps, профессиональное качество</div>
+                                            <div className="voice-controls__quality-desc">
+                                                48kHz/32bit, 512kbps, профессиональное качество
+                                            </div>
                                         </button>
                                     </div>
                                 </div>
@@ -313,13 +347,15 @@ const VoiceControls: React.FC = observer(() => {
                                     {/* Основные настройки */}
                                     <div className="voice-controls__audio-section">
                                         <h4>🔧 Основные настройки</h4>
-                                        
+
                                         <div className="voice-controls__audio-setting">
                                             <label className="voice-controls__audio-label">
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.echoCancellation}
-                                                    onChange={(e) => audioSettingsStore.setEchoCancellation(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setEchoCancellation(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Подавление эха</span>
                                             </label>
@@ -333,7 +369,9 @@ const VoiceControls: React.FC = observer(() => {
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.noiseSuppression}
-                                                    onChange={(e) => audioSettingsStore.setNoiseSuppression(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setNoiseSuppression(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Шумоподавление</span>
                                             </label>
@@ -347,7 +385,9 @@ const VoiceControls: React.FC = observer(() => {
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.autoGainControl}
-                                                    onChange={(e) => audioSettingsStore.setAutoGainControl(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setAutoGainControl(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Автоконтроль громкости</span>
                                             </label>
@@ -360,13 +400,15 @@ const VoiceControls: React.FC = observer(() => {
                                     {/* Улучшение голоса */}
                                     <div className="voice-controls__audio-section">
                                         <h4>🎤 Улучшение голоса</h4>
-                                        
+
                                         <div className="voice-controls__audio-setting">
                                             <label className="voice-controls__audio-label">
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.voiceEnhancement}
-                                                    onChange={(e) => audioSettingsStore.setVoiceEnhancement(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setVoiceEnhancement(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Улучшение голоса</span>
                                             </label>
@@ -385,10 +427,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.voiceClarity * 100}
-                                                    onChange={(e) => audioSettingsStore.setVoiceClarity(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setVoiceClarity(Number(e.target.value) / 100)
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.voiceClarity * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.voiceClarity * 100)}%
+                                                </span>
                                             </div>
                                         </div>
 
@@ -402,10 +448,16 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.backgroundNoiseReduction * 100}
-                                                    onChange={(e) => audioSettingsStore.setBackgroundNoiseReduction(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setBackgroundNoiseReduction(
+                                                            Number(e.target.value) / 100
+                                                        )
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.backgroundNoiseReduction * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.backgroundNoiseReduction * 100)}%
+                                                </span>
                                             </div>
                                         </div>
 
@@ -419,10 +471,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.voiceBoost * 100}
-                                                    onChange={(e) => audioSettingsStore.setVoiceBoost(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setVoiceBoost(Number(e.target.value) / 100)
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.voiceBoost * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.voiceBoost * 100)}%
+                                                </span>
                                             </div>
                                         </div>
 
@@ -431,7 +487,9 @@ const VoiceControls: React.FC = observer(() => {
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.voiceIsolation}
-                                                    onChange={(e) => audioSettingsStore.setVoiceIsolation(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setVoiceIsolation(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Изоляция голоса</span>
                                             </label>
@@ -444,7 +502,7 @@ const VoiceControls: React.FC = observer(() => {
                                     {/* Эквалайзер */}
                                     <div className="voice-controls__audio-section">
                                         <h4>🎛️ Эквалайзер</h4>
-                                        
+
                                         <div className="voice-controls__audio-setting">
                                             <label className="voice-controls__audio-label">
                                                 <span>Усиление басов</span>
@@ -455,10 +513,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.bassBoost * 100}
-                                                    onChange={(e) => audioSettingsStore.setBassBoost(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setBassBoost(Number(e.target.value) / 100)
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.bassBoost * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.bassBoost * 100)}%
+                                                </span>
                                             </div>
                                         </div>
 
@@ -472,10 +534,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.trebleBoost * 100}
-                                                    onChange={(e) => audioSettingsStore.setTrebleBoost(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setTrebleBoost(Number(e.target.value) / 100)
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.trebleBoost * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.trebleBoost * 100)}%
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -483,13 +549,15 @@ const VoiceControls: React.FC = observer(() => {
                                     {/* Дополнительные эффекты */}
                                     <div className="voice-controls__audio-section">
                                         <h4>✨ Дополнительные эффекты</h4>
-                                        
+
                                         <div className="voice-controls__audio-setting">
                                             <label className="voice-controls__audio-label">
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.stereoEnhancement}
-                                                    onChange={(e) => audioSettingsStore.setStereoEnhancement(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setStereoEnhancement(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Стерео улучшение</span>
                                             </label>
@@ -503,7 +571,9 @@ const VoiceControls: React.FC = observer(() => {
                                                 <input
                                                     type="checkbox"
                                                     checked={audioSettingsStore.spatialAudio}
-                                                    onChange={(e) => audioSettingsStore.setSpatialAudio(e.target.checked)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setSpatialAudio(e.target.checked)
+                                                    }
                                                 />
                                                 <span>Пространственный звук</span>
                                             </label>
@@ -522,10 +592,16 @@ const VoiceControls: React.FC = observer(() => {
                                                     min="0"
                                                     max="100"
                                                     value={audioSettingsStore.dynamicRangeCompression * 100}
-                                                    onChange={(e) => audioSettingsStore.setDynamicRangeCompression(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setDynamicRangeCompression(
+                                                            Number(e.target.value) / 100
+                                                        )
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.dynamicRangeCompression * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.dynamicRangeCompression * 100)}%
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -533,7 +609,7 @@ const VoiceControls: React.FC = observer(() => {
                                     {/* Технические настройки */}
                                     <div className="voice-controls__audio-section">
                                         <h4>⚙️ Технические настройки</h4>
-                                        
+
                                         <div className="voice-controls__audio-setting">
                                             <label className="voice-controls__audio-label">
                                                 <span>Частота дискретизации</span>
@@ -545,10 +621,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     max="48000"
                                                     step="8000"
                                                     value={audioSettingsStore.sampleRate}
-                                                    onChange={(e) => audioSettingsStore.setSampleRate(Number(e.target.value))}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setSampleRate(Number(e.target.value))
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{audioSettingsStore.sampleRate} Гц</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {audioSettingsStore.sampleRate} Гц
+                                                </span>
                                             </div>
                                         </div>
 
@@ -563,10 +643,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     max="320"
                                                     step="32"
                                                     value={audioSettingsStore.bitrate}
-                                                    onChange={(e) => audioSettingsStore.setBitrate(Number(e.target.value))}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setBitrate(Number(e.target.value))
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{audioSettingsStore.bitrate} kbps</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {audioSettingsStore.bitrate} kbps
+                                                </span>
                                             </div>
                                         </div>
 
@@ -581,10 +665,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     max="500"
                                                     step="25"
                                                     value={audioSettingsStore.latency}
-                                                    onChange={(e) => audioSettingsStore.setLatency(Number(e.target.value))}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setLatency(Number(e.target.value))
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{audioSettingsStore.latency} мс</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {audioSettingsStore.latency} мс
+                                                </span>
                                             </div>
                                         </div>
 
@@ -599,10 +687,14 @@ const VoiceControls: React.FC = observer(() => {
                                                     max="8192"
                                                     step="512"
                                                     value={audioSettingsStore.bufferSize}
-                                                    onChange={(e) => audioSettingsStore.setBufferSize(Number(e.target.value))}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setBufferSize(Number(e.target.value))
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{audioSettingsStore.bufferSize} сэмплов</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {audioSettingsStore.bufferSize} сэмплов
+                                                </span>
                                             </div>
                                         </div>
 
@@ -617,10 +709,16 @@ const VoiceControls: React.FC = observer(() => {
                                                     max="100"
                                                     step="5"
                                                     value={audioSettingsStore.compressionLevel * 100}
-                                                    onChange={(e) => audioSettingsStore.setCompressionLevel(Number(e.target.value) / 100)}
+                                                    onChange={(e) =>
+                                                        audioSettingsStore.setCompressionLevel(
+                                                            Number(e.target.value) / 100
+                                                        )
+                                                    }
                                                     className="voice-controls__audio-slider"
                                                 />
-                                                <span className="voice-controls__audio-value">{Math.round(audioSettingsStore.compressionLevel * 100)}%</span>
+                                                <span className="voice-controls__audio-value">
+                                                    {Math.round(audioSettingsStore.compressionLevel * 100)}%
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -630,7 +728,7 @@ const VoiceControls: React.FC = observer(() => {
                             {/* Настройки громкости */}
                             <div className="voice-controls__audio-section">
                                 <h4>🔊 Громкость</h4>
-                                
+
                                 <div className="voice-controls__audio-setting">
                                     <label className="voice-controls__audio-label">
                                         <span>Громкость микрофона</span>
@@ -644,7 +742,9 @@ const VoiceControls: React.FC = observer(() => {
                                             onChange={(e) => audioSettingsStore.setVolume(Number(e.target.value))}
                                             className="voice-controls__audio-slider"
                                         />
-                                        <span className="voice-controls__audio-value">{audioSettingsStore.volume}%</span>
+                                        <span className="voice-controls__audio-value">
+                                            {audioSettingsStore.volume}%
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -652,21 +752,21 @@ const VoiceControls: React.FC = observer(() => {
                             {/* Тестирование */}
                             <div className="voice-controls__audio-section">
                                 <h4>🧪 Тестирование</h4>
-                                
+
                                 <div className="voice-controls__audio-test-buttons">
-                                    <button 
+                                    <button
                                         className="voice-controls__audio-test-btn"
                                         onClick={() => audioSettingsStore.testMicrophone()}
                                     >
                                         🎤 Тест микрофона
                                     </button>
-                                    <button 
+                                    <button
                                         className="voice-controls__audio-test-btn"
                                         onClick={() => audioSettingsStore.testSpeakers()}
                                     >
                                         🔊 Тест динамиков
                                     </button>
-                                    <button 
+                                    <button
                                         className="voice-controls__audio-test-btn voice-controls__audio-test-btn--advanced"
                                         onClick={() => {
                                             import('../../../../../../../../utils/audioTest').then(({ audioTest }) => {
@@ -683,7 +783,6 @@ const VoiceControls: React.FC = observer(() => {
                     </div>
                 </div>
             )}
-            
         </div>
     );
 });

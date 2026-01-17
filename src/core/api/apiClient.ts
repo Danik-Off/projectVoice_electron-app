@@ -2,8 +2,9 @@
  * API Client - базовый HTTP клиент
  */
 import { API_URL } from '../config';
-import { getToken } from '../../shared/utils/storage';
+import { getToken, removeToken, removeUser } from '../../shared/utils/storage';
 import { connectionStore } from '../store/ConnectionStore';
+import { notificationStore } from '../store/NotificationStore';
 
 /**
  * Проверяет, является ли ошибка ошибкой протухшего/недействительного токена
@@ -18,7 +19,7 @@ function isTokenExpiredError(response: Response, errorMessage: string): boolean 
     try {
         const errorJson = JSON.parse(errorMessage);
         const errorText = errorJson.error?.toLowerCase() || '';
-        
+
         // Различные варианты сообщений о протухшем токене
         const tokenErrorPatterns = [
             'недействительный токен',
@@ -32,17 +33,16 @@ function isTokenExpiredError(response: Response, errorMessage: string): boolean 
             'токен недействителен'
         ];
 
-        return tokenErrorPatterns.some(pattern => 
-            errorText.includes(pattern.toLowerCase())
-        );
+        return tokenErrorPatterns.some((pattern) => errorText.includes(pattern.toLowerCase()));
     } catch {
         // Если не удалось распарсить JSON, проверяем текст напрямую
         const errorText = errorMessage.toLowerCase();
-        return errorText.includes('token') && (
-            errorText.includes('expired') || 
-            errorText.includes('invalid') || 
-            errorText.includes('недействительный') ||
-            errorText.includes('истек')
+        return (
+            errorText.includes('token') &&
+            (errorText.includes('expired') ||
+                errorText.includes('invalid') ||
+                errorText.includes('недействительный') ||
+                errorText.includes('истек'))
         );
     }
 }
@@ -57,14 +57,14 @@ export const apiClient = async <T = unknown>(
     // Установка заголовков
     const headers = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
+        ...token && { Authorization: `Bearer ${token}` },
+        ...options.headers
     };
 
     // Создание объекта запроса
     const requestOptions: RequestInit = {
         ...options,
-        headers,
+        headers
     };
 
     // Если тело запроса передано, сериализуем его в JSON
@@ -79,12 +79,15 @@ export const apiClient = async <T = unknown>(
             const errorMessage = await response.text();
 
             // Проверяем, является ли это ошибкой протухшего токена
-            // НЕ вызываем logout автоматически - пользователь должен выйти вручную через кнопку
             if (isTokenExpiredError(response, errorMessage)) {
-                console.warn('Token expired or invalid, but keeping user authenticated until manual logout');
-                // Можно показать уведомление, но не разлогиниваем автоматически
+                console.warn('Token expired or invalid, clearing token and user data');
+                // Очищаем токен и данные пользователя из localStorage
+                removeToken();
+                removeUser();
+                // Показываем уведомление пользователю
+                notificationStore.addNotification('Сессия истекла. Пожалуйста, войдите снова.', 'error');
             }
-            
+
             throw new Error(errorMessage);
         }
 
@@ -99,10 +102,12 @@ export const apiClient = async <T = unknown>(
         return response.json() as Promise<T>;
     } catch (error) {
         // Проверяем, является ли это ошибкой сети
-        if (error instanceof TypeError && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))) {
+        if (
+            error instanceof TypeError &&
+            (error.message.includes('Failed to fetch') || error.message.includes('NetworkError'))
+        ) {
             connectionStore.setConnected(false);
         }
         throw error;
     }
 };
-

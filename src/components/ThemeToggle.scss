@@ -10,32 +10,32 @@
     cursor: pointer;
     transition: all 0.3s ease;
     color: var(--text-color);
-    
+
     &:hover {
         background: var(--hover-bg);
         box-shadow: 0 4px 12px var(--shadow-color);
     }
-    
+
     &:focus {
         outline: none;
         box-shadow: 0 0 0 3px var(--accent-color);
     }
-    
+
     .theme-toggle-icon {
         display: flex;
         align-items: center;
         justify-content: center;
         transition: transform 0.3s ease;
-        
+
         svg {
             transition: all 0.3s ease;
         }
     }
-    
+
     &:hover .theme-toggle-icon {
         transform: scale(1.1);
     }
-    
+
     &:active .theme-toggle-icon {
         transform: scale(0.95);
     }
@@ -55,4 +55,4 @@
         opacity: 1;
         transform: rotate(0deg) scale(1);
     }
-} 
+}

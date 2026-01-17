@@ -1,4 +1,5 @@
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { getCookie } from './cookie';
 import { SocketClientState } from '../types/socket.types';
 import { iceServers } from '../configs/iceServers';
@@ -6,7 +7,7 @@ import { iceServers } from '../configs/iceServers';
 class SocketClient {
     public users = [];
 
-    public onStateChange: ((state: SocketClientState) => void) | null = null;
+    public onStateChange: ((state: SocketClientState)=> void) | null = null;
 
     // Getter for state
     public get state(): SocketClientState {
@@ -32,7 +33,7 @@ class SocketClient {
     public isMuteMicro = false;
 
     private readonly streamConstraints = {
-        audio: true,
+        audio: true
     };
 
     constructor() {
@@ -112,18 +113,13 @@ class SocketClient {
     private async initializeMedia() {
         this.state = SocketClientState.MEDIA_INITIALIZING;
         try {
-            this.localStream = await navigator.mediaDevices.getUserMedia(
-                this.streamConstraints
-            );
+            this.localStream = await navigator.mediaDevices.getUserMedia(this.streamConstraints);
             this.state = SocketClientState.MEDIA_INITIALIZED;
             if (this.localStream) {
                 for (const socketId in this.peerConnections) {
                     this.localStream.getTracks().forEach((track) => {
                         if (this.localStream) {
-                            this.peerConnections[socketId].addTrack(
-                                track,
-                                this.localStream
-                            );
+                            this.peerConnections[socketId].addTrack(track, this.localStream);
                         }
                     });
                 }
@@ -142,7 +138,7 @@ class SocketClient {
     private createPeerConnection(targetUserId: string): RTCPeerConnection {
         this.state = SocketClientState.PEER_CONNECTION_CREATING;
         const peerConnection = new RTCPeerConnection({
-            iceServers: iceServers,
+            iceServers
         });
 
         peerConnection.onicecandidate = (event) => {
@@ -150,7 +146,7 @@ class SocketClient {
                 this.socket?.emit('signal', {
                     to: targetUserId,
                     type: 'candidate',
-                    candidate: event.candidate,
+                    candidate: event.candidate
                 });
             }
         };
@@ -158,10 +154,7 @@ class SocketClient {
         peerConnection.ontrack = (event) => {
             if (!this.remoteStreams[targetUserId]) {
                 this.remoteStreams[targetUserId] = new MediaStream();
-                console.log(
-                    'Удалённый поток добавлен для пользователя:',
-                    targetUserId
-                );
+                console.log('Удалённый поток добавлен для пользователя:', targetUserId);
                 const audioElement = document.createElement('audio');
                 audioElement.srcObject = this.remoteStreams[targetUserId];
                 audioElement.autoplay = true;
@@ -192,7 +185,7 @@ class SocketClient {
             this.socket?.emit('signal', {
                 to: targetUserId,
                 type: 'offer',
-                sdp: offer.sdp,
+                sdp: offer.sdp
             });
         } catch {
             // Ошибка при создании предложения
@@ -207,7 +200,7 @@ class SocketClient {
             this.socket?.emit('signal', {
                 to: targetUserId,
                 type: 'answer',
-                sdp: answer.sdp,
+                sdp: answer.sdp
             });
         } catch {
             // Ошибка при создании ответа
@@ -222,18 +215,12 @@ class SocketClient {
         }
 
         if (type === 'offer') {
-            await this.peerConnections[from].setRemoteDescription(
-                new RTCSessionDescription({ type, sdp })
-            );
+            await this.peerConnections[from].setRemoteDescription(new RTCSessionDescription({ type, sdp }));
             await this.createAnswer(from); // Reply to the user who sent the offer
         } else if (type === 'answer') {
-            await this.peerConnections[from].setRemoteDescription(
-                new RTCSessionDescription({ type, sdp })
-            );
+            await this.peerConnections[from].setRemoteDescription(new RTCSessionDescription({ type, sdp }));
         } else if (type === 'candidate') {
-            await this.peerConnections[from].addIceCandidate(
-                new RTCIceCandidate(candidate)
-            );
+            await this.peerConnections[from].addIceCandidate(new RTCIceCandidate(candidate));
         }
     }
 
@@ -243,9 +230,7 @@ class SocketClient {
             delete this.peerConnections[socketId]; // Remove from storage
         }
         if (this.remoteStreams[socketId]) {
-            this.remoteStreams[socketId]
-                .getTracks()
-                .forEach((track) => track.stop());
+            this.remoteStreams[socketId].getTracks().forEach((track) => track.stop());
             delete this.remoteStreams[socketId]; // Remove remote stream
         }
     }
@@ -254,9 +239,7 @@ class SocketClient {
         if (this.socket) {
             this.socket.disconnect();
         }
-        Object.values(this.peerConnections).forEach((peerConnection) =>
-            peerConnection.close()
-        );
+        Object.values(this.peerConnections).forEach((peerConnection) => peerConnection.close());
         this.peerConnections = {};
         if (this.localStream) {
             this.localStream.getTracks().forEach((track) => track.stop());

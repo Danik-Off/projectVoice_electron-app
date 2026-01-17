@@ -2,10 +2,10 @@
 // import { useTranslation } from 'react-i18next';
 import './WelcomePage.scss';
 
-const WelcomePage: React.FC = () => {
-    // const { t } = useTranslation();
+const WelcomePage: React.FC = () =>
+// const { t } = useTranslation();
 
-    return (
+    (
         <div className="welcome-page">
             {/* Анимированный фон */}
             <div className="background-animation">
@@ -37,16 +37,17 @@ const WelcomePage: React.FC = () => {
                                 <div className="title-underline"></div>
                             </h1>
                         </div>
-                        
+
                         <div className="hero-story">
                             <h2 className="story-title">История создания</h2>
                             <p className="story-text">
-                                Один разработчик под ником <strong>Danik Off</strong> решил, что хочет сделать сервис для себя, 
-                                своих друзей и всех желающих для общения на <strong>peer-to-peer WebRTC</strong>.
+                                Один разработчик под ником <strong>Danik Off</strong> решил, что хочет сделать сервис
+                                для себя, своих друзей и всех желающих для общения на{' '}
+                                <strong>peer-to-peer WebRTC</strong>.
                             </p>
                             <p className="story-text">
-                                Из-за блокировки популярных платформ для общения 
-                                появился ProjectVoice — доступная альтернатива для качественного голосового общения.
+                                Из-за блокировки популярных платформ для общения появился ProjectVoice — доступная
+                                альтернатива для качественного голосового общения.
                             </p>
                             <div className="development-status">
                                 <span className="status-badge">🚧 Ранний этап разработки</span>
@@ -54,7 +55,7 @@ const WelcomePage: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="hero-visual">
                         <div className="visual-container">
                             <div className="developer-card">
@@ -107,9 +108,7 @@ const WelcomePage: React.FC = () => {
                 <section className="tech-section">
                     <div className="tech-content">
                         <h2 className="tech-title">Технические возможности</h2>
-                        <p className="tech-subtitle">
-                            Что уже работает в ProjectVoice
-                        </p>
+                        <p className="tech-subtitle">Что уже работает в ProjectVoice</p>
                         <div className="tech-grid">
                             <div className="tech-item">
                                 <div className="tech-icon">🔗</div>
@@ -167,19 +166,34 @@ const WelcomePage: React.FC = () => {
                                 <span className="feature-text">Музыкальные джемы</span>
                             </div>
                         </div>
-                        
+
                         <div className="social-links">
                             <h3 className="social-title">Следите за развитием проекта</h3>
                             <div className="social-buttons">
-                                <a href="https://t.me/+67a6CP6FbcpjNjdi" target="_blank" rel="noopener noreferrer" className="social-btn telegram">
+                                <a
+                                    href="https://t.me/+67a6CP6FbcpjNjdi"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="social-btn telegram"
+                                >
                                     <span className="social-icon">📱</span>
                                     <span className="social-text">Telegram</span>
                                 </a>
-                                <a href="https://github.com/Danik-Off/projectvoice" target="_blank" rel="noopener noreferrer" className="social-btn github">
+                                <a
+                                    href="https://github.com/Danik-Off/projectvoice"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="social-btn github"
+                                >
                                     <span className="social-icon">🐙</span>
                                     <span className="social-text">GitHub</span>
                                 </a>
-                                <a href="https://vk.com/freeprojectvoice" target="_blank" rel="noopener noreferrer" className="social-btn vk">
+                                <a
+                                    href="https://vk.com/freeprojectvoice"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="social-btn vk"
+                                >
                                     <span className="social-icon">💙</span>
                                     <span className="social-text">VK</span>
                                 </a>
@@ -191,14 +205,12 @@ const WelcomePage: React.FC = () => {
                 {/* Футер */}
                 <footer className="welcome-footer">
                     <div className="footer-bottom">
-                        <p className="copyright">
-                            © 2025 ProjectVoice by Danik Off. Создано с ❤️ для геймеров.
-                        </p>
+                        <p className="copyright">© 2025 ProjectVoice by Danik Off. Создано с ❤️ для геймеров.</p>
                     </div>
                 </footer>
             </div>
         </div>
-    );
-};
+    )
+;
 
 export default WelcomePage;

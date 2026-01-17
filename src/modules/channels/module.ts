@@ -14,6 +14,5 @@ export const channelsModule: IModule = {
     },
     async destroy() {
         console.log('Channels module destroyed');
-    },
+    }
 };
-

@@ -1,4 +1,4 @@
-import  { useEffect } from 'react';
+import { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 // Убедитесь, что путь к store корректен
 import './UserSidebar.css';

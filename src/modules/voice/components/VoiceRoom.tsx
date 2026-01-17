@@ -1,7 +1,7 @@
 import React from 'react';
 import './VoiceRoom.css'; // стили для оформления комнаты
 import voiceRoomStore from '../store/roomStore';
-import type { Participant } from '../store/roomStore';
+import type { Participant } from '../types/roomStore.types';
 import { observer } from 'mobx-react';
 import { useUserProfile } from '../../../hooks/useUserProfile';
 import ClickableAvatar from '../../../components/ClickableAvatar';
@@ -16,7 +16,7 @@ const VoiceRoom: React.FC = observer(() => {
     return (
         <div className="voice-room">
             <h2>Voice Room</h2>
-            
+
             {/* Локальный пользователь */}
             {currentUser && (
                 <div className={`user-box local-user ${isLocalSpeaking ? 'speaking' : ''}`}>
@@ -35,58 +35,50 @@ const VoiceRoom: React.FC = observer(() => {
                         onClick={() => openProfile(currentUser, true)}
                         className="user-avatar"
                     />
-                    <div className="user-name">
-                        {currentUser.username} (Вы)
-                    </div>
-                    <div className="user-status">
-                        {isLocalSpeaking ? '🎤 Говорит' : '🔇 Молчит'}
-                    </div>
+                    <div className="user-name">{currentUser.username} (Вы)</div>
+                    <div className="user-status">{isLocalSpeaking ? '🎤 Говорит' : '🔇 Молчит'}</div>
                 </div>
             )}
-            
+
             <div className="user-list">
                 {users.map((user: Participant) => (
-                    <div
-                        key={user.socketId}
-                        className={`user-box ${
-                            user.isSpeaking ? 'speaking' : ''
-                        }`}
-                    >
-                                            {user.userData && (
-                        <ClickableAvatar
-                            user={{
-                                id: user.userData.id,
-                                username: user.userData.username,
-                                email: `${user.userData.username}@temp.com`,
-                                profilePicture: user.userData.profilePicture,
-                                role: user.userData.role,
-                                isActive: true,
-                                createdAt: new Date().toISOString(),
-                                status: 'online'
-                            }}
-                            size="medium"
-                            onClick={() => {
-                                if (user.userData) {
-                                    openProfile({
-                                        id: user.userData.id,
-                                        username: user.userData.username,
-                                        email: `${user.userData.username}@temp.com`,
-                                        profilePicture: user.userData.profilePicture,
-                                        role: user.userData.role,
-                                        isActive: true,
-                                        createdAt: new Date().toISOString(),
-                                        status: 'online'
-                                    }, false);
-                                }
-                            }}
-                            className="user-avatar"
-                        />
-                    )}
-                        <div className="user-name">
-                            {user.userData?.username || 'Unknown User'}
-                        </div>
+                    <div key={user.socketId} className={`user-box ${user.isSpeaking ? 'speaking' : ''}`}>
+                        {user.userData && (
+                            <ClickableAvatar
+                                user={{
+                                    id: user.userData.id,
+                                    username: user.userData.username,
+                                    email: `${user.userData.username}@temp.com`,
+                                    profilePicture: user.userData.profilePicture,
+                                    role: user.userData.role,
+                                    isActive: true,
+                                    createdAt: new Date().toISOString(),
+                                    status: 'online'
+                                }}
+                                size="medium"
+                                onClick={() => {
+                                    if (user.userData) {
+                                        openProfile(
+                                            {
+                                                id: user.userData.id,
+                                                username: user.userData.username,
+                                                email: `${user.userData.username}@temp.com`,
+                                                profilePicture: user.userData.profilePicture,
+                                                role: user.userData.role,
+                                                isActive: true,
+                                                createdAt: new Date().toISOString(),
+                                                status: 'online'
+                                            },
+                                            false
+                                        );
+                                    }
+                                }}
+                                className="user-avatar"
+                            />
+                        )}
+                        <div className="user-name">{user.userData?.username || 'Unknown User'}</div>
                         <div className="user-status">
-                            {user.isSpeaking ? '🎤 Говорит' : (user.micToggle ? '🔇 Молчит' : '🔇 Выключен')}
+                            {user.isSpeaking ? '🎤 Говорит' : user.micToggle ? '🔇 Молчит' : '🔇 Выключен'}
                         </div>
                     </div>
                 ))}

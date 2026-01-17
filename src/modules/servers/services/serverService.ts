@@ -8,22 +8,22 @@ export const serverService = {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Content-Type': 'application/json'
+            }
         });
         return response;
     },
     // Получение списка серверов
     get: async () => {
         const data = await apiClient('/servers', {
-            method: 'GET',
+            method: 'GET'
         });
         return data;
     },
     // Получение сервера по ID
     getBy: async (id: number) => {
         const data = await apiClient(`/servers/${id}`, {
-            method: 'GET',
+            method: 'GET'
         });
         return data;
     },
@@ -33,18 +33,17 @@ export const serverService = {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: {
-                'Content-Type': 'application/json',
-            },
+                'Content-Type': 'application/json'
+            }
         });
         return response;
     },
     // Удаление сервера
     delete: async (id: number) => {
         const response = await apiClient(`/servers/${id}`, {
-            method: 'DELETE',
+            method: 'DELETE'
         });
         console.log('ServerService delete response:', response);
         return response || { success: true };
-    },
+    }
 };
-

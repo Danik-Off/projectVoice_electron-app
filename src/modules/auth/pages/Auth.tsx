@@ -27,7 +27,6 @@ const AuthPage: React.FC = observer(() => {
                 navigate('/');
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [redirect, navigate]);
 
     // Проверяем, заблокирован ли аккаунт
@@ -50,7 +49,7 @@ const AuthPage: React.FC = observer(() => {
                     <Spinner />
                 </div>
             )}
-            
+
             {/* Анимированный фон */}
             <div className="auth-background">
                 <div className="floating-shapes">
@@ -69,24 +68,20 @@ const AuthPage: React.FC = observer(() => {
                             <div className="logo-icon">🎙️</div>
                             <h1 className="logo-text">ProjectVoice</h1>
                         </div>
-                        <h2 className="auth-title">{isLogin ? t('authPage.welcomeBack') : t('authPage.createAccount')}</h2>
+                        <h2 className="auth-title">
+                            {isLogin ? t('authPage.welcomeBack') : t('authPage.createAccount')}
+                        </h2>
                         <p className="auth-subtitle">
                             {isLogin ? t('authPage.loginSubtitle') : t('authPage.registerSubtitle')}
                         </p>
                     </div>
 
-                    <div className="auth-form-container">
-                        {isLogin ? <LoginForm /> : <RegisterForm />}
-                    </div>
+                    <div className="auth-form-container">{isLogin ? <LoginForm /> : <RegisterForm />}</div>
 
                     <div className="auth-footer">
                         <p className="auth-switch">
                             {isLogin ? t('authPage.needAccount') : t('authPage.alreadyHaveAccount')}{' '}
-                            <button 
-                                type="button" 
-                                className="switch-button"
-                                onClick={() => setIsLogin(!isLogin)}
-                            >
+                            <button type="button" className="switch-button" onClick={() => setIsLogin(!isLogin)}>
                                 {isLogin ? t('authPage.signUp') : t('authPage.login')}
                             </button>
                         </p>
@@ -96,15 +91,13 @@ const AuthPage: React.FC = observer(() => {
                                 <span className="language-icon">🌐</span>
                                 {i18n.language === 'en' ? 'Русский' : 'English'}
                             </button>
-                            
-                            <button 
-                                onClick={() => themeStore.toggleTheme()} 
+
+                            <button
+                                onClick={() => themeStore.toggleTheme()}
                                 className="theme-toggle"
                                 title={t('common.toggleTheme')}
                             >
-                                <span className="theme-icon">
-                                    {themeStore.currentTheme === 'dark' ? '☀️' : '🌙'}
-                                </span>
+                                <span className="theme-icon">{themeStore.currentTheme === 'dark' ? '☀️' : '🌙'}</span>
                             </button>
                         </div>
                     </div>

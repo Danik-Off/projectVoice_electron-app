@@ -7,4 +7,3 @@ export interface UserProfileContextType {
 }
 
 export const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
-

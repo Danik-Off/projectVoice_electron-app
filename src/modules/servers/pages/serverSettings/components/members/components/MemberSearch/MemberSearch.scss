@@ -1,0 +1,36 @@
+@use '../../../../../../../../styles/main' as *;
+
+.member-search {
+    position: relative;
+    width: 100%;
+
+    &__input {
+        width: 100%;
+        padding: $spacing-md $spacing-xl $spacing-md $spacing-md;
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        border-radius: $border-radius-medium;
+        color: var(--text-primary);
+        font-size: 14px;
+        transition: all $animation-duration $animation-timing;
+
+        &:focus {
+            outline: none;
+            border-color: var(--input-focus-border);
+            box-shadow: var(--input-focus-shadow);
+        }
+
+        &::placeholder {
+            color: var(--placeholder-text);
+        }
+    }
+
+    &__icon {
+        position: absolute;
+        right: $spacing-md;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        font-size: 16px;
+    }
+}

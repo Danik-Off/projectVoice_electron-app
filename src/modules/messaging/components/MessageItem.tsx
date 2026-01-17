@@ -30,16 +30,17 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     useEffect(() => {
         if (isEditing && editInputRef.current) {
             editInputRef.current.focus();
-            editInputRef.current.setSelectionRange(editInputRef.current.value.length, editInputRef.current.value.length);
+            editInputRef.current.setSelectionRange(
+                editInputRef.current.value.length,
+                editInputRef.current.value.length
+            );
         }
     }, [isEditing]);
 
-    useEffect(() => {
-        return () => {
-            if (actionsTimeoutRef.current) {
-                clearTimeout(actionsTimeoutRef.current);
-            }
-        };
+    useEffect(() => () => {
+        if (actionsTimeoutRef.current) {
+            clearTimeout(actionsTimeoutRef.current);
+        }
     }, []);
 
     const handleEdit = () => {
@@ -106,32 +107,34 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
         const date = new Date(dateString);
         const now = new Date();
         const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-        
+
         if (diffInHours < 24) {
-            return date.toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+            return date.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
             });
-        } else if (diffInHours < 168) { // 7 дней
-            return date.toLocaleDateString('ru-RU', { 
+        } if (diffInHours < 168) {
+            // 7 дней
+            return date.toLocaleDateString('ru-RU', {
                 weekday: 'short',
                 month: 'short',
                 day: 'numeric'
             });
-        } else {
-            return date.toLocaleDateString('ru-RU', { 
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            });
         }
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
     };
 
-
-
     const getStatusIcon = () => {
-        if (message.isDeleted) return '🗑️';
-        if (message.isEdited) return '✏️';
+        if (message.isDeleted) {
+            return '🗑️';
+        }
+        if (message.isEdited) {
+            return '✏️';
+        }
         return '✓';
     };
 
@@ -146,7 +149,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     }
 
     return (
-        <div 
+        <div
             className={`message-item ${isOwnMessage ? 'own-message' : ''} ${isDeleting ? 'deleting' : ''}`}
             ref={messageRef}
             onMouseEnter={handleMouseEnter}
@@ -167,16 +170,19 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                     size="medium"
                     onClick={() => {
                         if (message.user) {
-                            openProfile({
-                                id: message.user.id || 0,
-                                username: message.user.username || 'Unknown',
-                                email: `${message.user.username || 'unknown'}@temp.com`,
-                                profilePicture: message.user.avatar,
-                                role: 'member',
-                                isActive: true,
-                                createdAt: new Date().toISOString(),
-                                status: 'online'
-                            }, false);
+                            openProfile(
+                                {
+                                    id: message.user.id || 0,
+                                    username: message.user.username || 'Unknown',
+                                    email: `${message.user.username || 'unknown'}@temp.com`,
+                                    profilePicture: message.user.avatar,
+                                    role: 'member',
+                                    isActive: true,
+                                    createdAt: new Date().toISOString(),
+                                    status: 'online'
+                                },
+                                false
+                            );
                         }
                     }}
                     className="message-avatar"
@@ -186,9 +192,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
             <div className="message-content">
                 {isFirstInGroup && (
                     <div className="message-header">
-                        <span className="message-author">
-                            {message.user?.username || 'Неизвестный пользователь'}
-                        </span>
+                        <span className="message-author">{message.user?.username || 'Неизвестный пользователь'}</span>
                         <span className="message-time">
                             {formatTime(message.createdAt)}
                             {message.isEdited && <span className="edit-indicator"> (изменено)</span>}
@@ -243,7 +247,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                 {(canEdit || canDelete) && showActions && (
                     <div className="message-actions">
                         {canEdit && (
-                            <button 
+                            <button
                                 className="action-btn edit-btn"
                                 onClick={handleEdit}
                                 title="Редактировать"
@@ -253,7 +257,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             </button>
                         )}
                         {canDelete && (
-                            <button 
+                            <button
                                 className="action-btn delete-btn"
                                 onClick={handleDelete}
                                 title="Удалить"
@@ -269,4 +273,4 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     );
 });
 
-export default MessageItem; 
+export default MessageItem;

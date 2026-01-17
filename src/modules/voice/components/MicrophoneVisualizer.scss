@@ -46,7 +46,9 @@
 
                     .level-bar {
                         height: 100%;
-                        transition: width 0.1s ease, background-color 0.1s ease;
+                        transition:
+                            width 0.1s ease,
+                            background-color 0.1s ease;
                         border-radius: 4px;
                     }
                 }
@@ -85,4 +87,3 @@
         }
     }
 }
-

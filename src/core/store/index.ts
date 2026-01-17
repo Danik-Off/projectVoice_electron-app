@@ -7,4 +7,3 @@ export { themeStore } from './ThemeStore';
 export { notificationStore } from './NotificationStore';
 export { connectionStore } from './ConnectionStore';
 export { default as audioSettingsStore } from './AudioSettingsStore';
-

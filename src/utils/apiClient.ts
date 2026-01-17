@@ -12,14 +12,14 @@ export const apiClient = async <T = unknown>(
     // Установка заголовков
     const headers = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
+        ...token && { Authorization: `Bearer ${token}` },
+        ...options.headers
     };
 
     // Создание объекта запроса
     const requestOptions: RequestInit = {
         ...options,
-        headers,
+        headers
     };
 
     // Если тело запроса передано, сериализуем его в JSON

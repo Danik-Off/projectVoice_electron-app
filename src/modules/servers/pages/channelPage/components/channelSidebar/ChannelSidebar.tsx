@@ -18,9 +18,7 @@ const ChannelSidebarComponent: React.FC = () => {
                     <ChannelList />
                 </div>
             ) : (
-                <div className="no-server-message">
-                    Выберите сервер для начала работы
-                </div>
+                <div className="no-server-message">Выберите сервер для начала работы</div>
             )}
         </aside>
     );

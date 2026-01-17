@@ -33,15 +33,17 @@ const ServerSettings: React.FC = observer(() => {
     const server = serverStore.currentServer;
 
     const loadServerData = useCallback(async () => {
-        if (!serverId) return;
-        
+        if (!serverId) {
+            return;
+        }
+
         setLoading(true);
         try {
             // Загружаем данные сервера только если они еще не загружены или это другой сервер
             if (!serverStore.currentServer || serverStore.currentServer.id !== parseInt(serverId)) {
                 await serverStore.fetchServerById(parseInt(serverId));
             }
-            
+
             // Загружаем права текущего пользователя на сервере
             if (currentUser?.id) {
                 try {
@@ -51,7 +53,7 @@ const ServerSettings: React.FC = observer(() => {
                     console.error('Error loading user permissions:', error);
                     // Fallback: загружаем роль из списка участников
                     const members = await serverMembersService.getServerMembers(parseInt(serverId));
-                    const userMember = members.find(member => member.userId === currentUser.id);
+                    const userMember = members.find((member) => member.userId === currentUser.id);
                     setCurrentUserRole(userMember?.role || 'member');
                 }
             }
@@ -68,7 +70,7 @@ const ServerSettings: React.FC = observer(() => {
 
     const renderTabContent = () => {
         const commonProps = { currentUserPermissions };
-        
+
         switch (activeTab) {
             case 'overview':
                 return <OverviewSettings {...commonProps} />;
@@ -116,18 +118,16 @@ const ServerSettings: React.FC = observer(() => {
     return (
         <div className="server-settings">
             <ServerSettingsHeader serverName={server.name} />
-            
+
             <div className="settings-container">
-                <ServerSettingsNavigation 
-                    activeTab={activeTab} 
+                <ServerSettingsNavigation
+                    activeTab={activeTab}
                     onTabChange={setActiveTab}
                     currentUserRole={currentUserRole}
                     currentUserPermissions={currentUserPermissions}
                 />
-                
-                <div className="settings-main">
-                    {renderTabContent()}
-                </div>
+
+                <div className="settings-main">{renderTabContent()}</div>
             </div>
         </div>
     );

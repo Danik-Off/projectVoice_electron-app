@@ -5,8 +5,7 @@ import { observer } from 'mobx-react-lite';
 import './ToastNotifications.scss';
 import { notificationStore } from '../../core';
 
-const ToastNotifications: React.FC = observer(() => {
-    return (
+const ToastNotifications: React.FC = observer(() => (
         <div className="toast-container">
             {notificationStore.notifications.map((notification) => (
                 <div key={notification.id} className={`toast toast-${notification.type}`}>
@@ -20,7 +19,6 @@ const ToastNotifications: React.FC = observer(() => {
                 </div>
             ))}
         </div>
-    );
-});
+));
 
 export default ToastNotifications;

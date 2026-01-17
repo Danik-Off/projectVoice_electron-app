@@ -1,7 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { Channel } from '../../../types/channel';
 import { channelService } from '../services/channelService';
-import { notificationStore } from '../../../core';
+import { notificationStore, eventBus, CHANNELS_EVENTS } from '../../../core';
+import type { ChannelSelectedEvent, ChannelsLoadedEvent } from '../../../core/events/events';
 
 class ChannelsStore {
     public channels: Channel[] = [];
@@ -16,28 +17,51 @@ class ChannelsStore {
     // Set current channel
     setCurrentChannel(channel: Channel | null): void {
         this.currentChannel = channel;
+
+        // Публикуем событие о выборе канала
+        if (channel) {
+            eventBus.emit(CHANNELS_EVENTS.CHANNEL_SELECTED, {
+                channel: {
+                    id: channel.id,
+                    name: channel.name,
+                    type: channel.type,
+                    description: channel.description
+                }
+            } as ChannelSelectedEvent);
+        }
     }
-    
+
     // Fetch channels for the current server
     async fetchChannels(serverId: number): Promise<void> {
         runInAction(() => {
             this.loading = true;
             this.error = null;
         });
-        
+
         try {
             const data: Channel[] = await channelService.getByServer(serverId);
             runInAction(() => {
                 this.channels = data;
                 this.loading = false;
             });
+
+            // Публикуем событие о загрузке каналов
+            eventBus.emit(CHANNELS_EVENTS.CHANNELS_LOADED, {
+                channels: data.map((ch) => ({
+                    id: ch.id,
+                    name: ch.name,
+                    type: ch.type,
+                    description: ch.description
+                })),
+                serverId
+            } as ChannelsLoadedEvent);
         } catch (error) {
             runInAction(() => {
                 this.error = (error as Error).message;
                 this.loading = false;
             });
         }
-        console.log("ok")
+        console.log('ok');
     }
 
     // Create a new channel in the current server
@@ -45,7 +69,7 @@ class ChannelsStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             const newChannel: Channel = await channelService.create(serverId, channelData);
             runInAction(() => {
@@ -65,7 +89,7 @@ class ChannelsStore {
         runInAction(() => {
             this.error = null;
         });
-        
+
         try {
             await channelService.delete(serverId, channelId);
             runInAction(() => {
@@ -81,4 +105,3 @@ class ChannelsStore {
 
 const channelsStore = new ChannelsStore();
 export default channelsStore;
-

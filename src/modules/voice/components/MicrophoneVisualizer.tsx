@@ -16,7 +16,9 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
     const [isMonitoring, setIsMonitoring] = useState(false);
 
     const startMonitoring = async () => {
-        if (!audioSettingsStore.stream || isMonitoring) return;
+        if (!audioSettingsStore.stream || isMonitoring) {
+            return;
+        }
 
         try {
             // Проверяем, что поток активен и не заглушен
@@ -26,9 +28,9 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
             }
 
             const audioContext = new AudioContext({
-                sampleRate: audioSettingsStore.sampleRate || 48000,
+                sampleRate: audioSettingsStore.sampleRate || 48000
             });
-            
+
             // Убеждаемся, что контекст активен
             if (audioContext.state === 'suspended') {
                 await audioContext.resume();
@@ -68,13 +70,15 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
     const visualize = () => {
         const canvas = canvasRef.current;
         const analyser = analyserRef.current;
-        
+
         if (!canvas || !analyser) {
             return;
         }
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) {
+            return;
+        }
 
         const bufferLength = analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
@@ -82,7 +86,9 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
         const height = canvas.height;
 
         const draw = () => {
-            if (!isMonitoring || !analyser) return;
+            if (!isMonitoring || !analyser) {
+                return;
+            }
 
             animationFrameRef.current = requestAnimationFrame(draw);
 
@@ -99,7 +105,7 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
             }
             // Используем комбинацию среднего и максимума для более точной визуализации
             const average = sum / bufferLength;
-            const normalizedLevel = Math.min((average * 0.7 + max * 0.3), 1);
+            const normalizedLevel = Math.min(average * 0.7 + max * 0.3, 1);
             setAudioLevel(normalizedLevel);
 
             // Очищаем canvas
@@ -141,15 +147,22 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
     };
 
     const getColorForLevel = (level: number): string => {
-        if (level > 0.8) return '#ff4444'; // Красный - слишком громко
-        if (level > 0.6) return '#ffaa00'; // Оранжевый - громко
-        if (level > 0.3) return '#44ff44'; // Зеленый - нормально
+        if (level > 0.8) {
+            return '#ff4444';
+        } // Красный - слишком громко
+        if (level > 0.6) {
+            return '#ffaa00';
+        } // Оранжевый - громко
+        if (level > 0.3) {
+            return '#44ff44';
+        } // Зеленый - нормально
         return '#8888ff'; // Синий - тихо
     };
 
     useEffect(() => {
-        const shouldMonitor = isActive && 
-            audioSettingsStore.stream && 
+        const shouldMonitor =
+            isActive &&
+            audioSettingsStore.stream &&
             !audioSettingsStore.isMicrophoneMuted &&
             audioSettingsStore.stream.getAudioTracks().length > 0 &&
             audioSettingsStore.stream.getAudioTracks()[0].enabled;
@@ -200,19 +213,14 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
     return (
         <div className="microphone-visualizer">
             <div className="visualizer-container">
-                <canvas
-                    ref={canvasRef}
-                    width={400}
-                    height={120}
-                    className="visualizer-canvas"
-                />
+                <canvas ref={canvasRef} width={400} height={120} className="visualizer-canvas" />
                 <div className="visualizer-info">
                     <div className="level-indicator">
                         <span className="level-label">Уровень:</span>
                         <div className="level-bar-container">
-                            <div 
+                            <div
                                 className="level-bar"
-                                style={{ 
+                                style={{
                                     width: `${audioLevel * 100}%`,
                                     backgroundColor: getColorForLevel(audioLevel)
                                 }}
@@ -221,14 +229,10 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
                         <span className="level-value">{Math.round(audioLevel * 100)}%</span>
                     </div>
                     {audioLevel > 0.9 && (
-                        <div className="warning-message">
-                            ⚠️ Слишком громко! Уменьшите громкость микрофона
-                        </div>
+                        <div className="warning-message">⚠️ Слишком громко! Уменьшите громкость микрофона</div>
                     )}
                     {audioLevel < 0.1 && audioSettingsStore.stream && (
-                        <div className="info-message">
-                            ℹ️ Микрофон не улавливает звук
-                        </div>
+                        <div className="info-message">ℹ️ Микрофон не улавливает звук</div>
                     )}
                 </div>
             </div>
@@ -237,4 +241,3 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
 });
 
 export default MicrophoneVisualizer;
-

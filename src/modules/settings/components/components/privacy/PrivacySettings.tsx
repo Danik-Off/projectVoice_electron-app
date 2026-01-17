@@ -10,21 +10,19 @@ const PrivacySettings: React.FC = () => {
                 <h2>{t('settingsPage.privacy.title')}</h2>
                 <p>{t('settingsPage.privacy.description')}</p>
             </div>
-            
+
             <div className="section-content">
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                👁️
-                            </div>
+                            <div className="icon-container">👁️</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.privacy.onlineStatus.title')}</h3>
                                 <p>{t('settingsPage.privacy.onlineStatus.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
@@ -32,8 +30,12 @@ const PrivacySettings: React.FC = () => {
                             </label>
                             <div className="setting-control">
                                 <select className="settings-select" defaultValue="friends">
-                                    <option value="everyone">{t('settingsPage.privacy.onlineStatus.options.everyone')}</option>
-                                    <option value="friends">{t('settingsPage.privacy.onlineStatus.options.friends')}</option>
+                                    <option value="everyone">
+                                        {t('settingsPage.privacy.onlineStatus.options.everyone')}
+                                    </option>
+                                    <option value="friends">
+                                        {t('settingsPage.privacy.onlineStatus.options.friends')}
+                                    </option>
                                     <option value="none">{t('settingsPage.privacy.onlineStatus.options.none')}</option>
                                 </select>
                                 <div className="setting-description">
@@ -41,7 +43,7 @@ const PrivacySettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.privacy.onlineStatus.showActivity')}</span>
@@ -63,16 +65,14 @@ const PrivacySettings: React.FC = () => {
                 <div className="settings-card">
                     <div className="card-header">
                         <div className="header-content">
-                            <div className="icon-container">
-                                🔒
-                            </div>
+                            <div className="icon-container">🔒</div>
                             <div className="header-text">
                                 <h3>{t('settingsPage.privacy.security.title')}</h3>
                                 <p>{t('settingsPage.privacy.security.subtitle')}</p>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="card-content">
                         <div className="setting-group">
                             <label className="setting-label">
@@ -89,7 +89,7 @@ const PrivacySettings: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="setting-group">
                             <label className="setting-label">
                                 <span>{t('settingsPage.privacy.security.loginNotifications')}</span>

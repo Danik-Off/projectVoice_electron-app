@@ -1,38 +1,37 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authStore, notificationStore } from '../../../../../../core';
-import { userStore } from '../../../../../../modules/auth';
 import type { ProfileForm, PasswordForm, ValidationErrors } from '../types';
 
 export const useProfileSettings = () => {
     const { t } = useTranslation();
-    
+
     // Состояния для модальных окон
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    
+
     // Состояния загрузки
     const [isLoading, setIsLoading] = useState(false);
     const [isPasswordLoading, setIsPasswordLoading] = useState(false);
-    
+
     // Формы
     const [editForm, setEditForm] = useState<ProfileForm>({
         username: authStore.user?.username || '',
         email: authStore.user?.email || ''
     });
-    
+
     const [passwordForm, setPasswordForm] = useState<PasswordForm>({
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
-    
+
     const [originalForm, setOriginalForm] = useState<ProfileForm>({
         username: authStore.user?.username || '',
         email: authStore.user?.email || ''
     });
-    
+
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
     // Обновляем формы при изменении пользователя
@@ -45,7 +44,6 @@ export const useProfileSettings = () => {
             setEditForm(userData);
             setOriginalForm(userData);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Валидация формы профиля
@@ -117,13 +115,15 @@ export const useProfileSettings = () => {
         setIsLoading(true);
         try {
             if (authStore.user?.id) {
-                await userStore.updateProfile(editForm);
+                await authStore.updateProfile(editForm);
                 setOriginalForm(editForm);
                 setShowEditProfile(false);
                 notificationStore.addNotification(t('settingsPage.profile.messages.profileUpdated'), 'success');
             }
         } catch (error: unknown) {
-            const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || t('settingsPage.profile.messages.updateError');
+            const errorMessage =
+                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                t('settingsPage.profile.messages.updateError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error updating profile:', error);
         } finally {
@@ -152,13 +152,15 @@ export const useProfileSettings = () => {
         setIsPasswordLoading(true);
         try {
             if (authStore.user?.id) {
-                await userStore.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+                await authStore.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
                 setShowPasswordForm(false);
                 setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                 notificationStore.addNotification(t('settingsPage.profile.messages.passwordChanged'), 'success');
             }
         } catch (error: unknown) {
-            const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || t('settingsPage.profile.messages.passwordChangeError');
+            const errorMessage =
+                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                t('settingsPage.profile.messages.passwordChangeError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error changing password:', error);
         } finally {
@@ -192,13 +194,13 @@ export const useProfileSettings = () => {
         editForm,
         passwordForm,
         validationErrors,
-        
+
         // Сеттеры
         setEditForm,
         setPasswordForm,
         setValidationErrors,
         setShowLogoutConfirm,
-        
+
         // Обработчики
         handleEdit,
         handleSave,
@@ -208,7 +210,7 @@ export const useProfileSettings = () => {
         handlePasswordCancel,
         handleLogout,
         confirmLogout,
-        
+
         // Валидация
         validateProfileForm,
         validatePasswordForm

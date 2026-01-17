@@ -12,7 +12,7 @@ interface CreateServerModalProps {
 const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }) => {
     const [serverName, setServerName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    
+
     // Будущий функционал (заложен на будущее)
     const [isPrivate, setIsPrivate] = useState(false);
     const [requireVerification, setRequireVerification] = useState(false);
@@ -20,26 +20,26 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
 
     const handleCreateServer = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         if (!serverName.trim()) {
             return;
         }
-        
+
         setIsLoading(true);
         try {
-            await serverStore.createServer({ 
+            await serverStore.createServer({
                 name: serverName.trim(),
                 isPrivate,
                 requireVerification,
                 allowInvites
             });
-            
+
             setServerName('');
             setIsPrivate(false);
             setRequireVerification(false);
             setAllowInvites(true);
             onClose();
-            
+
             notificationStore.addNotification('Сервер создан успешно!', 'success');
         } catch (error) {
             console.error('Ошибка создания сервера:', error);
@@ -60,13 +60,7 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
     };
 
     return (
-        <Modal
-            isOpen={isOpen}
-            onClose={handleClose}
-            title="Создать сервер"
-            size="small"
-            icon="➕"
-        >
+        <Modal isOpen={isOpen} onClose={handleClose} title="Создать сервер" size="small" icon="➕">
             <form className="create-server-form" onSubmit={handleCreateServer}>
                 <div className="create-server-form__field">
                     <label className="create-server-form__label">
@@ -126,16 +120,16 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
                 </div>
 
                 <div className="create-server-form__actions">
-                    <button 
-                        type="button" 
-                        className="create-server-form__button create-server-form__button--secondary" 
+                    <button
+                        type="button"
+                        className="create-server-form__button create-server-form__button--secondary"
                         onClick={handleClose}
                         disabled={isLoading}
                     >
                         Отмена
                     </button>
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="create-server-form__button create-server-form__button--primary"
                         disabled={!serverName.trim() || isLoading}
                     >
@@ -148,4 +142,3 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
 };
 
 export default CreateServerModal;
-

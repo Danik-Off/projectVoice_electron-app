@@ -13,12 +13,7 @@ interface MemberRoleManagerProps {
     onRoleChange: () => void;
 }
 
-const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
-    member,
-    serverId,
-    roles,
-    onRoleChange,
-}) => {
+const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, serverId, roles, onRoleChange }) => {
     const { t } = useTranslation();
     const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
     const [saving, setSaving] = useState(false);
@@ -26,9 +21,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
     useEffect(() => {
         // Загружаем текущие роли участника
         if (member.roles && Array.isArray(member.roles)) {
-            const roleIds = member.roles.map((r: Role | number) => 
-                typeof r === 'object' ? r.id : r
-            );
+            const roleIds = member.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r);
             setSelectedRoles(roleIds);
         } else {
             setSelectedRoles([]);
@@ -36,7 +29,9 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
     }, [member]);
 
     const toggleRole = async (roleId: number) => {
-        if (saving) return;
+        if (saving) {
+            return;
+        }
 
         const isSelected = selectedRoles.includes(roleId);
         setSaving(true);
@@ -45,11 +40,11 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
             if (isSelected) {
                 // Удаляем роль
                 await roleService.removeRoleFromMember(serverId, member.id, roleId);
-                setSelectedRoles(prev => prev.filter(id => id !== roleId));
+                setSelectedRoles((prev) => prev.filter((id) => id !== roleId));
             } else {
                 // Добавляем роль
                 await roleService.assignRoleToMember(serverId, member.id, roleId);
-                setSelectedRoles(prev => [...prev, roleId]);
+                setSelectedRoles((prev) => [...prev, roleId]);
             }
             onRoleChange();
         } catch (error) {
@@ -59,7 +54,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
         }
     };
 
-    const memberRoleIds = member.roles 
+    const memberRoleIds = member.roles
         ? member.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r)
         : [];
 
@@ -72,10 +67,10 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
             <div className="roles-list">
                 {sortedRoles.length === 0 ? (
                     <p className="no-roles">{t('serverSettings.noRolesAvailable') || 'Нет доступных ролей'}</p>
-                ) : (
-                    sortedRoles.map(role => {
-                        const isSelected = memberRoleIds.includes(role.id);
-                        return (
+                ) :
+                        sortedRoles.map((role) => {
+                            const isSelected = memberRoleIds.includes(role.id);
+                            return (
                             <label key={role.id} className="role-checkbox">
                                 <input
                                     type="checkbox"
@@ -83,19 +78,15 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({
                                     onChange={() => toggleRole(role.id)}
                                     disabled={saving}
                                 />
-                                <span 
-                                    className="role-color"
-                                    style={{ backgroundColor: role.color || '#5865F2' }}
-                                />
+                                <span className="role-color" style={{ backgroundColor: role.color || '#5865F2' }} />
                                 <span className="role-name">{role.name}</span>
                             </label>
-                        );
-                    })
-                )}
+                            );
+                        })
+                }
             </div>
         </div>
     );
 });
 
 export default MemberRoleManager;
-

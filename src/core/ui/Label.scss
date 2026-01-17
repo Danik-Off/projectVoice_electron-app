@@ -1,0 +1,15 @@
+@use '../../styles/main' as *;
+
+.ui-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: inline-block;
+
+    &--required {
+        .ui-label__asterisk {
+            color: var(--error-color);
+            margin-left: 2px;
+        }
+    }
+}
