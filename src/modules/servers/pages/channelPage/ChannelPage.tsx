@@ -5,7 +5,7 @@ import VoiceControls from './components/channelSidebar/components/voiceControls/
 import BlockedServerModal from '../../../../components/BlockedServerModal';
 import { useEffect, useState } from 'react';
 import { serverStore } from '../../../../modules/servers';
-import { eventBus, VOICE_EVENTS } from '../../../../core';
+import { eventBus, VOICE_EVENTS, notificationStore } from '../../../../core';
 import Spinner from '../../../../components/spinner/Spinner';
 import { observer } from 'mobx-react';
 import type { VoiceChannelConnectedEvent } from '../../../../core/events/events';
@@ -72,19 +72,28 @@ const ChannelPage = () => {
     useEffect(() => {
         if (serverId) {
             const id = Number(serverId);
-            // Загружаем данные сервера только если они еще не загружены или это другой сервер
-            if (!serverStore.currentServer || serverStore.currentServer.id !== id) {
-                serverStore.fetchServerById(id);
+            // Всегда загружаем сервер при изменении serverId, чтобы убедиться, что данные актуальны
+            serverStore.fetchServerById(id).catch((error) => {
+                console.error('Error fetching server:', error);
+                notificationStore.addNotification('Ошибка загрузки сервера', 'error');
+                navigate('/');
+            });
+        } else {
+            // Если serverId отсутствует, очищаем currentServer
+            if (serverStore.currentServer) {
+                serverStore.currentServer = null;
             }
         }
-    }, [serverId]);
+    }, [serverId, navigate]);
 
     // Проверяем, заблокирован ли сервер
     useEffect(() => {
         if (serverStore.currentServer?.isBlocked) {
             setShowBlockedModal(true);
+        } else {
+            setShowBlockedModal(false);
         }
-    }, []);
+    }, [serverStore.currentServer]);
 
     const handleBlockedModalClose = () => {
         setShowBlockedModal(false);

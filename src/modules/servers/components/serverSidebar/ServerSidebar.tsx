@@ -30,7 +30,7 @@ const ServerSidebar: React.FC = observer(() => {
         navigate('/admin');
     };
 
-    const handleServerClick = (server: Server) => {
+    const handleServerClick = async (server: Server) => {
         if (server.isBlocked) {
             setBlockedServer({
                 name: server.name,
@@ -39,6 +39,14 @@ const ServerSidebar: React.FC = observer(() => {
                 blockedBy: server.blockedByUser?.username
             });
         } else {
+            // Устанавливаем сервер сразу при клике для мгновенной реакции UI
+            if (serverStore.currentServer?.id !== server.id) {
+                // Предустанавливаем сервер из списка для быстрого отображения
+                const serverFromList = serverStore.servers.find((s) => s.id === server.id);
+                if (serverFromList) {
+                    serverStore.currentServer = serverFromList;
+                }
+            }
             navigate(`/server/${server.id}`);
         }
     };
