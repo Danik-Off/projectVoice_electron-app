@@ -21,9 +21,6 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
                 return;
             }
 
-            // Здесь будет логика удаления сервера через API
-            console.log('Deleting server:', server.id);
-
             // Пока что просто показываем уведомление
             notificationStore.addNotification(t('serverSettings.serverDeleted'), 'success', 3000);
 

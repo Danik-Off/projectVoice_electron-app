@@ -9,12 +9,12 @@ export const examplePlugin: IPlugin = {
     version: '1.0.0',
     dependencies: [],
     async initialize() {
-        console.log('Example plugin initialized');
+        console.warn('Example plugin initialized');
         // Здесь можно добавить логику инициализации
         // Например, подписка на события, регистрация обработчиков и т.д.
     },
     async destroy() {
-        console.log('Example plugin destroyed');
+        console.warn('Example plugin destroyed');
         // Очистка ресурсов при удалении плагина
     }
 };

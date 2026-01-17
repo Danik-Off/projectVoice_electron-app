@@ -23,9 +23,9 @@ export const serversModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Servers module initialized');
+        console.warn('Servers module initialized');
     },
     async destroy() {
-        console.log('Servers module destroyed');
+        console.warn('Servers module destroyed');
     }
 };

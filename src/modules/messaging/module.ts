@@ -17,11 +17,9 @@ export const messagingModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Messaging module initialized');
         // Инициализация подключения к сокетам для сообщений
     },
     async destroy() {
-        console.log('Messaging module destroyed');
         // Отключение от сокетов
     }
 };

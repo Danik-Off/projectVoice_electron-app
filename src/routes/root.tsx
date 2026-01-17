@@ -19,16 +19,6 @@ export function createRouter() {
     // Получаем все маршруты из зарегистрированных модулей
     const moduleRoutes = moduleManager.getRoutes();
 
-    console.log(
-        '📋 Module routes loaded:',
-        moduleRoutes.map((r) => ({
-            path: r.path,
-            moduleId: r.moduleId,
-            protected: r.protected,
-            admin: r.admin
-        }))
-    );
-
     // Разделяем маршруты на категории
     const publicRoutes = moduleRoutes.filter((route) => route.path === '/auth' || route.path === '/invite/:token');
 
@@ -53,21 +43,6 @@ export function createRouter() {
             route.path !== '/' &&
             route.path !== '/auth' &&
             route.path !== '/invite/:token'
-    );
-
-    console.log(
-        '🔓 Public routes:',
-        publicRoutes.map((r) => r.path)
-    );
-    console.log('🖥️ Server main route:', serverMainRoute?.path);
-    console.log(
-        '🖥️ Server child routes:',
-        serverChildRoutes.map((r) => r.path)
-    );
-    console.log('⚙️ Server settings route:', serverSettingsRoute?.path);
-    console.log(
-        '🔒 Other protected routes:',
-        otherProtectedRoutes.map((r) => r.path)
     );
 
     // Создаем структуру маршрутов
@@ -202,15 +177,6 @@ export function createRouter() {
             element: <Navigate to="/" replace />
         }
     ];
-
-    console.log('✅ Router created with', routes.length, 'top-level routes');
-    console.log(
-        '📊 Routes structure:',
-        routes.map((r) => ({
-            path: r.path,
-            hasChildren: Boolean((r as RouteObject).children)
-        }))
-    );
 
     return createBrowserRouter(routes);
 }

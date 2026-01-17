@@ -43,10 +43,10 @@ export async function initializeApp() {
             { name: 'messaging', module: messagingModule }
         ];
 
-        modules.forEach(({ name, module }) => {
-            console.warn(`  📝 Registering ${name} module (v${module.version})...`);
-            moduleManager.register(module);
-            console.warn(`  ✅ ${name} module registered`);
+        modules.forEach(({ name: moduleName, module: moduleInstance }) => {
+            console.warn(`  📝 Registering ${moduleName} module (v${moduleInstance.version})...`);
+            moduleManager.register(moduleInstance);
+            console.warn(`  ✅ ${moduleName} module registered`);
         });
 
         console.warn(`✅ All ${modules.length} modules registered`);
@@ -73,7 +73,7 @@ export async function initializeApp() {
                 // Применяем стили Discord как CSS-переменные
                 const root = document.documentElement;
                 Object.entries(appInfo.styles).forEach(([key, value]) => {
-                    if (value) {
+                    if (value !== null && value !== '') {
                         root.style.setProperty(`--discord-${key.toLowerCase()}`, value);
                     }
                 });

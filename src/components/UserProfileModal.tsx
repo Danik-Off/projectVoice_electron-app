@@ -16,8 +16,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
     const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'servers' | 'friends'>('overview');
     const [showEditMode, setShowEditMode] = useState(false);
     const [editData, setEditData] = useState({
-        username: user?.username || '',
-        status: user?.status || 'online',
+        username: user?.username ?? '',
+        status: user?.status ?? 'online',
         about: ''
     });
     const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +31,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
     }, [isOpen]);
 
     useEffect(() => {
-        if (user) {
+        if (user !== null) {
             setEditData({
-                username: user.username || '',
-                status: user.status || 'online',
+                username: user.username ?? '',
+                status: user.status ?? 'online',
                 about:
                     user.status === 'online'
                         ? 'Этот пользователь сейчас в сети и доступен для общения.'
@@ -54,8 +54,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
             day: 'numeric'
         });
 
-    const getStatusColor = (status?: string) => {
-        switch (status) {
+    const getStatusColor = (userStatus?: string) => {
+        switch (userStatus) {
             case 'online':
                 return '#4CAF50';
             case 'idle':
@@ -64,13 +64,15 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                 return '#F44336';
             case 'invisible':
                 return '#9E9E9E';
+            case undefined:
+                return '#9E9E9E';
             default:
                 return '#9E9E9E';
         }
     };
 
-    const getStatusText = (status?: string) => {
-        switch (status) {
+    const getStatusText = (userStatus?: string) => {
+        switch (userStatus) {
             case 'online':
                 return t('userProfile.status.online');
             case 'idle':
@@ -79,6 +81,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                 return t('userProfile.status.dnd');
             case 'invisible':
                 return t('userProfile.status.invisible');
+            case undefined:
+                return t('userProfile.status.offline');
             default:
                 return t('userProfile.status.offline');
         }
@@ -91,6 +95,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
             case 'moderator':
                 return '🛡️';
             case 'member':
+                return '👤';
+            case undefined:
                 return '👤';
             default:
                 return '👤';
@@ -127,7 +133,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Имитация API вызова
             setShowEditMode(false);
             // Обновляем данные пользователя
-            if (user) {
+            if (user !== null) {
                 Object.assign(user, editData);
             }
         } catch (error) {
@@ -139,8 +145,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
     const handleCancelEdit = () => {
         setEditData({
-            username: user?.username || '',
-            status: user?.status || 'online',
+            username: user?.username ?? '',
+            status: user?.status ?? 'online',
             about:
                 user?.status === 'online'
                     ? 'Этот пользователь сейчас в сети и доступен для общения.'
@@ -157,7 +163,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         <div className="profile-overview">
             <div className="profile-header">
                 <div className="profile-avatar-large">
-                    {user.profilePicture ? (
+                    {user.profilePicture !== null && user.profilePicture !== '' ? (
                         <img src={user.profilePicture} alt={user.username} />
                     ) : (
                         <div className="avatar-placeholder-large">{user.username.charAt(0).toUpperCase()}</div>
@@ -191,10 +197,10 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                     ) : (
                         <>
                             <h3 className="username">{user.username}</h3>
-                            <p className="user-tag">#{user.tag || '0000'}</p>
+                            <p className="user-tag">#{user.tag ?? '0000'}</p>
                             <p className="user-status">{getStatusText(user.status)}</p>
 
-                            {user.role ? (
+                            {user.role !== null && user.role !== '' ? (
                                 <div className="user-role">
                                     <span className="role-icon">{getRoleIcon(user.role)}</span>
                                     <span className="role-text">{t(`userProfile.roles.${user.role}`)}</span>
@@ -237,13 +243,15 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                         <div className="info-item">
                             <span className="info-label">{t('userProfile.accountInfo.memberSince')}</span>
                             <span className="info-value">
-                                {user.createdAt ? formatDate(user.createdAt) : t('userProfile.accountInfo.unknown')}
+                                {user.createdAt !== null && user.createdAt !== ''
+                                    ? formatDate(user.createdAt)
+                                    : t('userProfile.accountInfo.unknown')}
                             </span>
                         </div>
                         <div className="info-item">
                             <span className="info-label">{t('userProfile.accountInfo.accountStatus')}</span>
-                            <span className={`info-value status-${user.isActive ? 'active' : 'inactive'}`}>
-                                {user.isActive
+                            <span className={`info-value status-${user.isActive === true ? 'active' : 'inactive'}`}>
+                                {user.isActive === true
                                     ? t('userProfile.accountInfo.active')
                                     : t('userProfile.accountInfo.inactive')}
                             </span>
@@ -251,19 +259,19 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                     </div>
                 </div>
 
-                {user.blockedAt ? (
+                {user.blockedAt !== null && user.blockedAt !== '' ? (
                     <div className="detail-section warning">
                         <h4>{t('userProfile.blockedAccount.title')}</h4>
                         <p className="warning-text">{t('userProfile.blockedAccount.message')}</p>
                         <div className="block-details">
                             <p>
-                                <strong>{t('userProfile.blockedAccount.reason')}:</strong> {user.blockReason}
+                                <strong>{t('userProfile.blockedAccount.reason')}:</strong> {user.blockReason ?? ''}
                             </p>
                             <p>
                                 <strong>{t('userProfile.blockedAccount.blockedAt')}:</strong>{' '}
                                 {formatDate(user.blockedAt)}
                             </p>
-                            {user.blockedBy ? (
+                            {user.blockedBy !== null && user.blockedBy !== '' ? (
                                 <p>
                                     <strong>{t('userProfile.blockedAccount.blockedBy')}:</strong> {user.blockedBy}
                                 </p>
@@ -327,7 +335,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                         <h5>{t('userProfile.activity.music.title')}</h5>
                         <div className="music-activity">
                             <div className="music-item">
-                                <span className="song-name">"Bohemian Rhapsody"</span>
+                                <span className="song-name">&quot;Bohemian Rhapsody&quot;</span>
                                 <span className="artist-name">Queen</span>
                                 <span className="music-status">Слушает сейчас</span>
                             </div>
@@ -496,27 +504,29 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                                 </button>
                             </>
                         )}
-                        {isOwnProfile ? (
-                            <>
-                                {!showEditMode ? (
-                                    <button className="action-button primary" onClick={handleEditProfile}>
-                                        ✏️ {t('userProfile.actions.editProfile')}
+                        {isOwnProfile === true ? (
+                            !showEditMode ? (
+                                <button className="action-button primary" onClick={handleEditProfile}>
+                                    ✏️ {t('userProfile.actions.editProfile')}
+                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        className="action-button primary"
+                                        onClick={() => {
+                                            handleSaveProfile().catch(() => {
+                                                // Error handled in handleSaveProfile
+                                            });
+                                        }}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? '⏳ Сохранение...' : '💾 Сохранить'}
                                     </button>
-                                ) : (
-                                    <>
-                                        <button
-                                            className="action-button primary"
-                                            onClick={handleSaveProfile}
-                                            disabled={isLoading}
-                                        >
-                                            {isLoading ? '⏳ Сохранение...' : '💾 Сохранить'}
-                                        </button>
-                                        <button className="action-button secondary" onClick={handleCancelEdit}>
-                                            ❌ Отмена
-                                        </button>
-                                    </>
-                                )}
-                            </>
+                                    <button className="action-button secondary" onClick={handleCancelEdit}>
+                                        ❌ Отмена
+                                    </button>
+                                </>
+                            )
                         ) : null}
                     </div>
                 </div>

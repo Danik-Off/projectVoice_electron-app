@@ -49,7 +49,7 @@ const AudioSettings: React.FC = observer(() => {
             // Проверяем, действительно ли настройки изменились
             if (currentSettingsString !== lastSettings && roomStore.currentVoiceChannel) {
                 lastSettings = currentSettingsString;
-                console.log('AudioSettings: Settings changed, auto-reconnecting...');
+
                 handleAutoReconnect();
             }
         };
@@ -65,8 +65,6 @@ const AudioSettings: React.FC = observer(() => {
             isReconnectingRef.current = true;
             const currentChannel = roomStore.currentVoiceChannel;
 
-            console.log('AudioSettings: Starting auto-reconnect to channel:', currentChannel.name);
-
             try {
                 // Отключаемся от текущего канала
                 roomStore.disconnectToRoom();
@@ -75,7 +73,6 @@ const AudioSettings: React.FC = observer(() => {
                 setTimeout(() => {
                     // Переподключаемся с новыми настройками
                     roomStore.connectToRoom(currentChannel.id, currentChannel.name);
-                    console.log('AudioSettings: Auto-reconnect completed');
 
                     // Сбрасываем флаг переподключения через 3 секунды
                     setTimeout(() => {

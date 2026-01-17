@@ -14,7 +14,7 @@ const ProfileDemo: React.FC = () => {
             email: 'alice@example.com',
             role: 'admin',
             isActive: true,
-            profilePicture: undefined,
+            profilePicture: null,
             status: 'online',
             tag: '1234',
             createdAt: '2024-01-01T00:00:00Z'
@@ -25,7 +25,7 @@ const ProfileDemo: React.FC = () => {
             email: 'bob@example.com',
             role: 'moderator',
             isActive: true,
-            profilePicture: undefined,
+            profilePicture: null,
             status: 'idle',
             tag: '5678',
             createdAt: '2024-02-01T00:00:00Z'
@@ -36,7 +36,7 @@ const ProfileDemo: React.FC = () => {
             email: 'charlie@example.com',
             role: 'member',
             isActive: false,
-            profilePicture: undefined,
+            profilePicture: null,
             status: 'offline',
             tag: '9012',
             createdAt: '2024-03-01T00:00:00Z'
@@ -47,7 +47,7 @@ const ProfileDemo: React.FC = () => {
             email: 'diana@example.com',
             role: 'admin',
             isActive: true,
-            profilePicture: undefined,
+            profilePicture: null,
             status: 'dnd',
             tag: '3456',
             createdAt: '2024-04-01T00:00:00Z',

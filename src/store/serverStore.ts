@@ -23,7 +23,7 @@ class ServerStore {
         });
 
         try {
-            const data: Server[] = await serverService.get();
+            const data = (await serverService.get()) as Server[];
             runInAction(() => {
                 this.servers = data;
             });
@@ -47,7 +47,7 @@ class ServerStore {
         });
 
         try {
-            const data: Server = await serverService.getBy(id);
+            const data = (await serverService.getBy(id)) as Server;
             runInAction(() => {
                 this.currentServer = data;
             });
@@ -76,8 +76,7 @@ class ServerStore {
         });
 
         try {
-            const newServer: Server = await serverService.create(serverData);
-            console.log('🚀 ~ ServerStore ~ createServer ~ newServer:', newServer);
+            const newServer = (await serverService.create(serverData)) as Server;
             runInAction(() => {
                 this.servers.push(newServer);
             });
@@ -96,7 +95,7 @@ class ServerStore {
         });
 
         try {
-            const updatedServer: Server = await serverService.update(id, updatedData);
+            const updatedServer = (await serverService.update(id, updatedData)) as Server;
             runInAction(() => {
                 this.servers = this.servers.map((server) => (server.id === id ? updatedServer : server));
 
@@ -128,7 +127,6 @@ class ServerStore {
                     this.currentServer = null;
                 }
             });
-            console.log('Сервер удален из store, обновленный список:', this.servers);
         } catch (error) {
             runInAction(() => {
                 this.error = (error as Error).message;

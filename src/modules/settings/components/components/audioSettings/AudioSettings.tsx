@@ -6,26 +6,17 @@ import roomStore from '../../../../../store/roomStore';
 import './audioSettings.scss';
 
 const AudioSettings: React.FC = observer(() => {
-    const { t } = useTranslation();
-    const [isMicActive, setIsMicActive] = useState(false);
-    const [isSpeakerActive, setIsSpeakerActive] = useState(false);
     const isReconnectingRef = useRef(false);
 
     // Инициализируем микрофон при открытии настроек аудио
     useEffect(() => {
-        console.log('AudioSettings: Checking microphone initialization for audio settings...');
-
         // Проверяем, нужен ли микрофон и не инициализирован ли он уже
         if (!audioSettingsStore.isMicrophoneNeeded()) {
-            console.log('AudioSettings: Initializing microphone for audio settings...');
             audioSettingsStore.initMedia();
-        } else {
-            console.log('AudioSettings: Microphone already initialized, skipping initialization');
         }
 
         // Очищаем микрофон при закрытии настроек аудио
         return () => {
-            console.log('AudioSettings: Cleaning up microphone after closing audio settings...');
             // Не очищаем микрофон, если пользователь находится в голосовом канале
             if (!roomStore.currentVoiceChannel) {
                 audioSettingsStore.cleanup();
@@ -72,14 +63,14 @@ const AudioSettings: React.FC = observer(() => {
             if (!isInitialized) {
                 lastSettings = currentSettingsString;
                 isInitialized = true;
-                console.log('AudioSettings: Initial settings captured, auto-reconnect disabled for first check');
+
                 return;
             }
 
             // Проверяем, действительно ли настройки изменились
             if (currentSettingsString !== lastSettings && roomStore.currentVoiceChannel) {
                 lastSettings = currentSettingsString;
-                console.log('AudioSettings: Settings changed, auto-reconnecting...');
+
                 handleAutoReconnect();
             }
         };
@@ -95,8 +86,6 @@ const AudioSettings: React.FC = observer(() => {
             isReconnectingRef.current = true;
             const currentChannel = roomStore.currentVoiceChannel;
 
-            console.log('AudioSettings: Starting auto-reconnect to channel:', currentChannel.name);
-
             try {
                 // Отключаемся от текущего канала
                 roomStore.disconnectToRoom();
@@ -105,7 +94,6 @@ const AudioSettings: React.FC = observer(() => {
                 setTimeout(() => {
                     // Переподключаемся с новыми настройками
                     roomStore.connectToRoom(currentChannel.id, currentChannel.name);
-                    console.log('AudioSettings: Auto-reconnect completed');
 
                     // Сбрасываем флаг переподключения через 3 секунды
                     setTimeout(() => {
@@ -305,14 +293,7 @@ const AudioSettings: React.FC = observer(() => {
                             </div>
                             <div className="setting-control">
                                 <div className="volume-control">
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="200"
-                                        value={50}
-                                        onChange={(e) => console.log('Speaker volume:', e.target.value)}
-                                        className="settings-slider"
-                                    />
+                                    <input type="range" min="0" max="200" value={50} className="settings-slider" />
                                     <span className="volume-value">50%</span>
                                 </div>
                                 <div className="volume-visualizer">

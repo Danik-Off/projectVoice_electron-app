@@ -34,19 +34,19 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({ isOpen, onClo
                 <div className="blocked-account-modal__content">
                     <p className="blocked-account-modal__message">Ваш аккаунт был заблокирован администрацией.</p>
 
-                    {reason ? (
+                    {reason !== null && reason !== '' ? (
                         <div className="blocked-account-modal__reason-section">
                             <h3 className="blocked-account-modal__reason-section-title">Причина блокировки:</h3>
                             <p className="blocked-account-modal__reason-section-text">{reason}</p>
                         </div>
                     ) : null}
 
-                    {blockedAt ? (
+                    {blockedAt !== null && blockedAt !== '' ? (
                         <div className="blocked-account-modal__details-section">
                             <p className="blocked-account-modal__details-section-item">
                                 <strong>Дата блокировки:</strong> {formatDate(blockedAt)}
                             </p>
-                            {blockedBy ? (
+                            {blockedBy !== null && blockedBy !== '' ? (
                                 <p className="blocked-account-modal__details-section-item">
                                     <strong>Заблокирован:</strong> {blockedBy}
                                 </p>

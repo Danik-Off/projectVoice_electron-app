@@ -12,9 +12,10 @@ const MessageInput: React.FC = () => {
 
     // Подписка на выбор канала
     useEffect(() => {
-        const unsubscribe = eventBus.on<ChannelSelectedEvent>(CHANNELS_EVENTS.CHANNEL_SELECTED, (data) => {
-            if (data) {
-                setCurrentChannelId(data.channel.id);
+        const unsubscribe = eventBus.on(CHANNELS_EVENTS.CHANNEL_SELECTED, (data) => {
+            const channelData = data as ChannelSelectedEvent;
+            if (channelData != null) {
+                setCurrentChannelId(channelData.channel.id);
             }
         });
 
@@ -120,7 +121,6 @@ const MessageInput: React.FC = () => {
                                 title="Эмодзи"
                                 onClick={() => {
                                     // Здесь можно добавить эмодзи пикер
-                                    console.log('Emoji picker');
                                 }}
                             >
                                 😊
@@ -130,7 +130,6 @@ const MessageInput: React.FC = () => {
                                 title="Прикрепить файл"
                                 onClick={() => {
                                     // Здесь можно добавить загрузку файлов
-                                    console.log('File upload');
                                 }}
                             >
                                 📎

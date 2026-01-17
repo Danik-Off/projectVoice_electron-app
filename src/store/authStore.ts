@@ -41,18 +41,18 @@ class AuthStore {
         this.token = getCookie('token');
         this.isAuthenticated = this.token !== null;
 
-        console.log('AuthStore constructor - token:', this.token, 'isAuthenticated:', this.isAuthenticated);
-
         // Загружаем данные пользователя, если есть токен
-        if (this.token) {
-            this.loadUserData();
+        if (this.token != null && this.token !== '') {
+            this.loadUserData().catch(() => {
+                // Error handled in loadUserData
+            });
         }
     }
 
     public async login(email: string, password: string, redirect?: string | null): Promise<void> {
         try {
             this.loading = true;
-            const data = await authService.login(email, password);
+            const data = (await authService.login(email, password)) as { user: AuthStore['user']; token: string };
             this.user = data.user;
             this.token = data.token;
 
@@ -63,32 +63,31 @@ class AuthStore {
             this.loading = false;
 
             // Перенаправление после успешного входа
-            if (redirect) {
+            if (redirect != null && redirect !== '') {
                 window.location.href = redirect;
             } else {
                 window.location.href = '/';
             }
         } catch (error) {
             this.loading = false;
-            console.error('Login failed', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('Login failed', errorMessage);
             throw error; // Пробрасываем ошибку для обработки в компоненте
         }
     }
 
     public async loadUserData(): Promise<void> {
         try {
-            if (!this.token) {
-                console.log('No token available for loadUserData');
+            if (this.token == null || this.token === '') {
                 return;
             }
 
-            console.log('Loading user data with token:', this.token);
             const userData = await authService.getMe();
-            console.log('User data loaded:', userData);
-            this.user = userData;
+            this.user = userData as typeof this.user;
             this.isAuthenticated = true;
         } catch (error) {
-            console.error('Failed to load user data:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.error('Failed to load user data:', errorMessage);
             notificationStore.addNotification('notifications.serverDataLoadError', 'error');
             // Если не удалось загрузить данные пользователя, очищаем токен
             this.logout();
@@ -98,11 +97,11 @@ class AuthStore {
     public async register(username: string, email: string, password: string, redirect?: string | null): Promise<void> {
         try {
             this.loading = true;
-            const data = await authService.register(email, username, password);
+            const data = (await authService.register(email, username, password)) as { token: string };
 
             // После успешной регистрации получаем информацию о пользователе
             const userData = await authService.getMe();
-            this.user = userData;
+            this.user = userData as typeof this.user;
             this.token = data.token;
 
             // Сохранение токена в cookie
@@ -112,7 +111,7 @@ class AuthStore {
             this.loading = false;
 
             // Перенаправление после успешной регистрации
-            if (redirect) {
+            if (redirect != null && redirect !== '') {
                 window.location.href = redirect;
             } else {
                 window.location.href = '/';

@@ -92,7 +92,7 @@ class EventBus {
      * Получить количество подписчиков на событие
      */
     public listenerCount(eventName: string): number {
-        return this.events.get(eventName)?.size || 0;
+        return this.events.get(eventName)?.size ?? 0;
     }
 }
 

@@ -30,7 +30,6 @@ class VoiceActivityService {
     public initialize(): void {
         if (!this.audioContext) {
             this.audioContext = new AudioContext();
-            console.log('VoiceActivityService: AudioContext created');
         }
     }
 
@@ -56,8 +55,6 @@ class VoiceActivityService {
     }
 
     public startMonitoring = action((userId: string, audioStream: MediaStream): void => {
-        console.log(`VoiceActivityService: Starting monitoring for user: ${userId}`);
-
         if (!this.audioContext) {
             console.error('VoiceActivityService: AudioContext not initialized');
             return;
@@ -86,8 +83,6 @@ class VoiceActivityService {
             this.volumes.set(userId, 0);
 
             this.monitorUser(userId);
-
-            console.log(`VoiceActivityService: Monitoring started for user: ${userId}`);
         } catch (error) {
             console.error(`VoiceActivityService: Error starting monitoring for user ${userId}:`, error);
         }
@@ -104,8 +99,6 @@ class VoiceActivityService {
         this.dataArrays.delete(userId);
         this.isActive.delete(userId);
         this.volumes.delete(userId);
-
-        console.log(`VoiceActivityService: Monitoring stopped for user: ${userId}`);
     });
 
     private monitorUser(userId: string): void {
@@ -196,8 +189,6 @@ class VoiceActivityService {
             this.audioContext.close();
             this.audioContext = null;
         }
-
-        console.log('VoiceActivityService: Cleaned up');
     });
 }
 

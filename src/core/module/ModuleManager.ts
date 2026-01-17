@@ -2,6 +2,7 @@
  * Менеджер модулей
  * Управляет жизненным циклом модулей и их маршрутами
  */
+import type React from 'react';
 import type { IModule } from '../types';
 
 export class ModuleManager {
@@ -18,35 +19,37 @@ export class ModuleManager {
     /**
      * Регистрация модуля
      */
-    register(module: IModule): void {
-        if (this.modules.has(module.id)) {
-            console.warn(`Module ${module.id} is already registered`);
+    register(moduleInstance: IModule): void {
+        if (this.modules.has(moduleInstance.id)) {
+            console.warn(`Module ${moduleInstance.id} is already registered`);
             return;
         }
 
-        this.modules.set(module.id, module);
+        this.modules.set(moduleInstance.id, moduleInstance);
 
         // Регистрируем маршруты модуля
-        if (module.routes) {
-            module.routes.forEach((route) => {
+        if (moduleInstance.routes) {
+            moduleInstance.routes.forEach((route) => {
                 this.routes.push({
                     ...route,
-                    moduleId: module.id
+                    moduleId: moduleInstance.id
                 });
             });
         }
 
-        console.warn(`Module ${module.id} registered`);
+        console.warn(`Module ${moduleInstance.id} registered`);
     }
 
     /**
      * Удаление модуля
      */
     unregister(moduleId: string): void {
-        const module = this.modules.get(moduleId);
-        if (module) {
+        const moduleInstance = this.modules.get(moduleId);
+        if (moduleInstance !== null) {
             if (this.initializedModules.has(moduleId)) {
-                this.destroy(moduleId);
+                this.destroy(moduleId).catch(() => {
+                    // Destroy error handled silently
+                });
             }
 
             // Удаляем маршруты модуля
@@ -64,6 +67,7 @@ export class ModuleManager {
         const sortedModules = this.sortModulesByDependencies();
 
         for (const moduleId of sortedModules) {
+            // Последовательная инициализация необходима для соблюдения зависимостей
             await this.initialize(moduleId);
         }
     }
@@ -77,14 +81,16 @@ export class ModuleManager {
             return;
         }
 
-        const module = this.modules.get(moduleId);
-        if (!module) {
+        const moduleInstance = this.modules.get(moduleId);
+        if (!moduleInstance) {
             throw new Error(`Module ${moduleId} not found`);
         }
 
         // Проверяем зависимости
-        if (module.dependencies) {
-            for (const depId of module.dependencies) {
+        if (moduleInstance.dependencies) {
+            // Последовательная инициализация зависимостей необходима
+
+            for (const depId of moduleInstance.dependencies) {
                 if (!this.initializedModules.has(depId)) {
                     await this.initialize(depId);
                 }
@@ -92,7 +98,7 @@ export class ModuleManager {
         }
 
         try {
-            await module.initialize();
+            await moduleInstance.initialize();
             this.initializedModules.add(moduleId);
             console.warn(`Module ${moduleId} initialized`);
         } catch (error) {
@@ -109,10 +115,10 @@ export class ModuleManager {
             return;
         }
 
-        const module = this.modules.get(moduleId);
-        if (module?.destroy) {
+        const moduleInstance = this.modules.get(moduleId);
+        if (moduleInstance?.destroy) {
             try {
-                await module.destroy();
+                await moduleInstance.destroy();
             } catch (error) {
                 console.error(`Error destroying module ${moduleId}:`, error);
             }
@@ -127,6 +133,7 @@ export class ModuleManager {
     async destroyAll(): Promise<void> {
         const initializedModules = Array.from(this.initializedModules);
         // Уничтожаем в обратном порядке
+
         for (let i = initializedModules.length - 1; i >= 0; i--) {
             await this.destroy(initializedModules[i]);
         }
@@ -183,9 +190,9 @@ export class ModuleManager {
             }
 
             visiting.add(moduleId);
-            const module = this.modules.get(moduleId);
-            if (module?.dependencies) {
-                for (const depId of module.dependencies) {
+            const moduleInstance = this.modules.get(moduleId);
+            if (moduleInstance?.dependencies) {
+                for (const depId of moduleInstance.dependencies) {
                     if (!this.modules.has(depId)) {
                         throw new Error(`Module ${moduleId} depends on ${depId}, but ${depId} is not registered`);
                     }

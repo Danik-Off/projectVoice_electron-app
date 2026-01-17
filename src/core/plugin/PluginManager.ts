@@ -29,7 +29,9 @@ export class PluginManager {
         const plugin = this.plugins.get(pluginId);
         if (plugin) {
             if (this.initializedPlugins.has(pluginId)) {
-                this.destroy(pluginId);
+                this.destroy(pluginId).catch(() => {
+                    // Destroy error handled silently
+                });
             }
             this.plugins.delete(pluginId);
             console.warn(`Plugin ${pluginId} unregistered`);
@@ -41,6 +43,8 @@ export class PluginManager {
      */
     async initializeAll(): Promise<void> {
         const sortedPlugins = this.sortPluginsByDependencies();
+
+        // Последовательная инициализация необходима для соблюдения зависимостей
 
         for (const pluginId of sortedPlugins) {
             await this.initialize(pluginId);
@@ -63,6 +67,8 @@ export class PluginManager {
 
         // Проверяем зависимости
         if (plugin.dependencies) {
+            // Последовательная инициализация зависимостей необходима
+
             for (const depId of plugin.dependencies) {
                 if (!this.initializedPlugins.has(depId)) {
                     await this.initialize(depId);
@@ -110,6 +116,8 @@ export class PluginManager {
      */
     async destroyAll(): Promise<void> {
         const reversedOrder = [...this.initializationOrder].reverse();
+        // Уничтожаем в обратном порядке
+
         for (const pluginId of reversedOrder) {
             await this.destroy(pluginId);
         }

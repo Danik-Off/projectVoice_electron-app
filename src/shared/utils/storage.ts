@@ -13,7 +13,6 @@ const USER_KEY = 'auth_user';
 export const saveToken = (token: string): void => {
     try {
         localStorage.setItem(TOKEN_KEY, token);
-        console.log('✅ Token saved to localStorage');
     } catch (error) {
         console.error('❌ Failed to save token to localStorage:', error);
         throw error;
@@ -39,7 +38,6 @@ export const getToken = (): string | null => {
 export const removeToken = (): void => {
     try {
         localStorage.removeItem(TOKEN_KEY);
-        console.log('✅ Token removed from localStorage');
     } catch (error) {
         console.error('❌ Failed to remove token from localStorage:', error);
     }
@@ -56,7 +54,6 @@ export const hasToken = (): boolean => getToken() !== null;
 export const saveUser = (user: User): void => {
     try {
         localStorage.setItem(USER_KEY, JSON.stringify(user));
-        console.log('✅ User data saved to localStorage');
     } catch (error) {
         console.error('❌ Failed to save user data to localStorage:', error);
     }
@@ -84,7 +81,6 @@ export const getUser = (): User | null => {
 export const removeUser = (): void => {
     try {
         localStorage.removeItem(USER_KEY);
-        console.log('✅ User data removed from localStorage');
     } catch (error) {
         console.error('❌ Failed to remove user data from localStorage:', error);
     }

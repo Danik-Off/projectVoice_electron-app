@@ -13,16 +13,7 @@ import Auth from '../modules/auth/pages/Auth';
 import NotFound from './routes/NotFound';
 // Auth будет получен из модуля через маршруты, но добавим fallback
 
-export function createAppRouter() {
-    // Получаем маршруты из модулей
-    const moduleRoutes = moduleManager.getRoutes();
-
-    console.warn(
-        'Module routes:',
-        moduleRoutes.map((r) => ({ path: r.path, moduleId: r.moduleId }))
-    );
-
-    // Разделяем маршруты на категории
+function categorizeRoutes(moduleRoutes: ReturnType<typeof moduleManager.getRoutes>) {
     const serverRoutes = moduleRoutes.filter(
         (route) => route.path.includes('server/:serverId') && route.path !== 'server/:serverId'
     );
@@ -37,11 +28,26 @@ export function createAppRouter() {
             route.path !== '/invite/:token'
     );
 
-    console.log(
+    return { serverRoutes, publicRoutes, otherRoutes };
+}
+
+export function createAppRouter() {
+    // Получаем маршруты из модулей
+    const moduleRoutes = moduleManager.getRoutes();
+
+    console.warn(
+        'Module routes:',
+        moduleRoutes.map((r) => ({ path: r.path, moduleId: r.moduleId }))
+    );
+
+    // Разделяем маршруты на категории
+    const { serverRoutes, publicRoutes, otherRoutes } = categorizeRoutes(moduleRoutes);
+
+    console.warn(
         'Public routes:',
         publicRoutes.map((r) => r.path)
     );
-    console.log(
+    console.warn(
         'Other routes:',
         otherRoutes.map((r) => r.path)
     );
@@ -88,13 +94,14 @@ export function createAppRouter() {
                             const childPath = route.path.replace(/^server\/:serverId\//, '');
                             return {
                                 path: childPath,
-                                element: route.protected ? (
-                                    <ProtectedRoute>
+                                element:
+                                    route.protected === true ? (
+                                        <ProtectedRoute>
+                                            <route.component />
+                                        </ProtectedRoute>
+                                    ) : (
                                         <route.component />
-                                    </ProtectedRoute>
-                                ) : (
-                                    <route.component />
-                                )
+                                    )
                             };
                         })
                     ]
@@ -106,17 +113,18 @@ export function createAppRouter() {
                 // Динамические маршруты из модулей (settings, admin и т.д.)
                 ...otherRoutes.map((route) => ({
                     path: route.path.startsWith('/') ? route.path.substring(1) : route.path,
-                    element: route.admin ? (
-                        <AdminRoute>
+                    element:
+                        route.admin === true ? (
+                            <AdminRoute>
+                                <route.component />
+                            </AdminRoute>
+                        ) : route.protected === true ? (
+                            <ProtectedRoute>
+                                <route.component />
+                            </ProtectedRoute>
+                        ) : (
                             <route.component />
-                        </AdminRoute>
-                    ) : route.protected ? (
-                        <ProtectedRoute>
-                            <route.component />
-                        </ProtectedRoute>
-                    ) : (
-                        <route.component />
-                    )
+                        )
                 })),
                 // Catch-all для 404 внутри защищенных маршрутов
                 {

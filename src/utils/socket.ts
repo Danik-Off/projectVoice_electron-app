@@ -1,28 +1,27 @@
-import type { Socket } from 'socket.io-client';
-import { io } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import { getCookie } from './cookie';
-import { SocketClientState } from '../types/socket.types';
+import { SocketClientState, type SocketClientStateType } from '../types/socket.types';
 import { iceServers } from '../configs/iceServers';
 
 class SocketClient {
     public users = [];
 
-    public onStateChange: ((state: SocketClientState) => void) | null = null;
+    public onStateChange: ((state: SocketClientStateType) => void) | null = null;
 
     // Getter for state
-    public get state(): SocketClientState {
+    public get state(): SocketClientStateType {
         return this._state;
     }
 
     // Public setter for state
-    public set state(newState: SocketClientState) {
+    public set state(newState: SocketClientStateType) {
         this._state = newState; // Update the state
-        if (this.onStateChange) {
+        if (this.onStateChange != null) {
             this.onStateChange(this._state); // Invoke the handler if set
         }
     }
 
-    private _state: SocketClientState;
+    private _state: SocketClientStateType;
 
     private token: string;
     private socket: Socket | null;
@@ -37,7 +36,7 @@ class SocketClient {
     };
 
     constructor() {
-        this.token = getCookie('token') || '';
+        this.token = getCookie('token') ?? '';
         this.socket = null;
         this.peerConnections = {};
         this.localStream = null;
@@ -46,8 +45,9 @@ class SocketClient {
     }
 
     public muteMicrophone() {
-        if (this.localStream) {
+        if (this.localStream != null) {
             this.localStream.getAudioTracks().forEach((track) => {
+                // eslint-disable-next-line no-param-reassign -- Необходимо изменить свойство enabled для MediaStreamTrack
                 track.enabled = false; // Mute the audio track
             });
             this.socket?.emit('mute');
@@ -56,8 +56,9 @@ class SocketClient {
     }
 
     public unmuteMicrophone() {
-        if (this.localStream) {
+        if (this.localStream != null) {
             this.localStream.getAudioTracks().forEach((track) => {
+                // eslint-disable-next-line no-param-reassign -- Необходимо изменить свойство enabled для MediaStreamTrack
                 track.enabled = true; // Unmute the audio track
             });
             this.socket?.emit('unmute');
@@ -66,7 +67,7 @@ class SocketClient {
     }
 
     public connect(channelId: number) {
-        if (this.socket && this.socket.connected) {
+        if (this.socket?.connected === true) {
             return;
         }
 
@@ -90,16 +91,23 @@ class SocketClient {
 
         this.socket.on('user-connected', async (user: { socketId: string }) => {
             await this.initializeMedia(); // Initialize media
-            this.createOffer(user.socketId); // Initiate connection with the new user
+            this.createOffer(user.socketId).catch(() => {
+                // Error handled in createOffer
+            }); // Initiate connection with the new user
         });
 
         this.socket.on('user-disconnected', (socketId: string) => {
             this.disconnectPeer(socketId); // Close connection with the disconnected user
         });
 
-        this.socket.on('signal', (data) => {
-            this.handleSignal(data);
-        });
+        this.socket.on(
+            'signal',
+            (data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) => {
+                this.handleSignal(data).catch(() => {
+                    // Error handled in handleSignal
+                });
+            }
+        );
 
         this.socket.on('connect_error', () => {
             // Ошибка Socket.IO подключения
@@ -115,17 +123,20 @@ class SocketClient {
         try {
             this.localStream = await navigator.mediaDevices.getUserMedia(this.streamConstraints);
             this.state = SocketClientState.MEDIA_INITIALIZED;
-            if (this.localStream) {
+            if (this.localStream != null) {
                 for (const socketId in this.peerConnections) {
-                    this.localStream.getTracks().forEach((track) => {
-                        if (this.localStream) {
-                            this.peerConnections[socketId].addTrack(track, this.localStream);
-                        }
-                    });
+                    if (Object.hasOwn(this.peerConnections, socketId)) {
+                        this.localStream.getTracks().forEach((audioTrack) => {
+                            if (this.localStream != null) {
+                                this.peerConnections[socketId].addTrack(audioTrack, this.localStream);
+                            }
+                        });
+                    }
                 }
             }
-            if (this.isMuteMicro) {
+            if (this.isMuteMicro && this.localStream != null) {
                 this.localStream.getAudioTracks().forEach((track) => {
+                    // eslint-disable-next-line no-param-reassign -- Необходимо изменить свойство enabled для MediaStreamTrack
                     track.enabled = false; // Mute the audio track
                 });
             }
@@ -141,33 +152,33 @@ class SocketClient {
             iceServers
         });
 
-        peerConnection.onicecandidate = (event) => {
-            if (event.candidate) {
+        peerConnection.onicecandidate = (iceEvent) => {
+            if (iceEvent.candidate != null) {
                 this.socket?.emit('signal', {
                     to: targetUserId,
                     type: 'candidate',
-                    candidate: event.candidate
+                    candidate: iceEvent.candidate
                 });
             }
         };
 
-        peerConnection.ontrack = (event) => {
-            if (!this.remoteStreams[targetUserId]) {
+        peerConnection.ontrack = (trackEvent) => {
+            if (this.remoteStreams[targetUserId] == null) {
                 this.remoteStreams[targetUserId] = new MediaStream();
-                console.log('Удалённый поток добавлен для пользователя:', targetUserId);
+                console.warn('Удалённый поток добавлен для пользователя:', targetUserId);
                 const audioElement = document.createElement('audio');
                 audioElement.srcObject = this.remoteStreams[targetUserId];
                 audioElement.autoplay = true;
                 document.body.appendChild(audioElement);
             }
-            this.remoteStreams[targetUserId].addTrack(event.track);
+            this.remoteStreams[targetUserId].addTrack(trackEvent.track);
         };
 
         // Add local tracks to the PeerConnection
-        if (this.localStream) {
-            this.localStream.getTracks().forEach((track) => {
-                if (this.localStream) {
-                    peerConnection.addTrack(track, this.localStream);
+        if (this.localStream != null) {
+            this.localStream.getTracks().forEach((audioTrack) => {
+                if (this.localStream != null) {
+                    peerConnection.addTrack(audioTrack, this.localStream);
                 }
             });
         }
@@ -210,7 +221,7 @@ class SocketClient {
     private async handleSignal(data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) {
         const { from, type, sdp, candidate } = data;
 
-        if (!this.peerConnections[from]) {
+        if (this.peerConnections[from] == null) {
             this.createPeerConnection(from); // Create PeerConnection if it doesn't exist
         }
 
@@ -225,28 +236,40 @@ class SocketClient {
     }
 
     private disconnectPeer(socketId: string) {
-        if (this.peerConnections[socketId]) {
-            this.peerConnections[socketId].close(); // Close the connection
+        const peerConnection = this.peerConnections[socketId];
+        if (peerConnection != null) {
+            peerConnection.close(); // Close the connection
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Необходимо удалить динамическое свойство
             delete this.peerConnections[socketId]; // Remove from storage
         }
-        if (this.remoteStreams[socketId]) {
-            this.remoteStreams[socketId].getTracks().forEach((track) => track.stop());
+        const remoteStream = this.remoteStreams[socketId];
+        if (remoteStream != null) {
+            remoteStream.getTracks().forEach((audioTrack) => {
+                audioTrack.stop();
+            });
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- Необходимо удалить динамическое свойство
             delete this.remoteStreams[socketId]; // Remove remote stream
         }
     }
 
     public disconnect() {
-        if (this.socket) {
+        if (this.socket != null) {
             this.socket.disconnect();
         }
-        Object.values(this.peerConnections).forEach((peerConnection) => peerConnection.close());
+        Object.values(this.peerConnections).forEach((peerConnection) => {
+            peerConnection.close();
+        });
         this.peerConnections = {};
-        if (this.localStream) {
-            this.localStream.getTracks().forEach((track) => track.stop());
+        if (this.localStream != null) {
+            this.localStream.getTracks().forEach((audioTrack) => {
+                audioTrack.stop();
+            });
             this.localStream = null;
         }
         Object.values(this.remoteStreams).forEach((stream) => {
-            stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((audioTrack) => {
+                audioTrack.stop();
+            });
         });
         this.state = SocketClientState.PEER_CONNECTION_CLOSED;
         this.remoteStreams = {};

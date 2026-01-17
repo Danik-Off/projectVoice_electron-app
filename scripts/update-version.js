@@ -44,5 +44,5 @@ fs.writeFileSync(
   'utf8'
 );
 
-console.log('✅ Version updated:', versionData);
+console.warn('✅ Version updated:', versionData);
 

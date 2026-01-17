@@ -37,8 +37,6 @@ class AudioQualityTester {
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = 2048;
             this.analyser.smoothingTimeConstant = 0.8;
-
-            console.log('AudioQualityTester: Инициализирован');
         } catch (error) {
             console.error('AudioQualityTester: Ошибка инициализации:', error);
             throw error;
@@ -49,8 +47,6 @@ class AudioQualityTester {
      * Тест базовых настроек по умолчанию
      */
     public async testDefaultSettings(): Promise<AudioTestResult> {
-        console.log('AudioQualityTester: Тестирование базовых настроек...');
-
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -78,8 +74,6 @@ class AudioQualityTester {
      * Тест высокого качества звука
      */
     public async testAudioQuality(): Promise<AudioTestResult> {
-        console.log('AudioQualityTester: Тестирование высокого качества...');
-
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -107,8 +101,6 @@ class AudioQualityTester {
      * Тест профессионального качества
      */
     public async testProfessionalQuality(): Promise<AudioTestResult> {
-        console.log('AudioQualityTester: Тестирование профессионального качества...');
-
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: {
@@ -358,8 +350,6 @@ class AudioQualityTester {
             recommendations,
             passed: score >= 80
         };
-
-        console.log(`AudioQualityTester: Тест ${testType} завершен. Оценка: ${score}/100`);
 
         return result;
     }

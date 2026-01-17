@@ -17,11 +17,11 @@ export const voiceModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Voice module initialized');
+        console.warn('Voice module initialized');
         // Здесь можно добавить инициализацию WebRTC, подключение к сокетам и т.д.
     },
     async destroy() {
-        console.log('Voice module destroyed');
+        console.warn('Voice module destroyed');
         // Очистка WebRTC соединений, отключение от сокетов
     }
 };

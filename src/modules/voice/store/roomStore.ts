@@ -32,21 +32,19 @@ export class VoiceRoomStore {
 
         // Убираем автоматическую инициализацию аудио из конструктора
         // Аудио будет инициализироваться только при подключении к голосовому каналу
-        console.log('VoiceRoomStore: Constructor initialized (audio will be initialized on voice channel join)');
     }
 
     public connectToRoom(roomId: number, channelName?: string): void {
         // Проверяем, не подключен ли уже пользователь к голосовой комнате
         if (this.currentVoiceChannel) {
             if (this.currentVoiceChannel.id === roomId) {
-                console.log('VoiceRoomStore: Already connected to this voice channel, just opening interface');
                 notificationStore.addNotification(
                     `Вы уже подключены к голосовому каналу: ${this.currentVoiceChannel.name}`,
                     'info'
                 );
                 return;
             }
-            console.log('VoiceRoomStore: Switching from channel', this.currentVoiceChannel.id, 'to channel', roomId);
+
             // Отключаемся от текущего канала перед подключением к новому
             this.disconnectToRoom();
         }
@@ -55,16 +53,16 @@ export class VoiceRoomStore {
         this.socketClient.socketEmit('join-room', roomId, token);
 
         // Инициализируем аудио только при подключении к голосовому каналу
-        console.log('VoiceRoomStore: Initializing audio settings for voice channel...');
+
         audioSettingsStore.initMedia();
 
         // Инициализируем WebRTC и VAS при подключении к голосовому каналу
-        console.log('VoiceRoomStore: Initializing WebRTC and VAS for voice call...');
+
         this.webRTCClient.initializeMedia();
 
         // Устанавливаем currentVoiceChannel напрямую (store уже observable через makeAutoObservable)
         this.currentVoiceChannel = { id: roomId, name: channelName || `Voice Channel ${roomId}` };
-        console.log('VoiceRoomStore: currentVoiceChannel set to:', this.currentVoiceChannel);
+
         notificationStore.addNotification(
             `Подключились к голосовому каналу: ${channelName || `Voice Channel ${roomId}`}`,
             'info'
@@ -91,11 +89,9 @@ export class VoiceRoomStore {
         this.webRTCClient.disconect();
 
         // Очищаем аудио ресурсы при отключении от голосового канала
-        console.log('VoiceRoomStore: Cleaning up audio resources after voice call...');
         audioSettingsStore.cleanup();
 
         // Очищаем VAS при отключении от голосового канала
-        console.log('VoiceRoomStore: Cleaning up VAS after voice call...');
         voiceActivityService.cleanup();
 
         // Сохраняем ID канала перед очисткой для события
@@ -103,7 +99,7 @@ export class VoiceRoomStore {
 
         // Устанавливаем currentVoiceChannel в null напрямую (store уже observable)
         this.currentVoiceChannel = null;
-        console.log('VoiceRoomStore: currentVoiceChannel set to null');
+
         // Сбрасываем состояние активности речи для всех участников
         this.participants.forEach((participant) => {
             participant.isSpeaking = false;
@@ -124,12 +120,12 @@ export class VoiceRoomStore {
     }
 
     private setupServerResponseListeners() {
-        this.socketClient.socketOn('connect', () => {
-            console.log('Соединение с Socket.IO установлено');
-        });
+        // this.socketClient.socketOn('connect', () => {
+        //     console.log('Соединение с Socket.IO установлено');
+        // });
         this.socketClient.socketOn('created', (data: unknown) => {
             const room = data as { participants: Participant[] };
-            console.log('Вы подключены ', room);
+
             runInAction(() => {
                 // Исключаем локального пользователя из списка участников
                 // так как он отображается отдельно в UI
@@ -171,7 +167,7 @@ export class VoiceRoomStore {
         });
         this.socketClient.socketOn('user-disconnected', (data: unknown) => {
             const socketId = data as string;
-            console.log(`Пользователь отключен: ${socketId}`);
+
             const disconnectedUser = this.participants.find((user) => user.socketId === socketId);
             this.webRTCClient.disconnectPeer(socketId);
             runInAction(() => {
@@ -192,7 +188,7 @@ export class VoiceRoomStore {
         });
         this.socketClient.socketOn('signal', (data: unknown) => {
             const signal = data as Signal;
-            console.log('Сигнал', signal);
+
             // Преобразуем Signal (с полем 'to') в формат, ожидаемый handleSignal (с полем 'from')
             this.webRTCClient.handleSignal({
                 from: signal.to,
@@ -213,17 +209,20 @@ export class VoiceRoomStore {
             console.error('Ошибка Socket.IO подключения:', error);
             notificationStore.addNotification('notifications.connectError', 'error');
         });
-        this.socketClient.socketOn('disconnect', () => {
-            console.log('Соединение с Socket.IO закрыто');
-        });
+
+        // this.socketClient.socketOn('disconnect', () => {
+        //     console.log('Соединение с Socket.IO закрыто');
+        // });
     }
+
     private setupWebRTCSenders() {
         this.webRTCClient.sendSignal = (signal) => {
             this.socketClient.socketEmit('signal', signal);
         };
-        this.webRTCClient.changeState = (id, event) => {
-            console.log(`Изменен статус ${id}`, event);
-        };
+
+        // this.webRTCClient.changeState = (id, event) => {
+        //     console.log(`Изменен статус ${id}`, event);
+        // };
     }
 
     private setupVoiceActivityListeners(): void {

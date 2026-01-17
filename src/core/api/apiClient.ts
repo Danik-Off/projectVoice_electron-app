@@ -17,8 +17,8 @@ function isTokenExpiredError(response: Response, errorMessage: string): boolean 
 
     // Проверяем различные варианты сообщений об ошибке токена
     try {
-        const errorJson = JSON.parse(errorMessage);
-        const errorText = errorJson.error?.toLowerCase() || '';
+        const errorJson = JSON.parse(errorMessage) as { error?: string };
+        const errorText = errorJson.error?.toLowerCase() ?? '';
 
         // Различные варианты сообщений о протухшем токене
         const tokenErrorPatterns = [
@@ -57,7 +57,7 @@ export const apiClient = async <T = unknown>(
     // Установка заголовков
     const headers = {
         'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
+        ...(token !== null && token !== '' ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers
     };
 
@@ -68,7 +68,7 @@ export const apiClient = async <T = unknown>(
     };
 
     // Если тело запроса передано, сериализуем его в JSON
-    if (body) {
+    if (body !== null) {
         requestOptions.body = JSON.stringify(body);
     }
 
@@ -99,7 +99,7 @@ export const apiClient = async <T = unknown>(
             return null;
         }
 
-        return response.json() as Promise<T>;
+        return (await response.json()) as T;
     } catch (error) {
         // Проверяем, является ли это ошибкой сети
         if (

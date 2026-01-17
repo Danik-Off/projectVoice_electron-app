@@ -37,11 +37,9 @@ class WebRTCClient {
 
     // Инициализация медиа с реакцией на изменения настроек
     public async initializeMedia() {
-        console.log('WebRTCClient: Initializing media with enhanced settings integration...');
         voiceActivityService.initialize();
 
         if (audioSettingsStore.stream && audioSettingsStore.stream.getAudioTracks().length > 0) {
-            console.log('WebRTCClient: Stream already exists, setting up VoiceActivity immediately');
             this.setupLocalVoiceActivity();
         }
 
@@ -49,7 +47,6 @@ class WebRTCClient {
         reaction(
             () => audioSettingsStore.stream,
             () => {
-                console.log('WebRTCClient: Stream changed, updating connections');
                 this.resendlocalStream();
                 this.setupLocalVoiceActivity();
             }
@@ -63,7 +60,6 @@ class WebRTCClient {
                 audioQuality: audioSettingsStore.audioQuality
             }),
             () => {
-                console.log('WebRTCClient: Audio quality settings changed, updating connections');
                 this.updateAllConnectionsQuality();
             }
         );
@@ -71,8 +67,6 @@ class WebRTCClient {
 
     // Создание peer connection с оптимизированными настройками
     public createPeerConnection(id: string) {
-        console.log('WebRTCClient: Creating optimized peer connection for', id);
-
         const newPeerConnection = new RTCPeerConnection({
             iceServers,
             iceCandidatePoolSize: 10,
@@ -85,12 +79,10 @@ class WebRTCClient {
         // Обработка ICE кандидатов с улучшенной обработкой ошибок
         newPeerConnection.onicecandidate = (event) => {
             if (!event.candidate) {
-                console.log('WebRTCClient: ICE gathering completed for', id);
                 return;
             }
 
             if (!this.sendSignal) {
-                console.error('WebRTCClient: sendSignal not available');
                 return;
             }
 
@@ -108,7 +100,6 @@ class WebRTCClient {
         // Обработка изменений состояния соединения
         newPeerConnection.onconnectionstatechange = () => {
             const state = newPeerConnection.connectionState;
-            console.log(`WebRTCClient: Connection state changed for ${id}:`, state);
 
             if (this.changeState) {
                 this.changeState(id, new Event('connectionstatechange'));
@@ -125,7 +116,6 @@ class WebRTCClient {
         // Обработка ICE соединения
         newPeerConnection.oniceconnectionstatechange = () => {
             const iceState = newPeerConnection.iceConnectionState;
-            console.log(`WebRTCClient: ICE connection state for ${id}:`, iceState);
 
             if (iceState === 'failed' || iceState === 'disconnected') {
                 this.handleConnectionProblem(id, iceState);
@@ -134,7 +124,6 @@ class WebRTCClient {
 
         // Обработка получения треков
         newPeerConnection.ontrack = (event) => {
-            console.log('WebRTCClient: Received track', id, event.track.kind);
             if (event.track.kind === 'audio') {
                 this.addRemoteStream(event.track, id);
             }
@@ -151,7 +140,6 @@ class WebRTCClient {
 
     // Создание offer с оптимизацией под настройки качества
     public async createOffer(id: string) {
-        console.log('WebRTCClient: Creating optimized offer for', id);
         const peerConnection = this.createPeerConnection(id);
 
         try {
@@ -193,7 +181,6 @@ class WebRTCClient {
 
     // Создание answer с оптимизацией
     public async createAnswer(id: string) {
-        console.log('WebRTCClient: Creating optimized answer for', id);
         const peerConnection = this.peerConnections.get(id);
 
         if (!peerConnection) {
@@ -237,11 +224,9 @@ class WebRTCClient {
     // Обработка сигналов с улучшенной обработкой ошибок
     public async handleSignal(data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) {
         const { from, type, sdp, candidate } = data;
-        console.log('WebRTCClient: Handling signal', type, 'from', from);
 
         let peerConnection = this.peerConnections.get(from);
         if (!peerConnection) {
-            console.log('WebRTCClient: Creating new peer connection for', from);
             peerConnection = this.createPeerConnection(from);
         }
 
@@ -362,21 +347,11 @@ class WebRTCClient {
             );
         }
 
-        console.log(
-            'WebRTCClient: SDP optimized with settings - bitrate:',
-            maxBitrate,
-            'sampleRate:',
-            sampleRate,
-            'stereo:',
-            stereo
-        );
         return optimizedSdp;
     }
 
     // Добавление удаленного потока с улучшенной обработкой
     private addRemoteStream(track: MediaStreamTrack, id: string): void {
-        console.log('WebRTCClient: Adding remote stream for', id);
-
         let remoteStream = this.remoteStreams.get(id);
         if (!remoteStream) {
             remoteStream = new MediaStream();
@@ -402,7 +377,6 @@ class WebRTCClient {
             audioElement.muted = true; // Используем только Web Audio API
 
             audioElement.addEventListener('loadedmetadata', () => {
-                console.log('WebRTCClient: Audio metadata loaded for', id);
                 const currentStream = this.remoteStreams.get(id);
                 if (currentStream && currentStream.getAudioTracks().length > 0) {
                     this.setupAudioProcessing(id, currentStream);
@@ -432,13 +406,11 @@ class WebRTCClient {
         }
 
         if (this.audioSources.has(id)) {
-            console.log('WebRTCClient: Audio source already exists for', id);
             return;
         }
 
         try {
             if (remoteStream.getAudioTracks().length === 0) {
-                console.warn('WebRTCClient: Stream has no audio tracks for', id);
                 return;
             }
 
@@ -450,7 +422,6 @@ class WebRTCClient {
                 gainNode.connect(audioContext.destination);
 
                 this.audioSources.set(id, source);
-                console.log('WebRTCClient: Audio processing setup for', id);
 
                 this.setupRemoteVoiceActivity(id, remoteStream);
             }
@@ -461,8 +432,6 @@ class WebRTCClient {
 
     // Обновление локального потока
     public resendlocalStream() {
-        console.log('WebRTCClient: Resending local stream with updated settings');
-
         if (!audioSettingsStore.stream) {
             console.error('WebRTCClient: No local stream available');
             return;
@@ -490,8 +459,6 @@ class WebRTCClient {
                             sender.setParameters(params);
                         }
                     }
-
-                    console.log('WebRTCClient: Audio track replaced for', socketId);
                 } catch (error) {
                     console.error('WebRTCClient: Error replacing track:', error);
                 }
@@ -548,8 +515,6 @@ class WebRTCClient {
 
     // Отключение участника
     public disconnectPeer(id: string) {
-        console.log('WebRTCClient: Disconnecting peer', id);
-
         const peerConnection = this.peerConnections.get(id);
         if (peerConnection) {
             peerConnection.close();
@@ -592,8 +557,6 @@ class WebRTCClient {
 
     // Полное отключение
     public disconect() {
-        console.log('WebRTCClient: Disconnecting all peers');
-
         this.peerConnections.forEach((peerConnection) => {
             peerConnection.close();
         });
@@ -731,7 +694,6 @@ class WebRTCClient {
                 if (newBitrate !== currentBitrate) {
                     params.encodings[0].maxBitrate = newBitrate;
                     sender.setParameters(params);
-                    console.log(`WebRTCClient: Adjusted bitrate to ${newBitrate} due to ${quality} quality`);
                 }
             }
         } catch (error) {
@@ -772,10 +734,6 @@ class WebRTCClient {
             reconnectionState.attempts++;
             reconnectionState.backoff *= 2; // Экспоненциальная задержка
 
-            console.log(
-                `WebRTCClient: Attempting reconnection ${reconnectionState.attempts}/${reconnectionState.maxAttempts} for ${id}`
-            );
-
             reconnectionState.timer = setTimeout(() => {
                 // Попытка переподключения через создание нового offer
                 this.createOffer(id);
@@ -790,7 +748,6 @@ class WebRTCClient {
 
     // Обработка успешного соединения
     private handleConnectionSuccess(id: string): void {
-        console.log(`WebRTCClient: Connection successful for ${id}`);
         this.reconnectionStates.delete(id);
     }
 

@@ -23,8 +23,8 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
         }
     };
 
-    const getStatusColor = (status?: string) => {
-        switch (status) {
+    const getStatusColor = (userStatus?: string) => {
+        switch (userStatus) {
             case 'online':
                 return '#4CAF50';
             case 'idle':
@@ -32,6 +32,8 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
             case 'dnd':
                 return '#F44336';
             case 'invisible':
+                return '#9E9E9E';
+            case undefined:
                 return '#9E9E9E';
             default:
                 return '#9E9E9E';
@@ -42,6 +44,8 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
         switch (size) {
             case 'small':
                 return 'avatar-small';
+            case 'medium':
+                return 'avatar-medium';
             case 'large':
                 return 'avatar-large';
             default:
@@ -55,7 +59,7 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
             onClick={handleClick}
             title={`${user.username} - Click to view profile`}
         >
-            {user.profilePicture ? (
+            {user.profilePicture !== null && user.profilePicture !== '' ? (
                 <img src={user.profilePicture} alt={user.username} className="avatar-image" />
             ) : (
                 <div className="avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>

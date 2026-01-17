@@ -25,7 +25,7 @@ class ChannelsStore {
         });
 
         try {
-            const data: Channel[] = await channelService.getByServer(serverId);
+            const data = (await channelService.getByServer(serverId)) as Channel[];
             runInAction(() => {
                 this.channels = data;
                 this.loading = false;
@@ -36,7 +36,6 @@ class ChannelsStore {
                 this.loading = false;
             });
         }
-        console.log('ok');
     }
 
     // Create a new channel in the current server
@@ -46,7 +45,7 @@ class ChannelsStore {
         });
 
         try {
-            const newChannel: Channel = await channelService.create(serverId, channelData);
+            const newChannel = (await channelService.create(serverId, channelData)) as Channel;
             runInAction(() => {
                 this.channels.push(newChannel);
             });

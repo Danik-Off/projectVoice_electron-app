@@ -178,8 +178,8 @@ function getPreviousVersion() {
   }
 }
 
-// Check if this is the main module (ES module equivalent of require.main === module)
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Check if this is the main module (ES module equivalent of require.main===module)
+if (import.meta.url===`file://${process.argv[1]}`) {
   console.log(generateReleaseNotes());
 }
 

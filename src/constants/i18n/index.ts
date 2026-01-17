@@ -1,11 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
+import BrowserLanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslation from './en/translation.json';
 import ruTranslation from './ru/translation.json';
 
-i18n.use(LanguageDetector) // Автоматическое определение языка
+i18n.use(BrowserLanguageDetector) // Автоматическое определение языка
     .use(initReactI18next) // Подключение i18next к React
     .init({
         resources: {
@@ -16,6 +16,9 @@ i18n.use(LanguageDetector) // Автоматическое определени�
         interpolation: {
             escapeValue: false // React уже экранирует значения
         }
+    })
+    .catch(() => {
+        // Error handled silently
     });
 
 export default i18n;

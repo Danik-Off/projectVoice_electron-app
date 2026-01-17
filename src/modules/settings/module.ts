@@ -17,9 +17,9 @@ export const settingsModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Settings module initialized');
+        console.warn('Settings module initialized');
     },
     async destroy() {
-        console.log('Settings module destroyed');
+        console.warn('Settings module destroyed');
     }
 };

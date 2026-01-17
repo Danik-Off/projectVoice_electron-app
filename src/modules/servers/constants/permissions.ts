@@ -2,6 +2,8 @@
  * Константы разрешений (Bitmask) - соответствуют бэкенду
  * Используется BigInt для работы с большими числами
  */
+/* eslint-disable no-bitwise -- Битовые операции необходимы для работы с битовыми масками разрешений */
+/* eslint-disable no-shadow -- Permissions - стандартное имя для констант разрешений, конфликт с глобальной переменной допустим */
 export const Permissions = {
     CREATE_INSTANT_INVITE: 1n << 0n,
     KICK_MEMBERS: 1n << 1n,

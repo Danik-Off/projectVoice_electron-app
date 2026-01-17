@@ -4,8 +4,8 @@ class ConnectionStore {
     private static STORAGE_KEY = 'projectvoice_server_url';
 
     public serverUrl: string =
-        localStorage.getItem(ConnectionStore.STORAGE_KEY) ||
-        import.meta.env.VITE_API_BASE_URL ||
+        localStorage.getItem(ConnectionStore.STORAGE_KEY) ??
+        (typeof import.meta.env.VITE_API_BASE_URL === 'string' ? import.meta.env.VITE_API_BASE_URL : '') ??
         'http://localhost:5000';
 
     public isConnected = true;
@@ -17,8 +17,8 @@ class ConnectionStore {
         makeAutoObservable(this);
     }
 
-    public setSettingsModalOpen(open: boolean) {
-        this.isSettingsModalOpen = open;
+    public setSettingsModalOpen(isOpen: boolean) {
+        this.isSettingsModalOpen = isOpen;
     }
 
     public setServerUrl(url: string) {
@@ -49,7 +49,7 @@ class ConnectionStore {
 
     public setError(error: string | null) {
         this.lastError = error;
-        if (error) {
+        if (error !== null && error !== '') {
             this.isConnected = false;
         }
     }

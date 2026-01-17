@@ -1,5 +1,4 @@
-import type { Socket } from 'socket.io-client';
-import { io } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import { getCookie } from './cookie';
 import { BASE_URL } from '../configs/apiConfig';
 import { connectionStore } from '../core/store/ConnectionStore';
@@ -9,12 +8,12 @@ class SocketClient {
     private socket: Socket | null;
 
     public constructor() {
-        this.token = getCookie('token') || '';
+        this.token = getCookie('token') ?? '';
         this.socket = null;
     }
 
     public connect() {
-        if (this.socket && this.socket.connected) {
+        if (this.socket?.connected === true) {
             return;
         }
 

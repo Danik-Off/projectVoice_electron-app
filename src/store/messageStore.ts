@@ -27,12 +27,14 @@ class MessageStore {
         this.totalMessages = 0;
         this.hasMore = true;
         this.searchQuery = '';
-        this.loadMessages();
+        this.loadMessages().catch(() => {
+            // Error handled in loadMessages
+        });
     }
 
     // Загрузка сообщений
     async loadMessages(page = 1, append = false) {
-        if (!this.currentChannelId) {
+        if (this.currentChannelId == null) {
             return;
         }
 
@@ -80,9 +82,9 @@ class MessageStore {
     }
 
     // Отправка нового сообщения
-    async sendMessage(content: string) {
-        if (!this.currentChannelId || !content.trim()) {
-            return;
+    async sendMessage(content: string): Promise<Message> {
+        if (this.currentChannelId == null || !content.trim()) {
+            throw new Error('Channel ID is required and content must not be empty');
         }
 
         try {
@@ -109,9 +111,9 @@ class MessageStore {
     }
 
     // Обновление сообщения
-    async updateMessage(messageId: number, content: string) {
+    async updateMessage(messageId: number, content: string): Promise<Message> {
         if (!content.trim()) {
-            return;
+            throw new Error('Content must not be empty');
         }
 
         try {
@@ -161,7 +163,7 @@ class MessageStore {
 
     // Поиск сообщений
     async searchMessages(query: string) {
-        if (!this.currentChannelId || !query.trim()) {
+        if (this.currentChannelId == null || !query.trim()) {
             return;
         }
 
@@ -194,7 +196,9 @@ class MessageStore {
     // Очистка поиска
     clearSearch() {
         this.searchQuery = '';
-        this.loadMessages(1, false);
+        this.loadMessages(1, false).catch(() => {
+            // Error handled in loadMessages
+        });
     }
 
     // Добавление сообщения в реальном времени (для WebSocket)

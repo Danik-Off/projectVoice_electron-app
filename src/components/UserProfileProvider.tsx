@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import React, { type ReactNode, useMemo } from 'react';
 import { useUserProfileModal } from '../hooks/useUserProfileModal';
 import UserProfileModal from './UserProfileModal';
 import { UserProfileContext, type UserProfileContextType } from '../contexts/UserProfileContext';
@@ -10,10 +10,13 @@ interface UserProfileProviderProps {
 export const UserProfileProvider: React.FC<UserProfileProviderProps> = ({ children }) => {
     const { isOpen, user, isOwnProfile, openProfile, closeProfile } = useUserProfileModal();
 
-    const contextValue: UserProfileContextType = {
-        openProfile,
-        closeProfile
-    };
+    const contextValue: UserProfileContextType = useMemo(
+        () => ({
+            openProfile,
+            closeProfile
+        }),
+        [openProfile, closeProfile]
+    );
 
     return (
         <UserProfileContext.Provider value={contextValue}>

@@ -13,7 +13,7 @@ const winCacheDir = path.join(os.homedir(), 'AppData', 'Local', 'electron-builde
 console.log('🧹 Clearing electron-builder cache...');
 
 try {
-  if (process.platform === 'win32') {
+  if (process.platform==='win32') {
     if (fs.existsSync(winCacheDir)) {
       console.log(`Removing: ${winCacheDir}`);
       execSync(`rmdir /s /q "${winCacheDir}"`, { stdio: 'inherit' });

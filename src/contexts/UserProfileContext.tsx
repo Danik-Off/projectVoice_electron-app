@@ -6,4 +6,4 @@ export interface UserProfileContextType {
     closeProfile: () => void;
 }
 
-export const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
+export const UserProfileContext = createContext<UserProfileContextType | null>(null);

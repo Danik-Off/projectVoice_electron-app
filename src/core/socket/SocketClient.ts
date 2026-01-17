@@ -11,17 +11,17 @@ class SocketClient {
     private socket: Socket | null;
 
     public constructor() {
-        this.token = getToken() || '';
+        this.token = getToken() ?? '';
         this.socket = null;
     }
 
     public connect() {
-        if (this.socket && this.socket.connected) {
+        if (this.socket?.connected === true) {
             return;
         }
 
         // Всегда получаем актуальный токен из localStorage
-        this.token = getToken() || '';
+        this.token = getToken() ?? '';
 
         this.socket = io(appConfig.socket.url, {
             path: appConfig.socket.path,
@@ -72,7 +72,7 @@ class SocketClient {
     }
 
     public isConnected(): boolean {
-        return this.socket?.connected || false;
+        return this.socket?.connected ?? false;
     }
 }
 

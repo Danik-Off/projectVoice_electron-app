@@ -14,9 +14,9 @@ export const SocketClientState = {
     SIGNALING_ERROR: 'signaling_error'
 } as const;
 
-export type SocketClientState = (typeof SocketClientState)[keyof typeof SocketClientState];
+export type SocketClientStateType = (typeof SocketClientState)[keyof typeof SocketClientState];
 
-export const stateMessages: Record<SocketClientState, string> = {
+export const stateMessages: Record<SocketClientStateType, string> = {
     [SocketClientState.INIT]: 'Состояние инициализировано.',
     [SocketClientState.CONNECTING]: 'Соединение устанавливается...',
     [SocketClientState.CONNECTED]: 'Соединение установлено.',

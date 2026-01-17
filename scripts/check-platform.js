@@ -24,7 +24,7 @@ if (!targetPlatform) {
   process.exit(1);
 }
 
-if (targetPlatform !== currentPlatform && platform === 'linux') {
+if (targetPlatform !==currentPlatform && platform==='linux') {
   console.error('❌ Error: Linux AppImage can only be built on Linux systems.');
   console.error('   Use one of the following options:');
   console.error('   1. Build in CI/CD (GitHub Actions)');
@@ -34,7 +34,7 @@ if (targetPlatform !== currentPlatform && platform === 'linux') {
   process.exit(1);
 }
 
-if (targetPlatform !== currentPlatform && platform === 'mac') {
+if (targetPlatform !==currentPlatform && platform==='mac') {
   console.error('❌ Error: macOS builds can only be built on macOS systems.');
   console.error('   Use one of the following options:');
   console.error('   1. Build on a macOS machine');

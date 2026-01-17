@@ -10,12 +10,12 @@ interface ServerItemProps {
 
 const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const serverIcon = server.icon || '';
+    const currentLocation = useLocation();
+    const serverIcon = server.icon ?? '';
     const serverNameInitial = server.name.charAt(0).toUpperCase();
 
     // Проверяем, является ли текущий сервер активным
-    const isActive = location.pathname.includes(`/server/${server.id}`);
+    const isActive = currentLocation.pathname.includes(`/server/${server.id}`);
 
     // Определяем классы для различных состояний сервера
     const getServerClasses = () => {
@@ -24,16 +24,16 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
         if (isActive) {
             baseClasses.push('servers__server--active');
         }
-        if (server.isBlocked) {
+        if (server.isBlocked === true) {
             baseClasses.push('servers__server--blocked');
         }
-        if (server.hasNotifications) {
+        if (server.hasNotifications === true) {
             baseClasses.push('servers__server--has-notifications');
         }
-        if (server.connectionError) {
+        if (server.connectionError === true) {
             baseClasses.push('servers__server--connection-error');
         }
-        if (server.maintenance) {
+        if (server.maintenance === true) {
             baseClasses.push('servers__server--maintenance');
         }
 
@@ -44,19 +44,24 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
         if (onClick) {
             onClick();
         } else {
-            navigate(`/server/${server.id}`);
+            const navigationPromise = navigate(`/server/${server.id}`);
+            if (navigationPromise !== null && typeof navigationPromise.catch === 'function') {
+                navigationPromise.catch(() => {
+                    // Navigation error handled silently
+                });
+            }
         }
     };
 
     // Определяем стили для иконки в зависимости от состояния
     const getIconStyles = () => {
-        if (server.isBlocked) {
+        if (server.isBlocked === true) {
             return { filter: 'grayscale(0.5) brightness(0.7)' };
         }
-        if (server.connectionError) {
+        if (server.connectionError === true) {
             return { filter: 'brightness(0.8)' };
         }
-        if (server.maintenance) {
+        if (server.maintenance === true) {
             return { filter: 'brightness(0.9)' };
         }
         return {};
@@ -64,7 +69,7 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
 
     return (
         <div className={getServerClasses()} onClick={handleClick} title={server.name} data-server-id={server.id}>
-            {serverIcon ? (
+            {serverIcon !== '' ? (
                 <img
                     src={serverIcon}
                     alt={`${server.name} icon`}
@@ -78,18 +83,18 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
             )}
 
             {/* Индикатор состояния сервера */}
-            {server.isBlocked ? <div className="server-status-indicator blocked">🚫</div> : null}
+            {server.isBlocked === true ? <div className="server-status-indicator blocked">🚫</div> : null}
 
-            {server.connectionError && !server.isBlocked ? (
+            {server.connectionError === true && server.isBlocked !== true ? (
                 <div className="server-status-indicator error">⚠️</div>
             ) : null}
 
-            {server.maintenance && !server.isBlocked && !server.connectionError ? (
+            {server.maintenance === true && server.isBlocked !== true && server.connectionError !== true ? (
                 <div className="server-status-indicator maintenance">🔧</div>
             ) : null}
 
             {/* Счетчик уведомлений */}
-            {server.notificationCount && server.notificationCount > 0 ? (
+            {server.notificationCount !== null && server.notificationCount > 0 ? (
                 <div className="notification-badge">
                     {server.notificationCount > 99 ? '99+' : server.notificationCount}
                 </div>
