@@ -1,11 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { serverMembersService } from '../../../../../../modules/servers';
-import { roleService } from '../../../../services/roleService';
-import { serverStore } from '../../../../../../modules/servers';
-import { notificationStore, authStore } from '../../../../../../core';
-import type { ServerMember } from '../../../../../../modules/servers';
-import type { Role } from '../../../../types/role';
+import { serverMembersService, serverStore, roleService } from '../../../../../';
+import { notificationStore, authStore } from '../../../../../../../core';
+import type { ServerMember } from '../../../../../';
+import type { Role } from '../../../../../types/role';
 import type { SortOption, FilterOption, ContextMenuState } from '../types';
 import { processMembers, groupMembersByRole } from '../utils/membersUtils';
 

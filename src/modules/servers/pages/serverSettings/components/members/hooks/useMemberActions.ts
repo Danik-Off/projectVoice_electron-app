@@ -1,8 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { serverMembersService, Permissions, hasPermission } from '../../../../../../modules/servers';
-import { notificationStore } from '../../../../../../core';
-import type { ServerMember } from '../../../../../../modules/servers';
+import { serverMembersService, Permissions, hasPermission } from '../../../../../';
+import { notificationStore } from '../../../../../../../core';
+import type { ServerMember } from '../../../../../';
 
 interface UseMemberActionsProps {
     member: ServerMember;
