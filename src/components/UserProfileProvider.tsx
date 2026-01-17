@@ -1,5 +1,4 @@
-import React from 'react';
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { useUserProfileModal } from '../hooks/useUserProfileModal';
 import UserProfileModal from './UserProfileModal';
 import { UserProfileContext, type UserProfileContextType } from '../contexts/UserProfileContext';

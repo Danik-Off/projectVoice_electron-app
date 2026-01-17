@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { observer } from 'mobx-react';
 import { useParams } from 'react-router-dom';
 import { messageStore } from '../store/messageStore';
-import { eventBus, CHANNELS_EVENTS, VOICE_EVENTS, MESSAGING_EVENTS } from '../../../core';
+import { eventBus, MESSAGING_EVENTS } from '../../../core';
 import type { Message } from '../types/message';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';

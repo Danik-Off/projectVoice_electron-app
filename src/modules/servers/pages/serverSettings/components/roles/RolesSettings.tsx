@@ -159,6 +159,7 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
             return;
         }
 
+        // eslint-disable-next-line no-alert
         if (!confirm(t('serverSettings.confirmDeleteRole') || `Вы уверены, что хотите удалить роль "${role.name}"?`)) {
             return;
         }

@@ -30,7 +30,7 @@ class UserStore {
      * Делегирует вызов в authStore
      */
     async updateProfile(profileData: { username: string; email: string }): Promise<boolean> {
-        return await authStore.updateProfile(profileData);
+        return authStore.updateProfile(profileData);
     }
 
     /**
@@ -38,7 +38,7 @@ class UserStore {
      * Делегирует вызов в authStore
      */
     async changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
-        return await authStore.changePassword(oldPassword, newPassword);
+        return authStore.changePassword(oldPassword, newPassword);
     }
 
     /**

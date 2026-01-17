@@ -18,9 +18,9 @@ export const adminModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Admin module initialized');
+        console.warn('Admin module initialized');
     },
     async destroy() {
-        console.log('Admin module destroyed');
+        console.warn('Admin module destroyed');
     }
 };

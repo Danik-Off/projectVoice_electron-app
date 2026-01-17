@@ -46,6 +46,7 @@ const BansSettings: React.FC<BansSettingsProps> = observer(() => {
             return;
         }
 
+        // eslint-disable-next-line no-alert
         if (!confirm(t('serverSettings.confirmUnban') || 'Вы уверены, что хотите разбанить этого пользователя?')) {
             return;
         }

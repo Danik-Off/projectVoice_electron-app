@@ -1,8 +1,7 @@
 /**
  * Socket.io Client - базовый клиент для WebSocket соединений
  */
-import type { Socket } from 'socket.io-client';
-import { io } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import { getToken } from '../../shared/utils/storage';
 import { appConfig } from '../config';
 import { connectionStore } from '../store/ConnectionStore';
@@ -49,7 +48,7 @@ class SocketClient {
         });
     }
 
-    public socketOn(ev: string, listner: (data: unknown)=> void) {
+    public socketOn(ev: string, listner: (data: unknown) => void) {
         if (this.socket) {
             this.socket.on(ev, listner);
         }

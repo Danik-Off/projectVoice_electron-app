@@ -105,7 +105,7 @@ const MessageInput: React.FC = observer(() => {
                                 title="Эмодзи"
                                 onClick={() => {
                                     // Здесь можно добавить эмодзи пикер
-                                    console.log('Emoji picker');
+                                    console.warn('Emoji picker');
                                 }}
                             >
                                 😊
@@ -115,7 +115,7 @@ const MessageInput: React.FC = observer(() => {
                                 title="Прикрепить файл"
                                 onClick={() => {
                                     // Здесь можно добавить загрузку файлов
-                                    console.log('File upload');
+                                    console.warn('File upload');
                                 }}
                             >
                                 📎

@@ -39,9 +39,9 @@ class AuthStore {
         const savedToken = getToken();
         const savedUser = getUser();
 
-        console.log('🔐 Restoring auth from localStorage...');
-        console.log('📦 Token exists:', !!savedToken);
-        console.log('📦 User data exists:', !!savedUser);
+        console.warn('🔐 Restoring auth from localStorage...');
+        console.warn('📦 Token exists:', !!savedToken);
+        console.warn('📦 User data exists:', !!savedUser);
 
         if (savedToken) {
             // Восстанавливаем токен и устанавливаем авторизацию СИНХРОННО
@@ -51,11 +51,11 @@ class AuthStore {
             // Восстанавливаем данные пользователя из localStorage, если они есть
             if (savedUser) {
                 this.user = savedUser;
-                console.log('✅ User data restored from localStorage:', savedUser.username, 'role:', savedUser.role);
+                console.warn('✅ User data restored from localStorage:', savedUser.username, 'role:', savedUser.role);
             }
 
-            console.log('✅ Auth restored from localStorage - token present, isAuthenticated:', this.isAuthenticated);
-            console.log('✅ Token restored:', `${this.token.substring(0, 20)  }...`);
+            console.warn('✅ Auth restored from localStorage - token present, isAuthenticated:', this.isAuthenticated);
+            console.warn('✅ Token restored:', `${this.token.substring(0, 20)  }...`);
 
             // Загружаем актуальные данные пользователя асинхронно
             // НЕ вызываем logout при ошибке - пользователь должен выйти вручную
@@ -63,7 +63,7 @@ class AuthStore {
                 // Ошибка уже обработана в loadUserData
                 // Авторизация сохраняется даже при ошибке загрузки данных
                 console.error('❌ Error loading user data on init:', error);
-                console.log('⚠️ But keeping isAuthenticated = true and using cached user data');
+                console.warn('⚠️ But keeping isAuthenticated = true and using cached user data');
             });
         } else {
             // Нет токена в localStorage - пользователь не авторизован
@@ -71,10 +71,10 @@ class AuthStore {
             this.user = null;
             this.isAuthenticated = false;
             removeUser(); // Очищаем данные пользователя
-            console.log('❌ No token in localStorage - user not authenticated');
+            console.warn('❌ No token in localStorage - user not authenticated');
         }
 
-        console.log(
+        console.warn(
             '🔐 Auth restoration complete. isAuthenticated:',
             this.isAuthenticated,
             'user:',
@@ -98,7 +98,7 @@ class AuthStore {
             saveToken(data.token);
             saveUser(data.user);
 
-            console.log('Login successful - token and user data saved to localStorage, isAuthenticated:', true);
+            console.warn('Login successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.isAuthenticated = true;
             this.loading = false;
@@ -115,13 +115,13 @@ class AuthStore {
     public async loadUserData(): Promise<void> {
         try {
             if (!this.token) {
-                console.log('No token available for loadUserData');
+                console.warn('No token available for loadUserData');
                 return;
             }
 
-            console.log('Loading user data with token:', this.token);
+            console.warn('Loading user data with token:', this.token);
             const userData = await authService.getMe();
-            console.log('User data loaded:', userData);
+            console.warn('User data loaded:', userData);
             this.user = userData;
             this.isAuthenticated = true;
 
@@ -140,7 +140,7 @@ class AuthStore {
 
             // Если токен недействителен и был удален из localStorage, выполняем logout
             if (isTokenError && !getToken()) {
-                console.log('Token was cleared due to invalid token error, logging out...');
+                console.warn('Token was cleared due to invalid token error, logging out...');
                 this.logout();
                 return;
             }
@@ -153,7 +153,7 @@ class AuthStore {
             if (getToken()) {
                 this.isAuthenticated = true;
             } else {
-                console.log('Token was removed, logging out...');
+                console.warn('Token was removed, logging out...');
                 this.logout();
             }
         }
@@ -184,7 +184,7 @@ class AuthStore {
             let userData = data.user;
 
             if (!userData) {
-                console.log('User data missing in register response, fetching via getMe...');
+                console.warn('User data missing in register response, fetching via getMe...');
                 userData = await authService.getMe();
             }
 
@@ -194,7 +194,7 @@ class AuthStore {
             // Сохранение данных пользователя в localStorage
             saveUser(userData);
 
-            console.log('Registration successful - token and user data saved to localStorage, isAuthenticated:', true);
+            console.warn('Registration successful - token and user data saved to localStorage, isAuthenticated:', true);
 
             this.loading = false;
 

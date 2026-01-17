@@ -19,7 +19,7 @@ export class PluginManager {
         }
 
         this.plugins.set(plugin.id, plugin);
-        console.log(`Plugin ${plugin.id} registered`);
+        console.warn(`Plugin ${plugin.id} registered`);
     }
 
     /**
@@ -32,7 +32,7 @@ export class PluginManager {
                 this.destroy(pluginId);
             }
             this.plugins.delete(pluginId);
-            console.log(`Plugin ${pluginId} unregistered`);
+            console.warn(`Plugin ${pluginId} unregistered`);
         }
     }
 
@@ -74,7 +74,7 @@ export class PluginManager {
             await plugin.initialize();
             this.initializedPlugins.add(pluginId);
             this.initializationOrder.push(pluginId);
-            console.log(`Plugin ${pluginId} initialized`);
+            console.warn(`Plugin ${pluginId} initialized`);
         } catch (error) {
             console.error(`Failed to initialize plugin ${pluginId}:`, error);
             throw error;

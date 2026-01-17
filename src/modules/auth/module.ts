@@ -18,10 +18,10 @@ export const authModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Auth module initialized');
+        console.warn('Auth module initialized');
     },
     async destroy() {
-        console.log('Auth module destroyed');
+        console.warn('Auth module destroyed');
     }
 };
 

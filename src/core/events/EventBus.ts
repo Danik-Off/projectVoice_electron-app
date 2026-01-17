@@ -20,14 +20,18 @@ class EventBus {
             this.events.set(eventName, new Set());
         }
 
-        const callbacks = this.events.get(eventName)!;
-        callbacks.add(callback);
+        const callbacks = this.events.get(eventName);
+        if (callbacks) {
+            callbacks.add(callback);
+        }
 
         // Возвращаем функцию для отписки
         return () => {
-            callbacks.delete(callback);
-            if (callbacks.size === 0) {
-                this.events.delete(eventName);
+            if (callbacks) {
+                callbacks.delete(callback);
+                if (callbacks.size === 0) {
+                    this.events.delete(eventName);
+                }
             }
         };
     }

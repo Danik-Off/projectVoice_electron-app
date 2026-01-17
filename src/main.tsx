@@ -23,7 +23,11 @@ initializeApp()
         // Создаем роутер ПОСЛЕ инициализации модулей
         const router = createRouter();
 
-        createRoot(document.getElementById('root')!).render(
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+            throw new Error('Root element not found');
+        }
+        createRoot(rootElement).render(
             <StrictMode>
                 <RouterProvider router={router} />
                 <NoConnectionModal />
@@ -33,7 +37,11 @@ initializeApp()
     .catch((error: unknown) => {
         console.error('Failed to initialize app:', error);
         // Показываем ошибку пользователю
-        const root = createRoot(document.getElementById('root')!);
+        const rootElement = document.getElementById('root');
+        if (!rootElement) {
+            throw new Error('Root element not found');
+        }
+        const root = createRoot(rootElement);
         root.render(
             <div style={{ padding: '20px', color: 'red' }}>
                 <h1>Ошибка инициализации приложения</h1>

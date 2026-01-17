@@ -36,7 +36,7 @@ export class ModuleManager {
             });
         }
 
-        console.log(`Module ${module.id} registered`);
+        console.warn(`Module ${module.id} registered`);
     }
 
     /**
@@ -53,7 +53,7 @@ export class ModuleManager {
             this.routes = this.routes.filter((route) => route.moduleId !== moduleId);
 
             this.modules.delete(moduleId);
-            console.log(`Module ${moduleId} unregistered`);
+            console.warn(`Module ${moduleId} unregistered`);
         }
     }
 
@@ -94,7 +94,7 @@ export class ModuleManager {
         try {
             await module.initialize();
             this.initializedModules.add(moduleId);
-            console.log(`Module ${moduleId} initialized`);
+            console.warn(`Module ${moduleId} initialized`);
         } catch (error) {
             console.error(`Failed to initialize module ${moduleId}:`, error);
             throw error;

@@ -49,7 +49,7 @@ class ThemeStore {
         // Применяем тему к body для обратной совместимости
         document.body.className = `theme-${this.currentTheme}`;
 
-        console.log(`Applied theme: ${this.currentTheme}`);
+        console.warn(`Applied theme: ${this.currentTheme}`);
     }
 
     // Метод для получения системной темы

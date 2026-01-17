@@ -17,9 +17,9 @@ export const inviteModule: IModule = {
         }
     ],
     async initialize() {
-        console.log('Invite module initialized');
+        console.warn('Invite module initialized');
     },
     async destroy() {
-        console.log('Invite module destroyed');
+        console.warn('Invite module destroyed');
     }
 };

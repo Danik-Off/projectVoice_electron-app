@@ -10,7 +10,6 @@ const getRoomStore = async () => {
     }
     return roomStore;
 };
-import type { VoiceRoomStore } from '../../modules/voice/store/roomStore';
 
 class AudioSettingsStore {
     public stream: MediaStream = new MediaStream();
@@ -80,15 +79,15 @@ class AudioSettingsStore {
             this._stream.getAudioTracks().length > 0 &&
             this._stream.getAudioTracks().some((track) => track.readyState === 'live')
         ) {
-            console.log('AudioSettingsStore: Media stream already exists and is active, skipping initialization');
+            console.warn('AudioSettingsStore: Media stream already exists and is active, skipping initialization');
             return;
         }
-        console.log('AudioSettingsStore: Initializing media stream...');
+        console.warn('AudioSettingsStore: Initializing media stream...');
         this.updateMediaStream();
     }
 
     public cleanup() {
-        console.log('AudioSettingsStore: Cleaning up media resources...');
+        console.warn('AudioSettingsStore: Cleaning up media resources...');
 
         // Останавливаем все треки
         if (this._stream) {
@@ -115,7 +114,7 @@ class AudioSettingsStore {
         // Очищаем кэш процессоров
         this.audioProcessors = {};
 
-        console.log('AudioSettingsStore: Media resources cleaned up');
+        console.warn('AudioSettingsStore: Media resources cleaned up');
     }
 
     // Проверка, нужен ли микрофон в данный момент
@@ -315,7 +314,7 @@ class AudioSettingsStore {
     public async setMicrophone(deviceId: string): Promise<void> {
         const device = this.microphoneDevices.find((device) => device.deviceId === deviceId);
         if (device && this.selectedMicrophone?.deviceId !== deviceId) {
-            console.log(
+            console.warn(
                 'AudioSettingsStore: Switching microphone from',
                 this.selectedMicrophone?.deviceId,
                 'to',
@@ -395,7 +394,7 @@ class AudioSettingsStore {
     // Метод для принудительного применения всех настроек
     public async applyAllSettings(): Promise<void> {
         try {
-            console.log('AudioSettingsStore: Applying all audio settings...');
+            console.warn('AudioSettingsStore: Applying all audio settings...');
 
             // Обновляем медиа поток с новыми настройками
             await this.updateMediaStream(true);
@@ -405,7 +404,7 @@ class AudioSettingsStore {
             const voiceStore = store as VoiceRoomStore;
 
             if (voiceStore.currentVoiceChannel) {
-                console.log('AudioSettingsStore: Reconnecting to voice channel with new settings...');
+                console.warn('AudioSettingsStore: Reconnecting to voice channel with new settings...');
                 const currentChannel = voiceStore.currentVoiceChannel;
 
                 // Отключаемся от текущего канала
@@ -416,13 +415,13 @@ class AudioSettingsStore {
 
                 // Переподключаемся с новыми настройками
                 voiceStore.connectToRoom(currentChannel.id, currentChannel.name);
-                console.log('AudioSettingsStore: Reconnected to voice channel with new settings');
+                console.warn('AudioSettingsStore: Reconnected to voice channel with new settings');
             } else {
                 // Если не подключен к каналу, просто обновляем WebRTC поток
                 if (voiceStore.webRTCClient?.resendlocalStream) {
                     voiceStore.webRTCClient.resendlocalStream();
                 }
-                console.log('AudioSettingsStore: Settings applied (not connected to voice channel)');
+                console.warn('AudioSettingsStore: Settings applied (not connected to voice channel)');
             }
         } catch (error) {
             console.error('AudioSettingsStore: Error applying all settings:', error);
@@ -432,7 +431,7 @@ class AudioSettingsStore {
 
     // Метод для сброса настроек к умолчанию
     public async resetToDefaults(): Promise<void> {
-        console.log('AudioSettingsStore: Resetting to default settings...');
+        console.warn('AudioSettingsStore: Resetting to default settings...');
 
         // Сбрасываем основные настройки
         this.echoCancellation = true;
@@ -460,7 +459,7 @@ class AudioSettingsStore {
         // Применяем настройки (включая переподключение если нужно)
         await this.applyAllSettings();
 
-        console.log('AudioSettingsStore: Settings reset to defaults');
+        console.warn('AudioSettingsStore: Settings reset to defaults');
     }
 
     // Методы для настроек в реальном времени (не требуют пересоздания потока)
@@ -625,7 +624,7 @@ class AudioSettingsStore {
         // Используем экземпляр WebRTCClient из roomStore
         (store as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
 
-        console.log('Speaker mute toggled:', this.isSpeakerMuted);
+        console.warn('Speaker mute toggled:', this.isSpeakerMuted);
     }
 
     // Получение списка аудиоустройств
@@ -654,7 +653,7 @@ class AudioSettingsStore {
 
     private async updateMediaStream(forceUpdate: boolean = false) {
         try {
-            console.log('AudioSettingsStore: Starting media stream update...', forceUpdate ? '(forced)' : '');
+            console.warn('AudioSettingsStore: Starting media stream update...', forceUpdate ? '(forced)' : '');
             await this.ensureAudioContextIsRunning();
 
             // Проверяем, нужно ли пересоздавать поток
@@ -665,11 +664,11 @@ class AudioSettingsStore {
                 this._stream.getAudioTracks().some((track) => track.readyState === 'ended');
 
             if (!needsRecreation) {
-                console.log('AudioSettingsStore: Existing media stream is still valid, skipping recreation');
+                console.warn('AudioSettingsStore: Existing media stream is still valid, skipping recreation');
                 return;
             }
 
-            console.log('AudioSettingsStore: Recreating media stream...');
+            console.warn('AudioSettingsStore: Recreating media stream...');
 
             // Останавливаем предыдущий поток
             if (this._stream) {
@@ -677,7 +676,7 @@ class AudioSettingsStore {
             }
 
             runInAction(async () => {
-                console.log(
+                console.warn(
                     'AudioSettingsStore: Requesting getUserMedia with device:',
                     this.selectedMicrophone?.deviceId
                 );
@@ -694,7 +693,7 @@ class AudioSettingsStore {
                     } as MediaTrackConstraints,
                     video: false
                 });
-                console.log(
+                console.warn(
                     'AudioSettingsStore: getUserMedia success, audio tracks:',
                     this._stream.getAudioTracks().length
                 );
@@ -702,7 +701,7 @@ class AudioSettingsStore {
 
                 // Обновляем WebRTC поток после смены микрофона
                 if (forceUpdate) {
-                    console.log('AudioSettingsStore: Updating WebRTC stream after microphone change...');
+                    console.warn('AudioSettingsStore: Updating WebRTC stream after microphone change...');
                     // Обновляем WebRTC поток через roomStore
                     const store = await getRoomStore();
                     if ((store as VoiceRoomStore).webRTCClient?.resendlocalStream) {
@@ -716,7 +715,7 @@ class AudioSettingsStore {
     }
     private prepareMediaStream() {
         try {
-            console.log('AudioSettingsStore: Preparing media stream with enhanced settings...');
+            console.warn('AudioSettingsStore: Preparing media stream with enhanced settings...');
 
             // Очищаем предыдущие процессоры
             this.audioProcessors = {};
@@ -747,11 +746,11 @@ class AudioSettingsStore {
             // Применяем настройки в реальном времени после создания цепочки
             this.updateRealtimeSettings();
 
-            console.log(
+            console.warn(
                 'AudioSettingsStore: Enhanced media stream prepared, output tracks:',
                 this.stream.getAudioTracks().length
             );
-            console.log(
+            console.warn(
                 'AudioSettingsStore: Applied settings - Voice Enhancement:',
                 this.voiceEnhancement,
                 'Voice Clarity:',
@@ -767,39 +766,39 @@ class AudioSettingsStore {
     // Обновление настроек в реальном времени без пересоздания потока
     private updateRealtimeSettings() {
         try {
-            console.log('AudioSettingsStore: Updating realtime audio settings...');
+            console.warn('AudioSettingsStore: Updating realtime audio settings...');
 
             // Если нет активного потока, пропускаем обновление
             if (!this._stream || this._stream.getAudioTracks().length === 0) {
-                console.log('AudioSettingsStore: No active stream, skipping realtime update');
+                console.warn('AudioSettingsStore: No active stream, skipping realtime update');
                 return;
             }
 
             // Обновляем параметры существующих процессоров
             if (this.audioProcessors.voiceEnhancer) {
                 this.audioProcessors.voiceEnhancer.gain.value = this.voiceClarity * 3;
-                console.log('AudioSettingsStore: Updated voice enhancer gain:', this.voiceClarity * 3);
+                console.warn('AudioSettingsStore: Updated voice enhancer gain:', this.voiceClarity * 3);
             }
 
             if (this.audioProcessors.voiceBooster) {
                 this.audioProcessors.voiceBooster.gain.value = this.voiceBoost * 8;
-                console.log('AudioSettingsStore: Updated voice booster gain:', this.voiceBoost * 8);
+                console.warn('AudioSettingsStore: Updated voice booster gain:', this.voiceBoost * 8);
             }
 
             if (this.audioProcessors.bassBooster) {
                 this.audioProcessors.bassBooster.gain.value = this.bassBoost * 5;
-                console.log('AudioSettingsStore: Updated bass booster gain:', this.bassBoost * 5);
+                console.warn('AudioSettingsStore: Updated bass booster gain:', this.bassBoost * 5);
             }
 
             if (this.audioProcessors.trebleBooster) {
                 this.audioProcessors.trebleBooster.gain.value = this.trebleBoost * 5;
-                console.log('AudioSettingsStore: Updated treble booster gain:', this.trebleBoost * 5);
+                console.warn('AudioSettingsStore: Updated treble booster gain:', this.trebleBoost * 5);
             }
 
             if (this.audioProcessors.compressor) {
                 const compressionRatio = 1 + this.dynamicRangeCompression * 8; // 1-9
                 this.audioProcessors.compressor.ratio.value = compressionRatio;
-                console.log('AudioSettingsStore: Updated compressor ratio:', compressionRatio);
+                console.warn('AudioSettingsStore: Updated compressor ratio:', compressionRatio);
             }
 
             // Обновляем параметры фильтров шумоподавления
@@ -807,10 +806,10 @@ class AudioSettingsStore {
                 // Обновляем частоты фильтрации в зависимости от уровня шумоподавления
                 const cutoffFreq = 300 + this.backgroundNoiseReduction * 200; // 300-500 Hz
                 this.audioProcessors.voiceIsolator.frequency.value = cutoffFreq;
-                console.log('AudioSettingsStore: Updated voice isolator frequency:', cutoffFreq);
+                console.warn('AudioSettingsStore: Updated voice isolator frequency:', cutoffFreq);
             }
 
-            console.log('AudioSettingsStore: Realtime settings updated successfully');
+            console.warn('AudioSettingsStore: Realtime settings updated successfully');
         } catch (error) {
             console.error('AudioSettingsStore: Error updating realtime settings:', error);
         }
@@ -1020,7 +1019,7 @@ class AudioSettingsStore {
         // Останавливаем осциллятор через 1 секунду
         oscillator.stop(audioContext.currentTime + 1);
 
-        console.log('Тестирование динамиков...');
+        console.warn('Тестирование динамиков...');
     }
 
     public testMicrophone(): void {
@@ -1050,9 +1049,9 @@ class AudioSettingsStore {
             // Проверка, если есть значительная активность на микрофоне
             if (buffer.some((value) => value > -50)) {
                 // Примерная пороговая величина
-                console.log('Микрофон работает, есть звук');
+                console.warn('Микрофон работает, есть звук');
             } else {
-                console.log('Микрофон не регистрирует звук');
+                console.warn('Микрофон не регистрирует звук');
             }
 
             requestAnimationFrame(checkMicrophone);

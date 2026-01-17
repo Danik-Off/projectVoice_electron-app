@@ -17,7 +17,7 @@ export function createAppRouter() {
     // Получаем маршруты из модулей
     const moduleRoutes = moduleManager.getRoutes();
 
-    console.log(
+    console.warn(
         'Module routes:',
         moduleRoutes.map((r) => ({ path: r.path, moduleId: r.moduleId }))
     );
@@ -132,7 +132,7 @@ export function createAppRouter() {
         }
     ];
 
-    console.log(
+    console.warn(
         'Final routes structure:',
         routes.map((r) => r.path)
     );

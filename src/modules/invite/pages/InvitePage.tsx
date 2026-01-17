@@ -34,15 +34,21 @@ const InvitePage: React.FC = observer(() => {
 
     const isAuthenticated = authStore.isAuthenticated;
 
-    console.log('InvitePage rendered with token:', token);
+    console.warn('InvitePage rendered with token:', token);
 
     const fetchInviteData = useCallback(async () => {
-        console.log('🎯 InvitePage: Получение данных приглашения для токена:', token);
+        if (!token) {
+            setError(t('invitePage.invalidToken'));
+            setLoading(false);
+            return;
+        }
+
+        console.warn('🎯 InvitePage: Получение данных приглашения для токена:', token);
 
         try {
             // Используем сервис для получения данных приглашения
-            const inviteData = await inviteService.getInvite(token!);
-            console.log('🎯 InvitePage: Данные приглашения получены:', inviteData);
+            const inviteData = await inviteService.getInvite(token);
+            console.warn('🎯 InvitePage: Данные приглашения получены:', inviteData);
 
             setInviteData(inviteData);
 
@@ -70,6 +76,11 @@ const InvitePage: React.FC = observer(() => {
     }, [token, fetchInviteData]);
 
     const handleAcceptInvite = async () => {
+        if (!token) {
+            setError(t('invitePage.invalidToken'));
+            return;
+        }
+
         if (!isAuthenticated) {
             // Перенаправляем на страницу входа с возвратом на эту страницу
             navigate(`/auth?redirect=/invite/${token}`);
@@ -78,12 +89,12 @@ const InvitePage: React.FC = observer(() => {
 
         setAccepting(true);
         try {
-            console.log('🎯 InvitePage: Принятие приглашения с токеном:', token);
+            console.warn('🎯 InvitePage: Принятие приглашения с токеном:', token);
 
             // Используем сервис для принятия приглашения
-            await inviteService.acceptInvite(token!);
+            await inviteService.acceptInvite(token);
 
-            console.log('🎯 InvitePage: Приглашение принято успешно');
+            console.warn('🎯 InvitePage: Приглашение принято успешно');
 
             // Перенаправляем на сервер
             navigate(`/server/${serverData?.id}`);

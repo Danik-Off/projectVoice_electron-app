@@ -25,6 +25,7 @@ export const useMemberActions = ({ member, serverId, currentUserPermissions, onU
     const handleKick = useCallback(async () => {
         const memberName = member.nickname || member.user?.username;
         const confirmMessage = t('serverMembers.kickConfirm') || `Вы уверены, что хотите исключить ${memberName}?`;
+        // eslint-disable-next-line no-alert
         if (!confirm(confirmMessage)) {
             return;
         }

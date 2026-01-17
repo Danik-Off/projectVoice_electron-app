@@ -22,16 +22,16 @@ import '../plugins/example-plugin';
  * Инициализация приложения
  */
 export async function initializeApp() {
-    console.log('🚀 Starting application initialization...');
+    console.warn('🚀 Starting application initialization...');
 
     try {
         // Включаем MobX
-        console.log('📦 Enabling MobX...');
+        console.warn('📦 Enabling MobX...');
         enableMobX();
-        console.log('✅ MobX enabled');
+        console.warn('✅ MobX enabled');
 
         // Регистрируем модули (порядок важен из-за зависимостей)
-        console.log('📋 Registering modules...');
+        console.warn('📋 Registering modules...');
         const modules = [
             { name: 'auth', module: authModule },
             { name: 'servers', module: serversModule },
@@ -44,29 +44,29 @@ export async function initializeApp() {
         ];
 
         modules.forEach(({ name, module }) => {
-            console.log(`  📝 Registering ${name} module (v${module.version})...`);
+            console.warn(`  📝 Registering ${name} module (v${module.version})...`);
             moduleManager.register(module);
-            console.log(`  ✅ ${name} module registered`);
+            console.warn(`  ✅ ${name} module registered`);
         });
 
-        console.log(`✅ All ${modules.length} modules registered`);
+        console.warn(`✅ All ${modules.length} modules registered`);
 
         // Инициализируем модули (автоматически учитываются зависимости)
-        console.log('🔄 Initializing modules (with dependency resolution)...');
+        console.warn('🔄 Initializing modules (with dependency resolution)...');
         const startTime = Date.now();
         await moduleManager.initializeAll();
         const initTime = Date.now() - startTime;
-        console.log(`✅ All modules initialized in ${initTime}ms`);
+        console.warn(`✅ All modules initialized in ${initTime}ms`);
 
         // Инициализируем плагины
-        console.log('🔌 Initializing plugins...');
+        console.warn('🔌 Initializing plugins...');
         const pluginStartTime = Date.now();
         await pluginManager.initializeAll();
         const pluginInitTime = Date.now() - pluginStartTime;
-        console.log(`✅ All plugins initialized in ${pluginInitTime}ms`);
+        console.warn(`✅ All plugins initialized in ${pluginInitTime}ms`);
 
         // Загружаем информацию о приложении (стили Discord и т.д.)
-        console.log('📡 Loading app info...');
+        console.warn('📡 Loading app info...');
         try {
             const appInfo = await infoService.getInfo();
             if (appInfo.styles) {
@@ -77,7 +77,7 @@ export async function initializeApp() {
                         root.style.setProperty(`--discord-${key.toLowerCase()}`, value);
                     }
                 });
-                console.log('✅ App info loaded and styles applied');
+                console.warn('✅ App info loaded and styles applied');
             }
         } catch (error) {
             console.warn('⚠️ Failed to load app info:', error);
@@ -85,9 +85,9 @@ export async function initializeApp() {
         }
 
         const totalTime = Date.now() - startTime;
-        console.log(`🎉 Application initialized successfully in ${totalTime}ms`);
-        console.log(`   - Modules: ${modules.length}`);
-        console.log(`   - Plugins: ${pluginManager.getAllPlugins().length}`);
+        console.warn(`🎉 Application initialized successfully in ${totalTime}ms`);
+        console.warn(`   - Modules: ${modules.length}`);
+        console.warn(`   - Plugins: ${pluginManager.getAllPlugins().length}`);
     } catch (error) {
         console.error('❌ Error during application initialization:', error);
         throw error;
@@ -98,23 +98,23 @@ export async function initializeApp() {
  * Уничтожение приложения (для cleanup)
  */
 export async function destroyApp() {
-    console.log('🛑 Starting application destruction...');
+    console.warn('🛑 Starting application destruction...');
 
     try {
         const startTime = Date.now();
 
         // Уничтожаем плагины
-        console.log('🔌 Destroying plugins...');
+        console.warn('🔌 Destroying plugins...');
         await pluginManager.destroyAll();
-        console.log('✅ All plugins destroyed');
+        console.warn('✅ All plugins destroyed');
 
         // Уничтожаем модули
-        console.log('📦 Destroying modules...');
+        console.warn('📦 Destroying modules...');
         await moduleManager.destroyAll();
-        console.log('✅ All modules destroyed');
+        console.warn('✅ All modules destroyed');
 
         const destroyTime = Date.now() - startTime;
-        console.log(`✅ Application destroyed successfully in ${destroyTime}ms`);
+        console.warn(`✅ Application destroyed successfully in ${destroyTime}ms`);
     } catch (error) {
         console.error('❌ Error during application destruction:', error);
         throw error;

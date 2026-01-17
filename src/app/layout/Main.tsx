@@ -17,7 +17,7 @@ const Layout = observer(() => {
     const shouldShowVoiceControls = isConnectedToVoice;
 
     // Логирование для отладки
-    console.log('Layout - isConnectedToVoice:', isConnectedToVoice, 'currentChannel:', currentChannel);
+    console.warn('Layout - isConnectedToVoice:', isConnectedToVoice, 'currentChannel:', currentChannel);
 
     return (
         <UserProfileProvider>

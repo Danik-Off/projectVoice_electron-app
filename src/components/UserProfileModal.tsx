@@ -102,17 +102,17 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
     const handleSendMessage = () => {
         // TODO: Реализовать отправку сообщения
-        console.log('Send message to:', user.username);
+        console.warn('Send message to:', user.username);
     };
 
     const handleAddFriend = () => {
         // TODO: Реализовать добавление в друзья
-        console.log('Add friend:', user.username);
+        console.warn('Add friend:', user.username);
     };
 
     const handleBlockUser = () => {
         // TODO: Реализовать блокировку пользователя
-        console.log('Block user:', user.username);
+        console.warn('Block user:', user.username);
     };
 
     const handleEditProfile = () => {

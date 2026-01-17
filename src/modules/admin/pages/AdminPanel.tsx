@@ -212,7 +212,7 @@ const AdminPanel: React.FC = observer(() => {
     const updateUser = async (userId: number, updates: UpdateUserRequest) => {
         try {
             const result = await adminService.updateUser(userId, updates);
-            console.log(result.message);
+            console.warn(result.message);
             loadUsers(); // Перезагружаем список
         } catch (error) {
             console.error('Ошибка обновления пользователя:', error);
@@ -220,10 +220,11 @@ const AdminPanel: React.FC = observer(() => {
     };
 
     const deleteUser = async (userId: number) => {
+        // eslint-disable-next-line no-alert
         if (window.confirm('Вы уверены, что хотите удалить этого пользователя?')) {
             try {
                 const result = await adminService.deleteUser(userId);
-                console.log(result.message);
+                console.warn(result.message);
                 loadUsers(); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка удаления пользователя:', error);
@@ -234,7 +235,7 @@ const AdminPanel: React.FC = observer(() => {
     const blockServer = async (serverId: number, reason: string) => {
         try {
             const result = await adminService.blockServer(serverId, { reason });
-            console.log(result.message);
+            console.warn(result.message);
             loadServers(); // Перезагружаем список
         } catch (error) {
             console.error('Ошибка блокировки сервера:', error);
@@ -245,7 +246,7 @@ const AdminPanel: React.FC = observer(() => {
         if (window.confirm('Вы уверены, что хотите разблокировать этот сервер?')) {
             try {
                 const result = await adminService.unblockServer(serverId);
-                console.log(result.message);
+                console.warn(result.message);
                 loadServers(); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка разблокировки сервера:', error);
@@ -254,10 +255,11 @@ const AdminPanel: React.FC = observer(() => {
     };
 
     const deleteServer = async (serverId: number) => {
+        // eslint-disable-next-line no-alert
         if (window.confirm('Вы уверены, что хотите удалить этот сервер?')) {
             try {
                 const result = await adminService.deleteServer(serverId);
-                console.log(result.message);
+                console.warn(result.message);
                 loadServers(); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка удаления сервера:', error);

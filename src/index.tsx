@@ -19,7 +19,7 @@ if (!rootElement.getAttribute('data-theme')) {
 // Инициализируем приложение (модули, плагины) и создаем роутер
 initializeApp()
     .then(() => {
-        console.log('✅ App initialized, creating router...');
+        console.warn('✅ App initialized, creating router...');
         const router = createRouter();
 
         const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

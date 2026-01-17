@@ -112,7 +112,7 @@ export interface UpdateUserRequest {
 
 class AdminService {
     async getStats(): Promise<AdminStats> {
-        return await apiClient('/admin/stats', { method: 'GET' });
+        return apiClient('/admin/stats', { method: 'GET' });
     }
 
     async getUsers(filters: UserFilters = {}): Promise<UsersResponse> {
@@ -133,19 +133,19 @@ class AdminService {
             params.append('status', filters.status);
         }
 
-        return await apiClient(`/admin/users?${params.toString()}`, { method: 'GET' });
+        return apiClient(`/admin/users?${params.toString()}`, { method: 'GET' });
     }
 
     async getUser(userId: number): Promise<User> {
-        return await apiClient(`/admin/users/${userId}`, { method: 'GET' });
+        return apiClient(`/admin/users/${userId}`, { method: 'GET' });
     }
 
     async updateUser(userId: number, updates: UpdateUserRequest): Promise<{ message: string; user: User }> {
-        return await apiClient(`/admin/users/${userId}`, { method: 'PUT' }, updates);
+        return apiClient(`/admin/users/${userId}`, { method: 'PUT' }, updates);
     }
 
     async deleteUser(userId: number): Promise<{ message: string }> {
-        return await apiClient(`/admin/users/${userId}`, { method: 'DELETE' });
+        return apiClient(`/admin/users/${userId}`, { method: 'DELETE' });
     }
 
     async getServers(filters: ServerFilters = {}): Promise<ServersResponse> {
@@ -163,27 +163,27 @@ class AdminService {
             params.append('status', filters.status);
         }
 
-        return await apiClient(`/admin/servers?${params.toString()}`, { method: 'GET' });
+        return apiClient(`/admin/servers?${params.toString()}`, { method: 'GET' });
     }
 
     async getServer(serverId: number): Promise<Server> {
-        return await apiClient(`/admin/servers/${serverId}`, { method: 'GET' });
+        return apiClient(`/admin/servers/${serverId}`, { method: 'GET' });
     }
 
     async blockServer(serverId: number, data: BlockServerRequest): Promise<{ message: string; server: Server }> {
-        return await apiClient(`/admin/servers/${serverId}/block`, { method: 'POST' }, data);
+        return apiClient(`/admin/servers/${serverId}/block`, { method: 'POST' }, data);
     }
 
     async unblockServer(serverId: number): Promise<{ message: string; server: Server }> {
-        return await apiClient(`/admin/servers/${serverId}/unblock`, { method: 'POST' });
+        return apiClient(`/admin/servers/${serverId}/unblock`, { method: 'POST' });
     }
 
     async deleteServer(serverId: number): Promise<{ message: string }> {
-        return await apiClient(`/admin/servers/${serverId}`, { method: 'DELETE' });
+        return apiClient(`/admin/servers/${serverId}`, { method: 'DELETE' });
     }
 
     async getLogs(): Promise<LogsResponse> {
-        return await apiClient('/admin/logs', { method: 'GET' });
+        return apiClient('/admin/logs', { method: 'GET' });
     }
 }
 

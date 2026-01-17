@@ -15,7 +15,7 @@ export const authService = {
         });
         return data;
     },
-    getMe: async () => await apiClient('/auth/me', {
+    getMe: async () => apiClient('/auth/me', {
         method: 'GET'
     })
 };

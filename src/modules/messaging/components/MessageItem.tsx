@@ -69,6 +69,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     };
 
     const handleDelete = async () => {
+        // eslint-disable-next-line no-alert
         if (window.confirm('Вы уверены, что хотите удалить это сообщение?')) {
             setIsDeleting(true);
             try {
