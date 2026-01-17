@@ -9,12 +9,12 @@ const WelcomePage: React.FC = () => (
         {/* Анимированный фон */}
         <div className="background-animation">
             <div className="floating-shapes">
-                <div className="shape shape-1"></div>
-                <div className="shape shape-2"></div>
-                <div className="shape shape-3"></div>
-                <div className="shape shape-4"></div>
+                <div className="shape shape-1" />
+                <div className="shape shape-2" />
+                <div className="shape shape-3" />
+                <div className="shape shape-4" />
             </div>
-            <div className="grid-pattern"></div>
+            <div className="grid-pattern" />
         </div>
 
         {/* Главный контент */}
@@ -26,14 +26,14 @@ const WelcomePage: React.FC = () => (
                         <div className="logo-container">
                             <span className="logo-icon">🎙️</span>
                             <div className="logo-rings">
-                                <div className="ring ring-1"></div>
-                                <div className="ring ring-2"></div>
-                                <div className="ring ring-3"></div>
+                                <div className="ring ring-1" />
+                                <div className="ring ring-2" />
+                                <div className="ring ring-3" />
                             </div>
                         </div>
                         <h1 className="hero-title">
                             <span className="title-text">ProjectVoice</span>
-                            <div className="title-underline"></div>
+                            <div className="title-underline" />
                         </h1>
                     </div>
 
@@ -62,12 +62,12 @@ const WelcomePage: React.FC = () => (
                                 <h3 className="developer-name">Danik Off</h3>
                                 <p className="developer-role">Разработчик & Геймер</p>
                             </div>
-                            <div className="developer-glow"></div>
+                            <div className="developer-glow" />
                         </div>
                         <div className="gaming-preview">
                             <div className="game-icon">🎮</div>
                             <div className="friends-icon">👥</div>
-                            <div className="connection-line"></div>
+                            <div className="connection-line" />
                         </div>
                     </div>
                 </div>

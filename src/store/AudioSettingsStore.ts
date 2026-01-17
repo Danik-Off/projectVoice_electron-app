@@ -293,7 +293,7 @@ class AudioSettingsStore {
             this.selectedSpeaker = device;
             // Применяем выбранное устройство к удаленным аудиоэлементам
             import('./roomStore').then(({ default: roomStore }) => {
-                (roomStore as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
+                roomStore.webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
             });
         }
     }
@@ -584,7 +584,7 @@ class AudioSettingsStore {
         // Управляем удаленными аудиоэлементами через roomStore
         import('./roomStore').then(({ default: roomStore }) => {
             // Используем экземпляр WebRTCClient из roomStore
-            (roomStore as VoiceRoomStore).webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
+            roomStore.webRTCClient?.setRemoteAudioMuted(this.isSpeakerMuted);
         });
 
         console.log('Speaker mute toggled:', this.isSpeakerMuted);
@@ -614,7 +614,7 @@ class AudioSettingsStore {
         }
     };
 
-    private async updateMediaStream(forceUpdate: boolean = false) {
+    private async updateMediaStream(forceUpdate = false) {
         try {
             console.log('AudioSettingsStore: Starting media stream update...', forceUpdate ? '(forced)' : '');
             await this.ensureAudioContextIsRunning();

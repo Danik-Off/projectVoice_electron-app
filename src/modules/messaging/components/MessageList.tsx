@@ -248,19 +248,19 @@ const MessageList: React.FC = observer(() => {
 
             <div className="messages-area">
                 <div className="messages-container" ref={messagesContainerRef} onScroll={handleScroll}>
-                    {loadingState && messagesState.length === 0 && (
+                    {loadingState && messagesState.length === 0 ? (
                         <div className="loading-messages">
-                            <div className="loading-spinner"></div>
+                            <div className="loading-spinner" />
                             <span>Загрузка сообщений...</span>
                         </div>
-                    )}
+                    ) : null}
 
-                    {errorState && (
+                    {errorState ? (
                         <div className="error-message">
                             <span>Ошибка загрузки сообщений: {errorState}</span>
                             <button onClick={() => messageStore.loadMessages()}>Попробовать снова</button>
                         </div>
-                    )}
+                    ) : null}
 
                     {!loadingState && messagesState.length === 0 && (
                         <EmptyChatState channelName={currentChannel.name} />
@@ -274,17 +274,17 @@ const MessageList: React.FC = observer(() => {
                         </div>
                     ))}
 
-                    {loadingState && messagesState.length > 0 && (
+                    {loadingState && messagesState.length > 0 ? (
                         <div className="loading-more">
-                            <div className="loading-spinner small"></div>
+                            <div className="loading-spinner small" />
                             <span>Загрузка предыдущих сообщений...</span>
                         </div>
-                    )}
+                    ) : null}
 
                     <div ref={messagesEndRef} />
                 </div>
 
-                {showScrollToBottom && (
+                {showScrollToBottom ? (
                     <button
                         className="scroll-to-bottom-btn"
                         onClick={scrollToBottom}
@@ -295,7 +295,7 @@ const MessageList: React.FC = observer(() => {
                         </svg>
                         <span>Новые сообщения</span>
                     </button>
-                )}
+                ) : null}
             </div>
 
             <MessageInput />

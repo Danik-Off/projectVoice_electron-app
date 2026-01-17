@@ -45,7 +45,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
             <div className="section-content">
                 {loading ? (
                     <div className="loading-state">
-                        <div className="loading-spinner"></div>
+                        <div className="loading-spinner" />
                         <p>{t('serverSettings.loadingMembers')}</p>
                     </div>
                 ) : (
@@ -113,18 +113,18 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                 )}
             </div>
 
-            {selectedMemberForRoles && server?.id && (
+            {selectedMemberForRoles && server?.id ? (
                 <MemberRolesModal
-                    isOpen={!!selectedMemberForRoles}
+                    isOpen={Boolean(selectedMemberForRoles)}
                     member={selectedMemberForRoles}
                     serverId={server.id}
                     roles={roles}
                     onClose={() => setSelectedMemberForRoles(null)}
                     onUpdate={loadMembers}
                 />
-            )}
+            ) : null}
 
-            {contextMenu && server?.id && (
+            {contextMenu && server?.id ? (
                 <MemberContextMenu
                     key={`context-menu-${contextMenu.member.id}`}
                     member={contextMenu.member}
@@ -134,7 +134,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                     onMemberUpdate={handleMemberUpdate}
                     position={contextMenu.position}
                 />
-            )}
+            ) : null}
         </div>
     );
 });

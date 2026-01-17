@@ -113,7 +113,7 @@ const BansSettings: React.FC<BansSettingsProps> = observer(() => {
                                 {bans.map((ban) => (
                                     <div key={ban.id} className="ban-item">
                                         <div className="ban-user-info">
-                                            {ban.user && (
+                                            {ban.user ? (
                                                 <>
                                                     <img
                                                         src={ban.user.profilePicture || '/default-avatar.png'}
@@ -122,19 +122,19 @@ const BansSettings: React.FC<BansSettingsProps> = observer(() => {
                                                     />
                                                     <div className="ban-details">
                                                         <span className="ban-username">{ban.user.username}</span>
-                                                        {ban.reason && (
+                                                        {ban.reason ? (
                                                             <span className="ban-reason">
                                                                 {t('serverSettings.banReason') || 'Причина'}:{' '}
                                                                 {ban.reason}
                                                             </span>
-                                                        )}
+                                                        ) : null}
                                                         <span className="ban-date">
                                                             {t('serverSettings.bannedAt') || 'Забанен'}:{' '}
                                                             {new Date(ban.bannedAt).toLocaleDateString()}
                                                         </span>
                                                     </div>
                                                 </>
-                                            )}
+                                            ) : null}
                                         </div>
                                         <button
                                             className="unban-button"

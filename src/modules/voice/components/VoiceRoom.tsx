@@ -18,7 +18,7 @@ const VoiceRoom: React.FC = observer(() => {
             <h2>Voice Room</h2>
 
             {/* Локальный пользователь */}
-            {currentUser && (
+            {currentUser ? (
                 <div className={`user-box local-user ${isLocalSpeaking ? 'speaking' : ''}`}>
                     <ClickableAvatar
                         user={{
@@ -38,12 +38,12 @@ const VoiceRoom: React.FC = observer(() => {
                     <div className="user-name">{currentUser.username} (Вы)</div>
                     <div className="user-status">{isLocalSpeaking ? '🎤 Говорит' : '🔇 Молчит'}</div>
                 </div>
-            )}
+            ) : null}
 
             <div className="user-list">
                 {users.map((user: Participant) => (
                     <div key={user.socketId} className={`user-box ${user.isSpeaking ? 'speaking' : ''}`}>
-                        {user.userData && (
+                        {user.userData ? (
                             <ClickableAvatar
                                 user={{
                                     id: user.userData.id,
@@ -75,7 +75,7 @@ const VoiceRoom: React.FC = observer(() => {
                                 }}
                                 className="user-avatar"
                             />
-                        )}
+                        ) : null}
                         <div className="user-name">{user.userData?.username || 'Unknown User'}</div>
                         <div className="user-status">
                             {user.isSpeaking ? '🎤 Говорит' : user.micToggle ? '🔇 Молчит' : '🔇 Выключен'}

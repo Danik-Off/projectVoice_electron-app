@@ -16,7 +16,7 @@ class NotificationStore {
         makeAutoObservable(this);
     }
 
-    addNotification(message: string, type: 'info' | 'success' | 'error' | 'warning', duration: number = 5000) {
+    addNotification(message: string, type: 'info' | 'success' | 'error' | 'warning', duration = 5000) {
         const id = Math.random().toString(36).substr(2, 9); // simple ID generator
         // Проверяем, является ли сообщение ключом перевода
         let translatedMessage = message;

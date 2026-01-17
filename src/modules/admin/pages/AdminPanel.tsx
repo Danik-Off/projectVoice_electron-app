@@ -319,7 +319,7 @@ const AdminPanel: React.FC = observer(() => {
         return (
             <div className="admin-panel">
                 <div className="admin-loading">
-                    <div className="loading-spinner"></div>
+                    <div className="loading-spinner" />
                     Загрузка админ-панели...
                 </div>
             </div>

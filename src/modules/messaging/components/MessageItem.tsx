@@ -160,7 +160,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {isFirstInGroup && message.user && (
+            {isFirstInGroup && message.user ? (
                 <ClickableAvatar
                     user={{
                         id: message.user.id || 0,
@@ -192,15 +192,15 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                     }}
                     className="message-avatar"
                 />
-            )}
+            ) : null}
 
             <div className="message-content">
-                {isFirstInGroup && (
+                {isFirstInGroup ? (
                     <div className="message-header">
                         <span className="message-author">{message.user?.username || 'Неизвестный пользователь'}</span>
                         <span className="message-time">
                             {formatTime(message.createdAt)}
-                            {message.isEdited && <span className="edit-indicator"> (изменено)</span>}
+                            {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
                         </span>
                         <div className="message-status">
                             <span className={`status-icon ${message.isDeleted ? 'deleted' : 'delivered'}`}>
@@ -208,7 +208,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             </span>
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {isEditing ? (
                     <div className="edit-form">
@@ -245,13 +245,13 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                 {!isFirstInGroup && (
                     <div className="message-time">
                         {formatTime(message.createdAt)}
-                        {message.isEdited && <span className="edit-indicator"> (изменено)</span>}
+                        {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
                     </div>
                 )}
 
-                {(canEdit || canDelete) && showActions && (
+                {(canEdit || canDelete) && showActions ? (
                     <div className="message-actions">
-                        {canEdit && (
+                        {canEdit ? (
                             <button
                                 className="action-btn edit-btn"
                                 onClick={handleEdit}
@@ -260,8 +260,8 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             >
                                 ✏️
                             </button>
-                        )}
-                        {canDelete && (
+                        ) : null}
+                        {canDelete ? (
                             <button
                                 className="action-btn delete-btn"
                                 onClick={handleDelete}
@@ -270,9 +270,9 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             >
                                 {isDeleting ? '⏳' : '🗑️'}
                             </button>
-                        )}
+                        ) : null}
                     </div>
-                )}
+                ) : null}
             </div>
         </div>
     );

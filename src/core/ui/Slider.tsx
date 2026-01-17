@@ -25,14 +25,14 @@ const Slider: React.FC<SliderProps> = ({
 
     return (
         <div className={`ui-slider ${fullWidth ? 'ui-slider--full-width' : ''} ${className}`}>
-            {label && (
+            {label ? (
                 <div className="ui-slider__header">
                     <label htmlFor={sliderId} className="ui-slider__label">
                         {label}
                     </label>
-                    {showValue && <span className="ui-slider__value">{displayValue}</span>}
+                    {showValue ? <span className="ui-slider__value">{displayValue}</span> : null}
                 </div>
-            )}
+            ) : null}
             <div className="ui-slider__container">
                 <input
                     type="range"
@@ -42,7 +42,7 @@ const Slider: React.FC<SliderProps> = ({
                     {...props}
                 />
             </div>
-            {helperText && <span className="ui-slider__helper">{helperText}</span>}
+            {helperText ? <span className="ui-slider__helper">{helperText}</span> : null}
         </div>
     );
 };

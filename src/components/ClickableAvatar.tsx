@@ -61,9 +61,9 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
                 <div className="avatar-placeholder">{user.username.charAt(0).toUpperCase()}</div>
             )}
 
-            {showStatus && (
-                <div className="status-indicator" style={{ backgroundColor: getStatusColor(user.status) }}></div>
-            )}
+            {showStatus ? (
+                <div className="status-indicator" style={{ backgroundColor: getStatusColor(user.status) }} />
+            ) : null}
         </div>
     );
 };

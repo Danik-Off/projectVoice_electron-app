@@ -338,7 +338,7 @@ const AudioSettings: React.FC = observer(() => {
                                         checked={!audioSettingsStore.isSpeakerMuted}
                                         onChange={() => audioSettingsStore.toggleSpeakerMute()}
                                     />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">Включить звук</span>
                                 </div>
                                 <div className="setting-description">Включение/отключение звука</div>
@@ -397,7 +397,7 @@ const AudioSettings: React.FC = observer(() => {
                                             checked={audioSettingsStore.echoCancellation}
                                             onChange={(e) => audioSettingsStore.setEchoCancellation(e.target.checked)}
                                         />
-                                        <span className="checkmark"></span>
+                                        <span className="checkmark" />
                                         <span className="checkbox-label">Подавление эха</span>
                                     </label>
                                     <label className="settings-checkbox">
@@ -406,7 +406,7 @@ const AudioSettings: React.FC = observer(() => {
                                             checked={audioSettingsStore.noiseSuppression}
                                             onChange={(e) => audioSettingsStore.setNoiseSuppression(e.target.checked)}
                                         />
-                                        <span className="checkmark"></span>
+                                        <span className="checkmark" />
                                         <span className="checkbox-label">Шумоподавление</span>
                                     </label>
                                     <label className="settings-checkbox">
@@ -415,7 +415,7 @@ const AudioSettings: React.FC = observer(() => {
                                             checked={audioSettingsStore.autoGainControl}
                                             onChange={(e) => audioSettingsStore.setAutoGainControl(e.target.checked)}
                                         />
-                                        <span className="checkmark"></span>
+                                        <span className="checkmark" />
                                         <span className="checkbox-label">Автоконтроль громкости</span>
                                     </label>
                                 </div>
@@ -438,7 +438,7 @@ const AudioSettings: React.FC = observer(() => {
                                             checked={audioSettingsStore.voiceEnhancement}
                                             onChange={(e) => audioSettingsStore.setVoiceEnhancement(e.target.checked)}
                                         />
-                                        <span className="checkmark"></span>
+                                        <span className="checkmark" />
                                         <span className="checkbox-label">Улучшение голоса</span>
                                     </label>
                                     <label className="settings-checkbox">
@@ -447,7 +447,7 @@ const AudioSettings: React.FC = observer(() => {
                                             checked={audioSettingsStore.voiceIsolation}
                                             onChange={(e) => audioSettingsStore.setVoiceIsolation(e.target.checked)}
                                         />
-                                        <span className="checkmark"></span>
+                                        <span className="checkmark" />
                                         <span className="checkbox-label">Изоляция голоса</span>
                                     </label>
                                 </div>

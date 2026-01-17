@@ -23,7 +23,7 @@ const Layout = observer(() => {
         <UserProfileProvider>
             <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`}>
                 <ToastNotifications />
-                {shouldShowVoiceControls && <VoiceControls />}
+                {shouldShowVoiceControls ? <VoiceControls /> : null}
                 <ServerSidebar />
                 <div className="content-page">
                     <div className="content-wrapper">

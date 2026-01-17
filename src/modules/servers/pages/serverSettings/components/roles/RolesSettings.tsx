@@ -244,11 +244,11 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                     <h2>{t('serverSettings.roles') || 'Роли'}</h2>
                     <p>{t('serverSettings.rolesDescription') || 'Управляйте ролями сервера и их разрешениями'}</p>
                 </div>
-                {showCreateButton && (
+                {showCreateButton ? (
                     <button className="create-role-button" onClick={handleCreateRole}>
                         + {t('serverSettings.createRole') || 'Создать роль'}
                     </button>
-                )}
+                ) : null}
             </div>
 
             <div className="section-content">
@@ -261,11 +261,11 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                 {t('serverSettings.noRolesDescription') ||
                                     'Создайте роли для управления разрешениями участников сервера'}
                             </p>
-                            {showCreateButton && (
+                            {showCreateButton ? (
                                 <button className="create-first-role-button" onClick={handleCreateRole}>
                                     {t('serverSettings.createFirstRole') || 'Создать первую роль'}
                                 </button>
-                            )}
+                            ) : null}
                         </div>
                     ) : (
                         // Сортируем роли по позиции (больше = выше в иерархии)
@@ -285,38 +285,38 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                             <div className="role-header">
                                                 <h3 className="role-name">{role.name}</h3>
                                                 <div className="role-badges">
-                                                    {role.isHoisted && (
+                                                    {role.isHoisted ? (
                                                         <span className="badge">
                                                             {t('serverSettings.hoisted') || 'Отдельно'}
                                                         </span>
-                                                    )}
-                                                    {role.isMentionable && (
+                                                    ) : null}
+                                                    {role.isMentionable ? (
                                                         <span className="badge">
                                                             {t('serverSettings.mentionable') || 'Упоминаемая'}
                                                         </span>
-                                                    )}
+                                                    ) : null}
                                                     <span className="badge position">
                                                         {t('serverSettings.position') || 'Позиция'}: {role.position}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div className="role-actions">
-                                                {canEdit && (
+                                                {canEdit ? (
                                                     <button
                                                         className="action-button edit"
                                                         onClick={() => handleEditRole(role)}
                                                     >
                                                         {t('common.edit') || 'Редактировать'}
                                                     </button>
-                                                )}
-                                                {canDelete && (
+                                                ) : null}
+                                                {canDelete ? (
                                                     <button
                                                         className="action-button delete"
                                                         onClick={() => handleDeleteRole(role)}
                                                     >
                                                         {t('common.delete') || 'Удалить'}
                                                     </button>
-                                                )}
+                                                ) : null}
                                                 {!canEdit && !canDelete && (
                                                     <span className="no-permissions">
                                                         {t('serverSettings.noPermissions') || 'Нет прав для управления'}

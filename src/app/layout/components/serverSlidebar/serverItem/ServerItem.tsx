@@ -78,20 +78,22 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
             )}
 
             {/* Индикатор состояния сервера */}
-            {server.isBlocked && <div className="server-status-indicator blocked">🚫</div>}
+            {server.isBlocked ? <div className="server-status-indicator blocked">🚫</div> : null}
 
-            {server.connectionError && !server.isBlocked && <div className="server-status-indicator error">⚠️</div>}
+            {server.connectionError && !server.isBlocked ? (
+                <div className="server-status-indicator error">⚠️</div>
+            ) : null}
 
-            {server.maintenance && !server.isBlocked && !server.connectionError && (
+            {server.maintenance && !server.isBlocked && !server.connectionError ? (
                 <div className="server-status-indicator maintenance">🔧</div>
-            )}
+            ) : null}
 
             {/* Счетчик уведомлений */}
-            {server.notificationCount && server.notificationCount > 0 && (
+            {server.notificationCount && server.notificationCount > 0 ? (
                 <div className="notification-badge">
                     {server.notificationCount > 99 ? '99+' : server.notificationCount}
                 </div>
-            )}
+            ) : null}
         </div>
     );
 };

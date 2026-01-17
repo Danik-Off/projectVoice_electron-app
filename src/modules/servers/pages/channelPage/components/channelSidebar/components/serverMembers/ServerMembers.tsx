@@ -24,7 +24,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
         const { t } = useTranslation();
         const { openProfile } = useUserProfile();
         console.log('ServerMembers - received members:', members);
-        const [expandedRoles, setExpandedRoles] = useState<{ [key: string]: boolean }>({});
+        const [expandedRoles, setExpandedRoles] = useState<Record<string, boolean>>({});
         const [contextMenu, setContextMenu] = useState<{
             member: ServerMember;
             position: { x: number; y: number };
@@ -129,10 +129,10 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                             <span className="role-icon">👑</span>
                             <span className="role-name">{t('serverMembers.roles.owner')}</span>
                             <span className="role-count">({ownerMembers.length})</span>
-                            <span className="expand-icon">{expandedRoles['owner'] !== false ? '▼' : '▶'}</span>
+                            <span className="expand-icon">{expandedRoles.owner !== false ? '▼' : '▶'}</span>
                         </div>
 
-                        {expandedRoles['owner'] !== false && (
+                        {expandedRoles.owner !== false && (
                             <div className="members-list">
                                 {ownerMembers.map((member) => (
                                     <div
@@ -141,7 +141,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                         onContextMenu={(e) => handleContextMenu(e, member)}
                                     >
                                         <div className="member-info">
-                                            {member.user && (
+                                            {member.user ? (
                                                 <ClickableAvatar
                                                     user={{
                                                         id: member.user.id,
@@ -173,7 +173,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                     }}
                                                     className="member-avatar"
                                                 />
-                                            )}
+                                            ) : null}
                                             <span
                                                 className="member-name"
                                                 style={{
@@ -220,7 +220,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                 <span className="expand-icon">{isExpanded ? '▼' : '▶'}</span>
                             </div>
 
-                            {isExpanded && (
+                            {isExpanded ? (
                                 <div className="members-list">
                                     {roleMembers.map((member) => (
                                         <div
@@ -229,7 +229,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                             onContextMenu={(e) => handleContextMenu(e, member)}
                                         >
                                             <div className="member-info">
-                                                {member.user && (
+                                                {member.user ? (
                                                     <ClickableAvatar
                                                         user={{
                                                             id: member.user.id,
@@ -261,7 +261,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                         }}
                                                         className="member-avatar"
                                                     />
-                                                )}
+                                                ) : null}
                                                 <span
                                                     className="member-name"
                                                     style={{
@@ -272,9 +272,9 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                 </span>
                                             </div>
 
-                                            {canManageMembers && member.userId !== currentUser?.id && (
+                                            {canManageMembers && member.userId !== currentUser?.id ? (
                                                 <div className="member-actions">
-                                                    {canChangeRoles && (
+                                                    {canChangeRoles ? (
                                                         <select
                                                             value={member.role}
                                                             onChange={(e) => onRoleChange?.(member.id, e.target.value)}
@@ -290,7 +290,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                                 {t('serverMembers.roles.admin')}
                                                             </option>
                                                         </select>
-                                                    )}
+                                                    ) : null}
 
                                                     {hasPermission(currentUserPermissions, Permissions.ADMINISTRATOR) &&
                                                         member.role !== 'owner' && (
@@ -303,16 +303,16 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                             </button>
                                                         )}
                                                 </div>
-                                            )}
+                                            ) : null}
                                         </div>
                                     ))}
                                 </div>
-                            )}
+                            ) : null}
                         </div>
                     );
                 })}
 
-                {contextMenu && (
+                {contextMenu ? (
                     <MemberContextMenu
                         member={contextMenu.member}
                         serverId={serverId}
@@ -321,7 +321,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                         onMemberUpdate={onMemberUpdate}
                         position={contextMenu.position}
                     />
-                )}
+                ) : null}
             </div>
         );
     }

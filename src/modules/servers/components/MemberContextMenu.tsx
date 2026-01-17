@@ -240,21 +240,21 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 
                 <div className="context-menu-divider" />
 
-                {canKick && (
+                {canKick ? (
                     <button className="context-menu-item danger" onClick={handleKick}>
                         <span className="icon">👢</span>
                         {t('serverMembers.kick') || 'Исключить'}
                     </button>
-                )}
+                ) : null}
 
-                {canBan && (
+                {canBan ? (
                     <button className="context-menu-item danger" onClick={() => setShowBanModal(true)}>
                         <span className="icon">🔨</span>
                         {t('serverMembers.ban') || 'Забанить'}
                     </button>
-                )}
+                ) : null}
 
-                {canManageRoles && (
+                {canManageRoles ? (
                     <>
                         <div className="context-menu-divider" />
                         <button
@@ -268,32 +268,32 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                             {t('serverSettings.manageRoles') || 'Управление ролями'}
                         </button>
                     </>
-                )}
+                ) : null}
 
-                {(canMute || canDeafen) && (
+                {canMute || canDeafen ? (
                     <>
                         <div className="context-menu-divider" />
-                        {canMute && (
+                        {canMute ? (
                             <label className="context-menu-item checkbox">
                                 <input type="checkbox" checked={isMuted} onChange={handleMuteToggle} />
                                 <span className="icon">🔇</span>
                                 {t('serverMembers.mute') || 'Заглушить'}
                             </label>
-                        )}
-                        {canDeafen && (
+                        ) : null}
+                        {canDeafen ? (
                             <label className="context-menu-item checkbox">
                                 <input type="checkbox" checked={isDeafened} onChange={handleDeafenToggle} />
                                 <span className="icon">🔊</span>
                                 {t('serverMembers.deafen') || 'Отключить звук'}
                             </label>
-                        )}
+                        ) : null}
                     </>
-                )}
+                ) : null}
             </div>
 
             <BanModal isOpen={showBanModal} onClose={() => setShowBanModal(false)} onConfirm={handleBan} />
 
-            {showRolesModal && (
+            {showRolesModal ? (
                 <MemberRolesModal
                     isOpen={showRolesModal}
                     member={member}
@@ -305,7 +305,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                         setShowRolesModal(false);
                     }}
                 />
-            )}
+            ) : null}
         </>
     );
 };

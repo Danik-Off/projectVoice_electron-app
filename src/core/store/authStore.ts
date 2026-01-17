@@ -40,8 +40,8 @@ class AuthStore {
         const savedUser = getUser();
 
         console.warn('🔐 Restoring auth from localStorage...');
-        console.warn('📦 Token exists:', !!savedToken);
-        console.warn('📦 User data exists:', !!savedUser);
+        console.warn('📦 Token exists:', Boolean(savedToken));
+        console.warn('📦 User data exists:', Boolean(savedUser));
 
         if (savedToken) {
             // Восстанавливаем токен и устанавливаем авторизацию СИНХРОННО
@@ -87,7 +87,7 @@ class AuthStore {
             this.loading = true;
             const data = await authService.login(email, password);
 
-            if (!data || !data.token) {
+            if (!data?.token) {
                 throw new Error('Invalid response from server');
             }
 
@@ -170,7 +170,7 @@ class AuthStore {
             // ВНИМАНИЕ: authService.register принимает (email, username, password)
             const data = await authService.register(email, username, password);
 
-            if (!data || !data.token) {
+            if (!data?.token) {
                 console.error('Registration response missing token:', data);
                 throw new Error('Invalid response from server: token missing');
             }

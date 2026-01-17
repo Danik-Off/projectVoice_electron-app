@@ -85,7 +85,7 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
             </div>
 
             {/* Модальное окно подтверждения удаления */}
-            {showDeleteConfirm && (
+            {showDeleteConfirm ? (
                 <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-header">
@@ -107,7 +107,7 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
                         </div>
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 });

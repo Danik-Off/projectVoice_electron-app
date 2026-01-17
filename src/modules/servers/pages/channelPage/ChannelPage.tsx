@@ -20,7 +20,7 @@ const LoadingState: React.FC = () => (
             <p className="loading-description">Подготавливаем все каналы и настройки для вас</p>
             <div className="loading-progress">
                 <div className="progress-bar">
-                    <div className="progress-fill"></div>
+                    <div className="progress-fill" />
                 </div>
                 <span className="progress-text">Инициализация...</span>
             </div>
@@ -55,7 +55,7 @@ const Page = observer(() => {
                     <div className="channel-content">
                         <Outlet />
                     </div>
-                    {isVoiceConnected && <VoiceControls />}
+                    {isVoiceConnected ? <VoiceControls /> : null}
                 </div>
             ) : (
                 <LoadingState />
@@ -81,7 +81,7 @@ const ChannelPage = () => {
 
     // Проверяем, заблокирован ли сервер
     useEffect(() => {
-        if (serverStore.currentServer && serverStore.currentServer.isBlocked) {
+        if (serverStore.currentServer?.isBlocked) {
             setShowBlockedModal(true);
         }
     }, []);

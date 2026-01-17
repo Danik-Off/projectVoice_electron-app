@@ -11,7 +11,7 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        if (member && member.roles) {
+        if (member?.roles) {
             const roleIds = member.roles.map((r: any) => (typeof r === 'object' ? r.id : r));
             setSelectedRoleIds(roleIds);
         } else {
@@ -79,7 +79,9 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
                             <span className="preview-name" style={{ color: member.highestRole?.color }}>
                                 {member.nickname || member.user?.username}
                             </span>
-                            {member.nickname && <span className="preview-username">@{member.user?.username}</span>}
+                            {member.nickname ? (
+                                <span className="preview-username">@{member.user?.username}</span>
+                            ) : null}
                         </div>
                     </div>
 

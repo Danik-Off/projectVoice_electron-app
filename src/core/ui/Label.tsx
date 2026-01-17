@@ -9,7 +9,7 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
 const Label: React.FC<LabelProps> = ({ required = false, children, className = '', ...props }) => (
     <label className={`ui-label ${required ? 'ui-label--required' : ''} ${className}`} {...props}>
         {children}
-        {required && <span className="ui-label__asterisk">*</span>}
+        {required ? <span className="ui-label__asterisk">*</span> : null}
     </label>
 );
 

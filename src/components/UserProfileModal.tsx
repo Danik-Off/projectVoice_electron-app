@@ -162,7 +162,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                     ) : (
                         <div className="avatar-placeholder-large">{user.username.charAt(0).toUpperCase()}</div>
                     )}
-                    <div className="status-indicator" style={{ backgroundColor: getStatusColor(user.status) }}></div>
+                    <div className="status-indicator" style={{ backgroundColor: getStatusColor(user.status) }} />
                 </div>
 
                 <div className="profile-info">
@@ -194,12 +194,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                             <p className="user-tag">#{user.tag || '0000'}</p>
                             <p className="user-status">{getStatusText(user.status)}</p>
 
-                            {user.role && (
+                            {user.role ? (
                                 <div className="user-role">
                                     <span className="role-icon">{getRoleIcon(user.role)}</span>
                                     <span className="role-text">{t(`userProfile.roles.${user.role}`)}</span>
                                 </div>
-                            )}
+                            ) : null}
                         </>
                     )}
                 </div>
@@ -251,7 +251,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                     </div>
                 </div>
 
-                {user.blockedAt && (
+                {user.blockedAt ? (
                     <div className="detail-section warning">
                         <h4>{t('userProfile.blockedAccount.title')}</h4>
                         <p className="warning-text">{t('userProfile.blockedAccount.message')}</p>
@@ -263,14 +263,14 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                                 <strong>{t('userProfile.blockedAccount.blockedAt')}:</strong>{' '}
                                 {formatDate(user.blockedAt)}
                             </p>
-                            {user.blockedBy && (
+                            {user.blockedBy ? (
                                 <p>
                                     <strong>{t('userProfile.blockedAccount.blockedBy')}:</strong> {user.blockedBy}
                                 </p>
-                            )}
+                            ) : null}
                         </div>
                     </div>
-                )}
+                ) : null}
             </div>
         </div>
     );
@@ -496,7 +496,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                                 </button>
                             </>
                         )}
-                        {isOwnProfile && (
+                        {isOwnProfile ? (
                             <>
                                 {!showEditMode ? (
                                     <button className="action-button primary" onClick={handleEditProfile}>
@@ -517,7 +517,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                                     </>
                                 )}
                             </>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

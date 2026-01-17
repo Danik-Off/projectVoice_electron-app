@@ -108,12 +108,12 @@ const ChannelList: React.FC = observer(() => {
                 <p className="channel-list__empty">{t('channelsPage.channelList.noVoiceChannels')}</p>
             )}
 
-            {isFormVisible && <CreateChannelForm onClose={() => setIsFormVisible(false)} />}
+            {isFormVisible ? <CreateChannelForm onClose={() => setIsFormVisible(false)} /> : null}
         </div>
     );
     const loadingList = (
         <div className="spinner-conteiner">
-            <Spinner></Spinner>
+            <Spinner />
         </div>
     );
     return channelsStore.loading ? loadingList : channelList;

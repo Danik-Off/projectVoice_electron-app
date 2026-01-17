@@ -31,7 +31,7 @@ class MessageStore {
     }
 
     // Загрузка сообщений
-    async loadMessages(page: number = 1, append: boolean = false) {
+    async loadMessages(page = 1, append = false) {
         if (!this.currentChannelId) {
             return;
         }

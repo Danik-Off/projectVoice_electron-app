@@ -58,13 +58,13 @@ export interface BanInfo {
 
 class ServerMembersService {
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
-        return await apiClient(`/serverMembers/${serverId}/members`, {
+        return apiClient(`/serverMembers/${serverId}/members`, {
             method: 'GET'
         });
     }
 
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
-        return await apiClient(
+        return apiClient(
             `/serverMembers/${serverId}/members/${memberId}`,
             {
                 method: 'PUT'
@@ -79,8 +79,8 @@ class ServerMembersService {
         });
     }
 
-    async addMember(serverId: number, userId: number, role: string = 'member'): Promise<ServerMember> {
-        return await apiClient(
+    async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
+        return apiClient(
             `/serverMembers/${serverId}/members`,
             {
                 method: 'POST'
@@ -93,7 +93,7 @@ class ServerMembersService {
      * Получить права текущего пользователя на сервере
      */
     async getCurrentMemberPermissions(serverId: number): Promise<CurrentMemberPermissions> {
-        return await apiClient(`/serverMembers/${serverId}/members/me`, {
+        return apiClient(`/serverMembers/${serverId}/members/me`, {
             method: 'GET'
         });
     }
@@ -129,7 +129,7 @@ class ServerMembersService {
         isMuted?: boolean,
         isDeafened?: boolean
     ): Promise<ServerMember> {
-        return await apiClient(
+        return apiClient(
             `/serverMembers/${serverId}/members/${memberId}/voice`,
             {
                 method: 'PATCH'
@@ -142,7 +142,7 @@ class ServerMembersService {
      * Обновить роли участника
      */
     async updateMemberRoles(serverId: number, memberId: number, roleIds: number[]): Promise<ServerMember> {
-        return await apiClient(
+        return apiClient(
             `/serverMembers/${serverId}/members/${memberId}/roles`,
             {
                 method: 'PUT'
@@ -155,7 +155,7 @@ class ServerMembersService {
      * Получить список забаненных пользователей
      */
     async getBans(serverId: number): Promise<BanInfo[]> {
-        return await apiClient(`/servers/${serverId}/bans`, {
+        return apiClient(`/servers/${serverId}/bans`, {
             method: 'GET'
         });
     }

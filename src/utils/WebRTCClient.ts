@@ -389,7 +389,7 @@ class WebRTCClient {
         if (audioSettingsStore.stream && peerConnection) {
             audioSettingsStore.stream.getTracks().forEach((track) => {
                 // Если существет локальный стрим и пир для подключения то рассылаем стрим
-                peerConnection.addTrack(track, audioSettingsStore.stream!);
+                peerConnection.addTrack(track, audioSettingsStore.stream);
                 track.enabled = !audioSettingsStore.isMicrophoneMuted;
             });
         } else {

@@ -25,7 +25,7 @@ export const roleService = {
      * @returns созданная роль
      */
     createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> =>
-        await apiClient<Role>(
+        apiClient<Role>(
             `/servers/${serverId}/roles`,
             {
                 method: 'POST'
@@ -41,7 +41,7 @@ export const roleService = {
      * @returns обновленная роль
      */
     updateRole: async (serverId: number, roleId: number, roleData: UpdateRoleRequest): Promise<Role> =>
-        await apiClient<Role>(
+        apiClient<Role>(
             `/servers/${serverId}/roles/${roleId}`,
             {
                 method: 'PATCH'

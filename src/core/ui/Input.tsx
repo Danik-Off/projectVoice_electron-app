@@ -13,14 +13,14 @@ const Input: React.FC<InputProps> = ({ label, error, helperText, fullWidth = fal
 
     return (
         <div className={`ui-input ${fullWidth ? 'ui-input--full-width' : ''} ${error ? 'ui-input--error' : ''}`}>
-            {label && (
+            {label ? (
                 <label htmlFor={inputId} className="ui-input__label">
                     {label}
                 </label>
-            )}
+            ) : null}
             <input id={inputId} className={`ui-input__field ${className}`} {...props} />
-            {error && <span className="ui-input__error">{error}</span>}
-            {helperText && !error && <span className="ui-input__helper">{helperText}</span>}
+            {error ? <span className="ui-input__error">{error}</span> : null}
+            {helperText && !error ? <span className="ui-input__helper">{helperText}</span> : null}
         </div>
     );
 };

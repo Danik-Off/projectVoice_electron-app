@@ -13,7 +13,7 @@ const MicButton: React.FC<MicButtonProps> = ({ isMicOn, onMicToggle }) => (
         onClick={onMicToggle}
         aria-label={isMicOn ? 'Mute microphone' : 'Unmute microphone'}
     >
-        <MicIcon isMuted={!isMicOn}></MicIcon>
+        <MicIcon isMuted={!isMicOn} />
     </button>
 );
 

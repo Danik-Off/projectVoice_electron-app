@@ -8,7 +8,7 @@ class ServerStore {
     servers: Server[] = [];
     currentServer: Server | null = null;
     users: User[] = []; // Список пользователей
-    loading: boolean = false;
+    loading = false;
     error: string | null = null;
 
     constructor() {

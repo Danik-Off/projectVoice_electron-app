@@ -14,9 +14,9 @@ const Toggle: React.FC<ToggleProps> = ({ label, helperText, className = '', id, 
             <label htmlFor={toggleId} className="ui-toggle__label">
                 <input type="checkbox" id={toggleId} className="ui-toggle__input" {...props} />
                 <span className="ui-toggle__switch" />
-                {label && <span className="ui-toggle__text">{label}</span>}
+                {label ? <span className="ui-toggle__text">{label}</span> : null}
             </label>
-            {helperText && <span className="ui-toggle__helper">{helperText}</span>}
+            {helperText ? <span className="ui-toggle__helper">{helperText}</span> : null}
         </div>
     );
 };

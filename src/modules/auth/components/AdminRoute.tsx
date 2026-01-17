@@ -48,7 +48,7 @@ const AdminRoute: React.FC<AdminRouteProps> = observer(({ children }) => {
                             'radial-gradient(circle at 20% 80%, rgba(114, 137, 218, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(67, 181, 129, 0.1) 0%, transparent 50%)',
                         pointerEvents: 'none'
                     }}
-                ></div>
+                />
 
                 <div
                     style={{
@@ -59,7 +59,7 @@ const AdminRoute: React.FC<AdminRouteProps> = observer(({ children }) => {
                         borderRadius: '50%',
                         animation: 'spin 1s linear infinite'
                     }}
-                ></div>
+                />
 
                 <div
                     style={{

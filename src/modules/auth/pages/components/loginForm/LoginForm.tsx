@@ -70,7 +70,7 @@ const LoginForm: React.FC = () => {
             >
                 {isSubmitting ? (
                     <>
-                        <span className="spinner"></span>
+                        <span className="spinner" />
                         {t('authPage.loginButton.loading')}
                     </>
                 ) : (

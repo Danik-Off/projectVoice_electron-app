@@ -8,10 +8,10 @@ class ConnectionStore {
         import.meta.env.VITE_API_BASE_URL ||
         'http://localhost:5000';
 
-    public isConnected: boolean = true;
+    public isConnected = true;
     public lastError: string | null = null;
-    public isAttemptingToConnect: boolean = false;
-    public isSettingsModalOpen: boolean = false;
+    public isAttemptingToConnect = false;
+    public isSettingsModalOpen = false;
 
     constructor() {
         makeAutoObservable(this);

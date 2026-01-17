@@ -62,14 +62,14 @@ const ServerSidebar: React.FC = observer(() => {
                 >
                     <div className="servers__server-icon">🏠</div>
                 </div>
-                <div className="servers__separator"></div>
+                <div className="servers__separator" />
             </div>
 
             <div className="servers__list">
                 {serverStore.servers.map((server) => (
                     <ServerItem key={server.id} server={server} onClick={() => handleServerClick(server)} />
                 ))}
-                <div className="servers__separator"></div>
+                <div className="servers__separator" />
                 <div
                     className="servers__server servers__server--add"
                     onClick={() => {
@@ -81,7 +81,7 @@ const ServerSidebar: React.FC = observer(() => {
             </div>
 
             <div className="servers__footer">
-                <div className="servers__footer-separator"></div>
+                <div className="servers__footer-separator" />
                 <div
                     className="servers__server servers__server--settings"
                     onClick={handleSetting}
@@ -104,7 +104,7 @@ const ServerSidebar: React.FC = observer(() => {
             </div>
 
             <BlockedServerModal
-                isOpen={!!blockedServer}
+                isOpen={Boolean(blockedServer)}
                 onClose={() => setBlockedServer(null)}
                 serverName={blockedServer?.name || ''}
                 reason={blockedServer?.reason}

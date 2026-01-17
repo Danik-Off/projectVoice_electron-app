@@ -26,9 +26,9 @@ class SocketClient {
 
     private token: string;
     private socket: Socket | null;
-    private peerConnections: { [key: string]: RTCPeerConnection }; // Storage for multiple peer connections
+    private peerConnections: Record<string, RTCPeerConnection>; // Storage for multiple peer connections
     private localStream: MediaStream | null;
-    private remoteStreams: { [key: string]: MediaStream }; // Store remote user streams
+    private remoteStreams: Record<string, MediaStream>; // Store remote user streams
 
     public isMuteMicro = false;
 

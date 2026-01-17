@@ -19,7 +19,7 @@ class InfoService {
      * Получить информацию о приложении (включая стили Discord)
      */
     async getInfo(): Promise<AppInfo> {
-        return await apiClient('/info', {
+        return apiClient('/info', {
             method: 'GET'
         });
     }

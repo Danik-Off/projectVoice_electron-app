@@ -7,7 +7,7 @@ import type { ChannelSelectedEvent, ChannelsLoadedEvent } from '../../../core/ev
 class ChannelsStore {
     public channels: Channel[] = [];
     public currentChannel: Channel | null = null;
-    public loading: boolean = false;
+    public loading = false;
     public error: string | null = null;
 
     public constructor() {

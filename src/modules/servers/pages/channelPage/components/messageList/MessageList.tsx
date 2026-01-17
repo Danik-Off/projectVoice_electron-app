@@ -228,18 +228,18 @@ const MessageList: React.FC = () => {
 
             <div className="messages-area">
                 <div className="messages-container" ref={messagesContainerRef} onScroll={handleScroll}>
-                    {loading && messages.length === 0 && (
+                    {loading && messages.length === 0 ? (
                         <div className="loading-messages">
-                            <div className="loading-spinner"></div>
+                            <div className="loading-spinner" />
                             <span>Загрузка сообщений...</span>
                         </div>
-                    )}
+                    ) : null}
 
-                    {error && (
+                    {error ? (
                         <div className="error-message">
                             <span>Ошибка загрузки сообщений: {error}</span>
                         </div>
-                    )}
+                    ) : null}
 
                     {!loading && messages.length === 0 && <EmptyChatState channelName={currentChannel.name} />}
 
@@ -254,7 +254,7 @@ const MessageList: React.FC = () => {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {showScrollToBottom && (
+                {showScrollToBottom ? (
                     <button
                         className="scroll-to-bottom-btn"
                         onClick={scrollToBottom}
@@ -262,7 +262,7 @@ const MessageList: React.FC = () => {
                     >
                         <span>Новые сообщения</span>
                     </button>
-                )}
+                ) : null}
             </div>
 
             <MessageInput />

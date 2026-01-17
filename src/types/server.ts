@@ -1,6 +1,6 @@
 import type { Channel } from './channel';
 
-export type ServerMember = {
+export interface ServerMember {
     id: number;
     userId: number;
     serverId: number;
@@ -12,10 +12,10 @@ export type ServerMember = {
     };
     createdAt: string;
     updatedAt: string;
-};
+}
 
 // Define types for the server data
-export type Server = {
+export interface Server {
     id: number;
     name: string;
     ownerId: number;
@@ -56,4 +56,4 @@ export type Server = {
     messageCount?: number;
     voiceChannelCount?: number;
     textChannelCount?: number;
-};
+}

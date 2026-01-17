@@ -84,7 +84,7 @@ const AppearanceSettings: React.FC = observer(() => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" checked={followSystem} onChange={handleSystemThemeToggle} />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">
                                         {t('settingsPage.appearance.theme.followSystem')}
                                     </span>
@@ -111,9 +111,9 @@ const AppearanceSettings: React.FC = observer(() => {
                                             disabled={followSystem}
                                         >
                                             <div className="theme-preview light-preview">
-                                                <div className="preview-header"></div>
-                                                <div className="preview-sidebar"></div>
-                                                <div className="preview-content"></div>
+                                                <div className="preview-header" />
+                                                <div className="preview-sidebar" />
+                                                <div className="preview-content" />
                                             </div>
                                             <span className="theme-name">
                                                 ☀️ {t('settingsPage.appearance.theme.light')}
@@ -126,9 +126,9 @@ const AppearanceSettings: React.FC = observer(() => {
                                             disabled={followSystem}
                                         >
                                             <div className="theme-preview dark-preview">
-                                                <div className="preview-header"></div>
-                                                <div className="preview-sidebar"></div>
-                                                <div className="preview-content"></div>
+                                                <div className="preview-header" />
+                                                <div className="preview-sidebar" />
+                                                <div className="preview-content" />
                                             </div>
                                             <span className="theme-name">
                                                 🌙 {t('settingsPage.appearance.theme.dark')}
@@ -149,11 +149,11 @@ const AppearanceSettings: React.FC = observer(() => {
                                         : `☀️ ${t('settingsPage.appearance.theme.light')}`}
                                 </span>
                             </div>
-                            {followSystem && (
+                            {followSystem ? (
                                 <div className="info-item">
                                     <span className="info-badge">🔄 {t('settingsPage.appearance.theme.autoSync')}</span>
                                 </div>
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </div>

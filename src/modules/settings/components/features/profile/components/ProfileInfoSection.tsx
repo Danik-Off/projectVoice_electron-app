@@ -136,9 +136,9 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
                                     placeholder={t('settingsPage.profile.basicInfo.usernamePlaceholder')}
                                     disabled={isLoading}
                                 />
-                                {validationErrors.username && (
+                                {validationErrors.username ? (
                                     <div className="error-message">{validationErrors.username}</div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
 
@@ -153,9 +153,9 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
                                     placeholder={t('settingsPage.profile.basicInfo.emailPlaceholder')}
                                     disabled={isLoading}
                                 />
-                                {validationErrors.email && (
+                                {validationErrors.email ? (
                                     <div className="error-message">{validationErrors.email}</div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
 

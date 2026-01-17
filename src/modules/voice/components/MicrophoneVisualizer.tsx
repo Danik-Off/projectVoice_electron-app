@@ -231,9 +231,9 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
                     {audioLevel > 0.9 && (
                         <div className="warning-message">⚠️ Слишком громко! Уменьшите громкость микрофона</div>
                     )}
-                    {audioLevel < 0.1 && audioSettingsStore.stream && (
+                    {audioLevel < 0.1 && audioSettingsStore.stream ? (
                         <div className="info-message">ℹ️ Микрофон не улавливает звук</div>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </div>

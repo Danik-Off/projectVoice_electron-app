@@ -19,17 +19,17 @@ class MessageService {
         }
         params.append('channelId', filters.channelId.toString());
 
-        return await apiClient(`/messages?${params.toString()}`, { method: 'GET' });
+        return apiClient(`/messages?${params.toString()}`, { method: 'GET' });
     }
 
     // Создание нового сообщения
     async createMessage(data: CreateMessageRequest): Promise<Message> {
-        return await apiClient('/messages', { method: 'POST' }, data);
+        return apiClient('/messages', { method: 'POST' }, data);
     }
 
     // Обновление сообщения
     async updateMessage(messageId: number, data: UpdateMessageRequest): Promise<Message> {
-        return await apiClient(`/messages/${messageId}`, { method: 'PUT' }, data);
+        return apiClient(`/messages/${messageId}`, { method: 'PUT' }, data);
     }
 
     // Удаление сообщения
@@ -39,7 +39,7 @@ class MessageService {
 
     // Получение одного сообщения
     async getMessage(messageId: number): Promise<Message> {
-        return await apiClient(`/messages/${messageId}`, { method: 'GET' });
+        return apiClient(`/messages/${messageId}`, { method: 'GET' });
     }
 
     // Поиск сообщений
@@ -48,7 +48,7 @@ class MessageService {
         params.append('query', query);
         params.append('channelId', channelId.toString());
 
-        return await apiClient(`/messages/search?${params.toString()}`, { method: 'GET' });
+        return apiClient(`/messages/search?${params.toString()}`, { method: 'GET' });
     }
 }
 

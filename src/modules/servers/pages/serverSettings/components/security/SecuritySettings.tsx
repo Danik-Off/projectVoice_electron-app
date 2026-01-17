@@ -242,7 +242,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
                                 checked={settings.require2FA}
                                 onChange={(e) => setSettings((prev) => ({ ...prev, require2FA: e.target.checked }))}
                             />
-                            <span className="toggle-slider"></span>
+                            <span className="toggle-slider" />
                             <span className="toggle-label">
                                 {settings.require2FA
                                     ? t('serverSettings.security.require2FAEnabled') || 'Включено'

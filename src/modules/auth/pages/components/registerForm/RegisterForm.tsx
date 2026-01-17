@@ -17,13 +17,13 @@ const RegisterForm: React.FC = () => {
         password: '',
         confirmPassword: ''
     });
-    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [touched, setTouched] = useState<{ [key: string]: boolean }>({});
+    const [touched, setTouched] = useState<Record<string, boolean>>({});
 
     // Валидация формы
     const validateForm = (): boolean => {
-        const newErrors: { [key: string]: string } = {};
+        const newErrors: Record<string, string> = {};
 
         // Валидация имени пользователя
         if (!formData.username.trim()) {
@@ -181,7 +181,7 @@ const RegisterForm: React.FC = () => {
                     required
                     maxLength={20}
                 />
-                {errors.username && touched.username && <div className="auth-error">{errors.username}</div>}
+                {errors.username && touched.username ? <div className="auth-error">{errors.username}</div> : null}
             </div>
 
             <div className="input-group">
@@ -195,7 +195,7 @@ const RegisterForm: React.FC = () => {
                     onBlur={() => handleBlur('email')}
                     required
                 />
-                {errors.email && touched.email && <div className="auth-error">{errors.email}</div>}
+                {errors.email && touched.email ? <div className="auth-error">{errors.email}</div> : null}
             </div>
 
             <div className="input-group">
@@ -210,7 +210,7 @@ const RegisterForm: React.FC = () => {
                     required
                     maxLength={50}
                 />
-                {errors.password && touched.password && <div className="auth-error">{errors.password}</div>}
+                {errors.password && touched.password ? <div className="auth-error">{errors.password}</div> : null}
             </div>
 
             <div className="input-group">
@@ -225,9 +225,9 @@ const RegisterForm: React.FC = () => {
                     required
                     maxLength={50}
                 />
-                {errors.confirmPassword && touched.confirmPassword && (
+                {errors.confirmPassword && touched.confirmPassword ? (
                     <div className="auth-error">{errors.confirmPassword}</div>
-                )}
+                ) : null}
             </div>
 
             <button
@@ -237,7 +237,7 @@ const RegisterForm: React.FC = () => {
             >
                 {isSubmitting ? (
                     <>
-                        <span className="spinner"></span>
+                        <span className="spinner" />
                         {t('authPage.registerButton.loading')}
                     </>
                 ) : (
@@ -246,17 +246,17 @@ const RegisterForm: React.FC = () => {
             </button>
 
             {/* Индикатор силы пароля */}
-            {formData.password && (
+            {formData.password ? (
                 <div className="password-strength">
                     <div className="strength-bar">
                         <div
                             className={`strength-fill ${getPasswordStrength(formData.password)}`}
                             style={{ width: `${getPasswordStrengthPercentage(formData.password)}%` }}
-                        ></div>
+                        />
                     </div>
                     <span className="strength-text">{getPasswordStrengthText(formData.password)}</span>
                 </div>
-            )}
+            ) : null}
         </form>
     );
 };

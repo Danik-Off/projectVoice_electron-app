@@ -23,14 +23,14 @@ const Textarea: React.FC<TextareaProps> = ({
         <div
             className={`ui-textarea ${fullWidth ? 'ui-textarea--full-width' : ''} ${error ? 'ui-textarea--error' : ''}`}
         >
-            {label && (
+            {label ? (
                 <label htmlFor={textareaId} className="ui-textarea__label">
                     {label}
                 </label>
-            )}
+            ) : null}
             <textarea id={textareaId} className={`ui-textarea__field ${className}`} {...props} />
-            {error && <span className="ui-textarea__error">{error}</span>}
-            {helperText && !error && <span className="ui-textarea__helper">{helperText}</span>}
+            {error ? <span className="ui-textarea__error">{error}</span> : null}
+            {helperText && !error ? <span className="ui-textarea__helper">{helperText}</span> : null}
         </div>
     );
 };

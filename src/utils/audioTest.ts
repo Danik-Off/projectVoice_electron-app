@@ -292,7 +292,7 @@ class AudioQualityTester {
 
         // Расчет стандартного отклонения как меры джиттера
         const mean = measurements.reduce((a, b) => a + b) / measurements.length;
-        const variance = measurements.reduce((a, b) => a + Math.pow(b - mean, 2)) / measurements.length;
+        const variance = measurements.reduce((a, b) => a + (b - mean) ** 2) / measurements.length;
 
         return Math.sqrt(variance);
     }

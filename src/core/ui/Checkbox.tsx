@@ -14,9 +14,9 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, helperText, className = '', 
             <label htmlFor={checkboxId} className="ui-checkbox__label">
                 <input type="checkbox" id={checkboxId} className="ui-checkbox__input" {...props} />
                 <span className="ui-checkbox__checkmark" />
-                {label && <span className="ui-checkbox__text">{label}</span>}
+                {label ? <span className="ui-checkbox__text">{label}</span> : null}
             </label>
-            {helperText && <span className="ui-checkbox__helper">{helperText}</span>}
+            {helperText ? <span className="ui-checkbox__helper">{helperText}</span> : null}
         </div>
     );
 };

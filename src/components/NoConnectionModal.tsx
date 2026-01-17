@@ -103,13 +103,13 @@ const NoConnectionModal: React.FC = observer(() => {
                 {!isManualSettings && (
                     <div className="no-connection-modal__footer">
                         <div className="no-connection-modal__retry-status">
-                            <span className="no-connection-modal__retry-status-spinner"></span>
+                            <span className="no-connection-modal__retry-status-spinner" />
                             {t('connection.retryStatus')}
                         </div>
                     </div>
                 )}
 
-                {isManualSettings && !isEditing && (
+                {isManualSettings && !isEditing ? (
                     <div className="no-connection-modal__footer">
                         <button
                             className="no-connection-modal__edit-section-button-group-cancel-button"
@@ -119,7 +119,7 @@ const NoConnectionModal: React.FC = observer(() => {
                             {t('connection.close')}
                         </button>
                     </div>
-                )}
+                ) : null}
             </div>
         </div>
     );

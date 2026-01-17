@@ -16,13 +16,13 @@ export interface ServerMember {
 
 class ServerMembersService {
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
-        return await apiClient(`/serverMembers/${serverId}/members`, {
+        return apiClient(`/serverMembers/${serverId}/members`, {
             method: 'GET'
         });
     }
 
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
-        return await apiClient(
+        return apiClient(
             `/serverMembers/${serverId}/members/${memberId}`,
             {
                 method: 'PUT'
@@ -37,8 +37,8 @@ class ServerMembersService {
         });
     }
 
-    async addMember(serverId: number, userId: number, role: string = 'member'): Promise<ServerMember> {
-        return await apiClient(
+    async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
+        return apiClient(
             `/serverMembers/${serverId}/members`,
             {
                 method: 'POST'

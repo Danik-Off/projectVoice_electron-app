@@ -112,9 +112,9 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     placeholder={t('settingsPage.profile.security.currentPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.currentPassword && (
+                                {validationErrors.currentPassword ? (
                                     <div className="error-message">{validationErrors.currentPassword}</div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
 
@@ -129,9 +129,9 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     placeholder={t('settingsPage.profile.security.newPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.newPassword && (
+                                {validationErrors.newPassword ? (
                                     <div className="error-message">{validationErrors.newPassword}</div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
 
@@ -148,9 +148,9 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     placeholder={t('settingsPage.profile.security.confirmPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.confirmPassword && (
+                                {validationErrors.confirmPassword ? (
                                     <div className="error-message">{validationErrors.confirmPassword}</div>
-                                )}
+                                ) : null}
                             </div>
                         </div>
 

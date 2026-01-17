@@ -28,7 +28,7 @@ class InviteService {
     }
 
     async getInvite(token: string): Promise<Invite> {
-        return await apiClient(`/invite/invite/${token}`, {
+        return apiClient(`/invite/invite/${token}`, {
             method: 'GET'
         });
     }
@@ -46,7 +46,7 @@ class InviteService {
     }
 
     async getServerInvites(serverId: number): Promise<Invite[]> {
-        return await apiClient(`/invite/${serverId}/invites`, {
+        return apiClient(`/invite/${serverId}/invites`, {
             method: 'GET'
         });
     }

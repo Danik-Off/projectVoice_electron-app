@@ -96,7 +96,7 @@ export const addPermission = (permissions: bigint | string, permissionToAdd: big
  * @param isOwner - является ли пользователь владельцем сервера
  * @returns true, если может редактировать
  */
-export const canEditRole = (userHighestPosition: number, rolePosition: number, isOwner: boolean = false): boolean => {
+export const canEditRole = (userHighestPosition: number, rolePosition: number, isOwner = false): boolean => {
     if (isOwner) {
         return true;
     }
@@ -110,7 +110,7 @@ export const canEditRole = (userHighestPosition: number, rolePosition: number, i
  * @param isOwner - является ли пользователь владельцем сервера
  * @returns true, если может удалить
  */
-export const canDeleteRole = (userHighestPosition: number, rolePosition: number, isOwner: boolean = false): boolean => {
+export const canDeleteRole = (userHighestPosition: number, rolePosition: number, isOwner = false): boolean => {
     if (isOwner) {
         return true;
     }

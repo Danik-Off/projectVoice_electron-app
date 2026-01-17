@@ -99,7 +99,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
                         <span className="member-name" style={{ color: roleColor }}>
                             {displayName}
                         </span>
-                        {member.nickname && <span className="member-username">@{member.user?.username}</span>}
+                        {member.nickname ? <span className="member-username">@{member.user?.username}</span> : null}
                     </div>
 
                     <div className="member-roles-section">
@@ -126,9 +126,9 @@ const MemberRow: React.FC<MemberRowProps> = ({
                 </div>
 
                 <div className="member-actions-section">
-                    {showActions && hasModerationRights && !isCurrentUser && (
+                    {showActions && hasModerationRights && !isCurrentUser ? (
                         <div className="quick-actions">
-                            {canManageRoles && (
+                            {canManageRoles ? (
                                 <button
                                     className="action-btn manage-roles"
                                     onClick={() => onManageRoles(member)}
@@ -136,8 +136,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
                                 >
                                     🎭
                                 </button>
-                            )}
-                            {canMute && (
+                            ) : null}
+                            {canMute ? (
                                 <button
                                     className={`action-btn mute ${isMuted ? 'active' : ''}`}
                                     onClick={handleMuteToggle}
@@ -149,8 +149,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
                                 >
                                     {isMuted ? '🔊' : '🔇'}
                                 </button>
-                            )}
-                            {canDeafen && (
+                            ) : null}
+                            {canDeafen ? (
                                 <button
                                     className={`action-btn deafen ${isDeafened ? 'active' : ''}`}
                                     onClick={handleDeafenToggle}
@@ -162,8 +162,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
                                 >
                                     {isDeafened ? '🔊' : '🔉'}
                                 </button>
-                            )}
-                            {canKick && (
+                            ) : null}
+                            {canKick ? (
                                 <button
                                     className="action-btn kick"
                                     onClick={handleKick}
@@ -171,8 +171,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
                                 >
                                     👢
                                 </button>
-                            )}
-                            {canBan && (
+                            ) : null}
+                            {canBan ? (
                                 <button
                                     className="action-btn ban"
                                     onClick={handleBan}
@@ -180,9 +180,9 @@ const MemberRow: React.FC<MemberRowProps> = ({
                                 >
                                     🔨
                                 </button>
-                            )}
+                            ) : null}
                         </div>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </div>

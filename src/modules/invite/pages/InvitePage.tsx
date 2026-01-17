@@ -172,7 +172,7 @@ const InvitePage: React.FC = observer(() => {
                     </div>
                     <div className="server-details">
                         <h2>{serverData.name}</h2>
-                        {serverData.description && <p className="server-description">{serverData.description}</p>}
+                        {serverData.description ? <p className="server-description">{serverData.description}</p> : null}
                     </div>
                 </div>
 
@@ -183,12 +183,12 @@ const InvitePage: React.FC = observer(() => {
                             {inviteData.uses}/{inviteData.maxUses || '∞'}
                         </span>
                     </div>
-                    {inviteData.expiresAt && (
+                    {inviteData.expiresAt ? (
                         <div className="invite-stat">
                             <span className="label">{t('invitePage.expiresLabel')}</span>
                             <span className="value">{new Date(inviteData.expiresAt).toLocaleDateString()}</span>
                         </div>
-                    )}
+                    ) : null}
                 </div>
 
                 <div className="invite-actions">

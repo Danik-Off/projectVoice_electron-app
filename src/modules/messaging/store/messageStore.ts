@@ -71,7 +71,7 @@ class MessageStore {
     }
 
     // Загрузка сообщений
-    async loadMessages(page: number = 1, append: boolean = false) {
+    async loadMessages(page = 1, append = false) {
         if (!this.currentChannelId) {
             return;
         }
@@ -103,7 +103,7 @@ class MessageStore {
 
             // Публикуем событие о загрузке сообщений
             eventBus.emit(MESSAGING_EVENTS.MESSAGES_LOADED, {
-                channelId: this.currentChannelId!,
+                channelId: this.currentChannelId,
                 messages: response.messages.map((msg) => ({
                     id: msg.id,
                     content: msg.content,

@@ -23,11 +23,11 @@ const Select: React.FC<SelectProps> = ({
 
     return (
         <div className={`ui-select ${fullWidth ? 'ui-select--full-width' : ''} ${error ? 'ui-select--error' : ''}`}>
-            {label && (
+            {label ? (
                 <label htmlFor={selectId} className="ui-select__label">
                     {label}
                 </label>
-            )}
+            ) : null}
             <select id={selectId} className={`ui-select__field ${className}`} {...props}>
                 {options.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -35,8 +35,8 @@ const Select: React.FC<SelectProps> = ({
                     </option>
                 ))}
             </select>
-            {error && <span className="ui-select__error">{error}</span>}
-            {helperText && !error && <span className="ui-select__helper">{helperText}</span>}
+            {error ? <span className="ui-select__error">{error}</span> : null}
+            {helperText && !error ? <span className="ui-select__helper">{helperText}</span> : null}
         </div>
     );
 };

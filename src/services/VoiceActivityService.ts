@@ -21,7 +21,7 @@ class VoiceActivityService {
         smoothingFactor: 0.8 // Сглаживание
     };
 
-    private callbacks: ((event: VoiceActivityEvent) => void)[] = [];
+    private callbacks: Array<(event: VoiceActivityEvent) => void> = [];
 
     constructor() {
         makeAutoObservable(this);

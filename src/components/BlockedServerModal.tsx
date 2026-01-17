@@ -49,25 +49,25 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
 
                     <p className="blocked-server-modal__message">Этот сервер был заблокирован администрацией.</p>
 
-                    {reason && (
+                    {reason ? (
                         <div className="blocked-server-modal__reason-section">
                             <h3 className="blocked-server-modal__reason-section-title">Причина блокировки:</h3>
                             <p className="blocked-server-modal__reason-section-text">{reason}</p>
                         </div>
-                    )}
+                    ) : null}
 
-                    {blockedAt && (
+                    {blockedAt ? (
                         <div className="blocked-server-modal__details-section">
                             <p className="blocked-server-modal__details-section-item">
                                 <strong>Дата блокировки:</strong> {formatDate(blockedAt)}
                             </p>
-                            {blockedBy && (
+                            {blockedBy ? (
                                 <p className="blocked-server-modal__details-section-item">
                                     <strong>Заблокирован:</strong> {blockedBy}
                                 </p>
-                            )}
+                            ) : null}
                         </div>
-                    )}
+                    ) : null}
 
                     <div className="blocked-server-modal__contact-info">
                         <p className="blocked-server-modal__contact-info-text">

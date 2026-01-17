@@ -31,7 +31,7 @@ const NotificationsSettings: React.FC = () => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" defaultChecked />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">{t('settingsPage.notifications.enabled')}</span>
                                 </div>
                                 <div className="setting-description">
@@ -47,7 +47,7 @@ const NotificationsSettings: React.FC = () => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" defaultChecked />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">{t('settingsPage.notifications.enabled')}</span>
                                 </div>
                                 <div className="setting-description">
@@ -77,7 +77,7 @@ const NotificationsSettings: React.FC = () => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" defaultChecked />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">{t('settingsPage.notifications.enabled')}</span>
                                 </div>
                                 <div className="setting-description">
@@ -93,7 +93,7 @@ const NotificationsSettings: React.FC = () => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" defaultChecked />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">{t('settingsPage.notifications.enabled')}</span>
                                 </div>
                                 <div className="setting-description">
@@ -109,7 +109,7 @@ const NotificationsSettings: React.FC = () => {
                             <div className="setting-control">
                                 <div className="settings-toggle">
                                     <input type="checkbox" defaultChecked />
-                                    <span className="toggle-switch"></span>
+                                    <span className="toggle-switch" />
                                     <span className="toggle-label">{t('settingsPage.notifications.enabled')}</span>
                                 </div>
                                 <div className="setting-description">

@@ -137,7 +137,7 @@ const MessageInput: React.FC = observer(() => {
                 </div>
                 <div className="input-footer">
                     <span className="character-count">{message.length}/2000</span>
-                    {isTyping && <span className="typing-indicator">Печатает...</span>}
+                    {isTyping ? <span className="typing-indicator">Печатает...</span> : null}
                 </div>
             </div>
         </div>

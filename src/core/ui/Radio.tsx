@@ -14,9 +14,9 @@ const Radio: React.FC<RadioProps> = ({ label, helperText, className = '', id, ..
             <label htmlFor={radioId} className="ui-radio__label">
                 <input type="radio" id={radioId} className="ui-radio__input" {...props} />
                 <span className="ui-radio__mark" />
-                {label && <span className="ui-radio__text">{label}</span>}
+                {label ? <span className="ui-radio__text">{label}</span> : null}
             </label>
-            {helperText && <span className="ui-radio__helper">{helperText}</span>}
+            {helperText ? <span className="ui-radio__helper">{helperText}</span> : null}
         </div>
     );
 };

@@ -131,31 +131,31 @@ const ServerHeader: React.FC = observer(() => {
                             <span>{getRoleIcon(userRole)}</span>
                             <span>{t(`serverHeader.roles.${userRole}`)}</span>
                         </div>
-                        {currentServer.members && (
+                        {currentServer.members ? (
                             <div className="server-header__members">
                                 <span>👥</span>
                                 <span>{currentServer.members.length}</span>
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
 
                 <div className="server-header__actions">
-                    {canInvite && (
+                    {canInvite ? (
                         <button
                             onClick={handleShare}
                             disabled={isCreatingInvite}
                             title={t('serverHeader.inviteMembers')}
                         >
-                            {isCreatingInvite ? <div></div> : <span>📤</span>}
+                            {isCreatingInvite ? <div /> : <span>📤</span>}
                         </button>
-                    )}
+                    ) : null}
 
-                    {canEditServer && (
+                    {canEditServer ? (
                         <button onClick={handleEditServer} title={t('serverHeader.serverSettings')}>
                             <span>⚙️</span>
                         </button>
-                    )}
+                    ) : null}
                 </div>
             </div>
 

@@ -514,7 +514,7 @@ class WebRTCClient {
 
         audioSettingsStore.stream.getTracks().forEach((track) => {
             try {
-                peerConnection.addTrack(track, audioSettingsStore.stream!);
+                peerConnection.addTrack(track, audioSettingsStore.stream);
                 track.enabled = !audioSettingsStore.isMicrophoneMuted;
             } catch (error) {
                 console.error('WebRTCClient: Error adding track:', error);
@@ -711,7 +711,7 @@ class WebRTCClient {
         }
 
         const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-        if (!sender || !sender.getParameters) {
+        if (!sender?.getParameters) {
             return;
         }
 
@@ -743,7 +743,7 @@ class WebRTCClient {
     private updateAllConnectionsQuality(): void {
         this.peerConnections.forEach((peerConnection) => {
             const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-            if (sender && sender.getParameters) {
+            if (sender?.getParameters) {
                 try {
                     const params = sender.getParameters();
                     if (params.encodings && params.encodings.length > 0) {

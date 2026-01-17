@@ -131,7 +131,7 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
 
         return (
             <div className="nav-group">
-                {groupLabel && <div className="group-label">{groupLabel}</div>}
+                {groupLabel ? <div className="group-label">{groupLabel}</div> : null}
                 {tabs.map((tab) => (
                     <div
                         key={tab.id}
@@ -143,7 +143,7 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
                             <span className="tab-icon">{tab.icon}</span>
                             <div className="tab-text">
                                 <span className="tab-label">{tab.label}</span>
-                                {tab.description && <span className="tab-description">{tab.description}</span>}
+                                {tab.description ? <span className="tab-description">{tab.description}</span> : null}
                             </div>
                         </div>
                         {activeTab === tab.id && <div className="active-indicator" />}

@@ -16,7 +16,7 @@ export const SocketClientState = {
 
 export type SocketClientState = (typeof SocketClientState)[keyof typeof SocketClientState];
 
-export const stateMessages: { [key in SocketClientState]: string } = {
+export const stateMessages: Record<SocketClientState, string> = {
     [SocketClientState.INIT]: 'Состояние инициализировано.',
     [SocketClientState.CONNECTING]: 'Соединение устанавливается...',
     [SocketClientState.CONNECTED]: 'Соединение установлено.',

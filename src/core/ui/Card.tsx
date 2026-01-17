@@ -23,21 +23,21 @@ const Card: React.FC<CardProps> = ({
     onClick
 }) => (
     <div className={`ui-card ${onClick ? 'ui-card--clickable' : ''} ${className}`} onClick={onClick}>
-        {(title || description || icon) && (
+        {title || description || icon ? (
             <div className={`ui-card__header ${headerClassName}`}>
                 <div className="ui-card__header-content">
-                    {icon && (
+                    {icon ? (
                         <div className="ui-card__icon">{typeof icon === 'string' ? <span>{icon}</span> : icon}</div>
-                    )}
-                    {(title || description) && (
+                    ) : null}
+                    {title || description ? (
                         <div className="ui-card__header-text">
-                            {title && <h3 className="ui-card__title">{title}</h3>}
-                            {description && <p className="ui-card__description">{description}</p>}
+                            {title ? <h3 className="ui-card__title">{title}</h3> : null}
+                            {description ? <p className="ui-card__description">{description}</p> : null}
                         </div>
-                    )}
+                    ) : null}
                 </div>
             </div>
-        )}
+        ) : null}
         <div className={`ui-card__content ${contentClassName}`}>{children}</div>
     </div>
 );

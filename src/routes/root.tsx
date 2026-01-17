@@ -208,7 +208,7 @@ export function createRouter() {
         '📊 Routes structure:',
         routes.map((r) => ({
             path: r.path,
-            hasChildren: !!(r as RouteObject).children
+            hasChildren: Boolean((r as RouteObject).children)
         }))
     );
 

@@ -14,7 +14,7 @@ export const useUserProfileModal = (): UseUserProfileModalReturn => {
     const [user, setUser] = useState<User | null>(null);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
 
-    const openProfile = useCallback((userData: User, ownProfile: boolean = false) => {
+    const openProfile = useCallback((userData: User, ownProfile = false) => {
         setUser(userData);
         setIsOwnProfile(ownProfile);
         setIsOpen(true);

@@ -89,14 +89,14 @@ const VoiceControls: React.FC = observer(() => {
 
                 <div className="voice-controls__user-section">
                     <div className="voice-controls__user-info">
-                        {currentUser && (
+                        {currentUser ? (
                             <ClickableAvatar
                                 user={currentUser}
                                 size="medium"
                                 onClick={() => openProfile(currentUser, true)}
                                 className={`voice-controls__avatar ${isLocalSpeaking ? 'voice-controls__avatar--speaking' : ''}`}
                             />
-                        )}
+                        ) : null}
                         <div className="voice-controls__user-details">
                             <span className="voice-controls__username">{currentUser?.username || 'User'}</span>
                             <span
@@ -164,14 +164,14 @@ const VoiceControls: React.FC = observer(() => {
             </div>
 
             {/* Расширенная панель */}
-            {isExpanded && (
+            {isExpanded ? (
                 <div className="voice-controls__expanded-panel">
                     <div className="voice-controls__participants-section">
                         <h4 className="voice-controls__section-title">Участники ({otherParticipants.length})</h4>
                         <div className="voice-controls__participants-list">
                             {otherParticipants.map((participant) => (
                                 <div key={participant.socketId} className="voice-controls__participant">
-                                    {participant.userData && (
+                                    {participant.userData ? (
                                         <ClickableAvatar
                                             user={{
                                                 ...participant.userData,
@@ -197,7 +197,7 @@ const VoiceControls: React.FC = observer(() => {
                                             }}
                                             className={`voice-controls__participant-avatar ${participant.isSpeaking ? 'voice-controls__participant-avatar--speaking' : ''}`}
                                         />
-                                    )}
+                                    ) : null}
 
                                     <div className="voice-controls__participant-info">
                                         <span className="voice-controls__participant-name">
@@ -244,7 +244,7 @@ const VoiceControls: React.FC = observer(() => {
                         </div>
                     </div>
 
-                    {showVolumeSlider && (
+                    {showVolumeSlider ? (
                         <div className="voice-controls__volume-section">
                             <h4 className="voice-controls__section-title">Громкость</h4>
                             <div className="voice-controls__volume-controls">
@@ -258,12 +258,12 @@ const VoiceControls: React.FC = observer(() => {
                                 <span className="voice-controls__volume-value">100%</span>
                             </div>
                         </div>
-                    )}
+                    ) : null}
                 </div>
-            )}
+            ) : null}
 
             {/* Модальное окно настроек звука */}
-            {showAudioSettingsModal && (
+            {showAudioSettingsModal ? (
                 <div className="voice-controls__audio-modal-overlay" onClick={() => setShowAudioSettingsModal(false)}>
                     <div className="voice-controls__audio-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="voice-controls__audio-modal-header">
@@ -782,7 +782,7 @@ const VoiceControls: React.FC = observer(() => {
                         </div>
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 });

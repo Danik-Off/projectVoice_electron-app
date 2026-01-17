@@ -60,14 +60,14 @@ const Modal: React.FC<ModalProps> = ({
             <div className={`modal modal--${size}`}>
                 <div className="modal__header">
                     <div className="modal__title">
-                        {icon && <span className="modal__icon">{icon}</span>}
+                        {icon ? <span className="modal__icon">{icon}</span> : null}
                         <h2>{title}</h2>
                     </div>
-                    {showCloseButton && (
+                    {showCloseButton ? (
                         <button className="modal__close-button" onClick={onClose} aria-label="Закрыть модальное окно">
                             <span className="modal__close-icon">×</span>
                         </button>
-                    )}
+                    ) : null}
                 </div>
                 <div className="modal__content">{children}</div>
             </div>
