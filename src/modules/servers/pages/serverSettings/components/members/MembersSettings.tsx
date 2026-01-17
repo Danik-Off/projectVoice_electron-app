@@ -79,8 +79,8 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                                             'Попробуйте изменить параметры поиска или фильтра'}
                                     </p>
                                 </div>
-                            ) :
-                                    groupedMembers.map(({ groupName, groupMembers, groupColor }) => (
+                            ) : (
+                                groupedMembers.map(({ groupName, groupMembers, groupColor }) => (
                                     <div key={groupName} className="members-group">
                                         <div className="group-header">
                                             <div
@@ -106,8 +106,8 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                                             ))}
                                         </div>
                                     </div>
-                                    ))
-                            }
+                                ))
+                            )}
                         </div>
                     </div>
                 )}

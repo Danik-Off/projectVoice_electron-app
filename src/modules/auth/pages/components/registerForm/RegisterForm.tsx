@@ -240,9 +240,9 @@ const RegisterForm: React.FC = () => {
                         <span className="spinner"></span>
                         {t('authPage.registerButton.loading')}
                     </>
-                ) :
-                        t('authPage.signUp')
-                }
+                ) : (
+                    t('authPage.signUp')
+                )}
             </button>
 
             {/* Индикатор силы пароля */}

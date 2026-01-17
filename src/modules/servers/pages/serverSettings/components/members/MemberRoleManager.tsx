@@ -21,7 +21,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, 
     useEffect(() => {
         // Загружаем текущие роли участника
         if (member.roles && Array.isArray(member.roles)) {
-            const roleIds = member.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r);
+            const roleIds = member.roles.map((r: Role | number) => (typeof r === 'object' ? r.id : r));
             setSelectedRoles(roleIds);
         } else {
             setSelectedRoles([]);
@@ -55,7 +55,7 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, 
     };
 
     const memberRoleIds = member.roles
-        ? member.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r)
+        ? member.roles.map((r: Role | number) => (typeof r === 'object' ? r.id : r))
         : [];
 
     // Сортируем роли по позиции (больше = выше в иерархии)
@@ -67,10 +67,10 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, 
             <div className="roles-list">
                 {sortedRoles.length === 0 ? (
                     <p className="no-roles">{t('serverSettings.noRolesAvailable') || 'Нет доступных ролей'}</p>
-                ) :
-                        sortedRoles.map((role) => {
-                            const isSelected = memberRoleIds.includes(role.id);
-                            return (
+                ) : (
+                    sortedRoles.map((role) => {
+                        const isSelected = memberRoleIds.includes(role.id);
+                        return (
                             <label key={role.id} className="role-checkbox">
                                 <input
                                     type="checkbox"
@@ -81,9 +81,9 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, 
                                 <span className="role-color" style={{ backgroundColor: role.color || '#5865F2' }} />
                                 <span className="role-name">{role.name}</span>
                             </label>
-                            );
-                        })
-                }
+                        );
+                    })
+                )}
             </div>
         </div>
     );

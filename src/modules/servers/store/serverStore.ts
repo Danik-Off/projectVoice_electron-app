@@ -98,7 +98,7 @@ class ServerStore {
         try {
             const updatedServer: Server = await serverService.update(id, updatedData);
             runInAction(() => {
-                this.servers = this.servers.map((server) => server.id === id ? updatedServer : server);
+                this.servers = this.servers.map((server) => (server.id === id ? updatedServer : server));
 
                 // Обновляем currentServer если он был обновлен
                 if (this.currentServer && this.currentServer.id === id) {

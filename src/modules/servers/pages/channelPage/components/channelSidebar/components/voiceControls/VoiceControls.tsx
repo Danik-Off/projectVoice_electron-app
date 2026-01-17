@@ -105,8 +105,8 @@ const VoiceControls: React.FC = observer(() => {
                                 {isLocalSpeaking
                                     ? 'Говорит'
                                     : audioSettingsStore.isMicrophoneMuted
-                                        ? 'Микрофон выключен'
-                                        : 'Молчит'}
+                                      ? 'Микрофон выключен'
+                                      : 'Молчит'}
                             </span>
                         </div>
                     </div>
@@ -209,8 +209,8 @@ const VoiceControls: React.FC = observer(() => {
                                             {participant.isSpeaking
                                                 ? 'Говорит'
                                                 : participant.micToggle
-                                                    ? 'Молчит'
-                                                    : 'Микрофон выключен'}
+                                                  ? 'Молчит'
+                                                  : 'Микрофон выключен'}
                                         </span>
                                     </div>
                                     <div className="voice-controls__participant-controls">

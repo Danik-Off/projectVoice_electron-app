@@ -19,14 +19,14 @@ const Button: React.FC<ButtonProps> = ({
     children,
     ...props
 }) => (
-        <button
-            className={`ui-button ui-button--${variant} ui-button--${size} ${fullWidth ? 'ui-button--full-width' : ''} ${className}`}
-            disabled={disabled || loading}
-            {...props}
-        >
-            {loading && <span className="ui-button__spinner" />}
-            <span className="ui-button__content">{children}</span>
-        </button>
+    <button
+        className={`ui-button ui-button--${variant} ui-button--${size} ${fullWidth ? 'ui-button--full-width' : ''} ${className}`}
+        disabled={disabled || loading}
+        {...props}
+    >
+        {loading && <span className="ui-button__spinner" />}
+        <span className="ui-button__content">{children}</span>
+    </button>
 );
 
 export default Button;

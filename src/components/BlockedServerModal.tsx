@@ -22,13 +22,14 @@ const BlockedServerModal: React.FC<BlockedServerModalProps> = ({
         return null;
     }
 
-    const formatDate = (dateString: string) => new Date(dateString).toLocaleString('ru-RU', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const formatDate = (dateString: string) =>
+        new Date(dateString).toLocaleString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
     return (
         <div className="blocked-server-modal-overlay">

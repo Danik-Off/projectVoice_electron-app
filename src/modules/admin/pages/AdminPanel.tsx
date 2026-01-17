@@ -290,29 +290,29 @@ const AdminPanel: React.FC = observer(() => {
     };
 
     const getStatusBadge = (isActive: boolean) => (
-            <span
-                className={`status-badge ${isActive ? 'active' : 'blocked'}`}
-                style={{
-                    background: isActive
-                        ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
-                        : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
-                }}
-            >
-                {isActive ? 'Активен' : 'Заблокирован'}
-            </span>
+        <span
+            className={`status-badge ${isActive ? 'active' : 'blocked'}`}
+            style={{
+                background: isActive
+                    ? 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
+                    : 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
+            }}
+        >
+            {isActive ? 'Активен' : 'Заблокирован'}
+        </span>
     );
 
     const getServerStatusBadge = (isBlocked: boolean) => (
-            <span
-                className={`status-badge ${isBlocked ? 'blocked' : 'active'}`}
-                style={{
-                    background: isBlocked
-                        ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
-                        : 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
-                }}
-            >
-                {isBlocked ? 'Заблокирован' : 'Активен'}
-            </span>
+        <span
+            className={`status-badge ${isBlocked ? 'blocked' : 'active'}`}
+            style={{
+                background: isBlocked
+                    ? 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)'
+                    : 'linear-gradient(135deg, #27ae60 0%, #2ecc71 100%)'
+            }}
+        >
+            {isBlocked ? 'Заблокирован' : 'Активен'}
+        </span>
     );
 
     if (loading) {
@@ -508,86 +508,86 @@ const UsersManagement: React.FC<{
     getRoleBadge,
     getStatusBadge
 }) => (
-        <>
-            <div className="filters">
-                <input
-                    type="text"
-                    placeholder="Поиск по имени или email..."
-                    value={searchTerm}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                />
-                <select value={roleFilter} onChange={(e) => onRoleFilterChange(e.target.value)}>
-                    <option value="">Все роли</option>
-                    <option value="admin">Админ</option>
-                    <option value="moderator">Модератор</option>
-                    <option value="user">Пользователь</option>
-                </select>
-                <select value={statusFilter} onChange={(e) => onStatusFilterChange(e.target.value)}>
-                    <option value="">Все статусы</option>
-                    <option value="active">Активные</option>
-                    <option value="blocked">Заблокированные</option>
-                </select>
-            </div>
+    <>
+        <div className="filters">
+            <input
+                type="text"
+                placeholder="Поиск по имени или email..."
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+            />
+            <select value={roleFilter} onChange={(e) => onRoleFilterChange(e.target.value)}>
+                <option value="">Все роли</option>
+                <option value="admin">Админ</option>
+                <option value="moderator">Модератор</option>
+                <option value="user">Пользователь</option>
+            </select>
+            <select value={statusFilter} onChange={(e) => onStatusFilterChange(e.target.value)}>
+                <option value="">Все статусы</option>
+                <option value="active">Активные</option>
+                <option value="blocked">Заблокированные</option>
+            </select>
+        </div>
 
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Имя пользователя</th>
-                            <th>Email</th>
-                            <th>Роль</th>
-                            <th>Статус</th>
-                            <th>Дата регистрации</th>
-                            <th>Действия</th>
+        <div className="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя пользователя</th>
+                        <th>Email</th>
+                        <th>Роль</th>
+                        <th>Статус</th>
+                        <th>Дата регистрации</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {users.map((user) => (
+                        <tr key={user.id}>
+                            <td>{user.id}</td>
+                            <td>{user.username}</td>
+                            <td>{user.email}</td>
+                            <td>{getRoleBadge(user.role)}</td>
+                            <td>{getStatusBadge(user.isActive)}</td>
+                            <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>
+                                <select
+                                    value={user.role}
+                                    onChange={(e) => onUpdateUser(user.id, { role: e.target.value })}
+                                >
+                                    <option value="user">Пользователь</option>
+                                    <option value="moderator">Модератор</option>
+                                    <option value="admin">Админ</option>
+                                </select>
+                                <button
+                                    onClick={() => onUpdateUser(user.id, { isActive: !user.isActive })}
+                                    className={`status-toggle ${user.isActive ? 'block' : 'unblock'}`}
+                                >
+                                    {user.isActive ? '🚫 Заблокировать' : '✅ Разблокировать'}
+                                </button>
+                                <button onClick={() => onDeleteUser(user.id)} className="delete-btn">
+                                    🗑️ Удалить
+                                </button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.username}</td>
-                                <td>{user.email}</td>
-                                <td>{getRoleBadge(user.role)}</td>
-                                <td>{getStatusBadge(user.isActive)}</td>
-                                <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                                <td>
-                                    <select
-                                        value={user.role}
-                                        onChange={(e) => onUpdateUser(user.id, { role: e.target.value })}
-                                    >
-                                        <option value="user">Пользователь</option>
-                                        <option value="moderator">Модератор</option>
-                                        <option value="admin">Админ</option>
-                                    </select>
-                                    <button
-                                        onClick={() => onUpdateUser(user.id, { isActive: !user.isActive })}
-                                        className={`status-toggle ${user.isActive ? 'block' : 'unblock'}`}
-                                    >
-                                        {user.isActive ? '🚫 Заблокировать' : '✅ Разблокировать'}
-                                    </button>
-                                    <button onClick={() => onDeleteUser(user.id)} className="delete-btn">
-                                        🗑️ Удалить
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                    ))}
+                </tbody>
+            </table>
+        </div>
 
-            <div className="pagination">
-                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
-                    Предыдущая
-                </button>
-                <span>
-                    Страница {currentPage} из {totalPages}
-                </span>
-                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                    Следующая →
-                </button>
-            </div>
-        </>
+        <div className="pagination">
+            <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+                Предыдущая
+            </button>
+            <span>
+                Страница {currentPage} из {totalPages}
+            </span>
+            <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                Следующая →
+            </button>
+        </div>
+    </>
 );
 
 // Компонент управления серверами
@@ -618,82 +618,79 @@ const ServersManagement: React.FC<{
     onDeleteServer,
     getServerStatusBadge
 }) => (
-        <>
-            <div className="filters">
-                <input
-                    type="text"
-                    placeholder="Поиск по названию сервера..."
-                    value={searchTerm}
-                    onChange={(e) => onSearchChange(e.target.value)}
-                />
-                <select value={statusFilter} onChange={(e) => onStatusFilterChange(e.target.value)}>
-                    <option value="">Все статусы</option>
-                    <option value="active">Активные</option>
-                    <option value="blocked">Заблокированные</option>
-                </select>
-            </div>
+    <>
+        <div className="filters">
+            <input
+                type="text"
+                placeholder="Поиск по названию сервера..."
+                value={searchTerm}
+                onChange={(e) => onSearchChange(e.target.value)}
+            />
+            <select value={statusFilter} onChange={(e) => onStatusFilterChange(e.target.value)}>
+                <option value="">Все статусы</option>
+                <option value="active">Активные</option>
+                <option value="blocked">Заблокированные</option>
+            </select>
+        </div>
 
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Название</th>
-                            <th>Описание</th>
-                            <th>Владелец</th>
-                            <th>Каналов</th>
-                            <th>Участников</th>
-                            <th>Дата создания</th>
-                            <th>Статус</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {servers.map((server) => (
-                            <tr key={server.id}>
-                                <td>{server.id}</td>
-                                <td>{server.name}</td>
-                                <td>{server.description || 'Нет описания'}</td>
-                                <td>{server.ownerId}</td>
-                                <td>{server.channels?.length || 0}</td>
-                                <td>{server.memberCount || 0}</td>
-                                <td>{new Date(server.createdAt).toLocaleDateString()}</td>
-                                <td>{getServerStatusBadge(server.isBlocked)}</td>
-                                <td>
-                                    {server.isBlocked ? (
-                                        <button onClick={() => onUnblockServer(server.id)} className="unblock-btn">
-                                            ✅ Разблокировать
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() => onBlockServer(server.id, server.name)}
-                                            className="block-btn"
-                                        >
-                                            🚫 Заблокировать
-                                        </button>
-                                    )}
-                                    <button onClick={() => onDeleteServer(server.id)} className="delete-btn">
-                                        🗑️ Удалить
+        <div className="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th>Владелец</th>
+                        <th>Каналов</th>
+                        <th>Участников</th>
+                        <th>Дата создания</th>
+                        <th>Статус</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {servers.map((server) => (
+                        <tr key={server.id}>
+                            <td>{server.id}</td>
+                            <td>{server.name}</td>
+                            <td>{server.description || 'Нет описания'}</td>
+                            <td>{server.ownerId}</td>
+                            <td>{server.channels?.length || 0}</td>
+                            <td>{server.memberCount || 0}</td>
+                            <td>{new Date(server.createdAt).toLocaleDateString()}</td>
+                            <td>{getServerStatusBadge(server.isBlocked)}</td>
+                            <td>
+                                {server.isBlocked ? (
+                                    <button onClick={() => onUnblockServer(server.id)} className="unblock-btn">
+                                        ✅ Разблокировать
                                     </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                                ) : (
+                                    <button onClick={() => onBlockServer(server.id, server.name)} className="block-btn">
+                                        🚫 Заблокировать
+                                    </button>
+                                )}
+                                <button onClick={() => onDeleteServer(server.id)} className="delete-btn">
+                                    🗑️ Удалить
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
 
-            <div className="pagination">
-                <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
-                    Предыдущая
-                </button>
-                <span>
-                    Страница {currentPage} из {totalPages}
-                </span>
-                <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-                    Следующая →
-                </button>
-            </div>
-        </>
+        <div className="pagination">
+            <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
+                Предыдущая
+            </button>
+            <span>
+                Страница {currentPage} из {totalPages}
+            </span>
+            <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+                Следующая →
+            </button>
+        </div>
+    </>
 );
 
 // Компонент просмотра логов

@@ -73,9 +73,9 @@ const LoginForm: React.FC = () => {
                         <span className="spinner"></span>
                         {t('authPage.loginButton.loading')}
                     </>
-                ) :
-                        t('authPage.btnLogin')
-                }
+                ) : (
+                    t('authPage.btnLogin')
+                )}
             </button>
         </form>
     );

@@ -56,15 +56,15 @@ export function createAppRouter() {
             errorElement: <NotFound />
         })),
         // Fallback для /auth, если модуль не зарегистрировал маршрут
-        ...publicRoutes.find((r) => r.path === '/auth')
+        ...(publicRoutes.find((r) => r.path === '/auth')
             ? []
             : [
-                    {
-                        path: '/auth',
-                        element: <Auth />,
-                        errorElement: <NotFound />
-                    }
-                ],
+                  {
+                      path: '/auth',
+                      element: <Auth />,
+                      errorElement: <NotFound />
+                  }
+              ]),
         {
             path: '/',
             element: (

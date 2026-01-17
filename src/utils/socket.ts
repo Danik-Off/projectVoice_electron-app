@@ -7,7 +7,7 @@ import { iceServers } from '../configs/iceServers';
 class SocketClient {
     public users = [];
 
-    public onStateChange: ((state: SocketClientState)=> void) | null = null;
+    public onStateChange: ((state: SocketClientState) => void) | null = null;
 
     // Getter for state
     public get state(): SocketClientState {

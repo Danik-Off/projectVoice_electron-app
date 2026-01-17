@@ -51,12 +51,7 @@ export class VoiceRoomStore {
                 );
                 return;
             }
-            console.log(
-                'VoiceRoomStore: Switching from channel',
-                this.currentVoiceChannel.id,
-                'to channel',
-                roomId
-            );
+            console.log('VoiceRoomStore: Switching from channel', this.currentVoiceChannel.id, 'to channel', roomId);
             // Отключаемся от текущего канала перед подключением к новому
             this.disconnectToRoom();
         }

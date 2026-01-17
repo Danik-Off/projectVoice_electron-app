@@ -25,7 +25,7 @@ class ConnectionStore {
         // Убеждаемся, что URL имеет протокол
         let formattedUrl = url.trim();
         if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
-            formattedUrl = `http://${  formattedUrl}`;
+            formattedUrl = `http://${formattedUrl}`;
         }
 
         // Убираем слеш в конце, если он есть

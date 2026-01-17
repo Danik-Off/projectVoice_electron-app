@@ -38,11 +38,14 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
         }
     }, [isEditing]);
 
-    useEffect(() => () => {
-        if (actionsTimeoutRef.current) {
-            clearTimeout(actionsTimeoutRef.current);
-        }
-    }, []);
+    useEffect(
+        () => () => {
+            if (actionsTimeoutRef.current) {
+                clearTimeout(actionsTimeoutRef.current);
+            }
+        },
+        []
+    );
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -120,7 +123,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
                 hour: '2-digit',
                 minute: '2-digit'
             });
-        } if (diffInHours < 168) {
+        }
+        if (diffInHours < 168) {
             // 7 дней
             return date.toLocaleDateString('ru-RU', {
                 weekday: 'short',

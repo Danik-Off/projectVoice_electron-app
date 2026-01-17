@@ -47,11 +47,12 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         return null;
     }
 
-    const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('ru-RU', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
+    const formatDate = (dateString: string) =>
+        new Date(dateString).toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
 
     const getStatusColor = (status?: string) => {
         switch (status) {

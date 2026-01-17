@@ -66,7 +66,7 @@ const ChannelList: React.FC = observer(() => {
     const channelList = (
         <div className="channel-list">
             <button className="button" onClick={() => setIsFormVisible(!isFormVisible)}>
-                {t(`channelsPage.channelList.${  isFormVisible ? 'cancel' : 'create'  }Btn`)}
+                {t(`channelsPage.channelList.${isFormVisible ? 'cancel' : 'create'}Btn`)}
             </button>
 
             <h2>{t('channelsPage.channelList.textTitle')}</h2>

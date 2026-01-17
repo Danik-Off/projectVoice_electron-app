@@ -78,7 +78,8 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
         };
 
         // Получаем отображаемое имя (никнейм или username)
-        const getMemberDisplayName = (member: ServerMember): string => member.nickname || member.user?.username || 'Unknown User';
+        const getMemberDisplayName = (member: ServerMember): string =>
+            member.nickname || member.user?.username || 'Unknown User';
 
         const handleContextMenu = useCallback(
             (e: React.MouseEvent, member: ServerMember) => {
@@ -300,7 +301,7 @@ const ServerMembers: React.FC<ServerMembersProps> = observer(
                                                             >
                                                                 🗑️
                                                             </button>
-                                                    )}
+                                                        )}
                                                 </div>
                                             )}
                                         </div>

@@ -14,13 +14,14 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({ isOpen, onClo
         return null;
     }
 
-    const formatDate = (dateString: string) => new Date(dateString).toLocaleString('ru-RU', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const formatDate = (dateString: string) =>
+        new Date(dateString).toLocaleString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
     return (
         <div className="blocked-account-modal-overlay">

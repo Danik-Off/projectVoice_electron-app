@@ -83,15 +83,15 @@ export function createRouter() {
         }),
 
         // Fallback для /auth, если модуль не зарегистрировал маршрут
-        ...publicRoutes.find((r) => r.path === '/auth')
+        ...(publicRoutes.find((r) => r.path === '/auth')
             ? []
             : [
-                    {
-                        path: '/auth',
-                        element: <Auth />,
-                        errorElement: <NotFound />
-                    }
-                ],
+                  {
+                      path: '/auth',
+                      element: <Auth />,
+                      errorElement: <NotFound />
+                  }
+              ]),
 
         // Главный защищенный маршрут с Layout
         {
@@ -110,23 +110,23 @@ export function createRouter() {
                 },
 
                 // Маршруты сервера с вложенными дочерними маршрутами
-                ...serverMainRoute
+                ...(serverMainRoute
                     ? [
-                            {
-                                path: 'server/:serverId',
-                                element: (() => {
-                                    const ServerComponent = serverMainRoute.component;
-                                    return <ServerComponent />;
-                                })(),
-                                children: [
-                                    // Вложенные маршруты сервера (textRoom, voiceRoom)
-                                    ...serverChildRoutes.map((route) => {
-                                        // Убираем префикс 'server/:serverId/' из пути
-                                        const childPath = route.path.replace(/^server\/:serverId\//, '');
-                                        const RouteComponent = route.component;
-                                        return {
-                                            path: childPath,
-                                            element:
+                          {
+                              path: 'server/:serverId',
+                              element: (() => {
+                                  const ServerComponent = serverMainRoute.component;
+                                  return <ServerComponent />;
+                              })(),
+                              children: [
+                                  // Вложенные маршруты сервера (textRoom, voiceRoom)
+                                  ...serverChildRoutes.map((route) => {
+                                      // Убираем префикс 'server/:serverId/' из пути
+                                      const childPath = route.path.replace(/^server\/:serverId\//, '');
+                                      const RouteComponent = route.component;
+                                      return {
+                                          path: childPath,
+                                          element:
                                               route.protected !== false ? (
                                                   <ProtectedRoute>
                                                       <RouteComponent />
@@ -134,30 +134,30 @@ export function createRouter() {
                                               ) : (
                                                   <RouteComponent />
                                               )
-                                        };
-                                    }),
-                                    // Настройки сервера
-                                    ...serverSettingsRoute
-                                        ? [
-                                                {
-                                                    path: 'settings',
-                                                    element: (() => {
-                                                        const SettingsComponent = serverSettingsRoute.component;
-                                                        return serverSettingsRoute.protected !== false ? (
+                                      };
+                                  }),
+                                  // Настройки сервера
+                                  ...(serverSettingsRoute
+                                      ? [
+                                            {
+                                                path: 'settings',
+                                                element: (() => {
+                                                    const SettingsComponent = serverSettingsRoute.component;
+                                                    return serverSettingsRoute.protected !== false ? (
                                                         <ProtectedRoute>
                                                             <SettingsComponent />
                                                         </ProtectedRoute>
-                                                        ) : (
+                                                    ) : (
                                                         <SettingsComponent />
-                                                        );
-                                                    })()
-                                                }
-                                            ]
-                                        : []
-                                ]
-                            }
-                        ]
-                    : [],
+                                                    );
+                                                })()
+                                            }
+                                        ]
+                                      : [])
+                              ]
+                          }
+                      ]
+                    : []),
 
                 // Демо страница профиля
                 {

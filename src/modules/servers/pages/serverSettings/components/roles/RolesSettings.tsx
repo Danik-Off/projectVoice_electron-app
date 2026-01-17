@@ -86,7 +86,7 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
             // Вычисляем разрешения на основе ролей пользователя
             if (userMember.roles && Array.isArray(userMember.roles) && userMember.roles.length > 0) {
                 // Находим роли пользователя среди всех ролей сервера
-                const userRoleIds = userMember.roles.map((r: Role | number) => typeof r === 'object' ? r.id : r);
+                const userRoleIds = userMember.roles.map((r: Role | number) => (typeof r === 'object' ? r.id : r));
 
                 const userRoles = currentRoles.filter((r) => userRoleIds.includes(r.id));
 
@@ -267,15 +267,15 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                 </button>
                             )}
                         </div>
-                    ) :
+                    ) : (
                         // Сортируем роли по позиции (больше = выше в иерархии)
-                            [...roles]
-                                .sort((a, b) => b.position - a.position)
-                                .map((role) => {
-                                    const canEdit = canEditRole(currentUserHighestPosition, role.position, isOwner);
-                                    const canDelete = canDeleteRole(currentUserHighestPosition, role.position, isOwner);
+                        [...roles]
+                            .sort((a, b) => b.position - a.position)
+                            .map((role) => {
+                                const canEdit = canEditRole(currentUserHighestPosition, role.position, isOwner);
+                                const canDelete = canDeleteRole(currentUserHighestPosition, role.position, isOwner);
 
-                                    return (
+                                return (
                                     <div key={role.id} className="role-item">
                                         <div
                                             className="role-color-indicator"
@@ -325,9 +325,9 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                             </div>
                                         </div>
                                     </div>
-                                    );
-                                })
-                    }
+                                );
+                            })
+                    )}
                 </div>
             </div>
 

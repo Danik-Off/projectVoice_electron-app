@@ -12,7 +12,7 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
 
     useEffect(() => {
         if (member && member.roles) {
-            const roleIds = member.roles.map((r: any) => typeof r === 'object' ? r.id : r);
+            const roleIds = member.roles.map((r: any) => (typeof r === 'object' ? r.id : r));
             setSelectedRoleIds(roleIds);
         } else {
             setSelectedRoleIds([]);

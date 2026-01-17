@@ -36,7 +36,8 @@ export const getMemberRoles = (member: ServerMember, roles: Role[]): Role[] => {
 /**
  * Получает отображаемое имя участника
  */
-export const getMemberDisplayName = (member: ServerMember): string => member.nickname || member.user?.username || 'Unknown';
+export const getMemberDisplayName = (member: ServerMember): string =>
+    member.nickname || member.user?.username || 'Unknown';
 
 /**
  * Получает текст роли для отображения

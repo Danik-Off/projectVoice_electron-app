@@ -43,7 +43,7 @@ class SocketClient {
         });
     }
 
-    public socketOn(ev: string, listner: (data: unknown)=> void) {
+    public socketOn(ev: string, listner: (data: unknown) => void) {
         if (this.socket) {
             this.socket.on(ev, listner);
         }

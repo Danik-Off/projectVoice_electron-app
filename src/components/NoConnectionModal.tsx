@@ -40,9 +40,9 @@ const NoConnectionModal: React.FC = observer(() => {
                     style={
                         isManualSettings
                             ? {
-                                    background:
+                                  background:
                                       'linear-gradient(135deg, var(--success-accent) 0%, var(--tertiary-accent) 100%)'
-                                }
+                              }
                             : {}
                     }
                 >

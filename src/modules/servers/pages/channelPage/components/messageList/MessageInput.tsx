@@ -88,14 +88,16 @@ const MessageInput: React.FC = () => {
         sendMessage();
     };
 
-    useEffect(() =>
-        // Очистка таймера при размонтировании
-        () => {
-            if (typingTimeoutRef.current) {
-                clearTimeout(typingTimeoutRef.current);
-            }
-        },
-    []);
+    useEffect(
+        () =>
+            // Очистка таймера при размонтировании
+            () => {
+                if (typingTimeoutRef.current) {
+                    clearTimeout(typingTimeoutRef.current);
+                }
+            },
+        []
+    );
 
     return (
         <div className="message-input-container">

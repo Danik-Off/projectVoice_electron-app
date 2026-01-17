@@ -5,9 +5,9 @@ import { audioSettingsStore } from '../core';
 import participantVolumeStore from '../store/ParticipantVolumeStore';
 import voiceActivityService from '../services/VoiceActivityService';
 class WebRTCClient {
-    public sendSignal: null | ((signal: Signal)=> void) = null;
+    public sendSignal: null | ((signal: Signal) => void) = null;
 
-    public changeState: null | ((id: string, signal: Event)=> void) = null;
+    public changeState: null | ((id: string, signal: Event) => void) = null;
 
     private readonly remoteStreams: Map<string, MediaStream> = new Map();
     private readonly peerConnections: Map<string, RTCPeerConnection> = new Map();

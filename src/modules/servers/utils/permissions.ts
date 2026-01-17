@@ -61,10 +61,11 @@ export const stringToPermissions = (permissions: string): bigint => BigInt(permi
  * @param permissions - массив разрешений (BigInt или строки)
  * @returns объединенные разрешения
  */
-export const combinePermissions = (permissions: Array<bigint | string>): bigint => permissions.reduce((acc: bigint, perm) => {
-    const permValue = typeof perm === 'string' ? BigInt(perm) : perm;
-    return acc | permValue;
-}, 0n);
+export const combinePermissions = (permissions: Array<bigint | string>): bigint =>
+    permissions.reduce((acc: bigint, perm) => {
+        const permValue = typeof perm === 'string' ? BigInt(perm) : perm;
+        return acc | permValue;
+    }, 0n);
 
 /**
  * Удаляет разрешение из набора

@@ -8,13 +8,13 @@ interface MicButtonProps {
 }
 
 const MicButton: React.FC<MicButtonProps> = ({ isMicOn, onMicToggle }) => (
-        <button
-            className={`mic-button ${isMicOn ? 'active' : 'inactive'}`}
-            onClick={onMicToggle}
-            aria-label={isMicOn ? 'Mute microphone' : 'Unmute microphone'}
-        >
-            <MicIcon isMuted={!isMicOn}></MicIcon>
-        </button>
+    <button
+        className={`mic-button ${isMicOn ? 'active' : 'inactive'}`}
+        onClick={onMicToggle}
+        aria-label={isMicOn ? 'Mute microphone' : 'Unmute microphone'}
+    >
+        <MicIcon isMuted={!isMicOn}></MicIcon>
+    </button>
 );
 
 export default MicButton;

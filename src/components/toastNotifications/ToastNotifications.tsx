@@ -6,19 +6,16 @@ import './ToastNotifications.scss';
 import { notificationStore } from '../../core';
 
 const ToastNotifications: React.FC = observer(() => (
-        <div className="toast-container">
-            {notificationStore.notifications.map((notification) => (
-                <div key={notification.id} className={`toast toast-${notification.type}`}>
-                    <span className="toast-message">{notification.message}</span>
-                    <button
-                        className="toast-close"
-                        onClick={() => notificationStore.removeNotification(notification.id)}
-                    >
-                        ✖️
-                    </button>
-                </div>
-            ))}
-        </div>
+    <div className="toast-container">
+        {notificationStore.notifications.map((notification) => (
+            <div key={notification.id} className={`toast toast-${notification.type}`}>
+                <span className="toast-message">{notification.message}</span>
+                <button className="toast-close" onClick={() => notificationStore.removeNotification(notification.id)}>
+                    ✖️
+                </button>
+            </div>
+        ))}
+    </div>
 ));
 
 export default ToastNotifications;

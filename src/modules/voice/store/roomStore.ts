@@ -46,12 +46,7 @@ export class VoiceRoomStore {
                 );
                 return;
             }
-            console.log(
-                'VoiceRoomStore: Switching from channel',
-                this.currentVoiceChannel.id,
-                'to channel',
-                roomId
-            );
+            console.log('VoiceRoomStore: Switching from channel', this.currentVoiceChannel.id, 'to channel', roomId);
             // Отключаемся от текущего канала перед подключением к новому
             this.disconnectToRoom();
         }
@@ -206,10 +201,10 @@ export class VoiceRoomStore {
                 candidate:
                     'candidate' in signal
                         ? {
-                                candidate: signal.candidate.candidate,
-                                sdpMLineIndex: signal.candidate.sdpMLineIndex,
-                                sdpMid: signal.candidate.sdpMid
-                            }
+                              candidate: signal.candidate.candidate,
+                              sdpMLineIndex: signal.candidate.sdpMLineIndex,
+                              sdpMid: signal.candidate.sdpMid
+                          }
                         : undefined
             });
         });

@@ -22,24 +22,24 @@ const Card: React.FC<CardProps> = ({
     contentClassName = '',
     onClick
 }) => (
-        <div className={`ui-card ${onClick ? 'ui-card--clickable' : ''} ${className}`} onClick={onClick}>
-            {(title || description || icon) && (
-                <div className={`ui-card__header ${headerClassName}`}>
-                    <div className="ui-card__header-content">
-                        {icon && (
-                            <div className="ui-card__icon">{typeof icon === 'string' ? <span>{icon}</span> : icon}</div>
-                        )}
-                        {(title || description) && (
-                            <div className="ui-card__header-text">
-                                {title && <h3 className="ui-card__title">{title}</h3>}
-                                {description && <p className="ui-card__description">{description}</p>}
-                            </div>
-                        )}
-                    </div>
+    <div className={`ui-card ${onClick ? 'ui-card--clickable' : ''} ${className}`} onClick={onClick}>
+        {(title || description || icon) && (
+            <div className={`ui-card__header ${headerClassName}`}>
+                <div className="ui-card__header-content">
+                    {icon && (
+                        <div className="ui-card__icon">{typeof icon === 'string' ? <span>{icon}</span> : icon}</div>
+                    )}
+                    {(title || description) && (
+                        <div className="ui-card__header-text">
+                            {title && <h3 className="ui-card__title">{title}</h3>}
+                            {description && <p className="ui-card__description">{description}</p>}
+                        </div>
+                    )}
                 </div>
-            )}
-            <div className={`ui-card__content ${contentClassName}`}>{children}</div>
-        </div>
+            </div>
+        )}
+        <div className={`ui-card__content ${contentClassName}`}>{children}</div>
+    </div>
 );
 
 export default Card;

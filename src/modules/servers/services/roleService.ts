@@ -24,13 +24,14 @@ export const roleService = {
      * @param roleData - данные роли
      * @returns созданная роль
      */
-    createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> => await apiClient<Role>(
+    createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> =>
+        await apiClient<Role>(
             `/servers/${serverId}/roles`,
             {
                 method: 'POST'
             },
             roleData
-    ),
+        ),
 
     /**
      * Обновить роль
@@ -39,13 +40,14 @@ export const roleService = {
      * @param roleData - данные для обновления
      * @returns обновленная роль
      */
-    updateRole: async (serverId: number, roleId: number, roleData: UpdateRoleRequest): Promise<Role> => await apiClient<Role>(
+    updateRole: async (serverId: number, roleId: number, roleData: UpdateRoleRequest): Promise<Role> =>
+        await apiClient<Role>(
             `/servers/${serverId}/roles/${roleId}`,
             {
                 method: 'PATCH'
             },
             roleData
-    ),
+        ),
 
     /**
      * Удалить роль

@@ -55,7 +55,7 @@ class AuthStore {
             }
 
             console.warn('✅ Auth restored from localStorage - token present, isAuthenticated:', this.isAuthenticated);
-            console.warn('✅ Token restored:', `${this.token.substring(0, 20)  }...`);
+            console.warn('✅ Token restored:', `${this.token.substring(0, 20)}...`);
 
             // Загружаем актуальные данные пользователя асинхронно
             // НЕ вызываем logout при ошибке - пользователь должен выйти вручную
