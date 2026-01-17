@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function, complexity */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
@@ -37,7 +38,7 @@ const InvitePage: React.FC = observer(() => {
     console.warn('InvitePage rendered with token:', token);
 
     const fetchInviteData = useCallback(async () => {
-        if (!token) {
+        if (token == null || token === '') {
             setError(t('invitePage.invalidToken'));
             setLoading(false);
             return;
@@ -47,16 +48,16 @@ const InvitePage: React.FC = observer(() => {
 
         try {
             // Используем сервис для получения данных приглашения
-            const inviteData = await inviteService.getInvite(token);
-            console.warn('🎯 InvitePage: Данные приглашения получены:', inviteData);
+            const fetchedInviteData = await inviteService.getInvite(token);
+            console.warn('🎯 InvitePage: Данные приглашения получены:', fetchedInviteData);
 
-            setInviteData(inviteData);
+            setInviteData(fetchedInviteData);
 
             // Получаем данные сервера отдельно (пока что используем заглушку)
             // TODO: Добавить метод в inviteService для получения данных сервера
             setServerData({
-                id: inviteData.serverId,
-                name: `${t('invitePage.serverFallback')} ${inviteData.serverId}`, // Временная заглушка
+                id: fetchedInviteData.serverId,
+                name: `${t('invitePage.serverFallback')} ${fetchedInviteData.serverId}`, // Временная заглушка
                 description: t('invitePage.serverDescription')
             });
         } catch (err) {
@@ -70,20 +71,27 @@ const InvitePage: React.FC = observer(() => {
     }, [token, t]);
 
     useEffect(() => {
-        if (token) {
-            fetchInviteData();
+        if (token != null && token !== '') {
+            fetchInviteData().catch((error: unknown) => {
+                console.error('Error fetching invite data:', error);
+            });
         }
     }, [token, fetchInviteData]);
 
     const handleAcceptInvite = async () => {
-        if (!token) {
+        if (token == null || token === '') {
             setError(t('invitePage.invalidToken'));
             return;
         }
 
         if (!isAuthenticated) {
             // Перенаправляем на страницу входа с возвратом на эту страницу
-            navigate(`/auth?redirect=/invite/${token}`);
+            const result = navigate(`/auth?redirect=/invite/${token}`);
+            if (result instanceof Promise) {
+                result.catch((error: unknown) => {
+                    console.error('Navigation error:', error);
+                });
+            }
             return;
         }
 
@@ -97,7 +105,14 @@ const InvitePage: React.FC = observer(() => {
             console.warn('🎯 InvitePage: Приглашение принято успешно');
 
             // Перенаправляем на сервер
-            navigate(`/server/${serverData?.id}`);
+            if (serverData?.id != null && serverData.id !== 0) {
+                const result = navigate(`/server/${serverData.id}`);
+                if (result instanceof Promise) {
+                    result.catch((error: unknown) => {
+                        console.error('Navigation error:', error);
+                    });
+                }
+            }
             notificationStore.addNotification(t('invitePage.joinSuccess'), 'success');
         } catch (err) {
             console.error('🎯 InvitePage: Ошибка принятия приглашения:', err);
@@ -110,7 +125,12 @@ const InvitePage: React.FC = observer(() => {
     };
 
     const handleLogin = () => {
-        navigate(`/auth?redirect=/invite/${token}`);
+        const result = navigate(`/auth?redirect=/invite/${token ?? ''}`);
+        if (result instanceof Promise) {
+            result.catch((error: unknown) => {
+                console.error('Navigation error:', error);
+            });
+        }
     };
 
     if (loading) {
@@ -123,14 +143,24 @@ const InvitePage: React.FC = observer(() => {
         );
     }
 
-    if (error) {
+    if (error != null && error !== '') {
         return (
             <div className="invite-page">
                 <div className="invite-container">
                     <div className="error">
                         <h2>{t('invitePage.error')}</h2>
                         <p>{error}</p>
-                        <button onClick={() => navigate('/')} className="btn-primary">
+                        <button
+                            onClick={() => {
+                                const result = navigate('/');
+                                if (result instanceof Promise) {
+                                    result.catch((navError: unknown) => {
+                                        console.error('Navigation error:', navError);
+                                    });
+                                }
+                            }}
+                            className="btn-primary"
+                        >
                             {t('invitePage.backToHome')}
                         </button>
                     </div>
@@ -146,7 +176,17 @@ const InvitePage: React.FC = observer(() => {
                     <div className="error">
                         <h2>{t('invitePage.error')}</h2>
                         <p>{t('invitePage.expiredOrDeleted')}</p>
-                        <button onClick={() => navigate('/')} className="btn-primary">
+                        <button
+                            onClick={() => {
+                                const result = navigate('/');
+                                if (result instanceof Promise) {
+                                    result.catch((navError: unknown) => {
+                                        console.error('Navigation error:', navError);
+                                    });
+                                }
+                            }}
+                            className="btn-primary"
+                        >
                             {t('invitePage.backToHome')}
                         </button>
                     </div>
@@ -164,7 +204,7 @@ const InvitePage: React.FC = observer(() => {
 
                 <div className="server-info">
                     <div className="server-icon">
-                        {serverData.icon ? (
+                        {serverData.icon != null && serverData.icon !== '' ? (
                             <img src={serverData.icon} alt={serverData.name} />
                         ) : (
                             <span>{serverData.name.charAt(0).toUpperCase()}</span>
@@ -172,7 +212,9 @@ const InvitePage: React.FC = observer(() => {
                     </div>
                     <div className="server-details">
                         <h2>{serverData.name}</h2>
-                        {serverData.description ? <p className="server-description">{serverData.description}</p> : null}
+                        {serverData.description != null && serverData.description !== '' ? (
+                            <p className="server-description">{serverData.description}</p>
+                        ) : null}
                     </div>
                 </div>
 
@@ -180,10 +222,11 @@ const InvitePage: React.FC = observer(() => {
                     <div className="invite-stat">
                         <span className="label">{t('invitePage.usesLabel')}</span>
                         <span className="value">
-                            {inviteData.uses}/{inviteData.maxUses || '∞'}
+                            {inviteData.uses}/
+                            {inviteData.maxUses != null && inviteData.maxUses !== 0 ? inviteData.maxUses : '∞'}
                         </span>
                     </div>
-                    {inviteData.expiresAt ? (
+                    {inviteData.expiresAt != null && inviteData.expiresAt !== '' ? (
                         <div className="invite-stat">
                             <span className="label">{t('invitePage.expiresLabel')}</span>
                             <span className="value">{new Date(inviteData.expiresAt).toLocaleDateString()}</span>
@@ -193,7 +236,15 @@ const InvitePage: React.FC = observer(() => {
 
                 <div className="invite-actions">
                     {isAuthenticated ? (
-                        <button onClick={handleAcceptInvite} disabled={accepting} className="btn-accept">
+                        <button
+                            onClick={() => {
+                                handleAcceptInvite().catch((error: unknown) => {
+                                    console.error('Accept invite error:', error);
+                                });
+                            }}
+                            disabled={accepting}
+                            className="btn-accept"
+                        >
                             {accepting ? t('invitePage.joining') : t('invitePage.joinServer')}
                         </button>
                     ) : (

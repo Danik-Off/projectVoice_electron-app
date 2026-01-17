@@ -9,12 +9,13 @@ import type {
 
 class MessageService {
     // Получение сообщений канала с пагинацией
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getMessages(filters: MessageFilters): Promise<MessageResponse> {
         const params = new URLSearchParams();
-        if (filters.page) {
+        if (filters.page != null && filters.page > 0) {
             params.append('page', filters.page.toString());
         }
-        if (filters.limit) {
+        if (filters.limit != null && filters.limit > 0) {
             params.append('limit', filters.limit.toString());
         }
         params.append('channelId', filters.channelId.toString());
@@ -23,11 +24,13 @@ class MessageService {
     }
 
     // Создание нового сообщения
+    // eslint-disable-next-line require-await -- Returns promise directly
     async createMessage(data: CreateMessageRequest): Promise<Message> {
         return apiClient('/messages', { method: 'POST' }, data);
     }
 
     // Обновление сообщения
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateMessage(messageId: number, data: UpdateMessageRequest): Promise<Message> {
         return apiClient(`/messages/${messageId}`, { method: 'PUT' }, data);
     }
@@ -38,11 +41,13 @@ class MessageService {
     }
 
     // Получение одного сообщения
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getMessage(messageId: number): Promise<Message> {
         return apiClient(`/messages/${messageId}`, { method: 'GET' });
     }
 
     // Поиск сообщений
+    // eslint-disable-next-line require-await -- Returns promise directly
     async searchMessages(query: string, channelId: number): Promise<MessageResponse> {
         const params = new URLSearchParams();
         params.append('query', query);

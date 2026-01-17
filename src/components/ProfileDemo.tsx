@@ -3,6 +3,7 @@ import { useUserProfile } from '../hooks/useUserProfile';
 import ClickableAvatar from './ClickableAvatar';
 import type { User } from '../types/user';
 
+/* eslint-disable max-lines-per-function */
 const ProfileDemo: React.FC = () => {
     const { openProfile } = useUserProfile();
 

@@ -24,6 +24,7 @@ export const roleService = {
      * @param roleData - данные роли
      * @returns созданная роль
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     createRole: async (serverId: number, roleData: CreateRoleRequest): Promise<Role> =>
         apiClient<Role>(
             `/servers/${serverId}/roles`,
@@ -40,6 +41,7 @@ export const roleService = {
      * @param roleData - данные для обновления
      * @returns обновленная роль
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     updateRole: async (serverId: number, roleId: number, roleData: UpdateRoleRequest): Promise<Role> =>
         apiClient<Role>(
             `/servers/${serverId}/roles/${roleId}`,

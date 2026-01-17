@@ -11,7 +11,9 @@ const ServerSettingsHeader: React.FC<ServerSettingsHeaderProps> = ({ serverName 
     const navigate = useNavigate();
 
     const handleBackToServer = () => {
-        navigate(-1);
+        Promise.resolve(navigate(-1)).catch((error: unknown) => {
+            console.error('Error navigating back:', error);
+        });
     };
 
     return (

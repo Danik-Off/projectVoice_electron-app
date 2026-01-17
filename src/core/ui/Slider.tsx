@@ -20,12 +20,12 @@ const Slider: React.FC<SliderProps> = ({
     value,
     ...props
 }) => {
-    const sliderId = id || `slider-${Math.random().toString(36).substr(2, 9)}`;
-    const displayValue = valueLabel || (typeof value === 'number' ? `${value}%` : value);
+    const sliderId = id ?? `slider-${Math.random().toString(36).substr(2, 9)}`;
+    const displayValue = valueLabel ?? (typeof value === 'number' ? `${value}%` : value);
 
     return (
         <div className={`ui-slider ${fullWidth ? 'ui-slider--full-width' : ''} ${className}`}>
-            {label ? (
+            {label != null && label !== '' ? (
                 <div className="ui-slider__header">
                     <label htmlFor={sliderId} className="ui-slider__label">
                         {label}
@@ -42,7 +42,7 @@ const Slider: React.FC<SliderProps> = ({
                     {...props}
                 />
             </div>
-            {helperText ? <span className="ui-slider__helper">{helperText}</span> : null}
+            {helperText != null && helperText !== '' ? <span className="ui-slider__helper">{helperText}</span> : null}
         </div>
     );
 };

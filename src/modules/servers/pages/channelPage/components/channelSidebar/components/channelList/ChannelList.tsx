@@ -12,6 +12,7 @@ import type { Channel } from '../../../../../../../../types/channel';
 import { channelsStore } from '../../../../../../../channels';
 import serverStore from '../../../../../../store/serverStore';
 
+/* eslint-disable max-lines-per-function -- Complex channel list with navigation */
 const ChannelList: React.FC = observer(() => {
     const { t } = useTranslation();
     const navigate = useNavigate();
@@ -24,34 +25,47 @@ const ChannelList: React.FC = observer(() => {
     useEffect(() => {
         const fetchChannels = async () => {
             // Получаем сервер из Store
-            if (serverStore.currentServer) {
+            if (serverStore.currentServer != null) {
                 // Получаем каналы сервера
                 await channelsStore.fetchChannels(serverStore.currentServer.id);
             }
         };
 
-        fetchChannels();
+        fetchChannels().catch((error: unknown) => {
+            console.error('Error fetching channels:', error);
+        });
     }, []);
 
     const handleNavigate = (channel: Channel) => {
         const serverId = serverStore.currentServer?.id;
-        if (!serverId) {
+        if (serverId == null || serverId === 0) {
             return;
         }
-        let newPath = '';
+        const newPath =
+            channel.type === 'voice'
+                ? `/server/${serverId}/voiceRoom/${channel.id}`
+                : `/server/${serverId}/textRoom/${channel.id}`;
+
         if (channel.type === 'voice') {
-            newPath = `/server/${serverId}/voiceRoom/${channel.id}`;
             voiceRoomStore.connectToRoom(channel.id, channel.name);
-        } else {
-            newPath = `/server/${serverId}/textRoom/${channel.id}`;
-            // Не отключаемся от голосового канала при переходе на текстовый
-            // voiceRoomStore.disconnectToRoom();
         }
-        navigate(newPath);
+
+        const result = navigate(newPath);
+        if (result instanceof Promise) {
+            result.catch((error: unknown) => {
+                console.error('Navigation error:', error);
+            });
+        }
     };
 
-    const textChannels = channelsStore?.channels?.filter((channel: Channel) => channel.type === 'text') || [];
-    const voiceChannels = channelsStore?.channels?.filter((channel: Channel) => channel.type === 'voice') || [];
+    const textChannels =
+        channelsStore.channels != null
+            ? channelsStore.channels.filter((channel: Channel) => channel.type === 'text')
+            : [];
+    const voiceChannels =
+        channelsStore.channels != null
+            ? channelsStore.channels.filter((channel: Channel) => channel.type === 'voice')
+            : [];
 
     const getChannelClasses = (channel: Channel) => {
         const baseClass = 'channel-list__item';

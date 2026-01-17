@@ -34,7 +34,7 @@ const InviteModal: React.FC<InviteModalProps> = ({ isOpen, onClose, serverName, 
                 <div className="invite-modal__content">
                     <div className="invite-modal__server-preview">
                         <div className="invite-modal__server-preview-icon">
-                            {serverIcon ? (
+                            {serverIcon != null && serverIcon !== '' ? (
                                 <img src={serverIcon} alt="Server icon" />
                             ) : (
                                 <span>{serverName.charAt(0).toUpperCase()}</span>

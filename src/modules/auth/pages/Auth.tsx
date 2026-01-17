@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -21,10 +22,20 @@ const AuthPage: React.FC = observer(() => {
     // Если пользователь уже авторизован, перенаправляем его
     useEffect(() => {
         if (authStore.isAuthenticated) {
-            if (redirect) {
-                navigate(redirect);
+            if (redirect != null && redirect !== '') {
+                const result = navigate(redirect);
+                if (result instanceof Promise) {
+                    result.catch((error: unknown) => {
+                        console.error('Navigation error:', error);
+                    });
+                }
             } else {
-                navigate('/');
+                const result = navigate('/');
+                if (result instanceof Promise) {
+                    result.catch((error: unknown) => {
+                        console.error('Navigation error:', error);
+                    });
+                }
             }
         }
     }, [redirect, navigate]);
@@ -38,7 +49,9 @@ const AuthPage: React.FC = observer(() => {
 
     const toggleLanguage = () => {
         const newLanguage = i18n.language === 'en' ? 'ru' : 'en'; // Переключение между английским и русским
-        i18n.changeLanguage(newLanguage);
+        i18n.changeLanguage(newLanguage).catch((error: unknown) => {
+            console.error('Language change error:', error);
+        });
     };
 
     return (

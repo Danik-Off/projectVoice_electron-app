@@ -24,10 +24,10 @@ class InviteService {
             },
             options
         );
-        return response.invite;
+        return response.invite as Invite;
     }
 
-    async getInvite(token: string): Promise<Invite> {
+    getInvite(token: string): Promise<Invite> {
         return apiClient(`/invite/invite/${token}`, {
             method: 'GET'
         });
@@ -45,7 +45,7 @@ class InviteService {
         });
     }
 
-    async getServerInvites(serverId: number): Promise<Invite[]> {
+    getServerInvites(serverId: number): Promise<Invite[]> {
         return apiClient(`/invite/${serverId}/invites`, {
             method: 'GET'
         });

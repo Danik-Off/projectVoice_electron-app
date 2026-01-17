@@ -18,6 +18,7 @@ interface ProfileInfoSectionProps {
     onCancel: () => void;
 }
 
+/* eslint-disable max-lines-per-function -- Complex profile info component */
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
     ({
         editForm,
@@ -34,8 +35,8 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
 
         const handleFieldChange = (field: keyof ProfileForm, value: string) => {
             setEditForm({ ...editForm, [field]: value });
-            if (validationErrors[field]) {
-                setValidationErrors({ ...validationErrors, [field]: undefined });
+            if (validationErrors[field] != null) {
+                setValidationErrors({ ...validationErrors, [field]: null });
             }
         };
 
@@ -61,7 +62,8 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
                         <div className="profile-info-section">
                             <div className="profile-avatar-section">
                                 <div className="profile-avatar">
-                                    {authStore.user.profilePicture ? (
+                                    {authStore.user.profilePicture != null &&
+                                    authStore.user.profilePicture.length > 0 ? (
                                         <img src={authStore.user.profilePicture} alt={authStore.user.username} />
                                     ) : (
                                         <div className="avatar-placeholder">
@@ -132,11 +134,11 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
                                     type="text"
                                     value={editForm.username}
                                     onChange={(e) => handleFieldChange('username', e.target.value)}
-                                    className={`edit-input ${validationErrors.username ? 'error' : ''}`}
+                                    className={`edit-input ${validationErrors.username != null ? 'error' : ''}`}
                                     placeholder={t('settingsPage.profile.basicInfo.usernamePlaceholder')}
                                     disabled={isLoading}
                                 />
-                                {validationErrors.username ? (
+                                {validationErrors.username != null ? (
                                     <div className="error-message">{validationErrors.username}</div>
                                 ) : null}
                             </div>
@@ -149,11 +151,11 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = observer(
                                     type="email"
                                     value={editForm.email}
                                     onChange={(e) => handleFieldChange('email', e.target.value)}
-                                    className={`edit-input ${validationErrors.email ? 'error' : ''}`}
+                                    className={`edit-input ${validationErrors.email != null ? 'error' : ''}`}
                                     placeholder={t('settingsPage.profile.basicInfo.emailPlaceholder')}
                                     disabled={isLoading}
                                 />
-                                {validationErrors.email ? (
+                                {validationErrors.email != null ? (
                                     <div className="error-message">{validationErrors.email}</div>
                                 ) : null}
                             </div>

@@ -1,5 +1,7 @@
+/* eslint-disable max-lines-per-function -- Complex welcome page component */
 // src/components/WelcomePage.tsx
 // import { useTranslation } from 'react-i18next';
+import React from 'react';
 import './WelcomePage.scss';
 
 const WelcomePage: React.FC = () => (

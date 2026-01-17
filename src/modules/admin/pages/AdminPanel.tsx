@@ -92,7 +92,7 @@ const BlockServerModal: React.FC<BlockServerModalProps> = ({ isOpen, onClose, on
     return (
         <div className="modal-overlay">
             <div className="modal">
-                <h2>Заблокировать сервер "{serverName}"</h2>
+                <h2>Заблокировать сервер &quot;{serverName}&quot;</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="reason">Причина блокировки:</label>
@@ -119,6 +119,7 @@ const BlockServerModal: React.FC<BlockServerModalProps> = ({ isOpen, onClose, on
     );
 };
 
+/* eslint-disable max-lines-per-function, complexity, max-lines */
 const AdminPanel: React.FC = observer(() => {
     // const { t } = useTranslation();
     const [stats, setStats] = useState<Stats | null>(null);
@@ -196,16 +197,24 @@ const AdminPanel: React.FC = observer(() => {
             return;
         }
 
-        loadStats();
+        loadStats().catch((error: unknown) => {
+            console.error('Failed to load stats:', error);
+        });
     }, [loadStats]);
 
     useEffect(() => {
         if (activeTab === 'users') {
-            loadUsers();
+            loadUsers().catch((error: unknown) => {
+                console.error('Failed to load users:', error);
+            });
         } else if (activeTab === 'servers') {
-            loadServers();
+            loadServers().catch((error: unknown) => {
+                console.error('Failed to load servers:', error);
+            });
         } else if (activeTab === 'logs') {
-            loadLogs();
+            loadLogs().catch((error: unknown) => {
+                console.error('Failed to load logs:', error);
+            });
         }
     }, [activeTab, loadUsers, loadServers, loadLogs]);
 
@@ -213,7 +222,9 @@ const AdminPanel: React.FC = observer(() => {
         try {
             const result = await adminService.updateUser(userId, updates);
             console.warn(result.message);
-            loadUsers(); // Перезагружаем список
+            loadUsers().catch((error: unknown) => {
+                console.error('Failed to reload users after update:', error);
+            }); // Перезагружаем список
         } catch (error) {
             console.error('Ошибка обновления пользователя:', error);
         }
@@ -225,7 +236,9 @@ const AdminPanel: React.FC = observer(() => {
             try {
                 const result = await adminService.deleteUser(userId);
                 console.warn(result.message);
-                loadUsers(); // Перезагружаем список
+                loadUsers().catch((error: unknown) => {
+                    console.error('Failed to reload users after delete:', error);
+                }); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка удаления пользователя:', error);
             }
@@ -236,18 +249,23 @@ const AdminPanel: React.FC = observer(() => {
         try {
             const result = await adminService.blockServer(serverId, { reason });
             console.warn(result.message);
-            loadServers(); // Перезагружаем список
+            loadServers().catch((error: unknown) => {
+                console.error('Failed to reload servers after block:', error);
+            }); // Перезагружаем список
         } catch (error) {
             console.error('Ошибка блокировки сервера:', error);
         }
     };
 
     const unblockServer = async (serverId: number) => {
+        // eslint-disable-next-line no-alert
         if (window.confirm('Вы уверены, что хотите разблокировать этот сервер?')) {
             try {
                 const result = await adminService.unblockServer(serverId);
                 console.warn(result.message);
-                loadServers(); // Перезагружаем список
+                loadServers().catch((error: unknown) => {
+                    console.error('Failed to reload servers after unblock:', error);
+                }); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка разблокировки сервера:', error);
             }
@@ -260,7 +278,9 @@ const AdminPanel: React.FC = observer(() => {
             try {
                 const result = await adminService.deleteServer(serverId);
                 console.warn(result.message);
-                loadServers(); // Перезагружаем список
+                loadServers().catch((error: unknown) => {
+                    console.error('Failed to reload servers after delete:', error);
+                }); // Перезагружаем список
             } catch (error) {
                 console.error('Ошибка удаления сервера:', error);
             }
@@ -360,25 +380,25 @@ const AdminPanel: React.FC = observer(() => {
                             <div className="stat-card">
                                 <h3>👥 Пользователи</h3>
                                 <div className="stat-numbers">
-                                    <div className="stat-main">{stats?.users.total || 0}</div>
+                                    <div className="stat-main">{stats?.users.total ?? 0}</div>
                                     <div className="stat-details">
-                                        <span>✅ Активных: {stats?.users.active || 0}</span>
-                                        <span>❌ Заблокированных: {stats?.users.blocked || 0}</span>
+                                        <span>✅ Активных: {stats?.users.active ?? 0}</span>
+                                        <span>❌ Заблокированных: {stats?.users.blocked ?? 0}</span>
                                     </div>
                                 </div>
                                 <div className="stat-breakdown">
-                                    <div>👑 Админов: {stats?.users.byRole.admin || 0}</div>
-                                    <div>🛡️ Модераторов: {stats?.users.byRole.moderator || 0}</div>
-                                    <div>👤 Пользователей: {stats?.users.byRole.user || 0}</div>
+                                    <div>👑 Админов: {stats?.users.byRole.admin ?? 0}</div>
+                                    <div>🛡️ Модераторов: {stats?.users.byRole.moderator ?? 0}</div>
+                                    <div>👤 Пользователей: {stats?.users.byRole.user ?? 0}</div>
                                 </div>
                             </div>
 
                             <div className="stat-card">
                                 <h3>🏠 Серверы</h3>
                                 <div className="stat-numbers">
-                                    <div className="stat-main">{stats?.servers.total || 0}</div>
+                                    <div className="stat-main">{stats?.servers.total ?? 0}</div>
                                     <div className="stat-details">
-                                        <span>📢 С каналами: {stats?.servers.withChannels || 0}</span>
+                                        <span>📢 С каналами: {stats?.servers.withChannels ?? 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -386,10 +406,10 @@ const AdminPanel: React.FC = observer(() => {
                             <div className="stat-card">
                                 <h3>📢 Каналы</h3>
                                 <div className="stat-numbers">
-                                    <div className="stat-main">{stats?.channels.total || 0}</div>
+                                    <div className="stat-main">{stats?.channels.total ?? 0}</div>
                                     <div className="stat-details">
-                                        <span>💬 Текстовых: {stats?.channels.text || 0}</span>
-                                        <span>🎤 Голосовых: {stats?.channels.voice || 0}</span>
+                                        <span>💬 Текстовых: {stats?.channels.text ?? 0}</span>
+                                        <span>🎤 Голосовых: {stats?.channels.voice ?? 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -397,9 +417,9 @@ const AdminPanel: React.FC = observer(() => {
                             <div className="stat-card">
                                 <h3>💬 Сообщения</h3>
                                 <div className="stat-numbers">
-                                    <div className="stat-main">{stats?.messages.total || 0}</div>
+                                    <div className="stat-main">{stats?.messages.total ?? 0}</div>
                                     <div className="stat-details">
-                                        <span>📅 Сегодня: {stats?.messages.today || 0}</span>
+                                        <span>📅 Сегодня: {stats?.messages.today ?? 0}</span>
                                     </div>
                                 </div>
                             </div>
@@ -410,7 +430,15 @@ const AdminPanel: React.FC = observer(() => {
                             <div className="action-buttons">
                                 <button onClick={() => setActiveTab('users')}>👥 Управление пользователями</button>
                                 <button onClick={() => setActiveTab('servers')}>🏠 Просмотр серверов</button>
-                                <button onClick={loadStats}>🔄 Обновить статистику</button>
+                                <button
+                                    onClick={() => {
+                                        loadStats().catch((error: unknown) => {
+                                            console.error('Failed to refresh stats:', error);
+                                        });
+                                    }}
+                                >
+                                    🔄 Обновить статистику
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -419,6 +447,7 @@ const AdminPanel: React.FC = observer(() => {
                 {activeTab === 'users' && (
                     <div className="users-management">
                         <h2>👥 Управление пользователями</h2>
+                        {/* eslint-disable-next-line no-use-before-define */}
                         <UsersManagement
                             users={users}
                             currentPage={currentPage}
@@ -430,8 +459,16 @@ const AdminPanel: React.FC = observer(() => {
                             onRoleFilterChange={setRoleFilter}
                             onStatusFilterChange={setStatusFilter}
                             onPageChange={setCurrentPage}
-                            onUpdateUser={updateUser}
-                            onDeleteUser={deleteUser}
+                            onUpdateUser={(userId, updates) => {
+                                updateUser(userId, updates).catch((error: unknown) => {
+                                    console.error('Failed to update user:', error);
+                                });
+                            }}
+                            onDeleteUser={(userId) => {
+                                deleteUser(userId).catch((error: unknown) => {
+                                    console.error('Failed to delete user:', error);
+                                });
+                            }}
                             getRoleBadge={getRoleBadge}
                             getStatusBadge={getStatusBadge}
                         />
@@ -441,6 +478,7 @@ const AdminPanel: React.FC = observer(() => {
                 {activeTab === 'servers' && (
                     <div className="servers-management">
                         <h2>🏠 Управление серверами</h2>
+                        {/* eslint-disable-next-line no-use-before-define */}
                         <ServersManagement
                             servers={servers}
                             currentPage={currentPage}
@@ -451,8 +489,16 @@ const AdminPanel: React.FC = observer(() => {
                             onStatusFilterChange={setStatusFilter}
                             onPageChange={setCurrentPage}
                             onBlockServer={openBlockModal}
-                            onUnblockServer={unblockServer}
-                            onDeleteServer={deleteServer}
+                            onUnblockServer={(serverId) => {
+                                unblockServer(serverId).catch((error: unknown) => {
+                                    console.error('Failed to unblock server:', error);
+                                });
+                            }}
+                            onDeleteServer={(serverId) => {
+                                deleteServer(serverId).catch((error: unknown) => {
+                                    console.error('Failed to delete server:', error);
+                                });
+                            }}
                             getServerStatusBadge={getServerStatusBadge}
                         />
                     </div>
@@ -461,6 +507,7 @@ const AdminPanel: React.FC = observer(() => {
                 {activeTab === 'logs' && (
                     <div className="logs-viewer">
                         <h2>📝 Системные логи</h2>
+                        {/* eslint-disable-next-line no-use-before-define */}
                         <LogsViewer logs={logs} />
                     </div>
                 )}
@@ -469,7 +516,11 @@ const AdminPanel: React.FC = observer(() => {
             <BlockServerModal
                 isOpen={blockModal.isOpen}
                 onClose={closeBlockModal}
-                onBlock={(reason) => blockServer(blockModal.serverId, reason)}
+                onBlock={(reason) => {
+                    blockServer(blockModal.serverId, reason).catch((error: unknown) => {
+                        console.error('Failed to block server:', error);
+                    });
+                }}
                 serverName={blockModal.serverName}
             />
         </div>
@@ -653,10 +704,10 @@ const ServersManagement: React.FC<{
                         <tr key={server.id}>
                             <td>{server.id}</td>
                             <td>{server.name}</td>
-                            <td>{server.description || 'Нет описания'}</td>
+                            <td>{server.description ?? 'Нет описания'}</td>
                             <td>{server.ownerId}</td>
-                            <td>{server.channels?.length || 0}</td>
-                            <td>{server.memberCount || 0}</td>
+                            <td>{server.channels?.length ?? 0}</td>
+                            <td>{server.memberCount ?? 0}</td>
                             <td>{new Date(server.createdAt).toLocaleDateString()}</td>
                             <td>{getServerStatusBadge(server.isBlocked)}</td>
                             <td>
@@ -694,8 +745,8 @@ const ServersManagement: React.FC<{
 );
 
 // Компонент просмотра логов
-const LogsViewer: React.FC<{ logs: LogsResponse }> = ({ logs }) => {
-    if (!logs) {
+const LogsViewer: React.FC<{ logs: LogsResponse | null }> = ({ logs }) => {
+    if (logs == null) {
         return <div>Загрузка логов...</div>;
     }
 

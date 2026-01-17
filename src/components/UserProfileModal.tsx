@@ -11,6 +11,7 @@ interface UserProfileModalProps {
     isOwnProfile?: boolean;
 }
 
+/* eslint-disable max-lines-per-function, complexity */
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, user, isOwnProfile = false }) => {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'servers' | 'friends'>('overview');
@@ -55,6 +56,9 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
         });
 
     const getStatusColor = (userStatus?: string) => {
+        if (userStatus == null) {
+            return '#9E9E9E';
+        }
         switch (userStatus) {
             case 'online':
                 return '#4CAF50';
@@ -64,14 +68,15 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                 return '#F44336';
             case 'invisible':
                 return '#9E9E9E';
-            case undefined:
-                return '#9E9E9E';
             default:
                 return '#9E9E9E';
         }
     };
 
     const getStatusText = (userStatus?: string) => {
+        if (userStatus == null) {
+            return t('userProfile.status.offline');
+        }
         switch (userStatus) {
             case 'online':
                 return t('userProfile.status.online');
@@ -81,22 +86,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                 return t('userProfile.status.dnd');
             case 'invisible':
                 return t('userProfile.status.invisible');
-            case undefined:
-                return t('userProfile.status.offline');
             default:
                 return t('userProfile.status.offline');
         }
     };
 
     const getRoleIcon = (role?: string) => {
+        if (role == null) {
+            return '👤';
+        }
         switch (role) {
             case 'admin':
                 return '⚡';
             case 'moderator':
                 return '🛡️';
             case 'member':
-                return '👤';
-            case undefined:
                 return '👤';
             default:
                 return '👤';

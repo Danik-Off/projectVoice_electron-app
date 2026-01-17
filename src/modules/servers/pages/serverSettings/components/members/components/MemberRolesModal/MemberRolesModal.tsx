@@ -3,16 +3,29 @@ import { useTranslation } from 'react-i18next';
 import { serverMembersService } from '../../../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../../../core';
 import type { MemberRolesModalProps } from '../../types';
+import type { Role } from '../../../../../../types/role';
 import './MemberRolesModal.scss';
 
+/* eslint-disable max-lines-per-function -- Complex modal component */
+/* eslint-disable complexity -- Complex modal logic */
 const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, serverId, roles, onClose, onUpdate }) => {
     const { t } = useTranslation();
     const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        if (member?.roles) {
-            const roleIds = member.roles.map((r: any) => (typeof r === 'object' ? r.id : r));
+        if (member?.roles != null && member.roles.length > 0) {
+            const roleIds = member.roles
+                .map((r) => {
+                    if (typeof r === 'object' && r != null && 'id' in r) {
+                        return (r as { id: number }).id;
+                    }
+                    if (typeof r === 'number') {
+                        return r;
+                    }
+                    return 0;
+                })
+                .filter((id) => id > 0);
             setSelectedRoleIds(roleIds);
         } else {
             setSelectedRoleIds([]);
@@ -53,15 +66,19 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
         return null;
     }
 
-    const sortedRoles = [...roles].sort((a, b) => b.position - a.position);
+    const sortedRoles = roles.slice().sort((a: Role, b: Role) => {
+        const aPosition: number = a.position;
+        const bPosition: number = b.position;
+        return bPosition - aPosition;
+    });
 
     return (
         <div className="member-roles-modal-overlay" onClick={onClose}>
             <div className="member-roles-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h3>
-                        {t('serverSettings.manageRolesFor') || 'Управление ролями для'}:{' '}
-                        {member.nickname || member.user?.username}
+                        {t('serverSettings.manageRolesFor') ?? 'Управление ролями для'}:{' '}
+                        {member.nickname ?? member.user?.username ?? 'Unknown'}
                     </h3>
                     <button className="close-btn" onClick={onClose}>
                         ×
@@ -71,16 +88,24 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
                 <div className="modal-content">
                     <div className="member-preview">
                         <img
-                            src={member.user?.profilePicture || '/default-avatar.png'}
-                            alt={member.user?.username}
+                            src={member.user?.profilePicture ?? '/default-avatar.png'}
+                            alt={member.user?.username ?? ''}
                             className="preview-avatar"
                         />
                         <div className="preview-info">
-                            <span className="preview-name" style={{ color: member.highestRole?.color }}>
-                                {member.nickname || member.user?.username}
+                            <span
+                                className="preview-name"
+                                style={{
+                                    color:
+                                        member.highestRole?.color != null && member.highestRole.color.length > 0
+                                            ? member.highestRole.color
+                                            : null
+                                }}
+                            >
+                                {member.nickname ?? member.user?.username ?? 'Unknown'}
                             </span>
-                            {member.nickname ? (
-                                <span className="preview-username">@{member.user?.username}</span>
+                            {member.nickname != null && member.nickname.length > 0 ? (
+                                <span className="preview-username">@{member.user?.username ?? ''}</span>
                             ) : null}
                         </div>
                     </div>
@@ -91,22 +116,29 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
                             <p className="no-roles">{t('serverSettings.noRolesAvailable') || 'Нет доступных ролей'}</p>
                         ) : (
                             <div className="roles-list">
-                                {sortedRoles.map((role) => {
-                                    const isSelected = selectedRoleIds.includes(role.id);
+                                {sortedRoles.map((roleItem: Role) => {
+                                    const roleId: number = roleItem.id;
+                                    const isSelected = selectedRoleIds.includes(roleId);
+                                    const roleColor: string | undefined = roleItem.color;
+                                    const roleName: string = roleItem.name;
+                                    const rolePosition: number = roleItem.position;
                                     return (
-                                        <label key={role.id} className={`role-item ${isSelected ? 'selected' : ''}`}>
+                                        <label
+                                            key={roleId}
+                                            className={`role-item ${isSelected === true ? 'selected' : ''}`}
+                                        >
                                             <input
                                                 type="checkbox"
                                                 checked={isSelected}
-                                                onChange={() => handleToggleRole(role.id)}
+                                                onChange={() => handleToggleRole(roleId)}
                                                 disabled={saving}
                                             />
                                             <span
                                                 className="role-color-indicator"
-                                                style={{ backgroundColor: role.color || '#5865F2' }}
+                                                style={{ backgroundColor: roleColor ?? '#5865F2' }}
                                             />
-                                            <span className="role-name">{role.name}</span>
-                                            <span className="role-position">Позиция: {role.position}</span>
+                                            <span className="role-name">{roleName}</span>
+                                            <span className="role-position">Позиция: {rolePosition}</span>
                                         </label>
                                     );
                                 })}
@@ -119,7 +151,15 @@ const MemberRolesModal: React.FC<MemberRolesModalProps> = ({ isOpen, member, ser
                     <button className="btn-cancel" onClick={onClose} disabled={saving}>
                         {t('common.cancel') || 'Отмена'}
                     </button>
-                    <button className="btn-save" onClick={handleSave} disabled={saving}>
+                    <button
+                        className="btn-save"
+                        onClick={() => {
+                            handleSave().catch((error: unknown) => {
+                                console.error('Error in handleSave:', error);
+                            });
+                        }}
+                        disabled={saving}
+                    >
                         {saving ? t('common.saving') || 'Сохранение...' : t('common.save') || 'Сохранить'}
                     </button>
                 </div>

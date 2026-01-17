@@ -45,10 +45,11 @@ export class PluginManager {
         const sortedPlugins = this.sortPluginsByDependencies();
 
         // Последовательная инициализация необходима для соблюдения зависимостей
-
+        /* eslint-disable no-await-in-loop */
         for (const pluginId of sortedPlugins) {
             await this.initialize(pluginId);
         }
+        /* eslint-enable no-await-in-loop */
     }
 
     /**
@@ -68,12 +69,13 @@ export class PluginManager {
         // Проверяем зависимости
         if (plugin.dependencies) {
             // Последовательная инициализация зависимостей необходима
-
+            /* eslint-disable no-await-in-loop */
             for (const depId of plugin.dependencies) {
                 if (!this.initializedPlugins.has(depId)) {
                     await this.initialize(depId);
                 }
             }
+            /* eslint-enable no-await-in-loop */
         }
 
         try {
@@ -117,10 +119,11 @@ export class PluginManager {
     async destroyAll(): Promise<void> {
         const reversedOrder = [...this.initializationOrder].reverse();
         // Уничтожаем в обратном порядке
-
+        /* eslint-disable no-await-in-loop */
         for (const pluginId of reversedOrder) {
             await this.destroy(pluginId);
         }
+        /* eslint-enable no-await-in-loop */
     }
 
     /**

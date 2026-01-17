@@ -21,6 +21,7 @@ interface SecuritySectionProps {
     onCloseLogoutConfirm: () => void;
 }
 
+/* eslint-disable max-lines-per-function -- Complex security section component */
 const SecuritySection: React.FC<SecuritySectionProps> = observer(
     ({
         passwordForm,
@@ -41,8 +42,8 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
 
         const handlePasswordFieldChange = (field: keyof PasswordForm, value: string) => {
             setPasswordForm({ ...passwordForm, [field]: value });
-            if (validationErrors[field]) {
-                setValidationErrors({ ...validationErrors, [field]: undefined });
+            if (validationErrors[field] != null) {
+                setValidationErrors({ ...validationErrors, [field]: null });
             }
         };
 
@@ -108,11 +109,11 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     type="password"
                                     value={passwordForm.currentPassword}
                                     onChange={(e) => handlePasswordFieldChange('currentPassword', e.target.value)}
-                                    className={`password-input ${validationErrors.currentPassword ? 'error' : ''}`}
+                                    className={`password-input ${validationErrors.currentPassword != null ? 'error' : ''}`}
                                     placeholder={t('settingsPage.profile.security.currentPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.currentPassword ? (
+                                {validationErrors.currentPassword != null ? (
                                     <div className="error-message">{validationErrors.currentPassword}</div>
                                 ) : null}
                             </div>
@@ -125,11 +126,11 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     type="password"
                                     value={passwordForm.newPassword}
                                     onChange={(e) => handlePasswordFieldChange('newPassword', e.target.value)}
-                                    className={`password-input ${validationErrors.newPassword ? 'error' : ''}`}
+                                    className={`password-input ${validationErrors.newPassword != null ? 'error' : ''}`}
                                     placeholder={t('settingsPage.profile.security.newPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.newPassword ? (
+                                {validationErrors.newPassword != null ? (
                                     <div className="error-message">{validationErrors.newPassword}</div>
                                 ) : null}
                             </div>
@@ -144,11 +145,11 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                     type="password"
                                     value={passwordForm.confirmPassword}
                                     onChange={(e) => handlePasswordFieldChange('confirmPassword', e.target.value)}
-                                    className={`password-input ${validationErrors.confirmPassword ? 'error' : ''}`}
+                                    className={`password-input ${validationErrors.confirmPassword != null ? 'error' : ''}`}
                                     placeholder={t('settingsPage.profile.security.confirmPasswordPlaceholder')}
                                     disabled={isPasswordLoading}
                                 />
-                                {validationErrors.confirmPassword ? (
+                                {validationErrors.confirmPassword != null ? (
                                     <div className="error-message">{validationErrors.confirmPassword}</div>
                                 ) : null}
                             </div>

@@ -10,7 +10,7 @@ export interface SettingGroupProps {
 
 const SettingGroup: React.FC<SettingGroupProps> = ({ label, description, children, className = '' }) => (
     <div className={`ui-setting-group ${className}`}>
-        {label ? (
+        {label != null && label !== '' ? (
             <div className="ui-setting-group__header">
                 <label className="ui-setting-group__label">
                     <span>{label}</span>
@@ -19,7 +19,9 @@ const SettingGroup: React.FC<SettingGroupProps> = ({ label, description, childre
         ) : null}
         <div className="ui-setting-group__control">
             {children}
-            {description ? <div className="ui-setting-group__description">{description}</div> : null}
+            {description != null && description !== '' ? (
+                <div className="ui-setting-group__description">{description}</div>
+            ) : null}
         </div>
     </div>
 );

@@ -2,9 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { serverStore } from '../../../../modules/servers';
+import { serverStore, serverMembersService } from '../../../../modules/servers';
 import { authStore } from '../../../../core';
-import { serverMembersService } from '../../../../modules/servers';
 import {
     ServerSettingsHeader,
     ServerSettingsNavigation,
@@ -15,9 +14,9 @@ import {
     SecuritySettings,
     BansSettings,
     IntegrationsSettings,
-    DangerSettings
+    DangerSettings,
+    type ServerSettingsTab
 } from './components';
-import type { ServerSettingsTab } from './components';
 
 import './ServerSettings.scss';
 
@@ -33,28 +32,29 @@ const ServerSettings: React.FC = observer(() => {
     const server = serverStore.currentServer;
 
     const loadServerData = useCallback(async () => {
-        if (!serverId) {
+        if (serverId == null || serverId.length === 0) {
             return;
         }
 
         setLoading(true);
         try {
+            const serverIdNum = parseInt(serverId, 10);
             // Загружаем данные сервера только если они еще не загружены или это другой сервер
-            if (!serverStore.currentServer || serverStore.currentServer.id !== parseInt(serverId)) {
-                await serverStore.fetchServerById(parseInt(serverId));
+            if (serverStore.currentServer == null || serverStore.currentServer.id !== serverIdNum) {
+                await serverStore.fetchServerById(serverIdNum);
             }
 
             // Загружаем права текущего пользователя на сервере
-            if (currentUser?.id) {
+            if (currentUser?.id != null && currentUser.id > 0) {
                 try {
-                    const permissionsData = await serverMembersService.getCurrentMemberPermissions(parseInt(serverId));
-                    setCurrentUserPermissions(permissionsData.totalPermissions || '0');
+                    const permissionsData = await serverMembersService.getCurrentMemberPermissions(serverIdNum);
+                    setCurrentUserPermissions(permissionsData.totalPermissions ?? '0');
                 } catch (error) {
                     console.error('Error loading user permissions:', error);
                     // Fallback: загружаем роль из списка участников
-                    const members = await serverMembersService.getServerMembers(parseInt(serverId));
+                    const members = await serverMembersService.getServerMembers(serverIdNum);
                     const userMember = members.find((member) => member.userId === currentUser.id);
-                    setCurrentUserRole(userMember?.role || 'member');
+                    setCurrentUserRole(userMember?.role ?? 'member');
                 }
             }
         } catch (error) {
@@ -65,7 +65,9 @@ const ServerSettings: React.FC = observer(() => {
     }, [serverId, currentUser?.id]);
 
     useEffect(() => {
-        loadServerData();
+        loadServerData().catch((error: unknown) => {
+            console.error('Error in loadServerData effect:', error);
+        });
     }, [loadServerData]);
 
     const renderTabContent = () => {

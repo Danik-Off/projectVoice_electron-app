@@ -66,7 +66,11 @@ const ProfileSettings: React.FC = observer(() => {
                     showEditProfile={showEditProfile}
                     isLoading={isLoading}
                     onEdit={handleEdit}
-                    onSave={handleSave}
+                    onSave={() => {
+                        handleSave().catch((saveError: unknown) => {
+                            console.error('Error saving profile:', saveError);
+                        });
+                    }}
                     onCancel={handleCancel}
                 />
 
@@ -79,7 +83,11 @@ const ProfileSettings: React.FC = observer(() => {
                     showLogoutConfirm={showLogoutConfirm}
                     isPasswordLoading={isPasswordLoading}
                     onChangePassword={handleChangePassword}
-                    onPasswordSave={handlePasswordSave}
+                    onPasswordSave={() => {
+                        handlePasswordSave().catch((passwordError: unknown) => {
+                            console.error('Error saving password:', passwordError);
+                        });
+                    }}
                     onPasswordCancel={handlePasswordCancel}
                     onLogout={handleLogout}
                     onConfirmLogout={confirmLogout}

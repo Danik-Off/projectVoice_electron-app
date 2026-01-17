@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import React, { useState, useRef, useEffect } from 'react';
 import { observer } from 'mobx-react';
 import { messageStore } from '../store/messageStore';
@@ -29,21 +30,14 @@ const MessageInput: React.FC = observer(() => {
         }
 
         // Сброс таймера печати
-        if (typingTimeoutRef.current) {
+        if (typingTimeoutRef.current != null) {
             clearTimeout(typingTimeoutRef.current);
         }
 
         if (value.trim()) {
-            typingTimeoutRef.current = setTimeout(() => {
+            typingTimeoutRef.current = window.setTimeout(() => {
                 setIsTyping(false);
             }, 3000);
-        }
-    };
-
-    const handleKeyDown = async (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            await sendMessage();
         }
     };
 
@@ -63,7 +57,7 @@ const MessageInput: React.FC = observer(() => {
 
             // Сброс индикатора печати
             setIsTyping(false);
-            if (typingTimeoutRef.current) {
+            if (typingTimeoutRef.current != null) {
                 clearTimeout(typingTimeoutRef.current);
             }
         } catch (error) {
@@ -71,15 +65,26 @@ const MessageInput: React.FC = observer(() => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage().catch((error: unknown) => {
+                console.error('Send message error:', error);
+            });
+        }
+    };
+
     const handleSendClick = () => {
-        sendMessage();
+        sendMessage().catch((error: unknown) => {
+            console.error('Send message error:', error);
+        });
     };
 
     useEffect(
         () =>
             // Очистка таймера при размонтировании
             () => {
-                if (typingTimeoutRef.current) {
+                if (typingTimeoutRef.current != null) {
                     clearTimeout(typingTimeoutRef.current);
                 }
             },

@@ -57,12 +57,14 @@ export interface BanInfo {
 }
 
 class ServerMembersService {
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
         return apiClient(`/serverMembers/${serverId}/members`, {
             method: 'GET'
         });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
         return apiClient(
             `/serverMembers/${serverId}/members/${memberId}`,
@@ -79,6 +81,7 @@ class ServerMembersService {
         });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
         return apiClient(
             `/serverMembers/${serverId}/members`,
@@ -92,6 +95,7 @@ class ServerMembersService {
     /**
      * Получить права текущего пользователя на сервере
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getCurrentMemberPermissions(serverId: number): Promise<CurrentMemberPermissions> {
         return apiClient(`/serverMembers/${serverId}/members/me`, {
             method: 'GET'
@@ -123,6 +127,7 @@ class ServerMembersService {
     /**
      * Обновить голосовые настройки участника (Mute/Deafen)
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateVoiceSettings(
         serverId: number,
         memberId: number,
@@ -141,6 +146,7 @@ class ServerMembersService {
     /**
      * Обновить роли участника
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateMemberRoles(serverId: number, memberId: number, roleIds: number[]): Promise<ServerMember> {
         return apiClient(
             `/serverMembers/${serverId}/members/${memberId}/roles`,
@@ -154,6 +160,7 @@ class ServerMembersService {
     /**
      * Получить список забаненных пользователей
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getBans(serverId: number): Promise<BanInfo[]> {
         return apiClient(`/servers/${serverId}/bans`, {
             method: 'GET'

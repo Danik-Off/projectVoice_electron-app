@@ -3,6 +3,7 @@ import { eventBus, MESSAGING_COMMANDS, CHANNELS_EVENTS } from '../../../../../..
 import './MessageInput.scss';
 import type { ChannelSelectedEvent } from '../../../../../../core/events/events';
 
+/* eslint-disable max-lines-per-function -- Complex component with multiple responsibilities */
 const MessageInput: React.FC = () => {
     const [message, setMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -42,26 +43,20 @@ const MessageInput: React.FC = () => {
         }
 
         // Сброс таймера печати
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
+        const timeoutId = typingTimeoutRef.current;
+        if (timeoutId != null && timeoutId > 0) {
+            clearTimeout(timeoutId);
         }
 
-        if (value.trim()) {
+        if (value.trim().length > 0) {
             typingTimeoutRef.current = setTimeout(() => {
                 setIsTyping(false);
             }, 3000);
         }
     };
 
-    const handleKeyDown = async (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            await sendMessage();
-        }
-    };
-
     const sendMessage = () => {
-        if (!message.trim() || !currentChannelId) {
+        if (message.trim().length === 0 || currentChannelId == null || currentChannelId === 0) {
             return;
         }
 
@@ -80,8 +75,16 @@ const MessageInput: React.FC = () => {
 
         // Сброс индикатора печати
         setIsTyping(false);
-        if (typingTimeoutRef.current) {
-            clearTimeout(typingTimeoutRef.current);
+        const timeoutId = typingTimeoutRef.current;
+        if (timeoutId != null && timeoutId > 0) {
+            clearTimeout(timeoutId);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
         }
     };
 
@@ -93,8 +96,9 @@ const MessageInput: React.FC = () => {
         () =>
             // Очистка таймера при размонтировании
             () => {
-                if (typingTimeoutRef.current) {
-                    clearTimeout(typingTimeoutRef.current);
+                const timeoutId = typingTimeoutRef.current;
+                if (timeoutId != null && timeoutId > 0) {
+                    clearTimeout(timeoutId);
                 }
             },
         []

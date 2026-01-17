@@ -17,10 +17,12 @@ export const adminModule: IModule = {
             admin: true
         }
     ],
-    async initialize() {
+    initialize() {
         console.warn('Admin module initialized');
+        return Promise.resolve();
     },
-    async destroy() {
+    destroy() {
         console.warn('Admin module destroyed');
+        return Promise.resolve();
     }
 };

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function -- Complex privacy settings component */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

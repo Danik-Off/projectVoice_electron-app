@@ -95,12 +95,15 @@ class AuthStore {
                 throw new Error('Invalid response from server: user data missing');
             }
 
-            this.user = data.user as typeof this.user;
-            this.token = data.token;
+            const tokenValue = data.token as string;
+            const userData = data.user as typeof this.user;
+
+            this.user = userData;
+            this.token = tokenValue;
 
             // Сохранение токена и данных пользователя в localStorage
-            saveToken(data.token);
-            saveUser(data.user as typeof this.user);
+            saveToken(tokenValue);
+            saveUser(userData);
 
             console.warn('Login successful - token and user data saved to localStorage, isAuthenticated:', true);
 
@@ -181,8 +184,9 @@ class AuthStore {
             }
 
             // Сначала сохраняем токен, чтобы последующие запросы (getMe) могли его использовать
-            this.token = data.token;
-            saveToken(data.token);
+            const tokenValue = data.token as string;
+            this.token = tokenValue;
+            saveToken(tokenValue);
 
             // Если в ответе регистрации нет данных пользователя, получаем их через getMe
             // Если они есть (data.user), используем их

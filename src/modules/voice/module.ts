@@ -16,10 +16,12 @@ export const voiceModule: IModule = {
             protected: true
         }
     ],
+    // eslint-disable-next-line require-await -- No await needed
     async initialize() {
         console.warn('Voice module initialized');
         // Здесь можно добавить инициализацию WebRTC, подключение к сокетам и т.д.
     },
+    // eslint-disable-next-line require-await -- No await needed
     async destroy() {
         console.warn('Voice module destroyed');
         // Очистка WebRTC соединений, отключение от сокетов

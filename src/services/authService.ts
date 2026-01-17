@@ -21,6 +21,7 @@ export const authService = {
         );
         return data;
     },
+    // eslint-disable-next-line require-await -- Returns promise directly
     getMe: async () =>
         apiClient('/auth/me', {
             method: 'GET'

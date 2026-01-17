@@ -14,10 +14,10 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
     const navigate = useNavigate();
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    const handleDeleteServer = async () => {
+    const handleDeleteServer = () => {
         try {
             const server = serverStore.currentServer;
-            if (!server?.id) {
+            if (server?.id == null || server.id === 0) {
                 return;
             }
 
@@ -25,7 +25,9 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
             notificationStore.addNotification(t('serverSettings.serverDeleted'), 'success', 3000);
 
             // Переходим на главную страницу
-            navigate('/');
+            Promise.resolve(navigate('/')).catch((error: unknown) => {
+                console.error('Error navigating:', error);
+            });
         } catch (error) {
             console.error('Error deleting server:', error);
             notificationStore.addNotification(t('serverSettings.deleteError'), 'error', 5000);
@@ -64,8 +66,8 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
 
                     <div className="card-content">
                         <div className="danger-actions">
-                            {dangerActions.map((action, index) => (
-                                <div key={index} className="danger-item">
+                            {dangerActions.map((action) => (
+                                <div key={action.title} className="danger-item">
                                     <div className="danger-icon">{action.icon}</div>
                                     <div className="danger-content">
                                         <h4 className="danger-title">{action.title}</h4>
@@ -97,7 +99,12 @@ const DangerSettings: React.FC<DangerSettingsProps> = observer(() => {
                                 <button className="cancel-button" onClick={() => setShowDeleteConfirm(false)}>
                                     {t('common.cancel')}
                                 </button>
-                                <button className="danger-button" onClick={handleDeleteServer}>
+                                <button
+                                    className="danger-button"
+                                    onClick={() => {
+                                        handleDeleteServer();
+                                    }}
+                                >
                                     {t('serverSettings.deleteServer')}
                                 </button>
                             </div>

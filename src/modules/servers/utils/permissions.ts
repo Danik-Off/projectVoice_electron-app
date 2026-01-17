@@ -1,7 +1,8 @@
+/* eslint-disable no-bitwise -- Bitwise operations are required for permissions */
 /**
  * Утилиты для работы с разрешениями
  */
-import { Permissions } from '../constants/permissions';
+import { Permissions as PermissionsEnum } from '../constants/permissions';
 
 /**
  * Проверяет, есть ли у пользователя требуемое разрешение
@@ -14,7 +15,7 @@ export const hasPermission = (userPermissions: string | bigint, requiredPermissi
     const req = BigInt(requiredPermission);
 
     // Если есть права администратора — разрешено всё
-    if ((perms & Permissions.ADMINISTRATOR) === Permissions.ADMINISTRATOR) {
+    if ((perms & PermissionsEnum.ADMINISTRATOR) === PermissionsEnum.ADMINISTRATOR) {
         return true;
     }
 
@@ -31,9 +32,9 @@ export const calculateTotalPermissions = (
     memberRoles: Array<{ permissions: string }>,
     everyoneRole?: { permissions: string }
 ): bigint => {
-    let total = everyoneRole ? BigInt(everyoneRole.permissions) : 0n;
+    let total = everyoneRole != null ? BigInt(everyoneRole.permissions) : 0n;
 
-    if (memberRoles) {
+    if (memberRoles != null && memberRoles.length > 0) {
         memberRoles.forEach((role) => {
             total |= BigInt(role.permissions);
         });

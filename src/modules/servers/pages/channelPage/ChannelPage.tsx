@@ -1,13 +1,13 @@
+import React, { useEffect, useState } from 'react';
 import { Outlet, useParams, useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react';
 import './ChannelPage.scss'; // Assuming you have a separate CSS file for styling
 import ChannelSidebar from './components/channelSidebar/ChannelSidebar';
 import VoiceControls from './components/channelSidebar/components/voiceControls/VoiceControls';
 import BlockedServerModal from '../../../../components/BlockedServerModal';
-import { useEffect, useState } from 'react';
 import { serverStore } from '../../../../modules/servers';
 import { eventBus, VOICE_EVENTS, notificationStore } from '../../../../core';
 import Spinner from '../../../../components/spinner/Spinner';
-import { observer } from 'mobx-react';
 import type { VoiceChannelConnectedEvent } from '../../../../core/events/events';
 
 const LoadingState: React.FC = () => (
@@ -47,20 +47,18 @@ const Page = observer(() => {
         };
     }, []);
 
+    if (serverStore.loading) {
+        return <LoadingState />;
+    }
+
     return (
-        <>
-            {!serverStore.loading ? (
-                <div className={`channel-page ${isVoiceConnected ? 'with-voice-controls' : ''}`}>
-                    <ChannelSidebar />
-                    <div className="channel-content">
-                        <Outlet />
-                    </div>
-                    {isVoiceConnected ? <VoiceControls /> : null}
-                </div>
-            ) : (
-                <LoadingState />
-            )}
-        </>
+        <div className={`channel-page ${isVoiceConnected ? 'with-voice-controls' : ''}`}>
+            <ChannelSidebar />
+            <div className="channel-content">
+                <Outlet />
+            </div>
+            {isVoiceConnected ? <VoiceControls /> : null}
+        </div>
     );
 });
 
@@ -70,17 +68,22 @@ const ChannelPage = () => {
     const [showBlockedModal, setShowBlockedModal] = useState(false);
 
     useEffect(() => {
-        if (serverId) {
+        if (serverId != null && serverId !== '') {
             const id = Number(serverId);
             // Всегда загружаем сервер при изменении serverId, чтобы убедиться, что данные актуальны
-            serverStore.fetchServerById(id).catch((error) => {
+            serverStore.fetchServerById(id).catch((error: unknown) => {
                 console.error('Error fetching server:', error);
                 notificationStore.addNotification('Ошибка загрузки сервера', 'error');
-                navigate('/');
+                const result = navigate('/');
+                if (result instanceof Promise) {
+                    result.catch((navError: unknown) => {
+                        console.error('Navigation error:', navError);
+                    });
+                }
             });
         } else {
             // Если serverId отсутствует, очищаем currentServer
-            if (serverStore.currentServer) {
+            if (serverStore.currentServer != null) {
                 serverStore.currentServer = null;
             }
         }
@@ -88,16 +91,18 @@ const ChannelPage = () => {
 
     // Проверяем, заблокирован ли сервер
     useEffect(() => {
-        if (serverStore.currentServer?.isBlocked) {
-            setShowBlockedModal(true);
-        } else {
-            setShowBlockedModal(false);
-        }
-    }, [serverStore.currentServer]);
+        const isBlocked = serverStore.currentServer?.isBlocked === true;
+        setShowBlockedModal(isBlocked);
+    }, []);
 
     const handleBlockedModalClose = () => {
         setShowBlockedModal(false);
-        navigate('/'); // Перенаправляем на главную страницу
+        const result = navigate('/'); // Перенаправляем на главную страницу
+        if (result instanceof Promise) {
+            result.catch((error: unknown) => {
+                console.error('Navigation error:', error);
+            });
+        }
     };
 
     return (
@@ -106,7 +111,7 @@ const ChannelPage = () => {
             <BlockedServerModal
                 isOpen={showBlockedModal}
                 onClose={handleBlockedModalClose}
-                serverName={serverStore.currentServer?.name || ''}
+                serverName={serverStore.currentServer?.name ?? ''}
                 reason={serverStore.currentServer?.blockReason}
                 blockedAt={serverStore.currentServer?.blockedAt}
                 blockedBy={serverStore.currentServer?.blockedByUser?.username}

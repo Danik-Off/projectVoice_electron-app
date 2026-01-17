@@ -6,13 +6,13 @@ import { audioSettingsStore as AudioSettingsStore } from '../../../core';
  * Хук для управления голосовыми комнатами
  */
 export const useVoice = () => {
-    const joinRoom = useCallback(async (roomId: string, roomName: string) => {
+    const joinRoom = useCallback((roomId: string, roomName: string) => {
         try {
-            await RoomStore.connectToRoom(Number(roomId), roomName);
+            RoomStore.connectToRoom(Number(roomId), roomName);
             return { success: true };
-        } catch (error) {
-            console.error('Error joining voice room:', error);
-            return { success: false, error };
+        } catch (joinError: unknown) {
+            console.error('Error joining voice room:', joinError);
+            return { success: false, error: joinError };
         }
     }, []);
 
@@ -25,7 +25,9 @@ export const useVoice = () => {
     }, []);
 
     const toggleDeaf = useCallback(() => {
-        AudioSettingsStore.toggleSpeakerMute();
+        AudioSettingsStore.toggleSpeakerMute().catch((toggleError: unknown) => {
+            console.error('Error toggling speaker mute:', toggleError);
+        });
     }, []);
 
     return {
@@ -54,28 +56,40 @@ export const useAudioSettings = () => {
         AudioSettingsStore.setVolume(volume);
     }, []);
 
-    const updateMicrophone = useCallback(async (deviceId: string) => {
-        await AudioSettingsStore.setMicrophone(deviceId);
+    const updateMicrophone = useCallback((deviceId: string) => {
+        AudioSettingsStore.setMicrophone(deviceId).catch((microphoneError: unknown) => {
+            console.error('Error setting microphone:', microphoneError);
+        });
     }, []);
 
     const updateSpeaker = useCallback((deviceId: string) => {
-        AudioSettingsStore.setSpeaker(deviceId);
+        AudioSettingsStore.setSpeaker(deviceId).catch((speakerError: unknown) => {
+            console.error('Error setting speaker:', speakerError);
+        });
     }, []);
 
     const toggleEchoCancellation = useCallback(() => {
-        AudioSettingsStore.setEchoCancellation(!AudioSettingsStore.echoCancellation);
+        AudioSettingsStore.setEchoCancellation(!AudioSettingsStore.echoCancellation).catch((echoError: unknown) => {
+            console.error('Error setting echo cancellation:', echoError);
+        });
     }, []);
 
     const toggleNoiseSuppression = useCallback(() => {
-        AudioSettingsStore.setNoiseSuppression(!AudioSettingsStore.noiseSuppression);
+        AudioSettingsStore.setNoiseSuppression(!AudioSettingsStore.noiseSuppression).catch((noiseError: unknown) => {
+            console.error('Error setting noise suppression:', noiseError);
+        });
     }, []);
 
     const applyAllSettings = useCallback(() => {
-        AudioSettingsStore.applyAllSettings();
+        AudioSettingsStore.applyAllSettings().catch((applyError: unknown) => {
+            console.error('Error applying settings:', applyError);
+        });
     }, []);
 
     const resetToDefaults = useCallback(() => {
-        AudioSettingsStore.resetToDefaults();
+        AudioSettingsStore.resetToDefaults().catch((resetError: unknown) => {
+            console.error('Error resetting settings:', resetError);
+        });
     }, []);
 
     return {

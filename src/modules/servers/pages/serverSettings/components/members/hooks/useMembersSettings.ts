@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, type MouseEvent as ReactMouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { serverMembersService, serverStore, roleService } from '../../../../../';
+import { serverMembersService, serverStore, roleService, type ServerMember } from '../../../../../';
 import { notificationStore, authStore } from '../../../../../../../core';
-import type { ServerMember } from '../../../../../';
 import type { Role } from '../../../../../types/role';
 import type { SortOption, FilterOption, ContextMenuState } from '../types';
 import { processMembers, groupMembersByRole } from '../utils/membersUtils';
 
+/* eslint-disable max-lines-per-function -- Complex hook with multiple responsibilities */
 export const useMembersSettings = (currentUserPermissions: string | bigint = 0n) => {
     const { t } = useTranslation();
     const [members, setMembers] = useState<ServerMember[]>([]);
@@ -22,7 +22,7 @@ export const useMembersSettings = (currentUserPermissions: string | bigint = 0n)
     const currentUser = authStore.user;
 
     const loadMembers = useCallback(async () => {
-        if (!server?.id) {
+        if (server?.id == null) {
             return;
         }
 
@@ -42,7 +42,7 @@ export const useMembersSettings = (currentUserPermissions: string | bigint = 0n)
     }, [server?.id, t]);
 
     const loadRoles = useCallback(async () => {
-        if (!server?.id) {
+        if (server?.id == null) {
             return;
         }
 
@@ -57,8 +57,12 @@ export const useMembersSettings = (currentUserPermissions: string | bigint = 0n)
     }, [server?.id, t]);
 
     useEffect(() => {
-        loadMembers();
-        loadRoles();
+        loadMembers().catch((error: unknown) => {
+            console.error('Error in loadMembers effect:', error);
+        });
+        loadRoles().catch((error: unknown) => {
+            console.error('Error in loadRoles effect:', error);
+        });
     }, [loadMembers, loadRoles]);
 
     const filteredAndSortedMembers = useMemo(
@@ -72,11 +76,11 @@ export const useMembersSettings = (currentUserPermissions: string | bigint = 0n)
     );
 
     const handleContextMenu = useCallback(
-        (e: React.MouseEvent, member: ServerMember) => {
+        (e: ReactMouseEvent<HTMLElement>, member: ServerMember) => {
             e.preventDefault();
             e.stopPropagation();
 
-            if (member.userId === currentUser?.id || !server?.id) {
+            if (member.userId === currentUser?.id || server?.id == null) {
                 return;
             }
 
@@ -93,7 +97,9 @@ export const useMembersSettings = (currentUserPermissions: string | bigint = 0n)
     }, []);
 
     const handleMemberUpdate = useCallback(() => {
-        loadMembers();
+        loadMembers().catch((error: unknown) => {
+            console.error('Error in handleMemberUpdate:', error);
+        });
         setContextMenu(null);
     }, [loadMembers]);
 

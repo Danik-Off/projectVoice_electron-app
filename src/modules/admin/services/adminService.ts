@@ -111,78 +111,78 @@ export interface UpdateUserRequest {
 }
 
 class AdminService {
-    async getStats(): Promise<AdminStats> {
+    getStats(): Promise<AdminStats> {
         return apiClient('/admin/stats', { method: 'GET' });
     }
 
-    async getUsers(filters: UserFilters = {}): Promise<UsersResponse> {
+    getUsers(filters: UserFilters = {}): Promise<UsersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) {
+        if (filters.page != null && filters.page !== 0) {
             params.append('page', filters.page.toString());
         }
-        if (filters.limit) {
+        if (filters.limit != null && filters.limit !== 0) {
             params.append('limit', filters.limit.toString());
         }
-        if (filters.search) {
+        if (filters.search != null && filters.search !== '') {
             params.append('search', filters.search);
         }
-        if (filters.role) {
+        if (filters.role != null && filters.role !== '') {
             params.append('role', filters.role);
         }
-        if (filters.status) {
+        if (filters.status != null && filters.status !== '') {
             params.append('status', filters.status);
         }
 
         return apiClient(`/admin/users?${params.toString()}`, { method: 'GET' });
     }
 
-    async getUser(userId: number): Promise<User> {
+    getUser(userId: number): Promise<User> {
         return apiClient(`/admin/users/${userId}`, { method: 'GET' });
     }
 
-    async updateUser(userId: number, updates: UpdateUserRequest): Promise<{ message: string; user: User }> {
+    updateUser(userId: number, updates: UpdateUserRequest): Promise<{ message: string; user: User }> {
         return apiClient(`/admin/users/${userId}`, { method: 'PUT' }, updates);
     }
 
-    async deleteUser(userId: number): Promise<{ message: string }> {
+    deleteUser(userId: number): Promise<{ message: string }> {
         return apiClient(`/admin/users/${userId}`, { method: 'DELETE' });
     }
 
-    async getServers(filters: ServerFilters = {}): Promise<ServersResponse> {
+    getServers(filters: ServerFilters = {}): Promise<ServersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) {
+        if (filters.page != null && filters.page !== 0) {
             params.append('page', filters.page.toString());
         }
-        if (filters.limit) {
+        if (filters.limit != null && filters.limit !== 0) {
             params.append('limit', filters.limit.toString());
         }
-        if (filters.search) {
+        if (filters.search != null && filters.search !== '') {
             params.append('search', filters.search);
         }
-        if (filters.status) {
+        if (filters.status != null && filters.status !== '') {
             params.append('status', filters.status);
         }
 
         return apiClient(`/admin/servers?${params.toString()}`, { method: 'GET' });
     }
 
-    async getServer(serverId: number): Promise<Server> {
+    getServer(serverId: number): Promise<Server> {
         return apiClient(`/admin/servers/${serverId}`, { method: 'GET' });
     }
 
-    async blockServer(serverId: number, data: BlockServerRequest): Promise<{ message: string; server: Server }> {
+    blockServer(serverId: number, data: BlockServerRequest): Promise<{ message: string; server: Server }> {
         return apiClient(`/admin/servers/${serverId}/block`, { method: 'POST' }, data);
     }
 
-    async unblockServer(serverId: number): Promise<{ message: string; server: Server }> {
+    unblockServer(serverId: number): Promise<{ message: string; server: Server }> {
         return apiClient(`/admin/servers/${serverId}/unblock`, { method: 'POST' });
     }
 
-    async deleteServer(serverId: number): Promise<{ message: string }> {
+    deleteServer(serverId: number): Promise<{ message: string }> {
         return apiClient(`/admin/servers/${serverId}`, { method: 'DELETE' });
     }
 
-    async getLogs(): Promise<LogsResponse> {
+    getLogs(): Promise<LogsResponse> {
         return apiClient('/admin/logs', { method: 'GET' });
     }
 }

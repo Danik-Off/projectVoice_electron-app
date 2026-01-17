@@ -9,9 +9,9 @@ import {
     AppearanceSettings,
     NotificationsSettings,
     PrivacySettings,
-    AboutSettings
+    AboutSettings,
+    type SettingsTab
 } from '../components/components';
-import type { SettingsTab } from '../components/components';
 import AudioSettings from '../components/components/audioSettings/AudioSettings';
 
 const Settings = observer(() => {

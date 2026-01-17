@@ -44,6 +44,6 @@ export const serverService = {
             method: 'DELETE'
         });
 
-        return response || { success: true };
+        return response ?? { success: true };
     }
 };

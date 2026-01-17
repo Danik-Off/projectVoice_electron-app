@@ -2,7 +2,7 @@
  * Root Router Configuration
  * Создает роутер приложения на основе зарегистрированных модулей
  */
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { moduleManager } from '../core';
 import { ProtectedRoute, AdminRoute } from '../modules/auth';
 import Layout from '../app/layout/Main';
@@ -15,6 +15,7 @@ import NotFound from '../app/routes/NotFound';
  * Создает роутер приложения на основе модулей
  * Должен вызываться ПОСЛЕ инициализации модулей (initializeApp)
  */
+/* eslint-disable max-lines-per-function -- Router configuration requires many routes */
 export function createRouter() {
     // Получаем все маршруты из зарегистрированных модулей
     const moduleRoutes = moduleManager.getRoutes();
@@ -149,17 +150,18 @@ export function createRouter() {
 
                     return {
                         path: cleanPath,
-                        element: route.admin ? (
-                            <AdminRoute>
+                        element:
+                            route.admin === true ? (
+                                <AdminRoute>
+                                    <RouteComponent />
+                                </AdminRoute>
+                            ) : route.protected !== false ? (
+                                <ProtectedRoute>
+                                    <RouteComponent />
+                                </ProtectedRoute>
+                            ) : (
                                 <RouteComponent />
-                            </AdminRoute>
-                        ) : route.protected !== false ? (
-                            <ProtectedRoute>
-                                <RouteComponent />
-                            </ProtectedRoute>
-                        ) : (
-                            <RouteComponent />
-                        )
+                            )
                     };
                 }),
 

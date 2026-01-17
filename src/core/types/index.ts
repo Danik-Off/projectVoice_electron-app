@@ -2,6 +2,8 @@
  * Базовые типы ядра приложения
  */
 
+import type React from 'react';
+
 export interface IPlugin {
     id: string;
     name: string;

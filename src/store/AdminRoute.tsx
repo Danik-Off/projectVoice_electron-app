@@ -83,7 +83,7 @@ const AdminRoute: React.FC<AdminRouteProps> = observer(({ children }) => {
         );
     }
 
-    return <>{children}</>;
+    return children;
 });
 
 export default AdminRoute;

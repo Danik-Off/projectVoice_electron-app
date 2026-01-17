@@ -9,10 +9,12 @@ export const channelsModule: IModule = {
     version: '1.0.0',
     dependencies: ['auth', 'servers'],
     routes: [],
-    async initialize() {
+    initialize() {
         console.warn('Channels module initialized');
+        return Promise.resolve();
     },
-    async destroy() {
+    destroy() {
         console.warn('Channels module destroyed');
+        return Promise.resolve();
     }
 };

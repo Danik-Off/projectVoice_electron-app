@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function -- Complex about settings component */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import versionInfo from '../../../../../version.json';

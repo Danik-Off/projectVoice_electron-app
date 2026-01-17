@@ -15,7 +15,7 @@ const ChannelsSettings: React.FC<ChannelsSettingsProps> = () => {
     // Подписка на события загрузки каналов
     useEffect(() => {
         const unsubscribe = eventBus.on<ChannelsLoadedEvent>(CHANNELS_EVENTS.CHANNELS_LOADED, (data) => {
-            if (data) {
+            if (data != null && typeof data === 'object' && 'channels' in data) {
                 setChannels(data.channels as Channel[]);
             }
         });

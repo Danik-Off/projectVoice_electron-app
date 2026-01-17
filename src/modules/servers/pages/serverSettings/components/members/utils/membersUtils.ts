@@ -1,19 +1,19 @@
-import type { ServerMember } from '../../../../../../modules/servers';
-import type { Role } from '../../../../types/role';
+import type { ServerMember } from '../../../../../services/serverMembersService';
+import type { Role } from '../../../../../types/role';
 import type { SortOption, FilterOption, GroupedMembers } from '../types';
 
 /**
  * Фильтрует участников по поисковому запросу
  */
 export const filterBySearch = (members: ServerMember[], query: string): ServerMember[] => {
-    if (!query.trim()) {
+    if (query.trim().length === 0) {
         return members;
     }
 
     const lowerQuery = query.toLowerCase();
     return members.filter((member) => {
-        const username = member.user?.username?.toLowerCase() || '';
-        const nickname = member.nickname?.toLowerCase() || '';
+        const username: string = member.user?.username?.toLowerCase() ?? '';
+        const nickname: string = member.nickname?.toLowerCase() ?? '';
         return username.includes(lowerQuery) || nickname.includes(lowerQuery);
     });
 };
@@ -29,32 +29,70 @@ export const filterByRole = (members: ServerMember[], filter: FilterOption): Ser
 };
 
 /**
+ * Получает цвет роли по умолчанию
+ */
+const getDefaultRoleColor = (roleName: string): string => {
+    const defaultColors: Record<string, string> = {
+        owner: '#faa61a',
+        admin: '#ed4245',
+        moderator: '#5865f2'
+    };
+    return defaultColors[roleName] ?? '#5865f2';
+};
+
+/**
  * Сортирует участников
  */
+/* eslint-disable complexity -- Complex sorting logic with multiple cases */
 export const sortMembers = (members: ServerMember[], sortBy: SortOption): ServerMember[] => {
     const sorted = [...members];
 
     sorted.sort((a, b) => {
         switch (sortBy) {
             case 'name': {
-                const nameA = (a.nickname || a.user?.username || '').toLowerCase();
-                const nameB = (b.nickname || b.user?.username || '').toLowerCase();
+                const aNickname: string | undefined = a.nickname;
+                const aUsername: string | undefined = a.user?.username;
+                const nameA: string = (
+                    aNickname != null && aNickname.length > 0 ? aNickname : (aUsername ?? '')
+                ).toLowerCase();
+                const bNickname: string | undefined = b.nickname;
+                const bUsername: string | undefined = b.user?.username;
+                const nameB: string = (
+                    bNickname != null && bNickname.length > 0 ? bNickname : (bUsername ?? '')
+                ).toLowerCase();
                 return nameA.localeCompare(nameB);
             }
             case 'role': {
                 const roleOrder: Record<string, number> = { owner: 0, admin: 1, moderator: 2, member: 3 };
-                const roleA = roleOrder[a.role] ?? 4;
-                const roleB = roleOrder[b.role] ?? 4;
+                const aRole: 'member' | 'moderator' | 'admin' | 'owner' = a.role;
+                const bRole: 'member' | 'moderator' | 'admin' | 'owner' = b.role;
+                const roleA: number = roleOrder[aRole] ?? 4;
+                const roleB: number = roleOrder[bRole] ?? 4;
                 if (roleA !== roleB) {
                     return roleA - roleB;
                 }
                 // Если роли одинаковые, сортируем по имени
-                const nameA = (a.nickname || a.user?.username || '').toLowerCase();
-                const nameB = (b.nickname || b.user?.username || '').toLowerCase();
+                const aNickname: string | undefined = a.nickname;
+                const aUsername: string | undefined = a.user?.username;
+                const nameA: string = (
+                    aNickname != null && aNickname.length > 0 ? aNickname : (aUsername ?? '')
+                ).toLowerCase();
+                const bNickname: string | undefined = b.nickname;
+                const bUsername: string | undefined = b.user?.username;
+                const nameB: string = (
+                    bNickname != null && bNickname.length > 0 ? bNickname : (bUsername ?? '')
+                ).toLowerCase();
                 return nameA.localeCompare(nameB);
             }
-            case 'joined':
-                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            case 'joined': {
+                const aCreatedAt: string = a.createdAt;
+                const bCreatedAt: string = b.createdAt;
+                const aTime: number =
+                    typeof aCreatedAt === 'string' || aCreatedAt instanceof Date ? new Date(aCreatedAt).getTime() : 0;
+                const bTime: number =
+                    typeof bCreatedAt === 'string' || bCreatedAt instanceof Date ? new Date(bCreatedAt).getTime() : 0;
+                return aTime - bTime;
+            }
             default:
                 return 0;
         }
@@ -70,19 +108,19 @@ export const groupMembersByRole = (members: ServerMember[], roles: Role[]): Grou
     const groups: Record<string, ServerMember[]> = {};
 
     members.forEach((member) => {
-        const groupKey = member.role === 'owner' ? 'owner' : member.highestRole?.name || member.role;
+        const memberRole: 'member' | 'moderator' | 'admin' | 'owner' = member.role;
+        const highestRoleName: string | undefined = member.highestRole?.name;
+        const groupKey: string = memberRole === 'owner' ? 'owner' : (highestRoleName ?? memberRole ?? 'member');
 
-        if (!groups[groupKey]) {
-            groups[groupKey] = [];
-        }
-        groups[groupKey].push(member);
+        groups[groupKey] ??= [];
+        groups[groupKey]?.push(member);
     });
 
     // Сортируем группы: сначала владельцы, потом по позиции ролей
     const sortedGroups = Object.entries(groups)
         .map(([groupName, groupMembers]): GroupedMembers => {
-            const groupRole = roles.find((r) => r.name === groupName);
-            const groupColor = groupRole?.color || getDefaultRoleColor(groupName);
+            const groupRole: Role | undefined = roles.find((r) => r.name === groupName);
+            const groupColor: string = groupRole?.color ?? getDefaultRoleColor(groupName);
 
             return {
                 groupName,
@@ -98,28 +136,18 @@ export const groupMembersByRole = (members: ServerMember[], roles: Role[]): Grou
                 return 1;
             }
 
-            const roleA = roles.find((r) => r.name === a.groupName);
-            const roleB = roles.find((r) => r.name === b.groupName);
+            const roleA: Role | undefined = roles.find((r) => r.name === a.groupName);
+            const roleB: Role | undefined = roles.find((r) => r.name === b.groupName);
 
-            if (roleA && roleB) {
-                return roleB.position - roleA.position;
+            if (roleA != null && roleB != null) {
+                const roleAPosition: number = roleA.position;
+                const roleBPosition: number = roleB.position;
+                return roleBPosition - roleAPosition;
             }
             return a.groupName.localeCompare(b.groupName);
         });
 
     return sortedGroups;
-};
-
-/**
- * Получает цвет роли по умолчанию
- */
-const getDefaultRoleColor = (roleName: string): string => {
-    const defaultColors: Record<string, string> = {
-        owner: '#faa61a',
-        admin: '#ed4245',
-        moderator: '#5865f2'
-    };
-    return defaultColors[roleName] || '#5865f2';
 };
 
 /**

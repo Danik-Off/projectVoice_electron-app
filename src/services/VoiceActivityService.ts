@@ -28,9 +28,7 @@ class VoiceActivityService {
     }
 
     public initialize(): void {
-        if (!this.audioContext) {
-            this.audioContext = new AudioContext();
-        }
+        this.audioContext ??= new AudioContext();
     }
 
     public addCallback = action((callback: (event: VoiceActivityEvent) => void): void => {
@@ -44,10 +42,10 @@ class VoiceActivityService {
         }
     });
 
-    private notifyCallbacks(event: VoiceActivityEvent): void {
+    private notifyCallbacks(voiceEvent: VoiceActivityEvent): void {
         this.callbacks.forEach((callback) => {
             try {
-                callback(event);
+                callback(voiceEvent);
             } catch (error) {
                 console.error('Error in VoiceActivity callback:', error);
             }
@@ -90,7 +88,7 @@ class VoiceActivityService {
 
     public stopMonitoring = action((userId: string): void => {
         const animationFrame = this.animationFrames.get(userId);
-        if (animationFrame) {
+        if (animationFrame != null) {
             cancelAnimationFrame(animationFrame);
             this.animationFrames.delete(userId);
         }
@@ -118,20 +116,20 @@ class VoiceActivityService {
             // Используем разные пороги для локального и удаленных пользователей
             const threshold = userId === 'local' ? this.config.localThreshold : this.config.remoteThreshold;
             const isCurrentlyActive = smoothedVolume > threshold;
-            const wasActive = this.isActive.get(userId) || false;
+            const wasActive = this.isActive.get(userId) ?? false;
 
             // Обертываем изменения observable значений в action
             this.updateUserState(userId, smoothedVolume, isCurrentlyActive);
 
             if (isCurrentlyActive !== wasActive) {
-                const event: VoiceActivityEvent = {
+                const voiceEvent: VoiceActivityEvent = {
                     userId,
                     isActive: isCurrentlyActive,
                     volume: smoothedVolume,
                     timestamp: Date.now()
                 };
 
-                this.notifyCallbacks(event);
+                this.notifyCallbacks(voiceEvent);
             }
 
             const frameId = requestAnimationFrame(animate);
@@ -143,14 +141,14 @@ class VoiceActivityService {
 
     private calculateVolume(dataArray: Uint8Array): number {
         let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) {
-            sum += dataArray[i];
+        for (const value of dataArray) {
+            sum += value;
         }
         return (sum / dataArray.length) * 100;
     }
 
     private smoothVolume(userId: string, currentVolume: number): number {
-        const previousVolume = this.volumes.get(userId) || 0;
+        const previousVolume = this.volumes.get(userId) ?? 0;
         return previousVolume * this.config.smoothingFactor + currentVolume * (1 - this.config.smoothingFactor);
     }
 
@@ -166,11 +164,11 @@ class VoiceActivityService {
     });
 
     public getUserActivity(userId: string): boolean {
-        return this.isActive.get(userId) || false;
+        return this.isActive.get(userId) ?? false;
     }
 
     public getUserVolume(userId: string): number {
-        return this.volumes.get(userId) || 0;
+        return this.volumes.get(userId) ?? 0;
     }
 
     public cleanup = action((): void => {
@@ -185,8 +183,10 @@ class VoiceActivityService {
         this.animationFrames.clear();
         this.callbacks = [];
 
-        if (this.audioContext) {
-            this.audioContext.close();
+        if (this.audioContext != null) {
+            this.audioContext.close().catch(() => {
+                // Ignore close errors
+            });
             this.audioContext = null;
         }
     });

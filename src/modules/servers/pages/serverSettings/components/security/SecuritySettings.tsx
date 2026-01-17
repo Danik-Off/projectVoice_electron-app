@@ -1,10 +1,11 @@
+/* eslint-disable max-lines-per-function -- Complex security settings component */
+/* eslint-disable complexity -- Complex security settings logic */
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { serverStore } from '../../../../../../modules/servers';
+import { serverStore, serverService } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
-import { serverService } from '../../../../../../modules/servers';
 import './SecuritySettings.scss';
 
 interface SecuritySettingsProps {
@@ -17,11 +18,28 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
     const [loading, setLoading] = useState(false);
 
     const server = serverStore.currentServer;
-    const [settings, setSettings] = useState({
-        verificationLevel: server?.verificationLevel || 0,
-        explicitContentFilter: server?.explicitContentFilter || 0,
-        defaultNotifications: server?.defaultNotifications || 'all',
-        require2FA: server?.require2FA || false
+    const [settings, setSettings] = useState<{
+        verificationLevel: number;
+        explicitContentFilter: number;
+        defaultNotifications: string;
+        require2FA: boolean;
+    }>({
+        verificationLevel:
+            server != null && typeof (server as { verificationLevel?: number }).verificationLevel === 'number'
+                ? (server as { verificationLevel: number }).verificationLevel
+                : 0,
+        explicitContentFilter:
+            server != null && typeof (server as { explicitContentFilter?: number }).explicitContentFilter === 'number'
+                ? (server as { explicitContentFilter: number }).explicitContentFilter
+                : 0,
+        defaultNotifications:
+            server != null && typeof (server as { defaultNotifications?: string }).defaultNotifications === 'string'
+                ? (server as { defaultNotifications: string }).defaultNotifications
+                : 'all',
+        require2FA:
+            server != null && typeof (server as { require2FA?: boolean }).require2FA === 'boolean'
+                ? (server as { require2FA: boolean }).require2FA
+                : false
     });
 
     const verificationLevels = [
@@ -73,21 +91,21 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
     ];
 
     const handleSave = async () => {
-        if (!serverId) {
+        if (serverId == null || serverId.length === 0) {
             return;
         }
 
         setLoading(true);
         try {
-            await serverService.update(parseInt(serverId), settings);
+            await serverService.update(parseInt(serverId, 10), settings);
             notificationStore.addNotification(
                 t('serverSettings.security.settingsSaved') || 'Настройки безопасности сохранены',
                 'success'
             );
-        } catch (error) {
-            console.error('Error saving security settings:', error);
+        } catch (saveError: unknown) {
+            console.error('Error saving security settings:', saveError);
             notificationStore.addNotification(
-                t('serverSettings.security.saveError') || 'Ошибка сохранения настроек',
+                t('serverSettings.security.saveError') ?? 'Ошибка сохранения настроек',
                 'error'
             );
         } finally {
@@ -131,7 +149,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
                                         onChange={(e) =>
                                             setSettings((prev) => ({
                                                 ...prev,
-                                                verificationLevel: parseInt(e.target.value)
+                                                verificationLevel: parseInt(e.target.value, 10)
                                             }))
                                         }
                                     />
@@ -173,7 +191,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
                                         onChange={(e) =>
                                             setSettings((prev) => ({
                                                 ...prev,
-                                                explicitContentFilter: parseInt(e.target.value)
+                                                explicitContentFilter: parseInt(e.target.value, 10)
                                             }))
                                         }
                                     />
@@ -209,7 +227,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
                             value={settings.defaultNotifications}
                             onChange={(e) => setSettings((prev) => ({ ...prev, defaultNotifications: e.target.value }))}
                         >
-                            <option value="all">{t('serverSettings.security.notifyAll') || 'Все сообщения'}</option>
+                            <option value="all">{t('serverSettings.security.notifyAll') ?? 'Все сообщения'}</option>
                             <option value="mentions">
                                 {t('serverSettings.security.notifyMentions') || 'Только упоминания'}
                             </option>
@@ -244,9 +262,9 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
                             />
                             <span className="toggle-slider" />
                             <span className="toggle-label">
-                                {settings.require2FA
-                                    ? t('serverSettings.security.require2FAEnabled') || 'Включено'
-                                    : t('serverSettings.security.require2FADisabled') || 'Выключено'}
+                                {settings.require2FA === true
+                                    ? (t('serverSettings.security.require2FAEnabled') ?? 'Включено')
+                                    : (t('serverSettings.security.require2FADisabled') ?? 'Выключено')}
                             </span>
                         </label>
                     </div>
@@ -254,8 +272,18 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = observer(() => {
 
                 {/* Кнопка сохранения */}
                 <div className="settings-actions">
-                    <button className="save-button" onClick={handleSave} disabled={loading}>
-                        {loading ? t('common.saving') || 'Сохранение...' : t('common.save') || 'Сохранить изменения'}
+                    <button
+                        className="save-button"
+                        onClick={() => {
+                            handleSave().catch((saveError: unknown) => {
+                                console.error('Error in handleSave:', saveError);
+                            });
+                        }}
+                        disabled={loading}
+                    >
+                        {loading === true
+                            ? (t('common.saving') ?? 'Сохранение...')
+                            : (t('common.save') ?? 'Сохранить изменения')}
                     </button>
                 </div>
             </div>

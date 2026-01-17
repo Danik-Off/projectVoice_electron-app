@@ -1,9 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { SocketClient, eventBus, VOICE_EVENTS } from '../../../core';
+import { SocketClient, eventBus, VOICE_EVENTS, audioSettingsStore, notificationStore } from '../../../core';
 import { getToken } from '../../../shared/utils/storage';
 import WebRTCClient from '../utils/WebRTCClient';
-import { audioSettingsStore } from '../../../core';
-import { notificationStore } from '../../../core';
 import voiceActivityService, { type VoiceActivityEvent } from '../services/VoiceActivityService';
 import type { Signal } from '../types/WebRTCClient.types';
 import type {
@@ -58,21 +56,22 @@ export class VoiceRoomStore {
 
         // Инициализируем WebRTC и VAS при подключении к голосовому каналу
 
-        this.webRTCClient.initializeMedia();
+        this.webRTCClient.initializeMedia().catch((error) => {
+            console.error('Error initializing WebRTC media:', error);
+        });
 
         // Устанавливаем currentVoiceChannel напрямую (store уже observable через makeAutoObservable)
-        this.currentVoiceChannel = { id: roomId, name: channelName || `Voice Channel ${roomId}` };
+        const channelNameValue = channelName ?? `Voice Channel ${roomId}`;
+        this.currentVoiceChannel = { id: roomId, name: channelNameValue };
 
-        notificationStore.addNotification(
-            `Подключились к голосовому каналу: ${channelName || `Voice Channel ${roomId}`}`,
-            'info'
-        );
+        notificationStore.addNotification(`Подключились к голосовому каналу: ${channelNameValue}`, 'info');
 
         // Публикуем событие о подключении к голосовому каналу
-        eventBus.emit(VOICE_EVENTS.CHANNEL_CONNECTED, {
+        const connectedEvent: VoiceChannelConnectedEvent = {
             channelId: roomId,
-            channelName: channelName || `Voice Channel ${roomId}`
-        } as VoiceChannelConnectedEvent);
+            channelName: channelNameValue
+        };
+        eventBus.emit(VOICE_EVENTS.CHANNEL_CONNECTED, connectedEvent);
     }
     // Проверка, подключен ли пользователь к голосовой комнате
     public isConnectedToVoiceChannel(): boolean {
@@ -102,14 +101,16 @@ export class VoiceRoomStore {
 
         // Сбрасываем состояние активности речи для всех участников
         this.participants.forEach((participant) => {
+            // eslint-disable-next-line no-param-reassign -- Необходимо обновить состояние участника
             participant.isSpeaking = false;
         });
 
         // Публикуем событие об отключении от голосового канала
-        if (disconnectedChannelId) {
-            eventBus.emit(VOICE_EVENTS.CHANNEL_DISCONNECTED, {
+        if (disconnectedChannelId != null) {
+            const disconnectedEvent: VoiceChannelDisconnectedEvent = {
                 channelId: disconnectedChannelId
-            } as VoiceChannelDisconnectedEvent);
+            };
+            eventBus.emit(VOICE_EVENTS.CHANNEL_DISCONNECTED, disconnectedEvent);
         }
     }
     public muteMicrophone() {
@@ -124,7 +125,10 @@ export class VoiceRoomStore {
         //     console.log('Соединение с Socket.IO установлено');
         // });
         this.socketClient.socketOn('created', (data: unknown) => {
-            const room = data as { participants: Participant[] };
+            const roomData = data as { participants: Participant[] };
+            const room: { participants: Participant[] } = {
+                participants: roomData.participants
+            };
 
             runInAction(() => {
                 // Исключаем локального пользователя из списка участников
@@ -135,14 +139,22 @@ export class VoiceRoomStore {
             });
 
             // Публикуем событие об обновлении участников
-            eventBus.emit(VOICE_EVENTS.PARTICIPANTS_UPDATED, {
+            const participantsUpdatedEvent: VoiceParticipantsUpdatedEvent = {
                 participants: this.participants
-            } as VoiceParticipantsUpdatedEvent);
+            };
+            eventBus.emit(VOICE_EVENTS.PARTICIPANTS_UPDATED, participantsUpdatedEvent);
         });
         this.socketClient.socketOn('user-connected', (data: unknown) => {
-            const user = data as { socketId: string; userData: UserData };
-            console.log(`Пользователь ${user.userData?.username || user.socketId} подключен`);
-            this.webRTCClient.createOffer(user.socketId);
+            const userData = data as { socketId: string; userData: UserData };
+            const user: { socketId: string; userData: UserData } = {
+                socketId: userData.socketId,
+                userData: userData.userData
+            };
+            const username = user.userData?.username ?? user.socketId;
+            console.warn(`Пользователь ${username} подключен`);
+            this.webRTCClient.createOffer(user.socketId).catch((error) => {
+                console.error('Error creating offer:', error);
+            });
             runInAction(() => {
                 // Проверяем, что это не локальный пользователь
                 if (user.socketId !== this.socketClient.getSocketId()) {
@@ -155,15 +167,14 @@ export class VoiceRoomStore {
                     this.participants.push(participant);
 
                     // Публикуем событие о присоединении участника
-                    eventBus.emit(VOICE_EVENTS.PARTICIPANT_JOINED, {
+                    const participantJoinedEvent: VoiceParticipantJoinedEvent = {
                         participant
-                    } as VoiceParticipantJoinedEvent);
+                    };
+                    eventBus.emit(VOICE_EVENTS.PARTICIPANT_JOINED, participantJoinedEvent);
                 }
             });
-            notificationStore.addNotification(
-                `${user.userData?.username || 'Пользователь'} присоединился к голосовому каналу`,
-                'info'
-            );
+            const joinedUsername = user.userData?.username ?? 'Пользователь';
+            notificationStore.addNotification(`${joinedUsername} присоединился к голосовому каналу`, 'info');
         });
         this.socketClient.socketOn('user-disconnected', (data: unknown) => {
             const socketId = data as string;
@@ -175,38 +186,47 @@ export class VoiceRoomStore {
             });
 
             // Публикуем событие об отключении участника
-            eventBus.emit(VOICE_EVENTS.PARTICIPANT_LEFT, {
+            const participantLeftEvent: VoiceParticipantLeftEvent = {
                 socketId
-            } as VoiceParticipantLeftEvent);
+            };
+            eventBus.emit(VOICE_EVENTS.PARTICIPANT_LEFT, participantLeftEvent);
 
-            if (disconnectedUser) {
-                notificationStore.addNotification(
-                    `${disconnectedUser.userData?.username || 'Пользователь'} покинул голосовой канал`,
-                    'info'
-                );
+            if (disconnectedUser != null) {
+                const disconnectedUsername = disconnectedUser.userData?.username ?? 'Пользователь';
+                notificationStore.addNotification(`${disconnectedUsername} покинул голосовой канал`, 'info');
             }
         });
         this.socketClient.socketOn('signal', (data: unknown) => {
-            const signal = data as Signal;
+            const signalData = data as Signal;
+            const signalTo = signalData.to;
+            const signalType = signalData.type;
+            const signalSdp = 'sdp' in signalData && signalData.sdp != null ? signalData.sdp : null;
+            const signalCandidate =
+                'candidate' in signalData && signalData.candidate != null ? signalData.candidate : null;
 
             // Преобразуем Signal (с полем 'to') в формат, ожидаемый handleSignal (с полем 'from')
-            this.webRTCClient.handleSignal({
-                from: signal.to,
-                type: signal.type,
-                sdp: 'sdp' in signal ? signal.sdp : undefined,
-                candidate:
-                    'candidate' in signal
-                        ? {
-                              candidate: signal.candidate.candidate,
-                              sdpMLineIndex: signal.candidate.sdpMLineIndex,
-                              sdpMid: signal.candidate.sdpMid
-                          }
-                        : undefined
+            const handleSignalData: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit } = {
+                from: signalTo,
+                type: signalType
+            };
+            if (signalSdp != null) {
+                handleSignalData.sdp = signalSdp;
+            }
+            if (signalCandidate != null) {
+                const candidateInit: RTCIceCandidateInit = {
+                    candidate: String(signalCandidate.candidate),
+                    sdpMLineIndex: signalCandidate.sdpMLineIndex != null ? Number(signalCandidate.sdpMLineIndex) : null,
+                    sdpMid: signalCandidate.sdpMid != null ? String(signalCandidate.sdpMid) : null
+                };
+                handleSignalData.candidate = candidateInit;
+            }
+            this.webRTCClient.handleSignal(handleSignalData).catch((signalError: unknown) => {
+                console.error('Error handling signal:', signalError);
             });
         });
         this.socketClient.socketOn('connect_error', (data: unknown) => {
-            const error = data as Error;
-            console.error('Ошибка Socket.IO подключения:', error);
+            const connectError = data as Error;
+            console.error('Ошибка Socket.IO подключения:', connectError);
             notificationStore.addNotification('notifications.connectError', 'error');
         });
 
@@ -226,22 +246,23 @@ export class VoiceRoomStore {
     }
 
     private setupVoiceActivityListeners(): void {
-        voiceActivityService.addCallback((event: VoiceActivityEvent) => {
+        voiceActivityService.addCallback((voiceEvent: VoiceActivityEvent) => {
             runInAction(() => {
-                if (event.userId === 'local') {
+                if (voiceEvent.userId === 'local') {
                     // Публикуем событие об изменении состояния локального пользователя
                     eventBus.emit(VOICE_EVENTS.LOCAL_SPEAKING_STATE_CHANGED, {
-                        isSpeaking: event.isActive
+                        isSpeaking: voiceEvent.isActive
                     });
                 } else {
-                    const participant = this.participants.find((p) => p.socketId === event.userId);
-                    if (participant) {
-                        participant.isSpeaking = event.isActive;
+                    const participant = this.participants.find((p) => p.socketId === voiceEvent.userId);
+                    if (participant != null) {
+                        participant.isSpeaking = voiceEvent.isActive;
 
                         // Публикуем событие об обновлении участников
-                        eventBus.emit(VOICE_EVENTS.PARTICIPANTS_UPDATED, {
+                        const participantsUpdatedEvent: VoiceParticipantsUpdatedEvent = {
                             participants: this.participants
-                        } as VoiceParticipantsUpdatedEvent);
+                        };
+                        eventBus.emit(VOICE_EVENTS.PARTICIPANTS_UPDATED, participantsUpdatedEvent);
                     }
                 }
             });
@@ -251,7 +272,7 @@ export class VoiceRoomStore {
     // Получить состояние активности речи для участника
     public getParticipantSpeakingState(socketId: string): boolean {
         const participant = this.participants.find((p) => p.socketId === socketId);
-        return participant?.isSpeaking || false;
+        return participant?.isSpeaking ?? false;
     }
 
     // Получить состояние активности речи для локального пользователя

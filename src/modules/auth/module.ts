@@ -17,11 +17,13 @@ export const authModule: IModule = {
             protected: false
         }
     ],
-    async initialize() {
+    initialize() {
         console.warn('Auth module initialized');
+        return Promise.resolve();
     },
-    async destroy() {
+    destroy() {
         console.warn('Auth module destroyed');
+        return Promise.resolve();
     }
 };
 

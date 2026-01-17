@@ -27,6 +27,7 @@ interface Channel {
     description?: string;
 }
 
+/* eslint-disable max-lines-per-function -- Complex component with multiple responsibilities */
 const MessageList: React.FC = () => {
     const { roomId } = useParams<{ roomId: string }>();
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,27 +37,29 @@ const MessageList: React.FC = () => {
 
     // Локальное состояние через события
     const [currentChannel, setCurrentChannel] = useState<Channel | null>(null);
-    const [channels, setChannels] = useState<Channel[]>([]);
+    const [_channels, setChannels] = useState<Channel[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [error] = useState<string | null>(null);
     const [isVoiceConnected, setIsVoiceConnected] = useState(false);
 
     // Подписка на события каналов
     useEffect(() => {
         const unsubscribeSelected = eventBus.on<ChannelSelectedEvent>(CHANNELS_EVENTS.CHANNEL_SELECTED, (data) => {
-            if (data) {
-                setCurrentChannel(data.channel);
+            if (data != null && typeof data === 'object' && 'channel' in data) {
+                setCurrentChannel(data.channel as Channel);
             }
         });
 
         const unsubscribeLoaded = eventBus.on<ChannelsLoadedEvent>(CHANNELS_EVENTS.CHANNELS_LOADED, (data) => {
-            if (data) {
-                setChannels(data.channels);
+            if (data != null && typeof data === 'object' && 'channels' in data) {
+                const channelsData = data.channels as Channel[];
+                setChannels(channelsData);
                 // Автоматически выбираем канал по roomId
-                if (roomId) {
-                    const channel = data.channels.find((ch) => ch.id === parseInt(roomId));
-                    if (channel) {
+                if (roomId != null && roomId.length > 0) {
+                    const roomIdNum = parseInt(roomId, 10);
+                    const channel = channelsData.find((ch) => ch.id === roomIdNum);
+                    if (channel != null) {
                         setCurrentChannel(channel);
                     }
                 }
@@ -72,15 +75,22 @@ const MessageList: React.FC = () => {
     // Подписка на события сообщений
     useEffect(() => {
         const unsubscribeLoaded = eventBus.on<MessagesLoadedEvent>(MESSAGING_EVENTS.MESSAGES_LOADED, (data) => {
-            if (data && data.channelId === currentChannel?.id) {
-                setMessages(data.messages);
-                setLoading(false);
+            if (data != null && typeof data === 'object' && 'channelId' in data && 'messages' in data) {
+                const channelId = data.channelId as number;
+                if (channelId === (currentChannel?.id ?? 0)) {
+                    const messagesData = data.messages as Message[];
+                    setMessages(messagesData);
+                    setLoading(false);
+                }
             }
         });
 
         const unsubscribeCreated = eventBus.on<MessageCreatedEvent>(MESSAGING_EVENTS.MESSAGE_CREATED, (data) => {
-            if (data && data.message.channelId === currentChannel?.id) {
-                setMessages((prev) => [...prev, data.message]);
+            if (data != null && typeof data === 'object' && 'message' in data) {
+                const message = data.message as Message & { channelId: number };
+                if (message.channelId === (currentChannel?.id ?? 0)) {
+                    setMessages((prev) => [...prev, message]);
+                }
             }
         });
 
@@ -108,10 +118,11 @@ const MessageList: React.FC = () => {
 
     // Запрос загрузки сообщений при изменении канала
     useEffect(() => {
-        if (currentChannel?.id) {
+        const channelId = currentChannel?.id;
+        if (channelId != null && channelId > 0) {
             setLoading(true);
             // Отправляем событие запроса на загрузку сообщений
-            eventBus.emit(MESSAGING_EVENTS.CHANNEL_CHANGED, { channelId: currentChannel.id });
+            eventBus.emit(MESSAGING_EVENTS.CHANNEL_CHANGED, { channelId });
         }
     }, [currentChannel?.id]);
 
@@ -152,7 +163,7 @@ const MessageList: React.FC = () => {
         messages.forEach((message) => {
             const lastGroup = groups[groups.length - 1];
 
-            if (lastGroup && lastGroup.userId === message.userId) {
+            if (lastGroup != null && lastGroup.userId === message.userId) {
                 lastGroup.messages.push(message);
             } else {
                 groups.push({
@@ -180,7 +191,7 @@ const MessageList: React.FC = () => {
                         <path d="M7 9H17V11H7V9ZM7 13H13V15H7V13Z" fill="var(--accent-color)" />
                     </svg>
                 </div>
-                <h3>Добро пожаловать в #{channelName || 'канал'}!</h3>
+                <h3>Добро пожаловать в #{channelName ?? 'канал'}!</h3>
                 <p>Это начало канала. Отправьте первое сообщение, чтобы начать общение.</p>
             </div>
         </div>
@@ -221,7 +232,7 @@ const MessageList: React.FC = () => {
             <div className="channel-header">
                 <div className="channel-info">
                     <h2 className="channel-name">#{currentChannel.name}</h2>
-                    <span className="channel-description">{currentChannel.description || 'Текстовый канал'}</span>
+                    <span className="channel-description">{currentChannel.description ?? 'Текстовый канал'}</span>
                 </div>
                 <VoiceStatusIndicator />
             </div>
@@ -235,7 +246,7 @@ const MessageList: React.FC = () => {
                         </div>
                     ) : null}
 
-                    {error ? (
+                    {error != null && error.length > 0 ? (
                         <div className="error-message">
                             <span>Ошибка загрузки сообщений: {error}</span>
                         </div>
@@ -243,8 +254,8 @@ const MessageList: React.FC = () => {
 
                     {!loading && messages.length === 0 && <EmptyChatState channelName={currentChannel.name} />}
 
-                    {messageGroups.map((group, groupIndex) => (
-                        <div key={`${group.userId}-${groupIndex}`} className="message-group">
+                    {messageGroups.map((group) => (
+                        <div key={`${group.userId}-${group.messages[0]?.id ?? 0}`} className="message-group">
                             {group.messages.map((message, messageIndex) => (
                                 <MessageItem key={message.id} message={message} isFirstInGroup={messageIndex === 0} />
                             ))}

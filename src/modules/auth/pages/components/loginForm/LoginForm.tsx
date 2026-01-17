@@ -11,14 +11,14 @@ const LoginForm: React.FC = () => {
     const redirect = searchParams.get('redirect');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
         if (isSubmitting) {
             return;
         } // Защита от повторной отправки
 
-        const formData = event.currentTarget.elements as typeof event.currentTarget.elements & {
+        const formData = e.currentTarget.elements as typeof e.currentTarget.elements & {
             email: HTMLInputElement;
             password: HTMLInputElement;
         };
@@ -31,15 +31,25 @@ const LoginForm: React.FC = () => {
         try {
             const redirectPath = await authStore.login(email, password, redirect);
             // Редирект через React Router
-            navigate(redirectPath, { replace: true });
+            const result = navigate(redirectPath, { replace: true });
+            if (result instanceof Promise) {
+                result.catch((navError: unknown) => {
+                    console.error('Navigation error:', navError);
+                });
+            }
         } catch (error) {
             console.error('Login failed:', error);
             if (error instanceof Error) {
                 try {
-                    const errorData = JSON.parse(error.message);
-                    notificationStore.addNotification(errorData.error || t('authPage.messages.loginError'), 'error');
+                    const errorData = JSON.parse(error.message) as { error?: string };
+                    const errorMsg =
+                        errorData.error != null && errorData.error !== ''
+                            ? errorData.error
+                            : t('authPage.messages.loginError');
+                    notificationStore.addNotification(errorMsg, 'error');
                 } catch {
-                    notificationStore.addNotification(error.message || t('authPage.messages.loginError'), 'error');
+                    const errorMsg = error.message !== '' ? error.message : t('authPage.messages.loginError');
+                    notificationStore.addNotification(errorMsg, 'error');
                 }
             } else {
                 notificationStore.addNotification(t('authPage.messages.loginError'), 'error');
@@ -49,8 +59,14 @@ const LoginForm: React.FC = () => {
         }
     };
 
+    const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+        handleLogin(e).catch((error: unknown) => {
+            console.error('Form submission error:', error);
+        });
+    };
+
     return (
-        <form onSubmit={handleLogin} className="auth-form">
+        <form onSubmit={onSubmitHandler} className="auth-form">
             <div className="input-group">
                 <input type="email" name="email" placeholder={t('authPage.email')} className="auth-input" required />
             </div>

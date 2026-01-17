@@ -1,9 +1,10 @@
+/* eslint-disable max-lines-per-function -- Complex overview settings component */
+/* eslint-disable complexity -- Complex overview settings logic */
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { serverStore } from '../../../../../../modules/servers';
-import { serverMembersService } from '../../../../../../modules/servers';
+import { serverStore, serverMembersService } from '../../../../../../modules/servers';
 import { notificationStore } from '../../../../../../core';
 import './OverviewSettings.scss';
 
@@ -22,38 +23,38 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
         rolesCount: 0
     });
     const [editForm, setEditForm] = useState({
-        name: serverStore.currentServer?.name || '',
-        description: serverStore.currentServer?.description || ''
+        name: serverStore.currentServer?.name ?? '',
+        description: serverStore.currentServer?.description ?? ''
     });
 
     const server = serverStore.currentServer;
 
     useEffect(() => {
-        if (server) {
+        if (server != null) {
             setEditForm({
-                name: server.name || '',
-                description: server.description || ''
+                name: server.name ?? '',
+                description: server.description ?? ''
             });
         }
     }, [server]);
 
     useEffect(() => {
         const loadStats = async () => {
-            if (!serverId) {
+            if (serverId == null || serverId.length === 0) {
                 return;
             }
             try {
                 // Загружаем участников
-                const members = await serverMembersService.getServerMembers(parseInt(serverId));
+                const members = await serverMembersService.getServerMembers(parseInt(serverId, 10));
 
                 // Загружаем роли
                 const { roleService } = await import('../../../../services/roleService');
                 let rolesCount = 0;
                 try {
-                    const roles = await roleService.getRoles(parseInt(serverId));
+                    const roles = await roleService.getRoles(parseInt(serverId, 10));
                     rolesCount = roles.length;
-                } catch (error) {
-                    console.error('Error loading roles:', error);
+                } catch (rolesError: unknown) {
+                    console.error('Error loading roles:', rolesError);
                 }
 
                 // Загружаем каналы
@@ -61,11 +62,11 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
                 try {
                     const { channelsStore } = await import('../../../../../../modules/channels');
                     const channels = channelsStore.channels.filter(
-                        (ch: { serverId: number }) => ch.serverId === parseInt(serverId)
+                        (ch: { serverId: number }) => ch.serverId === parseInt(serverId, 10)
                     );
                     channelsCount = channels.length;
-                } catch (error) {
-                    console.error('Error loading channels:', error);
+                } catch (channelsError: unknown) {
+                    console.error('Error loading channels:', channelsError);
                 }
 
                 setStats({
@@ -73,37 +74,39 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
                     channelsCount,
                     rolesCount
                 });
-            } catch (error) {
-                console.error('Error loading stats:', error);
+            } catch (statsError: unknown) {
+                console.error('Error loading stats:', statsError);
             }
         };
-        loadStats();
+        loadStats().catch((loadError: unknown) => {
+            console.error('Error in loadStats:', loadError);
+        });
     }, [serverId]);
 
     const handleEdit = () => {
         setIsEditing(true);
         setEditForm({
-            name: server?.name || '',
-            description: server?.description || ''
+            name: server?.name ?? '',
+            description: server?.description ?? ''
         });
     };
 
     const handleCancel = () => {
         setIsEditing(false);
         setEditForm({
-            name: server?.name || '',
-            description: server?.description || ''
+            name: server?.name ?? '',
+            description: server?.description ?? ''
         });
     };
 
     const handleSave = async () => {
-        if (!serverId || !server) {
+        if (serverId == null || serverId.length === 0 || server == null) {
             return;
         }
 
-        if (!editForm.name.trim()) {
+        if (editForm.name.trim().length === 0) {
             notificationStore.addNotification(
-                t('serverSettings.serverNameRequired') || 'Название сервера обязательно',
+                t('serverSettings.serverNameRequired') ?? 'Название сервера обязательно',
                 'error'
             );
             return;
@@ -111,13 +114,13 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
 
         setLoading(true);
         try {
-            await serverStore.updateServer(parseInt(serverId), {
+            await serverStore.updateServer(parseInt(serverId, 10), {
                 name: editForm.name.trim(),
-                description: editForm.description.trim() || undefined
+                description: editForm.description.trim().length > 0 ? editForm.description.trim() : null
             });
             setIsEditing(false);
             notificationStore.addNotification(
-                t('serverSettings.serverUpdated') || 'Настройки сервера обновлены',
+                t('serverSettings.serverUpdated') ?? 'Настройки сервера обновлены',
                 'success'
             );
         } catch (error) {
@@ -202,7 +205,7 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
                                 <div className="info-item">
                                     <label className="info-label">{t('serverSettings.serverDescription')}</label>
                                     <span className="info-value">
-                                        {server?.description || t('serverSettings.noDescription')}
+                                        {server?.description ?? t('serverSettings.noDescription') ?? 'Нет описания'}
                                     </span>
                                 </div>
                                 <div className="info-item">
@@ -250,12 +253,16 @@ const OverviewSettings: React.FC<OverviewSettingsProps> = observer(() => {
                                     </button>
                                     <button
                                         className="save-button"
-                                        onClick={handleSave}
-                                        disabled={loading || !editForm.name.trim()}
+                                        onClick={() => {
+                                            handleSave().catch((error: unknown) => {
+                                                console.error('Error saving server settings:', error);
+                                            });
+                                        }}
+                                        disabled={loading === true || editForm.name.trim().length === 0}
                                     >
-                                        {loading
-                                            ? t('common.saving') || 'Сохранение...'
-                                            : t('common.save') || 'Сохранить'}
+                                        {loading === true
+                                            ? (t('common.saving') ?? 'Сохранение...')
+                                            : (t('common.save') ?? 'Сохранить')}
                                     </button>
                                 </div>
                             </div>

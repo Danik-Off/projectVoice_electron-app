@@ -149,8 +149,8 @@ export class VoiceRoomStore {
                     // Error handled in handleSignal
                 });
         });
-        this.socketClient.socketOn('connect_error', (error) => {
-            console.error('Ошибка Socket.IO подключения:', error);
+        this.socketClient.socketOn('connect_error', (connectError: unknown) => {
+            console.error('Ошибка Socket.IO подключения:', connectError);
             notificationStore.addNotification('notifications.connectError', 'error');
         });
         // this.socketClient.socketOn('disconnect', () => {

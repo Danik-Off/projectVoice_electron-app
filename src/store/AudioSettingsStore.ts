@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- Store file with complex audio processing logic */
 import { makeAutoObservable, runInAction } from 'mobx';
 import { RoomStore as roomStore } from '../modules/voice';
 
@@ -59,7 +60,9 @@ class AudioSettingsStore {
 
     public constructor() {
         makeAutoObservable(this);
-        this.fetchAudioDevices();
+        this.fetchAudioDevices().catch((error) => {
+            console.error('Error fetching audio devices:', error);
+        });
     }
 
     public initMedia() {
@@ -72,7 +75,9 @@ class AudioSettingsStore {
             return;
         }
 
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
     }
 
     public cleanup() {
@@ -90,7 +95,9 @@ class AudioSettingsStore {
 
         // Закрываем аудио контекст
         if (this.audioContext != null && this.audioContext.state !== 'closed') {
-            this.audioContext.close();
+            this.audioContext.close().catch(() => {
+                // Ignore close errors
+            });
         }
 
         // Сбрасываем потоки
@@ -135,103 +142,104 @@ class AudioSettingsStore {
     private applySimpleQualitySettings() {
         switch (this.audioQuality) {
             case 'low':
-                this.sampleRate = 24000; // Улучшенная частота даже для низкого качества
-                this.sampleSize = 16;
-                this.bitrate = 96; // Увеличенный битрейт
-                this.latency = 100; // Уменьшенная задержка
-                this.echoCancellation = true;
-                this.noiseSuppression = true;
-                this.autoGainControl = true;
-                this.voiceEnhancement = true; // Включаем даже для низкого качества
-                this.voiceIsolation = true;
-                this.voiceClarity = 0.5; // Улучшенная четкость
-                this.backgroundNoiseReduction = 0.6;
-                this.voiceBoost = 0.2;
-                this.bassBoost = 0.1;
-                this.trebleBoost = 0.1;
-                this.dynamicRangeCompression = 0.2;
-                this.stereoEnhancement = false;
-                this.spatialAudio = false;
+                this.applyLowQualitySettings();
                 break;
             case 'medium':
-                this.sampleRate = 48000; // Максимальная частота для среднего качества
-                this.sampleSize = 24; // Увеличенная разрядность
-                this.bitrate = 192; // Высокий битрейт
-                this.latency = 75; // Минимальная задержка
-                this.echoCancellation = true;
-                this.noiseSuppression = true;
-                this.autoGainControl = true;
-                this.voiceEnhancement = true;
-                this.voiceIsolation = true;
-                this.voiceClarity = 0.7; // Высокая четкость
-                this.backgroundNoiseReduction = 0.7;
-                this.voiceBoost = 0.25;
-                this.bassBoost = 0.15;
-                this.trebleBoost = 0.15;
-                this.dynamicRangeCompression = 0.2;
-                this.stereoEnhancement = true;
-                this.spatialAudio = true;
+                this.applyMediumQualitySettings();
                 break;
             case 'high':
-                this.sampleRate = 48000; // Максимальная частота дискретизации
-                this.sampleSize = 24; // Максимальная разрядность
-                this.bitrate = 320; // Максимальный битрейт
-                this.latency = 50; // Минимальная задержка
-                this.echoCancellation = true;
-                this.noiseSuppression = true;
-                this.autoGainControl = true;
-                this.voiceEnhancement = true;
-                this.voiceIsolation = true;
-                this.voiceClarity = 0.9; // Максимальная четкость
-                this.backgroundNoiseReduction = 0.8;
-                this.voiceBoost = 0.3;
-                this.bassBoost = 0.2;
-                this.trebleBoost = 0.2;
-                this.dynamicRangeCompression = 0.1; // Минимальное сжатие
-                this.stereoEnhancement = true;
-                this.spatialAudio = true;
+                this.applyHighQualitySettings();
                 break;
             case 'ultra':
-                this.sampleRate = 48000; // Максимальная частота дискретизации
-                this.sampleSize = 32; // Профессиональная разрядность
-                this.bitrate = 512; // Профессиональный битрейт
-                this.latency = 25; // Минимальная задержка
-                this.echoCancellation = true;
-                this.noiseSuppression = true;
-                this.autoGainControl = true;
-                this.voiceEnhancement = true;
-                this.voiceIsolation = true;
-                this.voiceClarity = 1.0; // Максимальная четкость
-                this.backgroundNoiseReduction = 0.9;
-                this.voiceBoost = 0.4;
-                this.bassBoost = 0.3;
-                this.trebleBoost = 0.3;
-                this.dynamicRangeCompression = 0.05; // Минимальное сжатие
-                this.stereoEnhancement = true;
-                this.spatialAudio = true;
+                this.applyUltraQualitySettings();
                 break;
             default:
-                // Fallback to high quality if unknown
-                this.sampleRate = 48000;
-                this.sampleSize = 24;
-                this.bitrate = 320;
-                this.latency = 50;
-                this.echoCancellation = true;
-                this.noiseSuppression = true;
-                this.autoGainControl = true;
-                this.voiceEnhancement = true;
-                this.voiceIsolation = true;
-                this.voiceClarity = 0.9;
-                this.backgroundNoiseReduction = 0.8;
-                this.voiceBoost = 0.3;
-                this.bassBoost = 0.2;
-                this.trebleBoost = 0.2;
-                this.dynamicRangeCompression = 0.1;
-                this.stereoEnhancement = true;
-                this.spatialAudio = true;
+                this.applyHighQualitySettings();
                 break;
         }
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
+    }
+
+    private applyLowQualitySettings(): void {
+        this.sampleRate = 24000;
+        this.sampleSize = 16;
+        this.bitrate = 96;
+        this.latency = 100;
+        this.echoCancellation = true;
+        this.noiseSuppression = true;
+        this.autoGainControl = true;
+        this.voiceEnhancement = true;
+        this.voiceIsolation = true;
+        this.voiceClarity = 0.5;
+        this.backgroundNoiseReduction = 0.6;
+        this.voiceBoost = 0.2;
+        this.bassBoost = 0.1;
+        this.trebleBoost = 0.1;
+        this.dynamicRangeCompression = 0.2;
+        this.stereoEnhancement = false;
+        this.spatialAudio = false;
+    }
+
+    private applyMediumQualitySettings(): void {
+        this.sampleRate = 48000;
+        this.sampleSize = 24;
+        this.bitrate = 192;
+        this.latency = 75;
+        this.echoCancellation = true;
+        this.noiseSuppression = true;
+        this.autoGainControl = true;
+        this.voiceEnhancement = true;
+        this.voiceIsolation = true;
+        this.voiceClarity = 0.7;
+        this.backgroundNoiseReduction = 0.7;
+        this.voiceBoost = 0.25;
+        this.bassBoost = 0.15;
+        this.trebleBoost = 0.15;
+        this.dynamicRangeCompression = 0.2;
+        this.stereoEnhancement = true;
+        this.spatialAudio = true;
+    }
+
+    private applyHighQualitySettings(): void {
+        this.sampleRate = 48000;
+        this.sampleSize = 24;
+        this.bitrate = 320;
+        this.latency = 50;
+        this.echoCancellation = true;
+        this.noiseSuppression = true;
+        this.autoGainControl = true;
+        this.voiceEnhancement = true;
+        this.voiceIsolation = true;
+        this.voiceClarity = 0.9;
+        this.backgroundNoiseReduction = 0.8;
+        this.voiceBoost = 0.3;
+        this.bassBoost = 0.2;
+        this.trebleBoost = 0.2;
+        this.dynamicRangeCompression = 0.1;
+        this.stereoEnhancement = true;
+        this.spatialAudio = true;
+    }
+
+    private applyUltraQualitySettings(): void {
+        this.sampleRate = 48000;
+        this.sampleSize = 32;
+        this.bitrate = 512;
+        this.latency = 25;
+        this.echoCancellation = true;
+        this.noiseSuppression = true;
+        this.autoGainControl = true;
+        this.voiceEnhancement = true;
+        this.voiceIsolation = true;
+        this.voiceClarity = 1.0;
+        this.backgroundNoiseReduction = 0.9;
+        this.voiceBoost = 0.4;
+        this.bassBoost = 0.3;
+        this.trebleBoost = 0.3;
+        this.dynamicRangeCompression = 0.05;
+        this.stereoEnhancement = true;
+        this.spatialAudio = true;
     }
 
     // Методы для изменения настроек (требуют пересоздания потока)
@@ -240,7 +248,9 @@ class AudioSettingsStore {
             return;
         }
         this.echoCancellation = value;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -252,7 +262,9 @@ class AudioSettingsStore {
             return;
         }
         this.noiseSuppression = value;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -264,7 +276,9 @@ class AudioSettingsStore {
             return;
         }
         this.autoGainControl = value;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -276,7 +290,9 @@ class AudioSettingsStore {
             return;
         }
         this.sampleRate = rate;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -288,7 +304,9 @@ class AudioSettingsStore {
             return;
         }
         this.sampleSize = size;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -302,7 +320,9 @@ class AudioSettingsStore {
 
     public setChannelCount(channelCount: 'stereo' | 'mono') {
         this.channelCount = channelCount === 'stereo' ? 2 : 1;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
     }
 
     public setSpeaker(deviceId: string): void {
@@ -358,7 +378,9 @@ class AudioSettingsStore {
             return;
         }
         this.bitrate = bitrate;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -370,7 +392,9 @@ class AudioSettingsStore {
             return;
         }
         this.bufferSize = bufferSize;
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -382,7 +406,9 @@ class AudioSettingsStore {
             return;
         }
         this.compressionLevel = Math.max(0, Math.min(1, level));
-        this.updateMediaStream();
+        this.updateMediaStream().catch((error) => {
+            console.error('Error updating media stream:', error);
+        });
         // Обновляем WebRTC поток через roomStore
         if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
             roomStore.webRTCClient.resendlocalStream();
@@ -393,7 +419,7 @@ class AudioSettingsStore {
     public applyAllSettings(): void {
         try {
             // Если есть активный поток, обновляем настройки в реальном времени
-            if (this._stream && this._stream.getAudioTracks().length > 0) {
+            if (this._stream != null && this._stream.getAudioTracks().length > 0) {
                 this.updateRealtimeSettings();
                 // Обновляем WebRTC поток через roomStore
                 if (roomStore?.webRTCClient != null && typeof roomStore.webRTCClient.resendlocalStream === 'function') {
@@ -401,7 +427,9 @@ class AudioSettingsStore {
                 }
             } else {
                 // Если нет активного потока, создаем новый
-                this.updateMediaStream(true);
+                this.updateMediaStream(true).catch((error) => {
+                    console.error('Error updating media stream:', error);
+                });
             }
         } catch (error) {
             console.error('AudioSettingsStore: Error applying all settings:', error);
@@ -594,7 +622,7 @@ class AudioSettingsStore {
     }
 
     // Получение списка аудиоустройств
-    private fetchAudioDevices = async () => {
+    private fetchAudioDevices = async (): Promise<void> => {
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
 
@@ -639,20 +667,23 @@ class AudioSettingsStore {
                 });
             }
 
-            runInAction(async () => {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: this.echoCancellation,
-                        noiseSuppression: this.noiseSuppression,
-                        autoGainControl: this.autoGainControl,
-                        sampleRate: this.sampleRate,
-                        sampleSize: this.sampleSize,
-                        channelCount: this.channelCount,
-                        deviceId: this.selectedMicrophone?.deviceId,
-                        groupId: this.selectedMicrophone?.groupId
-                    } as MediaTrackConstraints,
-                    video: false
-                });
+            const audioConstraints: MediaTrackConstraints = {
+                echoCancellation: this.echoCancellation,
+                noiseSuppression: this.noiseSuppression,
+                autoGainControl: this.autoGainControl,
+                sampleRate: this.sampleRate,
+                sampleSize: this.sampleSize,
+                channelCount: this.channelCount,
+                deviceId: this.selectedMicrophone?.deviceId,
+                groupId: this.selectedMicrophone?.groupId
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: audioConstraints,
+                video: false
+            });
+
+            runInAction(() => {
                 this._stream = stream;
 
                 this.prepareMediaStream();

@@ -12,6 +12,7 @@ interface MessageItemProps {
     isFirstInGroup?: boolean;
 }
 
+/* eslint-disable max-lines-per-function, complexity */
 const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGroup = false }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(message.content);
@@ -39,7 +40,7 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
 
     useEffect(
         () => () => {
-            if (actionsTimeoutRef.current) {
+            if (actionsTimeoutRef.current != null) {
                 clearTimeout(actionsTimeoutRef.current);
             }
         },
@@ -88,14 +89,16 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSave();
+            handleSave().catch((error: unknown) => {
+                console.error('Error saving message on Enter:', error);
+            });
         } else if (e.key === 'Escape') {
             handleCancel();
         }
     };
 
     const handleMouseEnter = () => {
-        if (actionsTimeoutRef.current) {
+        if (actionsTimeoutRef.current != null) {
             clearTimeout(actionsTimeoutRef.current);
         }
         setShowActions(true);
@@ -134,16 +137,16 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
     };
 
     const getStatusIcon = () => {
-        if (message.isDeleted) {
+        if (message.isDeleted != null && message.isDeleted) {
             return '🗑️';
         }
-        if (message.isEdited) {
+        if (message.isEdited != null && message.isEdited) {
             return '✏️';
         }
         return '✓';
     };
 
-    if (message.isDeleted) {
+    if (message.isDeleted != null && message.isDeleted) {
         return (
             <div className="message-item system-message deleted-message">
                 <div className="message-content">
@@ -197,13 +200,17 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
             <div className="message-content">
                 {isFirstInGroup ? (
                     <div className="message-header">
-                        <span className="message-author">{message.user?.username || 'Неизвестный пользователь'}</span>
+                        <span className="message-author">{message.user?.username ?? 'Неизвестный пользователь'}</span>
                         <span className="message-time">
                             {formatTime(message.createdAt)}
-                            {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
+                            {message.isEdited != null && message.isEdited ? (
+                                <span className="edit-indicator"> (изменено)</span>
+                            ) : null}
                         </span>
                         <div className="message-status">
-                            <span className={`status-icon ${message.isDeleted ? 'deleted' : 'delivered'}`}>
+                            <span
+                                className={`status-icon ${message.isDeleted != null && message.isDeleted ? 'deleted' : 'delivered'}`}
+                            >
                                 {getStatusIcon()}
                             </span>
                         </div>
@@ -223,7 +230,15 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                             maxLength={2000}
                         />
                         <div className="edit-actions">
-                            <button className="save-btn" onClick={handleSave} disabled={!editContent.trim()}>
+                            <button
+                                className="save-btn"
+                                onClick={() => {
+                                    handleSave().catch((error: unknown) => {
+                                        console.error('Error saving message:', error);
+                                    });
+                                }}
+                                disabled={!editContent.trim()}
+                            >
                                 {editContent.trim() ? 'Сохранить' : 'Отмена'}
                             </button>
                             <button className="cancel-btn" onClick={handleCancel}>
@@ -233,19 +248,28 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                     </div>
                 ) : (
                     <div className="message-text">
-                        {message.content.split('\n').map((line: string, index: number) => (
-                            <React.Fragment key={index}>
-                                {line}
-                                {index < message.content.split('\n').length - 1 && <br />}
-                            </React.Fragment>
-                        ))}
+                        {message.content
+                            .split('\n')
+                            .reduce((acc: React.ReactElement[], line: string, index: number, lines: string[]) => {
+                                acc.push(
+                                    <React.Fragment key={`${message.id}-frag-${line.slice(0, 20)}-${acc.length}`}>
+                                        {line}
+                                    </React.Fragment>
+                                );
+                                if (index < lines.length - 1) {
+                                    acc.push(<br key={`${message.id}-br-${acc.length}`} />);
+                                }
+                                return acc;
+                            }, [])}
                     </div>
                 )}
 
                 {!isFirstInGroup && (
                     <div className="message-time">
                         {formatTime(message.createdAt)}
-                        {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
+                        {message.isEdited != null && message.isEdited ? (
+                            <span className="edit-indicator"> (изменено)</span>
+                        ) : null}
                     </div>
                 )}
 
@@ -264,7 +288,11 @@ const MessageItem: React.FC<MessageItemProps> = observer(({ message, isFirstInGr
                         {canDelete ? (
                             <button
                                 className="action-btn delete-btn"
-                                onClick={handleDelete}
+                                onClick={() => {
+                                    handleDelete().catch((error: unknown) => {
+                                        console.error('Error deleting message:', error);
+                                    });
+                                }}
                                 title="Удалить"
                                 disabled={isDeleting}
                             >

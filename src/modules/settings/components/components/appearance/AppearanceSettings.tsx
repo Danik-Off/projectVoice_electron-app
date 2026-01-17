@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function -- Complex appearance settings component */
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +40,9 @@ const AppearanceSettings: React.FC = observer(() => {
     // Слушаем изменения системной темы
     useEffect(() => {
         if (!followSystem) {
-            return;
+            return () => {
+                // No cleanup needed when not following system
+            };
         }
 
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -50,7 +53,9 @@ const AppearanceSettings: React.FC = observer(() => {
         };
 
         mediaQuery.addEventListener('change', handleChange);
-        return () => mediaQuery.removeEventListener('change', handleChange);
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
     }, [followSystem]);
 
     return (

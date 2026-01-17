@@ -9,9 +9,10 @@ import ServerItem from '../../../../app/layout/components/serverSlidebar/serverI
 import serverStore from '../../store/serverStore';
 import './ServerSidebar.scss';
 
+/* eslint-disable max-lines-per-function -- Complex sidebar with modals and navigation */
 const ServerSidebar: React.FC = observer(() => {
     const navigate = useNavigate();
-    const location = useLocation();
+    const currentLocation = useLocation();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [blockedServer, setBlockedServer] = useState<{
         name: string;
@@ -23,15 +24,25 @@ const ServerSidebar: React.FC = observer(() => {
     const handleSetting = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        navigate('/settings');
+        const result = navigate('/settings');
+        if (result instanceof Promise) {
+            result.catch((error: unknown) => {
+                console.error('Navigation error:', error);
+            });
+        }
     };
 
     const handleAdminPanel = () => {
-        navigate('/admin');
+        const result = navigate('/admin');
+        if (result instanceof Promise) {
+            result.catch((error: unknown) => {
+                console.error('Navigation error:', error);
+            });
+        }
     };
 
-    const handleServerClick = async (server: Server) => {
-        if (server.isBlocked) {
+    const handleServerClick = (server: Server) => {
+        if (server.isBlocked === true) {
             setBlockedServer({
                 name: server.name,
                 reason: server.blockReason,
@@ -43,22 +54,29 @@ const ServerSidebar: React.FC = observer(() => {
             if (serverStore.currentServer?.id !== server.id) {
                 // Предустанавливаем сервер из списка для быстрого отображения
                 const serverFromList = serverStore.servers.find((s) => s.id === server.id);
-                if (serverFromList) {
+                if (serverFromList != null) {
                     serverStore.currentServer = serverFromList;
                 }
             }
-            navigate(`/server/${server.id}`);
+            const result = navigate(`/server/${server.id}`);
+            if (result instanceof Promise) {
+                result.catch((error: unknown) => {
+                    console.error('Navigation error:', error);
+                });
+            }
         }
     };
 
     const isOnHomePage =
-        location.pathname === '/' ||
-        location.pathname === '/main' ||
-        location.pathname === '/welcome' ||
-        location.pathname.startsWith('/auth');
+        currentLocation.pathname === '/' ||
+        currentLocation.pathname === '/main' ||
+        currentLocation.pathname === '/welcome' ||
+        currentLocation.pathname.startsWith('/auth');
 
     useEffect(() => {
-        serverStore.fetchServers();
+        serverStore.fetchServers().catch((error: unknown) => {
+            console.error('Error fetching servers:', error);
+        });
     }, []);
 
     return (
@@ -66,7 +84,14 @@ const ServerSidebar: React.FC = observer(() => {
             <div className="servers__header">
                 <div
                     className={`servers__server servers__server--home ${isOnHomePage ? 'servers__server--active' : ''}`}
-                    onClick={() => navigate('/')}
+                    onClick={() => {
+                        const result = navigate('/');
+                        if (result instanceof Promise) {
+                            result.catch((error: unknown) => {
+                                console.error('Navigation error:', error);
+                            });
+                        }
+                    }}
                 >
                     <div className="servers__server-icon">🏠</div>
                 </div>
@@ -75,7 +100,13 @@ const ServerSidebar: React.FC = observer(() => {
 
             <div className="servers__list">
                 {serverStore.servers.map((server) => (
-                    <ServerItem key={server.id} server={server} onClick={() => handleServerClick(server)} />
+                    <ServerItem
+                        key={server.id}
+                        server={server}
+                        onClick={() => {
+                            handleServerClick(server);
+                        }}
+                    />
                 ))}
                 <div className="servers__separator" />
                 <div
@@ -98,7 +129,12 @@ const ServerSidebar: React.FC = observer(() => {
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault();
-                            navigate('/settings');
+                            const result = navigate('/settings');
+                            if (result instanceof Promise) {
+                                result.catch((error: unknown) => {
+                                    console.error('Navigation error:', error);
+                                });
+                            }
                         }
                     }}
                 >
@@ -112,9 +148,9 @@ const ServerSidebar: React.FC = observer(() => {
             </div>
 
             <BlockedServerModal
-                isOpen={Boolean(blockedServer)}
+                isOpen={blockedServer != null}
                 onClose={() => setBlockedServer(null)}
-                serverName={blockedServer?.name || ''}
+                serverName={blockedServer?.name ?? ''}
                 reason={blockedServer?.reason}
                 blockedAt={blockedServer?.blockedAt}
                 blockedBy={blockedServer?.blockedBy}

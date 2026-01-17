@@ -1,10 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { MemberRowProps } from '../../types';
+import type { Role } from '../../../../../../types/role';
 import { useMemberActions } from '../../hooks/useMemberActions';
 import { getHighestRoleColor, getMemberRoles, getMemberDisplayName, getRoleDisplayText } from '../../utils/memberUtils';
 import './MemberRow.scss';
 
+/* eslint-disable max-lines-per-function -- Complex member row component */
+/* eslint-disable complexity -- Complex member row logic with multiple actions */
 const MemberRow: React.FC<MemberRowProps> = ({
     member,
     serverId,
@@ -39,7 +42,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
 
     const isCurrentUser = member.userId === currentUserId;
     const hasModerationRights = canKick || canBan || canMute || canDeafen || canManageRoles;
-    const memberRoles = getMemberRoles(member, roles);
+    const memberRolesResult = getMemberRoles(member, roles as Role[]);
+    const memberRoles: Role[] = Array.isArray(memberRolesResult) ? memberRolesResult : [];
     const roleColor = getHighestRoleColor(member);
     const displayName = getMemberDisplayName(member);
 
@@ -49,7 +53,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
                 return;
             }
 
-            if (canManageRoles && !isCurrentUser && onManageRoles) {
+            if (canManageRoles === true && isCurrentUser === false && onManageRoles != null) {
                 onManageRoles(member);
             }
         },
@@ -57,7 +61,7 @@ const MemberRow: React.FC<MemberRowProps> = ({
     );
 
     const handleContextMenuClick = useCallback(
-        (e: React.MouseEvent) => {
+        (e: React.MouseEvent<HTMLElement>) => {
             e.preventDefault();
             e.stopPropagation();
 
@@ -82,8 +86,8 @@ const MemberRow: React.FC<MemberRowProps> = ({
                 <div className="member-avatar-section">
                     <div className="avatar-wrapper">
                         <img
-                            src={member.user?.profilePicture || '/default-avatar.png'}
-                            alt={member.user?.username}
+                            src={member.user?.profilePicture ?? '/default-avatar.png'}
+                            alt={member.user?.username ?? ''}
                             className="member-avatar"
                         />
                         {member.role === 'owner' && (
@@ -96,28 +100,50 @@ const MemberRow: React.FC<MemberRowProps> = ({
 
                 <div className="member-info-section">
                     <div className="member-name-section">
-                        <span className="member-name" style={{ color: roleColor }}>
+                        <span className="member-name" style={{ color: roleColor ?? '' }}>
                             {displayName}
                         </span>
-                        {member.nickname ? <span className="member-username">@{member.user?.username}</span> : null}
+                        {member.nickname != null && member.nickname.length > 0 ? (
+                            <span className="member-username">@{member.user?.username ?? ''}</span>
+                        ) : null}
                     </div>
 
                     <div className="member-roles-section">
                         {memberRoles.length > 0 ? (
                             <div className="roles-badges">
-                                {memberRoles.map((role) => (
-                                    <span
-                                        key={role.id}
-                                        className="role-badge"
-                                        style={{
-                                            backgroundColor: role.color ? `${role.color}20` : 'rgba(88, 101, 242, 0.2)',
-                                            color: role.color || '#5865f2',
-                                            borderColor: role.color || '#5865f2'
-                                        }}
-                                    >
-                                        {role.name}
-                                    </span>
-                                ))}
+                                {memberRoles.map((roleItem: Role) => {
+                                    if (
+                                        roleItem == null ||
+                                        typeof roleItem !== 'object' ||
+                                        !('id' in roleItem) ||
+                                        !('name' in roleItem)
+                                    ) {
+                                        return null;
+                                    }
+                                    const safeRole = roleItem;
+                                    const roleColorValue: string | undefined = safeRole.color;
+                                    const roleId: number = safeRole.id;
+                                    const roleName: string = safeRole.name;
+                                    const backgroundColor =
+                                        roleColorValue != null && roleColorValue.length > 0
+                                            ? `${roleColorValue}20`
+                                            : 'rgba(88, 101, 242, 0.2)';
+                                    const textColor = roleColorValue ?? '#5865f2';
+                                    const borderColor = roleColorValue ?? '#5865f2';
+                                    return (
+                                        <span
+                                            key={roleId}
+                                            className="role-badge"
+                                            style={{
+                                                backgroundColor,
+                                                color: textColor,
+                                                borderColor
+                                            }}
+                                        >
+                                            {roleName}
+                                        </span>
+                                    );
+                                })}
                             </div>
                         ) : (
                             <span className="member-role-text">{getRoleDisplayText(member.role)}</span>
@@ -128,55 +154,73 @@ const MemberRow: React.FC<MemberRowProps> = ({
                 <div className="member-actions-section">
                     {showActions && hasModerationRights && !isCurrentUser ? (
                         <div className="quick-actions">
-                            {canManageRoles ? (
+                            {canManageRoles === true ? (
                                 <button
                                     className="action-btn manage-roles"
-                                    onClick={() => onManageRoles(member)}
-                                    title={t('serverSettings.manageRoles') || 'Управление ролями'}
+                                    onClick={() => {
+                                        onManageRoles(member);
+                                    }}
+                                    title={t('serverSettings.manageRoles') ?? 'Управление ролями'}
                                 >
                                     🎭
                                 </button>
                             ) : null}
-                            {canMute ? (
+                            {canMute === true ? (
                                 <button
-                                    className={`action-btn mute ${isMuted ? 'active' : ''}`}
-                                    onClick={handleMuteToggle}
+                                    className={`action-btn mute ${isMuted === true ? 'active' : ''}`}
+                                    onClick={() => {
+                                        handleMuteToggle().catch((error: unknown) => {
+                                            console.error('Error in handleMuteToggle:', error);
+                                        });
+                                    }}
                                     title={
-                                        isMuted
-                                            ? t('serverMembers.unmute') || 'Разглушить'
-                                            : t('serverMembers.mute') || 'Заглушить'
+                                        isMuted === true
+                                            ? (t('serverMembers.unmute') ?? 'Разглушить')
+                                            : (t('serverMembers.mute') ?? 'Заглушить')
                                     }
                                 >
-                                    {isMuted ? '🔊' : '🔇'}
+                                    {isMuted === true ? '🔊' : '🔇'}
                                 </button>
                             ) : null}
-                            {canDeafen ? (
+                            {canDeafen === true ? (
                                 <button
-                                    className={`action-btn deafen ${isDeafened ? 'active' : ''}`}
-                                    onClick={handleDeafenToggle}
+                                    className={`action-btn deafen ${isDeafened === true ? 'active' : ''}`}
+                                    onClick={() => {
+                                        handleDeafenToggle().catch((error: unknown) => {
+                                            console.error('Error in handleDeafenToggle:', error);
+                                        });
+                                    }}
                                     title={
-                                        isDeafened
-                                            ? t('serverMembers.undeafen') || 'Включить звук'
-                                            : t('serverMembers.deafen') || 'Отключить звук'
+                                        isDeafened === true
+                                            ? (t('serverMembers.undeafen') ?? 'Включить звук')
+                                            : (t('serverMembers.deafen') ?? 'Отключить звук')
                                     }
                                 >
-                                    {isDeafened ? '🔊' : '🔉'}
+                                    {isDeafened === true ? '🔊' : '🔉'}
                                 </button>
                             ) : null}
-                            {canKick ? (
+                            {canKick === true ? (
                                 <button
                                     className="action-btn kick"
-                                    onClick={handleKick}
-                                    title={t('serverMembers.kick') || 'Исключить'}
+                                    onClick={() => {
+                                        handleKick().catch((error: unknown) => {
+                                            console.error('Error in handleKick:', error);
+                                        });
+                                    }}
+                                    title={t('serverMembers.kick') ?? 'Исключить'}
                                 >
                                     👢
                                 </button>
                             ) : null}
-                            {canBan ? (
+                            {canBan === true ? (
                                 <button
                                     className="action-btn ban"
-                                    onClick={handleBan}
-                                    title={t('serverMembers.ban') || 'Забанить'}
+                                    onClick={() => {
+                                        handleBan().catch((error: unknown) => {
+                                            console.error('Error in handleBan:', error);
+                                        });
+                                    }}
+                                    title={t('serverMembers.ban') ?? 'Забанить'}
                                 >
                                     🔨
                                 </button>

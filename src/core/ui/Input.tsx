@@ -9,18 +9,22 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input: React.FC<InputProps> = ({ label, error, helperText, fullWidth = false, className = '', id, ...props }) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const inputId = id ?? `input-${Math.random().toString(36).substr(2, 9)}`;
 
     return (
-        <div className={`ui-input ${fullWidth ? 'ui-input--full-width' : ''} ${error ? 'ui-input--error' : ''}`}>
-            {label ? (
+        <div
+            className={`ui-input ${fullWidth ? 'ui-input--full-width' : ''} ${error != null && error !== '' ? 'ui-input--error' : ''}`}
+        >
+            {label != null && label !== '' ? (
                 <label htmlFor={inputId} className="ui-input__label">
                     {label}
                 </label>
             ) : null}
             <input id={inputId} className={`ui-input__field ${className}`} {...props} />
-            {error ? <span className="ui-input__error">{error}</span> : null}
-            {helperText && !error ? <span className="ui-input__helper">{helperText}</span> : null}
+            {error != null && error !== '' ? <span className="ui-input__error">{error}</span> : null}
+            {helperText != null && helperText !== '' && !(error != null && error !== '') ? (
+                <span className="ui-input__helper">{helperText}</span>
+            ) : null}
         </div>
     );
 };

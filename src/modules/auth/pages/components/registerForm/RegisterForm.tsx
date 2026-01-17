@@ -1,4 +1,5 @@
 // RegisterForm.tsx
+/* eslint-disable max-lines-per-function, complexity */
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { authStore, notificationStore } from '../../../../../core';
@@ -120,8 +121,8 @@ const RegisterForm: React.FC = () => {
     };
 
     // Обработка отправки формы
-    const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
         if (isSubmitting) {
             return;
@@ -143,21 +144,25 @@ const RegisterForm: React.FC = () => {
             );
             notificationStore.addNotification(t('authPage.messages.registrationSuccess'), 'success');
             // Редирект через React Router
-            navigate(redirectPath, { replace: true });
+            const result = navigate(redirectPath, { replace: true });
+            if (result instanceof Promise) {
+                result.catch((navError: unknown) => {
+                    console.error('Navigation error:', navError);
+                });
+            }
         } catch (error) {
             console.error('Registration failed:', error);
             if (error instanceof Error) {
                 try {
-                    const errorData = JSON.parse(error.message);
-                    notificationStore.addNotification(
-                        errorData.error || t('authPage.messages.registrationError'),
-                        'error'
-                    );
+                    const errorData = JSON.parse(error.message) as { error?: string };
+                    const errorMsg =
+                        errorData.error != null && errorData.error !== ''
+                            ? errorData.error
+                            : t('authPage.messages.registrationError');
+                    notificationStore.addNotification(errorMsg, 'error');
                 } catch {
-                    notificationStore.addNotification(
-                        error.message || t('authPage.messages.registrationError'),
-                        'error'
-                    );
+                    const errorMsg = error.message !== '' ? error.message : t('authPage.messages.registrationError');
+                    notificationStore.addNotification(errorMsg, 'error');
                 }
             } else {
                 notificationStore.addNotification(t('authPage.messages.registrationError'), 'error');
@@ -167,8 +172,14 @@ const RegisterForm: React.FC = () => {
         }
     };
 
+    const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+        handleRegister(e).catch((error: unknown) => {
+            console.error('Form submission error:', error);
+        });
+    };
+
     return (
-        <form onSubmit={handleRegister} className="auth-form">
+        <form onSubmit={onSubmitHandler} className="auth-form">
             <div className="input-group">
                 <input
                     type="text"

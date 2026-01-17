@@ -45,9 +45,9 @@ const ServerItem: React.FC<ServerItemProps> = ({ server, onClick }) => {
             onClick();
         } else {
             const navigationPromise = navigate(`/server/${server.id}`);
-            if (navigationPromise !== null && typeof navigationPromise.catch === 'function') {
-                navigationPromise.catch(() => {
-                    // Navigation error handled silently
+            if (navigationPromise !== null && navigationPromise instanceof Promise) {
+                navigationPromise.catch((error: unknown) => {
+                    console.error('Navigation error:', error);
                 });
             }
         }

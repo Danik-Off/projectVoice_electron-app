@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => (
     <button
         className={`ui-button ui-button--${variant} ui-button--${size} ${fullWidth ? 'ui-button--full-width' : ''} ${className}`}
-        disabled={disabled || loading}
+        disabled={(disabled != null && disabled) || loading}
         {...props}
     >
         {loading ? <span className="ui-button__spinner" /> : null}

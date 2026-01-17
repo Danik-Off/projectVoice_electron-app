@@ -17,20 +17,22 @@ const Textarea: React.FC<TextareaProps> = ({
     id,
     ...props
 }) => {
-    const textareaId = id || `textarea-${Math.random().toString(36).substr(2, 9)}`;
+    const textareaId = id ?? `textarea-${Math.random().toString(36).substr(2, 9)}`;
 
     return (
         <div
-            className={`ui-textarea ${fullWidth ? 'ui-textarea--full-width' : ''} ${error ? 'ui-textarea--error' : ''}`}
+            className={`ui-textarea ${fullWidth ? 'ui-textarea--full-width' : ''} ${error != null && error !== '' ? 'ui-textarea--error' : ''}`}
         >
-            {label ? (
+            {label != null && label !== '' ? (
                 <label htmlFor={textareaId} className="ui-textarea__label">
                     {label}
                 </label>
             ) : null}
             <textarea id={textareaId} className={`ui-textarea__field ${className}`} {...props} />
-            {error ? <span className="ui-textarea__error">{error}</span> : null}
-            {helperText && !error ? <span className="ui-textarea__helper">{helperText}</span> : null}
+            {error != null && error !== '' ? <span className="ui-textarea__error">{error}</span> : null}
+            {helperText != null && helperText !== '' && !(error != null && error !== '') ? (
+                <span className="ui-textarea__helper">{helperText}</span>
+            ) : null}
         </div>
     );
 };

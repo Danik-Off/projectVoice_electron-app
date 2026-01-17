@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function -- Complex visualization component */
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { audioSettingsStore } from '../../../core';
@@ -9,74 +10,57 @@ interface MicrophoneVisualizerProps {
 
 const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ isActive = true }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const animationFrameRef = useRef<number>();
+    const animationFrameRef = useRef<number | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const [audioLevel, setAudioLevel] = useState(0);
     const [isMonitoring, setIsMonitoring] = useState(false);
 
-    const startMonitoring = async () => {
-        if (!audioSettingsStore.stream || isMonitoring) {
-            return;
-        }
+    const getColorForLevel = (level: number): string => {
+        if (level > 0.8) {
+            return '#ff4444';
+        } // Красный - слишком громко
+        if (level > 0.6) {
+            return '#ffaa00';
+        } // Оранжевый - громко
+        if (level > 0.3) {
+            return '#44ff44';
+        } // Зеленый - нормально
+        return '#8888ff'; // Синий - тихо
+    };
 
-        try {
-            // Проверяем, что поток активен и не заглушен
-            const audioTracks = audioSettingsStore.stream.getAudioTracks();
-            if (audioTracks.length === 0 || !audioTracks[0].enabled) {
-                return;
-            }
+    const drawLevelMeter = (ctx: CanvasRenderingContext2D, level: number, width: number, height: number): void => {
+        const barWidth = 4;
+        const barSpacing = 2;
+        const barCount = 20;
+        const totalBarWidth = (barWidth + barSpacing) * barCount - barSpacing;
+        const startX = (width - totalBarWidth) / 2;
+        const maxBarHeight = height * 0.6;
 
-            const audioContext = new AudioContext({
-                sampleRate: audioSettingsStore.sampleRate || 48000
-            });
+        for (let i = 0; i < barCount; i++) {
+            const barIndex = i / barCount;
+            const barLevel = Math.max(0, level - barIndex);
+            const barHeight = barLevel * maxBarHeight;
+            const x = startX + i * (barWidth + barSpacing);
+            const y = height / 2 - barHeight / 2;
 
-            // Убеждаемся, что контекст активен
-            if (audioContext.state === 'suspended') {
-                await audioContext.resume();
-            }
-
-            const analyser = audioContext.createAnalyser();
-            const source = audioContext.createMediaStreamSource(audioSettingsStore.stream);
-
-            analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.8;
-            analyser.minDecibels = -90;
-            analyser.maxDecibels = -10;
-            source.connect(analyser);
-
-            audioContextRef.current = audioContext;
-            analyserRef.current = analyser;
-            setIsMonitoring(true);
-
-            visualize();
-        } catch (error) {
-            console.error('Error starting microphone visualization:', error);
-            setIsMonitoring(false);
+            // Цвет в зависимости от уровня
+            const color = getColorForLevel(barLevel);
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, barWidth, barHeight);
         }
     };
 
-    const stopMonitoring = () => {
-        if (animationFrameRef.current) {
-            cancelAnimationFrame(animationFrameRef.current);
-            animationFrameRef.current = undefined;
-        }
-        setIsMonitoring(false);
-        analyserRef.current = null;
-        setAudioLevel(0);
-        // Не закрываем контекст, так как он может использоваться другими компонентами
-    };
-
-    const visualize = () => {
+    const visualize = (): void => {
         const canvas = canvasRef.current;
         const analyser = analyserRef.current;
 
-        if (!canvas || !analyser) {
+        if (canvas == null || analyser == null) {
             return;
         }
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) {
+        if (ctx == null) {
             return;
         }
 
@@ -85,8 +69,8 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
         const width = canvas.width;
         const height = canvas.height;
 
-        const draw = () => {
-            if (!isMonitoring || !analyser) {
+        const draw = (): void => {
+            if (!isMonitoring || analyser == null) {
                 return;
             }
 
@@ -146,69 +130,82 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
         draw();
     };
 
-    const getColorForLevel = (level: number): string => {
-        if (level > 0.8) {
-            return '#ff4444';
-        } // Красный - слишком громко
-        if (level > 0.6) {
-            return '#ffaa00';
-        } // Оранжевый - громко
-        if (level > 0.3) {
-            return '#44ff44';
-        } // Зеленый - нормально
-        return '#8888ff'; // Синий - тихо
+    const startMonitoring = async (): Promise<void> => {
+        if (audioSettingsStore.stream == null || isMonitoring) {
+            return;
+        }
+
+        try {
+            // Проверяем, что поток активен и не заглушен
+            const audioTracks = audioSettingsStore.stream.getAudioTracks();
+            if (audioTracks.length === 0 || !audioTracks[0].enabled) {
+                return;
+            }
+
+            const audioContext = new AudioContext({
+                sampleRate: audioSettingsStore.sampleRate ?? 48000
+            });
+
+            // Убеждаемся, что контекст активен
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+
+            const analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaStreamSource(audioSettingsStore.stream);
+
+            analyser.fftSize = 2048;
+            analyser.smoothingTimeConstant = 0.8;
+            analyser.minDecibels = -90;
+            analyser.maxDecibels = -10;
+            source.connect(analyser);
+
+            audioContextRef.current = audioContext;
+            analyserRef.current = analyser;
+            setIsMonitoring(true);
+
+            visualize();
+        } catch (visualizationError: unknown) {
+            console.error('Error starting microphone visualization:', visualizationError);
+            setIsMonitoring(false);
+        }
+    };
+
+    const stopMonitoring = (): void => {
+        if (animationFrameRef.current != null) {
+            cancelAnimationFrame(animationFrameRef.current);
+            animationFrameRef.current = null;
+        }
+        setIsMonitoring(false);
+        analyserRef.current = null;
+        setAudioLevel(0);
+        // Не закрываем контекст, так как он может использоваться другими компонентами
     };
 
     useEffect(() => {
         const shouldMonitor =
-            isActive &&
-            audioSettingsStore.stream &&
+            isActive === true &&
+            audioSettingsStore.stream != null &&
             !audioSettingsStore.isMicrophoneMuted &&
             audioSettingsStore.stream.getAudioTracks().length > 0 &&
-            audioSettingsStore.stream.getAudioTracks()[0].enabled;
+            audioSettingsStore.stream.getAudioTracks()[0]?.enabled === true;
 
         if (!shouldMonitor) {
             stopMonitoring();
-            return;
+            return () => {
+                stopMonitoring();
+            };
         }
 
-        startMonitoring();
+        startMonitoring().catch((monitoringError: unknown) => {
+            console.error('Error in startMonitoring:', monitoringError);
+        });
 
         return () => {
             stopMonitoring();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isActive, audioSettingsStore.stream, audioSettingsStore.isMicrophoneMuted]);
-
-    const drawLevelMeter = (ctx: CanvasRenderingContext2D, level: number, width: number, height: number) => {
-        const barWidth = 4;
-        const barSpacing = 2;
-        const barCount = 20;
-        const totalBarWidth = (barWidth + barSpacing) * barCount - barSpacing;
-        const startX = (width - totalBarWidth) / 2;
-        const maxBarHeight = height * 0.6;
-
-        for (let i = 0; i < barCount; i++) {
-            const barIndex = i / barCount;
-            const barLevel = Math.max(0, level - barIndex);
-            const barHeight = barLevel * maxBarHeight;
-            const x = startX + i * (barWidth + barSpacing);
-            const y = height / 2 - barHeight / 2;
-
-            // Цвет в зависимости от уровня
-            let color = '#4a9eff';
-            if (barIndex < 0.3) {
-                color = level > 0.3 ? '#44ff44' : '#8888ff';
-            } else if (barIndex < 0.6) {
-                color = '#ffaa00';
-            } else {
-                color = '#ff4444';
-            }
-
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, barWidth, barHeight);
-        }
-    };
 
     return (
         <div className="microphone-visualizer">
@@ -231,7 +228,7 @@ const MicrophoneVisualizer: React.FC<MicrophoneVisualizerProps> = observer(({ is
                     {audioLevel > 0.9 && (
                         <div className="warning-message">⚠️ Слишком громко! Уменьшите громкость микрофона</div>
                     )}
-                    {audioLevel < 0.1 && audioSettingsStore.stream ? (
+                    {audioLevel < 0.1 && audioSettingsStore.stream != null ? (
                         <div className="info-message">ℹ️ Микрофон не улавливает звук</div>
                     ) : null}
                 </div>

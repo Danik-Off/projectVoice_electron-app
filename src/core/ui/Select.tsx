@@ -19,11 +19,13 @@ const Select: React.FC<SelectProps> = ({
     id,
     ...props
 }) => {
-    const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+    const selectId = id ?? `select-${Math.random().toString(36).substr(2, 9)}`;
 
     return (
-        <div className={`ui-select ${fullWidth ? 'ui-select--full-width' : ''} ${error ? 'ui-select--error' : ''}`}>
-            {label ? (
+        <div
+            className={`ui-select ${fullWidth ? 'ui-select--full-width' : ''} ${error != null && error !== '' ? 'ui-select--error' : ''}`}
+        >
+            {label != null && label !== '' ? (
                 <label htmlFor={selectId} className="ui-select__label">
                     {label}
                 </label>
@@ -35,8 +37,10 @@ const Select: React.FC<SelectProps> = ({
                     </option>
                 ))}
             </select>
-            {error ? <span className="ui-select__error">{error}</span> : null}
-            {helperText && !error ? <span className="ui-select__helper">{helperText}</span> : null}
+            {error != null && error !== '' ? <span className="ui-select__error">{error}</span> : null}
+            {helperText != null && helperText !== '' && !(error != null && error !== '') ? (
+                <span className="ui-select__helper">{helperText}</span>
+            ) : null}
         </div>
     );
 };

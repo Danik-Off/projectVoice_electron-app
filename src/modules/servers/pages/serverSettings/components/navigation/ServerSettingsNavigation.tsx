@@ -28,6 +28,8 @@ interface ServerSettingsNavigationProps {
     currentUserPermissions?: string | bigint;
 }
 
+/* eslint-disable max-lines-per-function -- Complex navigation component with many tabs */
+/* eslint-disable complexity -- Complex navigation logic with role-based access */
 const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
     activeTab,
     onTabChange,
@@ -124,26 +126,28 @@ const ServerSettingsNavigation: React.FC<ServerSettingsNavigationProps> = ({
     const advancedTabs = filteredTabs.filter((tab) => tab.category === 'advanced');
     const dangerTabs = filteredTabs.filter((tab) => tab.category === 'danger');
 
-    const renderTabGroup = (tabs: TabItem[], groupLabel?: string) => {
-        if (tabs.length === 0) {
+    const renderTabGroup = (tabItems: TabItem[], groupLabel?: string) => {
+        if (tabItems.length === 0) {
             return null;
         }
 
         return (
             <div className="nav-group">
-                {groupLabel ? <div className="group-label">{groupLabel}</div> : null}
-                {tabs.map((tab) => (
+                {groupLabel != null && groupLabel.length > 0 ? <div className="group-label">{groupLabel}</div> : null}
+                {tabItems.map((tab) => (
                     <div
                         key={tab.id}
                         className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                         onClick={() => onTabChange(tab.id)}
-                        title={tab.description}
+                        title={tab.description ?? ''}
                     >
                         <div className="tab-content">
                             <span className="tab-icon">{tab.icon}</span>
                             <div className="tab-text">
                                 <span className="tab-label">{tab.label}</span>
-                                {tab.description ? <span className="tab-description">{tab.description}</span> : null}
+                                {tab.description != null && tab.description.length > 0 ? (
+                                    <span className="tab-description">{tab.description}</span>
+                                ) : null}
                             </div>
                         </div>
                         {activeTab === tab.id && <div className="active-indicator" />}

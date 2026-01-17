@@ -24,9 +24,10 @@ class InviteService {
             },
             options
         );
-        return response.invite;
+        return response.invite as Invite;
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getInvite(token: string): Promise<Invite> {
         return apiClient(`/invite/invite/${token}`, {
             method: 'GET'
@@ -45,6 +46,7 @@ class InviteService {
         });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getServerInvites(serverId: number): Promise<Invite[]> {
         return apiClient(`/invite/${serverId}/invites`, {
             method: 'GET'

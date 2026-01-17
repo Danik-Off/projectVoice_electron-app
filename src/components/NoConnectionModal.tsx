@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { connectionStore } from '../core/store/ConnectionStore';
 import './NoConnectionModal.scss';
 
+/* eslint-disable max-lines-per-function */
 const NoConnectionModal: React.FC = observer(() => {
     const { t } = useTranslation();
     const [newUrl, setNewUrl] = useState(connectionStore.serverUrl);

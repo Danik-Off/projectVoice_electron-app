@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function -- Complex profile settings hook */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authStore, notificationStore } from '../../../../../../core';
@@ -17,8 +18,8 @@ export const useProfileSettings = () => {
 
     // Формы
     const [editForm, setEditForm] = useState<ProfileForm>({
-        username: authStore.user?.username || '',
-        email: authStore.user?.email || ''
+        username: authStore.user?.username ?? '',
+        email: authStore.user?.email ?? ''
     });
 
     const [passwordForm, setPasswordForm] = useState<PasswordForm>({
@@ -28,18 +29,18 @@ export const useProfileSettings = () => {
     });
 
     const [originalForm, setOriginalForm] = useState<ProfileForm>({
-        username: authStore.user?.username || '',
-        email: authStore.user?.email || ''
+        username: authStore.user?.username ?? '',
+        email: authStore.user?.email ?? ''
     });
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
     // Обновляем формы при изменении пользователя
     useEffect(() => {
-        if (authStore.user) {
+        if (authStore.user != null) {
             const userData: ProfileForm = {
-                username: authStore.user.username || '',
-                email: authStore.user.email || ''
+                username: authStore.user.username ?? '',
+                email: authStore.user.email ?? ''
             };
             setEditForm(userData);
             setOriginalForm(userData);
@@ -114,7 +115,7 @@ export const useProfileSettings = () => {
 
         setIsLoading(true);
         try {
-            if (authStore.user?.id) {
+            if (authStore.user?.id != null) {
                 await authStore.updateProfile(editForm);
                 setOriginalForm(editForm);
                 setShowEditProfile(false);
@@ -122,7 +123,7 @@ export const useProfileSettings = () => {
             }
         } catch (error: unknown) {
             const errorMessage =
-                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
                 t('settingsPage.profile.messages.updateError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error updating profile:', error);
@@ -151,7 +152,7 @@ export const useProfileSettings = () => {
 
         setIsPasswordLoading(true);
         try {
-            if (authStore.user?.id) {
+            if (authStore.user?.id != null) {
                 await authStore.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
                 setShowPasswordForm(false);
                 setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -159,7 +160,7 @@ export const useProfileSettings = () => {
             }
         } catch (error: unknown) {
             const errorMessage =
-                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
                 t('settingsPage.profile.messages.passwordChangeError');
             notificationStore.addNotification(errorMessage, 'error');
             console.error('Error changing password:', error);

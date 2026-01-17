@@ -66,10 +66,12 @@ export class ModuleManager {
     async initializeAll(): Promise<void> {
         const sortedModules = this.sortModulesByDependencies();
 
+        // Последовательная инициализация необходима для соблюдения зависимостей
+        /* eslint-disable no-await-in-loop */
         for (const moduleId of sortedModules) {
-            // Последовательная инициализация необходима для соблюдения зависимостей
             await this.initialize(moduleId);
         }
+        /* eslint-enable no-await-in-loop */
     }
 
     /**
@@ -89,12 +91,13 @@ export class ModuleManager {
         // Проверяем зависимости
         if (moduleInstance.dependencies) {
             // Последовательная инициализация зависимостей необходима
-
+            /* eslint-disable no-await-in-loop */
             for (const depId of moduleInstance.dependencies) {
                 if (!this.initializedModules.has(depId)) {
                     await this.initialize(depId);
                 }
             }
+            /* eslint-enable no-await-in-loop */
         }
 
         try {
@@ -133,10 +136,11 @@ export class ModuleManager {
     async destroyAll(): Promise<void> {
         const initializedModules = Array.from(this.initializedModules);
         // Уничтожаем в обратном порядке
-
+        /* eslint-disable no-await-in-loop */
         for (let i = initializedModules.length - 1; i >= 0; i--) {
             await this.destroy(initializedModules[i]);
         }
+        /* eslint-enable no-await-in-loop */
     }
 
     /**

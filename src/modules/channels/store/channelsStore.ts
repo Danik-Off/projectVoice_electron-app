@@ -19,15 +19,16 @@ class ChannelsStore {
         this.currentChannel = channel;
 
         // Публикуем событие о выборе канала
-        if (channel) {
-            eventBus.emit(CHANNELS_EVENTS.CHANNEL_SELECTED, {
+        if (channel != null) {
+            const channelEvent: ChannelSelectedEvent = {
                 channel: {
                     id: channel.id,
                     name: channel.name,
                     type: channel.type,
                     description: channel.description
                 }
-            } as ChannelSelectedEvent);
+            };
+            eventBus.emit(CHANNELS_EVENTS.CHANNEL_SELECTED, channelEvent);
         }
     }
 
@@ -46,7 +47,7 @@ class ChannelsStore {
             });
 
             // Публикуем событие о загрузке каналов
-            eventBus.emit(CHANNELS_EVENTS.CHANNELS_LOADED, {
+            const channelsEvent: ChannelsLoadedEvent = {
                 channels: data.map((ch) => ({
                     id: ch.id,
                     name: ch.name,
@@ -54,7 +55,8 @@ class ChannelsStore {
                     description: ch.description
                 })),
                 serverId
-            } as ChannelsLoadedEvent);
+            };
+            eventBus.emit(CHANNELS_EVENTS.CHANNELS_LOADED, channelsEvent);
         } catch (error) {
             runInAction(() => {
                 this.error = (error as Error).message;

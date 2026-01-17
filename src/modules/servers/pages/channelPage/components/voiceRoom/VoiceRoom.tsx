@@ -21,6 +21,7 @@ interface Participant {
     isSpeaking?: boolean;
 }
 
+/* eslint-disable max-lines-per-function -- Complex component with multiple responsibilities */
 const VoiceRoom: React.FC = () => {
     const { openProfile } = useUserProfile();
     const currentUser = authStore.user;
@@ -29,34 +30,49 @@ const VoiceRoom: React.FC = () => {
 
     // Подписка на события участников
     useEffect(() => {
-        const unsubscribeJoined = eventBus.on<VoiceParticipantJoinedEvent>(VOICE_EVENTS.PARTICIPANT_JOINED, (data) => {
-            if (data) {
-                setUsers((prev) => [...prev, data.participant]);
+        const handleParticipantJoined = (data: unknown) => {
+            if (data != null && typeof data === 'object' && 'participant' in data) {
+                const participant = (data as { participant: Participant }).participant;
+                setUsers((prev) => [...prev, participant]);
             }
-        });
+        };
 
-        const unsubscribeLeft = eventBus.on<VoiceParticipantLeftEvent>(VOICE_EVENTS.PARTICIPANT_LEFT, (data) => {
-            if (data) {
-                setUsers((prev) => prev.filter((u) => u.socketId !== data.socketId));
+        const handleParticipantLeft = (data: unknown) => {
+            if (data != null && typeof data === 'object' && 'socketId' in data) {
+                const socketId = (data as { socketId: string }).socketId;
+                setUsers((prev) => prev.filter((u) => u.socketId !== socketId));
             }
-        });
+        };
 
+        const handleParticipantsUpdated = (data: unknown) => {
+            if (data != null && typeof data === 'object' && 'participants' in data) {
+                const participants = (data as { participants: Participant[] }).participants;
+                setUsers(participants);
+            }
+        };
+
+        const handleLocalSpeaking = (data: unknown) => {
+            if (data != null && typeof data === 'object' && 'isSpeaking' in data) {
+                const isSpeaking = (data as { isSpeaking: boolean }).isSpeaking;
+                setIsLocalSpeaking(isSpeaking);
+            }
+        };
+
+        const unsubscribeJoined = eventBus.on<VoiceParticipantJoinedEvent>(
+            VOICE_EVENTS.PARTICIPANT_JOINED,
+            handleParticipantJoined
+        );
+        const unsubscribeLeft = eventBus.on<VoiceParticipantLeftEvent>(
+            VOICE_EVENTS.PARTICIPANT_LEFT,
+            handleParticipantLeft
+        );
         const unsubscribeUpdated = eventBus.on<VoiceParticipantsUpdatedEvent>(
             VOICE_EVENTS.PARTICIPANTS_UPDATED,
-            (data) => {
-                if (data) {
-                    setUsers(data.participants);
-                }
-            }
+            handleParticipantsUpdated
         );
-
         const unsubscribeLocalSpeaking = eventBus.on<{ isSpeaking: boolean }>(
             VOICE_EVENTS.LOCAL_SPEAKING_STATE_CHANGED,
-            (data) => {
-                if (data) {
-                    setIsLocalSpeaking(data.isSpeaking);
-                }
-            }
+            handleLocalSpeaking
         );
 
         return () => {
@@ -72,7 +88,7 @@ const VoiceRoom: React.FC = () => {
             <h2>Voice Room</h2>
 
             {/* Локальный пользователь */}
-            {currentUser ? (
+            {currentUser != null ? (
                 <div className={`user-box local-user ${isLocalSpeaking ? 'speaking' : ''}`}>
                     <ClickableAvatar
                         user={{
@@ -90,14 +106,14 @@ const VoiceRoom: React.FC = () => {
                         className="user-avatar"
                     />
                     <div className="user-name">{currentUser.username} (Вы)</div>
-                    <div className="user-status">{isLocalSpeaking ? '🎤 Говорит' : '🔇 Молчит'}</div>
+                    <div className="user-status">{isLocalSpeaking === true ? '🎤 Говорит' : '🔇 Молчит'}</div>
                 </div>
             ) : null}
 
             <div className="user-list">
                 {users.map((user) => (
-                    <div key={user.socketId} className={`user-box ${user.isSpeaking ? 'speaking' : ''}`}>
-                        {user.userData ? (
+                    <div key={user.socketId} className={`user-box ${user.isSpeaking === true ? 'speaking' : ''}`}>
+                        {user.userData != null ? (
                             <ClickableAvatar
                                 user={{
                                     id: user.userData.id,
@@ -111,7 +127,7 @@ const VoiceRoom: React.FC = () => {
                                 }}
                                 size="medium"
                                 onClick={() => {
-                                    if (user.userData) {
+                                    if (user.userData != null) {
                                         openProfile(
                                             {
                                                 id: user.userData.id,
@@ -132,7 +148,11 @@ const VoiceRoom: React.FC = () => {
                         ) : null}
                         <div className="user-name">{user.userData?.username || 'Unknown User'}</div>
                         <div className="user-status">
-                            {user.isSpeaking ? '🎤 Говорит' : user.micToggle ? '🔇 Молчит' : '🔇 Выключен'}
+                            {user.isSpeaking === true
+                                ? '🎤 Говорит'
+                                : user.micToggle === true
+                                  ? '🔇 Молчит'
+                                  : '🔇 Выключен'}
                         </div>
                     </div>
                 ))}

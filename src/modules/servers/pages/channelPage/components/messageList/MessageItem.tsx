@@ -10,6 +10,8 @@ interface MessageItemProps {
     isFirstInGroup?: boolean;
 }
 
+/* eslint-disable max-lines-per-function -- Complex component with multiple responsibilities */
+/* eslint-disable complexity -- Complex component with multiple conditional branches */
 const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = false }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editContent, setEditContent] = useState(message.content);
@@ -40,8 +42,9 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
 
     useEffect(
         () => () => {
-            if (actionsTimeoutRef.current) {
-                clearTimeout(actionsTimeoutRef.current);
+            const timeoutId = actionsTimeoutRef.current;
+            if (timeoutId != null && timeoutId > 0) {
+                clearTimeout(timeoutId);
             }
         },
         []
@@ -53,8 +56,8 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
         setShowActions(false);
     };
 
-    const handleSave = async () => {
-        if (editContent.trim() && editContent !== message.content) {
+    const handleSave = () => {
+        if (editContent.trim().length > 0 && editContent !== message.content) {
             try {
                 // Отправляем команду через eventBus
                 eventBus.emit(MESSAGING_COMMANDS.UPDATE_MESSAGE, {
@@ -75,7 +78,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
         setEditContent(message.content);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         // eslint-disable-next-line no-alert
         if (window.confirm('Вы уверены, что хотите удалить это сообщение?')) {
             setIsDeleting(true);
@@ -100,9 +103,14 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
         }
     };
 
+    const handleSaveClick = () => {
+        handleSave();
+    };
+
     const handleMouseEnter = () => {
-        if (actionsTimeoutRef.current) {
-            clearTimeout(actionsTimeoutRef.current);
+        const timeoutId = actionsTimeoutRef.current;
+        if (timeoutId != null && timeoutId > 0) {
+            clearTimeout(timeoutId);
         }
         setShowActions(true);
     };
@@ -140,16 +148,16 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
     };
 
     const getStatusIcon = () => {
-        if (message.isDeleted) {
+        if (message.isDeleted === true) {
             return '🗑️';
         }
-        if (message.isEdited) {
+        if (message.isEdited === true) {
             return '✏️';
         }
         return '✓';
     };
 
-    if (message.isDeleted) {
+    if (message.isDeleted === true) {
         return (
             <div className="message-item system-message deleted-message">
                 <div className="message-content">
@@ -203,13 +211,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
             <div className="message-content">
                 {isFirstInGroup ? (
                     <div className="message-header">
-                        <span className="message-author">{message.user?.username || 'Неизвестный пользователь'}</span>
+                        <span className="message-author">{message.user?.username ?? 'Неизвестный пользователь'}</span>
                         <span className="message-time">
                             {formatTime(message.createdAt)}
-                            {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
+                            {message.isEdited === true ? <span className="edit-indicator"> (изменено)</span> : null}
                         </span>
                         <div className="message-status">
-                            <span className={`status-icon ${message.isDeleted ? 'deleted' : 'delivered'}`}>
+                            <span className={`status-icon ${message.isDeleted === true ? 'deleted' : 'delivered'}`}>
                                 {getStatusIcon()}
                             </span>
                         </div>
@@ -229,8 +237,12 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
                             maxLength={2000}
                         />
                         <div className="edit-actions">
-                            <button className="save-btn" onClick={handleSave} disabled={!editContent.trim()}>
-                                {editContent.trim() ? 'Сохранить' : 'Отмена'}
+                            <button
+                                className="save-btn"
+                                onClick={handleSaveClick}
+                                disabled={editContent.trim().length === 0}
+                            >
+                                {editContent.trim().length > 0 ? 'Сохранить' : 'Отмена'}
                             </button>
                             <button className="cancel-btn" onClick={handleCancel}>
                                 Отмена
@@ -239,19 +251,22 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
                     </div>
                 ) : (
                     <div className="message-text">
-                        {message.content.split('\n').map((line, index) => (
-                            <React.Fragment key={index}>
-                                {line}
-                                {index < message.content.split('\n').length - 1 && <br />}
-                            </React.Fragment>
-                        ))}
+                        {message.content.split('\n').map((line, index, lines) => {
+                            const lineKey = `${message.id}-${line.substring(0, 20)}-${line.length}-${index}`;
+                            return (
+                                <React.Fragment key={lineKey}>
+                                    {line}
+                                    {index < lines.length - 1 && <br />}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
                 )}
 
                 {!isFirstInGroup && (
                     <div className="message-time">
                         {formatTime(message.createdAt)}
-                        {message.isEdited ? <span className="edit-indicator"> (изменено)</span> : null}
+                        {message.isEdited === true ? <span className="edit-indicator"> (изменено)</span> : null}
                     </div>
                 )}
 
@@ -270,11 +285,13 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, isFirstInGroup = fal
                         {canDelete ? (
                             <button
                                 className="action-btn delete-btn"
-                                onClick={handleDelete}
+                                onClick={() => {
+                                    handleDelete();
+                                }}
                                 title="Удалить"
-                                disabled={isDeleting}
+                                disabled={isDeleting === true}
                             >
-                                {isDeleting ? '⏳' : '🗑️'}
+                                {isDeleting === true ? '⏳' : '🗑️'}
                             </button>
                         ) : null}
                     </div>

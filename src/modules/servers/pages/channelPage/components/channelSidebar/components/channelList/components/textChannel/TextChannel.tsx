@@ -5,6 +5,8 @@ interface TextChannelProps {
     name: string;
 }
 
-const TextChannel: React.FC<TextChannelProps> = ({ name }) => <div className="text-channel">{name}</div>;
+const TextChannel: React.FC<TextChannelProps> = ({ name: channelName }) => (
+    <div className="text-channel">{channelName}</div>
+);
 
 export default TextChannel;

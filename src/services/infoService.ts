@@ -18,6 +18,7 @@ class InfoService {
     /**
      * Получить информацию о приложении (включая стили Discord)
      */
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getInfo(): Promise<AppInfo> {
         return apiClient('/info', {
             method: 'GET'

@@ -27,6 +27,7 @@ class AudioQualityTester {
     /**
      * Инициализация тестера аудио качества
      */
+    // eslint-disable-next-line require-await -- No await needed
     public async initialize(): Promise<void> {
         try {
             this.audioContext = new AudioContext({
@@ -62,7 +63,9 @@ class AudioQualityTester {
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'default');
 
-            stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования базовых настроек:', error);
@@ -89,7 +92,9 @@ class AudioQualityTester {
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'high');
 
-            stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования высокого качества:', error);
@@ -117,7 +122,9 @@ class AudioQualityTester {
             const metrics = await this.analyzeAudioStream(stream);
             const result = this.evaluateQuality(metrics, 'professional');
 
-            stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
             return result;
         } catch (error) {
             console.error('AudioQualityTester: Ошибка тестирования профессионального качества:', error);
@@ -154,6 +161,7 @@ class AudioQualityTester {
     /**
      * Измерение задержки аудио
      */
+    // eslint-disable-next-line require-await -- No await needed
     private async measureLatency(): Promise<number> {
         if (!this.audioContext) {
             return 0;
@@ -182,16 +190,17 @@ class AudioQualityTester {
         }
 
         // Примерный расчет битрейта на основе настроек
-        const sampleRate = this.audioContext.sampleRate;
+        const audioSampleRate = this.audioContext.sampleRate;
         const bitDepth = 24; // Предполагаемая разрядность
         const channels = 2; // Стерео
 
-        return (sampleRate * bitDepth * channels) / 1000; // kbps
+        return (audioSampleRate * bitDepth * channels) / 1000; // kbps
     }
 
     /**
      * Измерение отношения сигнал/шум
      */
+    // eslint-disable-next-line require-await -- No await needed
     private async measureSNR(): Promise<number> {
         if (!this.analyser) {
             return 0;
@@ -222,6 +231,7 @@ class AudioQualityTester {
     /**
      * Измерение частотной характеристики
      */
+    // eslint-disable-next-line require-await -- No await needed
     private async measureFrequencyResponse(): Promise<number[]> {
         if (!this.analyser) {
             return [];
@@ -239,6 +249,7 @@ class AudioQualityTester {
     /**
      * Измерение уровня искажений
      */
+    // eslint-disable-next-line require-await -- No await needed
     private async measureDistortion(): Promise<number> {
         if (!this.analyser) {
             return 0;
@@ -275,12 +286,20 @@ class AudioQualityTester {
         const measurements: number[] = [];
         const numMeasurements = 10;
 
-        for (let i = 0; i < numMeasurements; i++) {
-            const startTime = performance.now();
-            await new Promise((resolve) => setTimeout(resolve, 1));
-            const endTime = performance.now();
-            measurements.push(endTime - startTime);
-        }
+        const promises = Array.from(
+            { length: numMeasurements },
+            () =>
+                new Promise<number>((resolve) => {
+                    setTimeout(() => {
+                        const startTime = performance.now();
+                        const endTime = performance.now();
+                        resolve(endTime - startTime);
+                    }, 1);
+                })
+        );
+
+        const results = await Promise.all(promises);
+        measurements.push(...results);
 
         // Расчет стандартного отклонения как меры джиттера
         const mean = measurements.reduce((a, b) => a + b) / measurements.length;
@@ -292,7 +311,7 @@ class AudioQualityTester {
     /**
      * Оценка качества на основе метрик
      */
-    private evaluateQuality(metrics: AudioQualityMetrics, testType: string): AudioTestResult {
+    private evaluateQuality(metrics: AudioQualityMetrics, _testType: string): AudioTestResult {
         let score = 0;
         const recommendations: string[] = [];
 
@@ -365,8 +384,10 @@ class AudioQualityTester {
      * Очистка ресурсов
      */
     public cleanup(): void {
-        if (this.audioContext && this.audioContext.state !== 'closed') {
-            this.audioContext.close();
+        if (this.audioContext != null && this.audioContext.state !== 'closed') {
+            this.audioContext.close().catch(() => {
+                // Ignore close errors
+            });
         }
         this.audioContext = null;
         this.analyser = null;

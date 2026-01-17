@@ -12,9 +12,10 @@ import './constants/i18n';
 themeStore.loadTheme();
 
 // Дополнительная проверка инициализации темы
-const rootElement = document.documentElement;
-if (!rootElement.getAttribute('data-theme')) {
-    rootElement.setAttribute('data-theme', themeStore.currentTheme);
+const documentElement = document.documentElement;
+const currentTheme = documentElement.getAttribute('data-theme');
+if (currentTheme == null || currentTheme === '') {
+    documentElement.setAttribute('data-theme', themeStore.currentTheme);
 }
 
 // Инициализируем приложение (модули, плагины, MobX)
@@ -23,11 +24,11 @@ initializeApp()
         // Создаем роутер ПОСЛЕ инициализации модулей
         const router = createRouter();
 
-        const rootElement = document.getElementById('root');
-        if (!rootElement) {
+        const rootEl = document.getElementById('root');
+        if (rootEl == null) {
             throw new Error('Root element not found');
         }
-        createRoot(rootElement).render(
+        createRoot(rootEl).render(
             <StrictMode>
                 <RouterProvider router={router} />
                 <NoConnectionModal />
@@ -37,11 +38,11 @@ initializeApp()
     .catch((error: unknown) => {
         console.error('Failed to initialize app:', error);
         // Показываем ошибку пользователю
-        const rootElement = document.getElementById('root');
-        if (!rootElement) {
+        const rootEl = document.getElementById('root');
+        if (rootEl == null) {
             throw new Error('Root element not found');
         }
-        const root = createRoot(rootElement);
+        const root = createRoot(rootEl);
         root.render(
             <div style={{ padding: '20px', color: 'red' }}>
                 <h1>Ошибка инициализации приложения</h1>

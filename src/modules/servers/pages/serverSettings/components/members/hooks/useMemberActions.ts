@@ -1,8 +1,12 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { serverMembersService, Permissions, hasPermission } from '../../../../../';
+import {
+    serverMembersService,
+    Permissions as PermissionsEnum,
+    hasPermission,
+    type ServerMember
+} from '../../../../../';
 import { notificationStore } from '../../../../../../../core';
-import type { ServerMember } from '../../../../../';
 
 interface UseMemberActionsProps {
     member: ServerMember;
@@ -13,19 +17,19 @@ interface UseMemberActionsProps {
 
 export const useMemberActions = ({ member, serverId, currentUserPermissions, onUpdate }: UseMemberActionsProps) => {
     const { t } = useTranslation();
-    const [isMuted, setIsMuted] = useState(member.isMuted || false);
-    const [isDeafened, setIsDeafened] = useState(member.isDeafened || false);
+    const [isMuted, setIsMuted] = useState(member.isMuted ?? false);
+    const [isDeafened, setIsDeafened] = useState(member.isDeafened ?? false);
 
-    const canKick = hasPermission(currentUserPermissions, Permissions.KICK_MEMBERS);
-    const canBan = hasPermission(currentUserPermissions, Permissions.BAN_MEMBERS);
-    const canMute = hasPermission(currentUserPermissions, Permissions.MUTE_MEMBERS);
-    const canDeafen = hasPermission(currentUserPermissions, Permissions.DEAFEN_MEMBERS);
-    const canManageRoles = hasPermission(currentUserPermissions, Permissions.MANAGE_ROLES);
+    const canKick = hasPermission(currentUserPermissions, PermissionsEnum.KICK_MEMBERS);
+    const canBan = hasPermission(currentUserPermissions, PermissionsEnum.BAN_MEMBERS);
+    const canMute = hasPermission(currentUserPermissions, PermissionsEnum.MUTE_MEMBERS);
+    const canDeafen = hasPermission(currentUserPermissions, PermissionsEnum.DEAFEN_MEMBERS);
+    const canManageRoles = hasPermission(currentUserPermissions, PermissionsEnum.MANAGE_ROLES);
 
     const handleKick = useCallback(async () => {
-        const memberName = member.nickname || member.user?.username;
-        const confirmMessage = t('serverMembers.kickConfirm') || `Вы уверены, что хотите исключить ${memberName}?`;
-        // eslint-disable-next-line no-alert
+        const memberName = member.nickname ?? member.user?.username ?? 'Unknown';
+        const confirmMessage = t('serverMembers.kickConfirm') ?? `Вы уверены, что хотите исключить ${memberName}?`;
+        // eslint-disable-next-line no-alert -- User confirmation required
         if (!confirm(confirmMessage)) {
             return;
         }
@@ -43,9 +47,14 @@ export const useMemberActions = ({ member, serverId, currentUserPermissions, onU
     }, [member, serverId, onUpdate, t]);
 
     const handleBan = useCallback(async () => {
-        const reason = prompt(t('serverMembers.banReason') || 'Причина бана (необязательно):');
+        // eslint-disable-next-line no-alert -- User input required for ban reason
+        const reason = prompt(t('serverMembers.banReason') ?? 'Причина бана (необязательно):');
         try {
-            await serverMembersService.banMember(serverId, member.id, reason || undefined);
+            await serverMembersService.banMember(
+                serverId,
+                member.id,
+                reason != null && reason.length > 0 ? reason : null
+            );
             notificationStore.addNotification(t('serverMembers.memberBanned') || 'Участник забанен', 'success');
             onUpdate();
         } catch (error) {

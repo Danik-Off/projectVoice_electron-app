@@ -1,13 +1,15 @@
+/* eslint-disable max-lines-per-function -- Complex roles settings component */
+/* eslint-disable complexity -- Complex roles settings logic */
+/* eslint-disable no-bitwise -- Bitwise operations are required for permissions */
 import React, { useState, useEffect, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { roleService } from '../../../../services/roleService';
-import { authStore } from '../../../../../../core';
-import { notificationStore } from '../../../../../../core';
+import { authStore, notificationStore } from '../../../../../../core';
 import { serverMembersService } from '../../../../../../modules/servers';
 import type { Role, CreateRoleRequest, UpdateRoleRequest } from '../../../../types/role';
-import { Permissions } from '../../../../constants/permissions';
+import { Permissions as PermissionsEnum } from '../../../../constants/permissions';
 import { hasPermission, canEditRole, canDeleteRole } from '../../../../utils/permissions';
 import RoleEditor from './RoleEditor';
 import './RolesSettings.scss';
@@ -21,7 +23,7 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
     const { serverId } = useParams<{ serverId: string }>();
     const [roles, setRoles] = useState<Role[]>([]);
     const [loading, setLoading] = useState(false);
-    const [editingRole, setEditingRole] = useState<Role | undefined>(undefined);
+    const [editingRole, setEditingRole] = useState<Role | null>(null);
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [currentUserPermissions, setCurrentUserPermissions] = useState<bigint>(0n);
     const [currentUserHighestPosition, setCurrentUserHighestPosition] = useState(0);
@@ -30,33 +32,33 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
     const currentUser = authStore.user;
 
     const loadRoles = useCallback(async () => {
-        if (!serverId) {
+        if (serverId == null || serverId.length === 0) {
             return;
         }
 
         setLoading(true);
         try {
-            const rolesData = await roleService.getRoles(parseInt(serverId));
+            const rolesData = await roleService.getRoles(parseInt(serverId, 10));
             setRoles(rolesData);
-        } catch (error) {
-            console.error('Error loading roles:', error);
-            notificationStore.addNotification(t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей', 'error');
+        } catch (loadError: unknown) {
+            console.error('Error loading roles:', loadError);
+            notificationStore.addNotification(t('serverSettings.rolesLoadError') ?? 'Ошибка загрузки ролей', 'error');
         } finally {
             setLoading(false);
         }
     }, [serverId, t]);
 
     const loadUserPermissions = useCallback(async () => {
-        if (!serverId || !currentUser?.id) {
+        if (serverId == null || serverId.length === 0 || currentUser?.id == null) {
             return;
         }
 
         try {
             // Загружаем участников сервера
-            const members = await serverMembersService.getServerMembers(parseInt(serverId));
+            const members = await serverMembersService.getServerMembers(parseInt(serverId, 10));
             const userMember = members.find((m) => m.userId === currentUser.id);
 
-            if (!userMember) {
+            if (userMember == null) {
                 setCurrentUserPermissions(0n);
                 setCurrentUserHighestPosition(0);
                 setIsOwner(false);
@@ -69,14 +71,14 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
 
             // Если владелец, даем максимальные права
             if (isUserOwner) {
-                setCurrentUserPermissions(Permissions.ADMINISTRATOR);
+                setCurrentUserPermissions(PermissionsEnum.ADMINISTRATOR);
                 setCurrentUserHighestPosition(999); // Максимальная позиция для владельца
                 return;
             }
 
             // Загружаем все роли сервера с бэкенда для вычисления разрешений
             // Используем актуальные роли из состояния, если они уже загружены
-            const currentRoles = roles.length > 0 ? roles : await roleService.getRoles(parseInt(serverId));
+            const currentRoles = roles.length > 0 ? roles : await roleService.getRoles(parseInt(serverId, 10));
 
             // Если роли еще не загружены в состояние, загружаем их
             if (roles.length === 0 && currentRoles.length > 0) {
@@ -84,7 +86,7 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
             }
 
             // Вычисляем разрешения на основе ролей пользователя
-            if (userMember.roles && Array.isArray(userMember.roles) && userMember.roles.length > 0) {
+            if (userMember.roles != null && Array.isArray(userMember.roles) && userMember.roles.length > 0) {
                 // Находим роли пользователя среди всех ролей сервера
                 const userRoleIds = userMember.roles.map((r: Role | number) => (typeof r === 'object' ? r.id : r));
 
@@ -94,11 +96,11 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                 let totalPerms = 0n;
                 let highestPosition = 0;
 
-                userRoles.forEach((role) => {
-                    const rolePerms = BigInt(role.permissions);
+                userRoles.forEach((userRole) => {
+                    const rolePerms = BigInt(userRole.permissions);
                     totalPerms |= rolePerms;
-                    if (role.position > highestPosition) {
-                        highestPosition = role.position;
+                    if (userRole.position > highestPosition) {
+                        highestPosition = userRole.position;
                     }
                 });
 
@@ -109,8 +111,8 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                 setCurrentUserPermissions(0n);
                 setCurrentUserHighestPosition(0);
             }
-        } catch (error) {
-            console.error('Error loading user permissions:', error);
+        } catch (permissionsError: unknown) {
+            console.error('Error loading user permissions:', permissionsError);
             setCurrentUserPermissions(0n);
             setCurrentUserHighestPosition(0);
             setIsOwner(false);
@@ -119,18 +121,22 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
 
     // Загружаем роли при монтировании компонента
     useEffect(() => {
-        loadRoles();
+        loadRoles().catch((loadError: unknown) => {
+            console.error('Error in loadRoles:', loadError);
+        });
     }, [loadRoles]);
 
     // Загружаем права пользователя после загрузки ролей
     useEffect(() => {
-        if (serverId && currentUser?.id) {
-            loadUserPermissions();
+        if (serverId != null && serverId.length > 0 && currentUser?.id != null) {
+            loadUserPermissions().catch((permissionsError: unknown) => {
+                console.error('Error in loadUserPermissions:', permissionsError);
+            });
         }
     }, [serverId, currentUser?.id, roles.length, loadUserPermissions]);
 
     const handleCreateRole = () => {
-        setEditingRole(undefined);
+        setEditingRole(null);
         setIsEditorOpen(true);
     };
 
@@ -147,48 +153,48 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
     };
 
     const handleDeleteRole = async (role: Role) => {
-        if (!serverId) {
+        if (serverId == null || serverId.length === 0) {
             return;
         }
 
         if (!canDeleteRole(currentUserHighestPosition, role.position, isOwner)) {
             notificationStore.addNotification(
-                t('serverSettings.cannotDeleteRole') || 'У вас нет прав для удаления этой роли',
+                t('serverSettings.cannotDeleteRole') ?? 'У вас нет прав для удаления этой роли',
                 'error'
             );
             return;
         }
 
         // eslint-disable-next-line no-alert
-        if (!confirm(t('serverSettings.confirmDeleteRole') || `Вы уверены, что хотите удалить роль "${role.name}"?`)) {
+        if (!confirm(t('serverSettings.confirmDeleteRole') ?? `Вы уверены, что хотите удалить роль "${role.name}"?`)) {
             return;
         }
 
         try {
-            await roleService.deleteRole(parseInt(serverId), role.id);
+            await roleService.deleteRole(parseInt(serverId, 10), role.id);
             await loadRoles();
-            notificationStore.addNotification(t('serverSettings.roleDeleted') || 'Роль удалена', 'success');
-        } catch (error) {
-            console.error('Error deleting role:', error);
-            notificationStore.addNotification(t('serverSettings.roleDeleteError') || 'Ошибка удаления роли', 'error');
+            notificationStore.addNotification(t('serverSettings.roleDeleted') ?? 'Роль удалена', 'success');
+        } catch (deleteError: unknown) {
+            console.error('Error deleting role:', deleteError);
+            notificationStore.addNotification(t('serverSettings.roleDeleteError') ?? 'Ошибка удаления роли', 'error');
         }
     };
 
     const handleSaveRole = async (roleData: CreateRoleRequest | UpdateRoleRequest) => {
-        if (!serverId) {
+        if (serverId == null || serverId.length === 0) {
             return;
         }
 
         try {
-            if (editingRole) {
-                await roleService.updateRole(parseInt(serverId), editingRole.id, roleData);
-                notificationStore.addNotification(t('serverSettings.roleUpdated') || 'Роль обновлена', 'success');
+            if (editingRole != null) {
+                await roleService.updateRole(parseInt(serverId, 10), editingRole.id, roleData);
+                notificationStore.addNotification(t('serverSettings.roleUpdated') ?? 'Роль обновлена', 'success');
             } else {
                 // При создании новой роли устанавливаем позицию выше всех существующих
                 const maxPosition = roles.length > 0 ? Math.max(...roles.map((r) => r.position)) + 1 : 1;
 
                 // Убеждаемся, что все обязательные поля присутствуют
-                if (!roleData.name) {
+                if (roleData.name == null || roleData.name.length === 0) {
                     throw new Error('Имя роли обязательно');
                 }
 
@@ -196,38 +202,38 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                     name: roleData.name,
                     color: roleData.color,
                     permissions: roleData.permissions,
-                    position: roleData.position || maxPosition,
+                    position: roleData.position ?? maxPosition,
                     isHoisted: roleData.isHoisted,
                     isMentionable: roleData.isMentionable
                 };
 
-                await roleService.createRole(parseInt(serverId), createData);
-                notificationStore.addNotification(t('serverSettings.roleCreated') || 'Роль создана', 'success');
+                await roleService.createRole(parseInt(serverId, 10), createData);
+                notificationStore.addNotification(t('serverSettings.roleCreated') ?? 'Роль создана', 'success');
             }
             await loadRoles();
-        } catch (error) {
-            console.error('Error saving role:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+        } catch (saveError: unknown) {
+            console.error('Error saving role:', saveError);
+            const errorMessage = saveError instanceof Error ? saveError.message : 'Неизвестная ошибка';
             notificationStore.addNotification(
-                t('serverSettings.roleSaveError') || `Ошибка сохранения роли: ${errorMessage}`,
+                t('serverSettings.roleSaveError') ?? `Ошибка сохранения роли: ${errorMessage}`,
                 'error'
             );
-            throw error;
+            throw saveError;
         }
     };
 
     // Владелец всегда может управлять ролями
     // Также проверяем разрешение MANAGE_ROLES или MANAGE_GUILD
     const canManageRoles =
-        isOwner ||
-        hasPermission(currentUserPermissions, Permissions.MANAGE_ROLES) ||
-        hasPermission(currentUserPermissions, Permissions.MANAGE_GUILD) ||
-        hasPermission(currentUserPermissions, Permissions.ADMINISTRATOR);
+        isOwner === true ||
+        hasPermission(currentUserPermissions, PermissionsEnum.MANAGE_ROLES) ||
+        hasPermission(currentUserPermissions, PermissionsEnum.MANAGE_GUILD) ||
+        hasPermission(currentUserPermissions, PermissionsEnum.ADMINISTRATOR);
 
     // Для владельца всегда показываем кнопку создания, даже если разрешения еще не загружены
-    const showCreateButton = canManageRoles || isOwner;
+    const showCreateButton = canManageRoles === true || isOwner === true;
 
-    if (loading) {
+    if (loading === true) {
         return (
             <div className="settings-section">
                 <div className="loading-state">
@@ -279,20 +285,20 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                     <div key={role.id} className="role-item">
                                         <div
                                             className="role-color-indicator"
-                                            style={{ backgroundColor: role.color || '#5865F2' }}
+                                            style={{ backgroundColor: role.color ?? '#5865F2' }}
                                         />
                                         <div className="role-content">
                                             <div className="role-header">
                                                 <h3 className="role-name">{role.name}</h3>
                                                 <div className="role-badges">
-                                                    {role.isHoisted ? (
+                                                    {role.isHoisted === true ? (
                                                         <span className="badge">
-                                                            {t('serverSettings.hoisted') || 'Отдельно'}
+                                                            {t('serverSettings.hoisted') ?? 'Отдельно'}
                                                         </span>
                                                     ) : null}
-                                                    {role.isMentionable ? (
+                                                    {role.isMentionable === true ? (
                                                         <span className="badge">
-                                                            {t('serverSettings.mentionable') || 'Упоминаемая'}
+                                                            {t('serverSettings.mentionable') ?? 'Упоминаемая'}
                                                         </span>
                                                     ) : null}
                                                     <span className="badge position">
@@ -301,25 +307,32 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                                                 </div>
                                             </div>
                                             <div className="role-actions">
-                                                {canEdit ? (
+                                                {canEdit === true ? (
                                                     <button
                                                         className="action-button edit"
                                                         onClick={() => handleEditRole(role)}
                                                     >
-                                                        {t('common.edit') || 'Редактировать'}
+                                                        {t('common.edit') ?? 'Редактировать'}
                                                     </button>
                                                 ) : null}
-                                                {canDelete ? (
+                                                {canDelete === true ? (
                                                     <button
                                                         className="action-button delete"
-                                                        onClick={() => handleDeleteRole(role)}
+                                                        onClick={() => {
+                                                            handleDeleteRole(role).catch((deleteError: unknown) => {
+                                                                console.error(
+                                                                    'Error in handleDeleteRole:',
+                                                                    deleteError
+                                                                );
+                                                            });
+                                                        }}
                                                     >
-                                                        {t('common.delete') || 'Удалить'}
+                                                        {t('common.delete') ?? 'Удалить'}
                                                     </button>
                                                 ) : null}
-                                                {!canEdit && !canDelete && (
+                                                {canEdit !== true && canDelete !== true && (
                                                     <span className="no-permissions">
-                                                        {t('serverSettings.noPermissions') || 'Нет прав для управления'}
+                                                        {t('serverSettings.noPermissions') ?? 'Нет прав для управления'}
                                                     </span>
                                                 )}
                                             </div>
@@ -336,9 +349,13 @@ const RolesSettings: React.FC<RolesSettingsProps> = observer(() => {
                 isOpen={isEditorOpen}
                 onClose={() => {
                     setIsEditorOpen(false);
-                    setEditingRole(undefined);
+                    setEditingRole(null);
                 }}
-                onSave={handleSaveRole}
+                onSave={(roleData) => {
+                    handleSaveRole(roleData).catch((saveError: unknown) => {
+                        console.error('Error in handleSaveRole:', saveError);
+                    });
+                }}
             />
         </div>
     );

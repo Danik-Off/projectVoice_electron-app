@@ -22,10 +22,12 @@ export const serversModule: IModule = {
             protected: true
         }
     ],
-    async initialize() {
+    initialize() {
         console.warn('Servers module initialized');
+        return Promise.resolve();
     },
-    async destroy() {
+    destroy() {
         console.warn('Servers module destroyed');
+        return Promise.resolve();
     }
 };

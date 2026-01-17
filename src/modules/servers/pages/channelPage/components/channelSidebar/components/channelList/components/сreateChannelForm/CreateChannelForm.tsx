@@ -54,7 +54,11 @@ const CreateChannelForm: React.FC<CreateChannelFormProps> = ({ onClose }) => {
 
     return (
         <Modal isOpen onClose={handleClose} title={t('createChannelForm.title')} size="medium" icon="📝">
-            <form onSubmit={handleCreateChannel}>
+            <form
+                onSubmit={(e) => {
+                    handleCreateChannel(e).catch((error: unknown) => console.error('Error creating channel:', error));
+                }}
+            >
                 <div className="form-group">
                     <label className="form-label">
                         {t('createChannelForm.channelName')}

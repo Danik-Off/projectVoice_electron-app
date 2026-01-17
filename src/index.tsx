@@ -12,7 +12,8 @@ themeStore.loadTheme();
 
 // Дополнительная проверка инициализации темы
 const rootElement = document.documentElement;
-if (!rootElement.getAttribute('data-theme')) {
+const currentTheme = rootElement.getAttribute('data-theme');
+if (currentTheme == null || currentTheme === '') {
     rootElement.setAttribute('data-theme', themeStore.currentTheme);
 }
 

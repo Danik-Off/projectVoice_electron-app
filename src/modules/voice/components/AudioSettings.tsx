@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+/* eslint-disable max-lines -- Complex audio settings component */
+/* eslint-disable max-lines-per-function -- Complex audio settings logic */
+/* eslint-disable complexity -- Complex audio settings logic */
+import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslation } from 'react-i18next';
 import { audioSettingsStore, notificationStore } from '../../../core';
@@ -10,81 +13,6 @@ const AudioSettings: React.FC = observer(() => {
     const { t } = useTranslation();
     const [isMicActive, setIsMicActive] = useState(false);
     const [isSpeakerActive, setIsSpeakerActive] = useState(false);
-    const isReconnectingRef = useRef(false);
-
-    // Автоматическое переподключение при изменении настроек
-    useEffect(() => {
-        let lastSettings = '';
-
-        const checkForChanges = () => {
-            // Пропускаем проверку, если уже идет переподключение
-            if (isReconnectingRef.current) {
-                return;
-            }
-
-            const currentSettings = {
-                microphone: audioSettingsStore.selectedMicrophone?.deviceId,
-                speaker: audioSettingsStore.selectedSpeaker?.deviceId,
-                volume: audioSettingsStore.volume,
-                echoCancellation: audioSettingsStore.echoCancellation,
-                noiseSuppression: audioSettingsStore.noiseSuppression,
-                autoGainControl: audioSettingsStore.autoGainControl,
-                voiceEnhancement: audioSettingsStore.voiceEnhancement,
-                voiceIsolation: audioSettingsStore.voiceIsolation,
-                voiceClarity: audioSettingsStore.voiceClarity,
-                backgroundNoiseReduction: audioSettingsStore.backgroundNoiseReduction,
-                voiceBoost: audioSettingsStore.voiceBoost,
-                bassBoost: audioSettingsStore.bassBoost,
-                trebleBoost: audioSettingsStore.trebleBoost,
-                stereoEnhancement: audioSettingsStore.stereoEnhancement,
-                spatialAudio: audioSettingsStore.spatialAudio,
-                sampleRate: audioSettingsStore.sampleRate,
-                bitrate: audioSettingsStore.bitrate,
-                latency: audioSettingsStore.latency,
-                channelCount: audioSettingsStore.channelCount
-            };
-
-            const currentSettingsString = JSON.stringify(currentSettings);
-
-            // Проверяем, действительно ли настройки изменились
-            if (currentSettingsString !== lastSettings && roomStore.currentVoiceChannel) {
-                lastSettings = currentSettingsString;
-
-                handleAutoReconnect();
-            }
-        };
-
-        // Проверяем изменения каждые 1000мс (увеличили интервал)
-        const interval = setInterval(checkForChanges, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const handleAutoReconnect = async () => {
-        if (roomStore.currentVoiceChannel && !isReconnectingRef.current) {
-            isReconnectingRef.current = true;
-            const currentChannel = roomStore.currentVoiceChannel;
-
-            try {
-                // Отключаемся от текущего канала
-                roomStore.disconnectToRoom();
-
-                // Небольшая задержка для корректного отключения
-                setTimeout(() => {
-                    // Переподключаемся с новыми настройками
-                    roomStore.connectToRoom(currentChannel.id, currentChannel.name);
-
-                    // Сбрасываем флаг переподключения через 3 секунды
-                    setTimeout(() => {
-                        isReconnectingRef.current = false;
-                    }, 3000);
-                }, 1000);
-            } catch (error) {
-                console.error('AudioSettings: Error during auto-reconnect:', error);
-                isReconnectingRef.current = false;
-            }
-        }
-    };
 
     return (
         <div className="settings-section">
@@ -117,8 +45,17 @@ const AudioSettings: React.FC = observer(() => {
                             <div className="setting-control">
                                 <select
                                     className="settings-select"
-                                    value={audioSettingsStore.selectedMicrophone?.deviceId || ''}
-                                    onChange={(e) => audioSettingsStore.setMicrophone(e.target.value)}
+                                    value={audioSettingsStore.selectedMicrophone?.deviceId ?? ''}
+                                    onChange={(e) => {
+                                        const deviceId = e.target.value;
+                                        if (deviceId.length > 0) {
+                                            audioSettingsStore
+                                                .setMicrophone(deviceId)
+                                                .catch((microphoneError: unknown) => {
+                                                    console.error('Error setting microphone:', microphoneError);
+                                                });
+                                        }
+                                    }}
                                 >
                                     <option value="">Выберите микрофон</option>
                                     {audioSettingsStore.microphoneDevices.map((device: MediaDeviceInfo) => (
@@ -253,9 +190,9 @@ const AudioSettings: React.FC = observer(() => {
                                 <button
                                     className="settings-button settings-button--test"
                                     disabled={audioSettingsStore.isMicrophoneMuted}
-                                    onClick={async () => {
+                                    onClick={() => {
                                         setIsMicActive(true);
-                                        await audioSettingsStore.testMicrophone();
+                                        audioSettingsStore.testMicrophone();
                                         setTimeout(() => setIsMicActive(false), 3000);
                                     }}
                                 >
@@ -290,8 +227,15 @@ const AudioSettings: React.FC = observer(() => {
                             <div className="setting-control">
                                 <select
                                     className="settings-select"
-                                    value={audioSettingsStore.selectedSpeaker?.deviceId || ''}
-                                    onChange={(e) => audioSettingsStore.setSpeaker(e.target.value)}
+                                    value={audioSettingsStore.selectedSpeaker?.deviceId ?? ''}
+                                    onChange={(e) => {
+                                        const deviceId = e.target.value;
+                                        if (deviceId.length > 0) {
+                                            audioSettingsStore.setSpeaker(deviceId).catch((speakerError: unknown) => {
+                                                console.error('Error setting speaker:', speakerError);
+                                            });
+                                        }
+                                    }}
                                 >
                                     <option value="">Выберите устройство</option>
                                     {audioSettingsStore.speakerDevices.map((device: MediaDeviceInfo) => (
@@ -358,7 +302,11 @@ const AudioSettings: React.FC = observer(() => {
                                     <input
                                         type="checkbox"
                                         checked={!audioSettingsStore.isSpeakerMuted}
-                                        onChange={() => audioSettingsStore.toggleSpeakerMute()}
+                                        onChange={() => {
+                                            audioSettingsStore.toggleSpeakerMute().catch((muteError: unknown) => {
+                                                console.error('Error toggling speaker mute:', muteError);
+                                            });
+                                        }}
                                     />
                                     <span className="toggle-switch" />
                                     <span className="toggle-label">Включить звук</span>
@@ -377,9 +325,9 @@ const AudioSettings: React.FC = observer(() => {
                             <div className="setting-control">
                                 <button
                                     className="settings-button settings-button--test"
-                                    onClick={async () => {
+                                    onClick={() => {
                                         setIsSpeakerActive(true);
-                                        await audioSettingsStore.testSpeakers();
+                                        audioSettingsStore.testSpeakers();
                                         setTimeout(() => setIsSpeakerActive(false), 3000);
                                     }}
                                 >
@@ -417,7 +365,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <input
                                             type="checkbox"
                                             checked={audioSettingsStore.echoCancellation}
-                                            onChange={(e) => audioSettingsStore.setEchoCancellation(e.target.checked)}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setEchoCancellation(e.target.checked)
+                                                    .catch((echoError: unknown) => {
+                                                        console.error('Error setting echo cancellation:', echoError);
+                                                    });
+                                            }}
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Подавление эха</span>
@@ -426,7 +380,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <input
                                             type="checkbox"
                                             checked={audioSettingsStore.noiseSuppression}
-                                            onChange={(e) => audioSettingsStore.setNoiseSuppression(e.target.checked)}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setNoiseSuppression(e.target.checked)
+                                                    .catch((noiseError: unknown) => {
+                                                        console.error('Error setting noise suppression:', noiseError);
+                                                    });
+                                            }}
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Шумоподавление</span>
@@ -435,7 +395,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <input
                                             type="checkbox"
                                             checked={audioSettingsStore.autoGainControl}
-                                            onChange={(e) => audioSettingsStore.setAutoGainControl(e.target.checked)}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setAutoGainControl(e.target.checked)
+                                                    .catch((agcError: unknown) => {
+                                                        console.error('Error setting auto gain control:', agcError);
+                                                    });
+                                            }}
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Автоконтроль громкости</span>
@@ -458,7 +424,16 @@ const AudioSettings: React.FC = observer(() => {
                                         <input
                                             type="checkbox"
                                             checked={audioSettingsStore.voiceEnhancement}
-                                            onChange={(e) => audioSettingsStore.setVoiceEnhancement(e.target.checked)}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setVoiceEnhancement(e.target.checked)
+                                                    .catch((enhancementError: unknown) => {
+                                                        console.error(
+                                                            'Error setting voice enhancement:',
+                                                            enhancementError
+                                                        );
+                                                    });
+                                            }}
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Улучшение голоса</span>
@@ -467,7 +442,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <input
                                             type="checkbox"
                                             checked={audioSettingsStore.voiceIsolation}
-                                            onChange={(e) => audioSettingsStore.setVoiceIsolation(e.target.checked)}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setVoiceIsolation(e.target.checked)
+                                                    .catch((isolationError: unknown) => {
+                                                        console.error('Error setting voice isolation:', isolationError);
+                                                    });
+                                            }}
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Изоляция голоса</span>
@@ -506,9 +487,13 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.voiceClarity * 100}
-                                        onChange={(e) =>
-                                            audioSettingsStore.setVoiceClarity(Number(e.target.value) / 100)
-                                        }
+                                        onChange={(e) => {
+                                            audioSettingsStore
+                                                .setVoiceClarity(Number(e.target.value) / 100)
+                                                .catch((clarityError: unknown) => {
+                                                    console.error('Error setting voice clarity:', clarityError);
+                                                });
+                                        }}
                                         className="settings-slider"
                                     />
                                     <span className="slider-value">
@@ -533,9 +518,16 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.backgroundNoiseReduction * 100}
-                                        onChange={(e) =>
-                                            audioSettingsStore.setBackgroundNoiseReduction(Number(e.target.value) / 100)
-                                        }
+                                        onChange={(e) => {
+                                            audioSettingsStore
+                                                .setBackgroundNoiseReduction(Number(e.target.value) / 100)
+                                                .catch((reductionError: unknown) => {
+                                                    console.error(
+                                                        'Error setting background noise reduction:',
+                                                        reductionError
+                                                    );
+                                                });
+                                        }}
                                         className="settings-slider"
                                     />
                                     <span className="slider-value">
@@ -560,7 +552,13 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.voiceBoost * 100}
-                                        onChange={(e) => audioSettingsStore.setVoiceBoost(Number(e.target.value) / 100)}
+                                        onChange={(e) => {
+                                            audioSettingsStore
+                                                .setVoiceBoost(Number(e.target.value) / 100)
+                                                .catch((boostError: unknown) => {
+                                                    console.error('Error setting voice boost:', boostError);
+                                                });
+                                        }}
                                         className="settings-slider"
                                     />
                                     <span className="slider-value">
@@ -585,7 +583,13 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.bassBoost * 100}
-                                        onChange={(e) => audioSettingsStore.setBassBoost(Number(e.target.value) / 100)}
+                                        onChange={(e) => {
+                                            audioSettingsStore
+                                                .setBassBoost(Number(e.target.value) / 100)
+                                                .catch((bassError: unknown) => {
+                                                    console.error('Error setting bass boost:', bassError);
+                                                });
+                                        }}
                                         className="settings-slider"
                                     />
                                     <span className="slider-value">
@@ -610,9 +614,13 @@ const AudioSettings: React.FC = observer(() => {
                                         min="0"
                                         max="100"
                                         value={audioSettingsStore.trebleBoost * 100}
-                                        onChange={(e) =>
-                                            audioSettingsStore.setTrebleBoost(Number(e.target.value) / 100)
-                                        }
+                                        onChange={(e) => {
+                                            audioSettingsStore
+                                                .setTrebleBoost(Number(e.target.value) / 100)
+                                                .catch((trebleError: unknown) => {
+                                                    console.error('Error setting treble boost:', trebleError);
+                                                });
+                                        }}
                                         className="settings-slider"
                                     />
                                     <span className="slider-value">
@@ -690,7 +698,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <select
                                             className="settings-select"
                                             value={audioSettingsStore.sampleRate}
-                                            onChange={(e) => audioSettingsStore.setSampleRate(Number(e.target.value))}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setSampleRate(Number(e.target.value))
+                                                    .catch((sampleRateError: unknown) => {
+                                                        console.error('Error setting sample rate:', sampleRateError);
+                                                    });
+                                            }}
                                         >
                                             <option value={8000}>8 кГц</option>
                                             <option value={16000}>16 кГц</option>
@@ -703,7 +717,13 @@ const AudioSettings: React.FC = observer(() => {
                                         <select
                                             className="settings-select"
                                             value={audioSettingsStore.bitrate}
-                                            onChange={(e) => audioSettingsStore.setBitrate(Number(e.target.value))}
+                                            onChange={(e) => {
+                                                audioSettingsStore
+                                                    .setBitrate(Number(e.target.value))
+                                                    .catch((bitrateError: unknown) => {
+                                                        console.error('Error setting bitrate:', bitrateError);
+                                                    });
+                                            }}
                                         >
                                             <option value={64}>64 kbps</option>
                                             <option value={128}>128 kbps</option>
@@ -740,49 +760,58 @@ const AudioSettings: React.FC = observer(() => {
                                 <div className="button-group">
                                     <button
                                         className="settings-button settings-button--test"
-                                        onClick={async () => {
-                                            try {
-                                                if (roomStore.currentVoiceChannel) {
-                                                    await audioSettingsStore.applyAllSettings();
+                                        onClick={() => {
+                                            audioSettingsStore
+                                                .applyAllSettings()
+                                                .then(() => {
+                                                    if (roomStore.currentVoiceChannel != null) {
+                                                        notificationStore.addNotification(
+                                                            'Настройки применены. Переподключение к голосовому каналу...',
+                                                            'success'
+                                                        );
+                                                    } else {
+                                                        notificationStore.addNotification(
+                                                            'Настройки применены',
+                                                            'success'
+                                                        );
+                                                    }
+                                                })
+                                                .catch((applyError: unknown) => {
+                                                    console.error('Error applying settings:', applyError);
                                                     notificationStore.addNotification(
-                                                        'Настройки применены. Переподключение к голосовому каналу...',
-                                                        'success'
+                                                        'Ошибка при применении настроек',
+                                                        'error'
                                                     );
-                                                } else {
-                                                    await audioSettingsStore.applyAllSettings();
-                                                    notificationStore.addNotification('Настройки применены', 'success');
-                                                }
-                                            } catch (error) {
-                                                console.error('Error applying settings:', error);
-                                                notificationStore.addNotification(
-                                                    'Ошибка при применении настроек',
-                                                    'error'
-                                                );
-                                            }
+                                                });
                                         }}
                                     >
                                         Применить настройки
                                     </button>
                                     <button
                                         className="settings-button settings-button--danger"
-                                        onClick={async () => {
-                                            try {
-                                                await audioSettingsStore.resetToDefaults();
-                                                if (roomStore.currentVoiceChannel) {
+                                        onClick={() => {
+                                            audioSettingsStore
+                                                .resetToDefaults()
+                                                .then(() => {
+                                                    if (roomStore.currentVoiceChannel != null) {
+                                                        notificationStore.addNotification(
+                                                            'Настройки сброшены. Переподключение к голосовому каналу...',
+                                                            'success'
+                                                        );
+                                                    } else {
+                                                        notificationStore.addNotification(
+                                                            'Настройки сброшены',
+                                                            'success'
+                                                        );
+                                                    }
+                                                })
+                                                .catch((resetError: unknown) => {
+                                                    console.error('Error resetting settings:', resetError);
                                                     notificationStore.addNotification(
-                                                        'Настройки сброшены. Переподключение к голосовому каналу...',
-                                                        'success'
+                                                        'Ошибка при сбросе настроек',
+                                                        'error'
                                                     );
-                                                } else {
-                                                    notificationStore.addNotification('Настройки сброшены', 'success');
-                                                }
-                                            } catch (error) {
-                                                console.error('Error resetting settings:', error);
-                                                notificationStore.addNotification(
-                                                    'Ошибка при сбросе настроек',
-                                                    'error'
-                                                );
-                                            }
+                                                });
                                         }}
                                     >
                                         Сбросить настройки

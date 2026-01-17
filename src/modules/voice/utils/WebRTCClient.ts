@@ -1,7 +1,7 @@
+/* eslint-disable max-lines -- WebRTC client with complex connection management */
 import { reaction } from 'mobx';
-import { iceServers } from '../../../core';
+import { iceServers, audioSettingsStore } from '../../../core';
 import type { Signal } from '../types/WebRTCClient.types';
-import { audioSettingsStore } from '../../../core';
 import participantVolumeStore from '../store/ParticipantVolumeStore';
 import voiceActivityService from '../services/VoiceActivityService';
 
@@ -20,6 +20,28 @@ interface ReconnectionState {
     timer?: ReturnType<typeof setTimeout>;
 }
 
+interface QualityParameters {
+    maxBitrate: number;
+    stereo: number;
+    audioSampleRate: number;
+}
+
+interface StatsReportData {
+    rtt: number;
+    packetsLost: number;
+    jitter: number;
+    bitrate: number;
+}
+
+interface SdpReplaceParams {
+    match: string;
+    port: string;
+    codecs: string;
+    offset: number;
+    string: string;
+    groups?: { port?: string; codecs?: string };
+}
+
 class WebRTCClient {
     public sendSignal: null | ((signal: Signal) => void) = null;
     public changeState: null | ((id: string, signal: Event) => void) = null;
@@ -36,10 +58,11 @@ class WebRTCClient {
     private readonly defaultSampleRate = 48000;
 
     // Инициализация медиа с реакцией на изменения настроек
+    // eslint-disable-next-line require-await -- No await needed
     public async initializeMedia() {
         voiceActivityService.initialize();
 
-        if (audioSettingsStore.stream && audioSettingsStore.stream.getAudioTracks().length > 0) {
+        if (audioSettingsStore.stream != null && audioSettingsStore.stream.getAudioTracks().length > 0) {
             this.setupLocalVoiceActivity();
         }
 
@@ -77,8 +100,8 @@ class WebRTCClient {
         });
 
         // Обработка ICE кандидатов с улучшенной обработкой ошибок
-        newPeerConnection.onicecandidate = (event) => {
-            if (!event.candidate) {
+        newPeerConnection.onicecandidate = (iceEvent) => {
+            if (iceEvent.candidate == null) {
                 return;
             }
 
@@ -90,10 +113,10 @@ class WebRTCClient {
                 this.sendSignal({
                     to: id,
                     type: 'candidate',
-                    candidate: event.candidate
+                    candidate: iceEvent.candidate
                 });
-            } catch (error) {
-                console.error('WebRTCClient: Error sending ICE candidate:', error);
+            } catch (candidateError: unknown) {
+                console.error('WebRTCClient: Error sending ICE candidate:', candidateError);
             }
         };
 
@@ -101,8 +124,9 @@ class WebRTCClient {
         newPeerConnection.onconnectionstatechange = () => {
             const state = newPeerConnection.connectionState;
 
-            if (this.changeState) {
-                this.changeState(id, new Event('connectionstatechange'));
+            if (this.changeState != null) {
+                const connectionEvent = new Event('connectionstatechange');
+                this.changeState(id, connectionEvent);
             }
 
             // Обработка проблем с соединением
@@ -123,9 +147,9 @@ class WebRTCClient {
         };
 
         // Обработка получения треков
-        newPeerConnection.ontrack = (event) => {
-            if (event.track.kind === 'audio') {
-                this.addRemoteStream(event.track, id);
+        newPeerConnection.ontrack = (trackEvent) => {
+            if (trackEvent.track.kind === 'audio') {
+                this.addRemoteStream(trackEvent.track, id);
             }
         };
 
@@ -149,7 +173,7 @@ class WebRTCClient {
             });
 
             // Оптимизируем SDP с учетом настроек качества
-            const modifiedSdp = this.optimizeSdpWithSettings(offer.sdp || '');
+            const modifiedSdp = this.optimizeSdpWithSettings(offer.sdp ?? '');
             const optimizedOffer: RTCSessionDescriptionInit = {
                 type: offer.type,
                 sdp: modifiedSdp
@@ -158,12 +182,12 @@ class WebRTCClient {
             await peerConnection.setLocalDescription(optimizedOffer);
             const sdp = optimizedOffer.sdp;
 
-            if (!this.sendSignal) {
+            if (this.sendSignal == null) {
                 console.error('WebRTCClient: sendSignal not available');
                 return;
             }
 
-            if (!sdp) {
+            if (sdp == null || sdp.length === 0) {
                 console.error('WebRTCClient: Offer SDP is empty');
                 return;
             }
@@ -183,7 +207,7 @@ class WebRTCClient {
     public async createAnswer(id: string) {
         const peerConnection = this.peerConnections.get(id);
 
-        if (!peerConnection) {
+        if (peerConnection == null) {
             console.error('WebRTCClient: Peer connection not found for', id);
             return;
         }
@@ -194,18 +218,18 @@ class WebRTCClient {
             });
 
             // Оптимизируем SDP с учетом настроек качества
-            const modifiedSdp = this.optimizeSdpWithSettings(answer.sdp || '');
+            const modifiedSdp = this.optimizeSdpWithSettings(answer.sdp ?? '');
             const optimizedAnswer = { ...answer, sdp: modifiedSdp };
 
             await peerConnection.setLocalDescription(optimizedAnswer);
             const sdp = optimizedAnswer.sdp;
 
-            if (!this.sendSignal) {
+            if (this.sendSignal == null) {
                 console.error('WebRTCClient: sendSignal not available');
                 return;
             }
 
-            if (!sdp) {
+            if (sdp == null || sdp.length === 0) {
                 console.error('WebRTCClient: Answer SDP is empty');
                 return;
             }
@@ -226,26 +250,26 @@ class WebRTCClient {
         const { from, type, sdp, candidate } = data;
 
         let peerConnection = this.peerConnections.get(from);
-        if (!peerConnection) {
-            peerConnection = this.createPeerConnection(from);
-        }
+        peerConnection ??= this.createPeerConnection(from);
 
         try {
             switch (type) {
                 case 'offer': {
-                    if (!sdp) {
+                    if (sdp == null || sdp.length === 0) {
                         console.error('WebRTCClient: Offer SDP is missing');
                         return;
                     }
                     const optimizedOfferSdp = this.optimizeSdpWithSettings(sdp);
-                    await peerConnection.setRemoteDescription(
-                        new RTCSessionDescription({ type, sdp: optimizedOfferSdp })
-                    );
+                    const offerDescription: RTCSessionDescriptionInit = {
+                        type: type as RTCSdpType,
+                        sdp: optimizedOfferSdp
+                    };
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(offerDescription));
                     await this.createAnswer(from);
                     break;
                 }
                 case 'answer': {
-                    if (!sdp) {
+                    if (sdp == null || sdp.length === 0) {
                         console.error('WebRTCClient: Answer SDP is missing');
                         return;
                     }
@@ -272,17 +296,13 @@ class WebRTCClient {
         }
     }
 
-    // Оптимизация SDP с учетом настроек из AudioSettingsStore
-    private optimizeSdpWithSettings(sdp: string): string {
-        let optimizedSdp = sdp;
-
-        // Получаем настройки качества из store
+    // Получение параметров качества из store
+    private getQualityParameters(): QualityParameters {
         const bitrate = audioSettingsStore.bitrate * 1000; // Конвертируем в биты
-        const sampleRate = audioSettingsStore.sampleRate;
+        const audioSampleRate = audioSettingsStore.sampleRate;
         const channelCount = audioSettingsStore.channelCount;
         const audioQuality = audioSettingsStore.audioQuality;
 
-        // Определяем параметры в зависимости от качества
         let maxBitrate = bitrate;
         let stereo = channelCount === 2 ? 1 : 0;
 
@@ -301,23 +321,26 @@ class WebRTCClient {
             case 'ultra':
                 maxBitrate = Math.min(maxBitrate, 512000);
                 break;
+            default:
+                maxBitrate = Math.min(maxBitrate, 320000);
+                break;
         }
 
-        // Приоритет кодека Opus
-        optimizedSdp = optimizedSdp.replace(/m=audio (\d+) RTP\/SAVPF ([\d\s]+)/, (_match, port, codecs) => {
-            const opusCodec = '111';
-            const newCodecs = `${opusCodec} ${codecs.replace(opusCodec, '').trim()}`;
-            return `m=audio ${port} RTP/SAVPF ${newCodecs}`;
-        });
+        return { maxBitrate, stereo, audioSampleRate };
+    }
+
+    // Оптимизация кодека Opus в SDP
+    private optimizeOpusCodec(sdp: string, params: QualityParameters): string {
+        const { maxBitrate, stereo, audioSampleRate } = params;
 
         // Настройки Opus кодека с учетом настроек качества
-        optimizedSdp = optimizedSdp.replace(/a=fmtp:111 (.+)/, () => {
+        return sdp.replace(/a=fmtp:111 (?<params>.+)/, () => {
             const optimizedParams = [
                 'minptime=10',
                 'useinbandfec=1', // FEC для восстановления пакетов
                 `stereo=${stereo}`,
                 `sprop-stereo=${stereo}`,
-                `maxplaybackrate=${sampleRate}`,
+                `maxplaybackrate=${audioSampleRate}`,
                 `maxaveragebitrate=${maxBitrate}`,
                 `maxbitrate=${maxBitrate}`,
                 'cbr=0', // Переменный битрейт
@@ -326,26 +349,92 @@ class WebRTCClient {
             ].join(';');
             return `a=fmtp:111 ${optimizedParams}`;
         });
+    }
 
-        // Добавляем параметры если их нет
-        if (!optimizedSdp.includes('a=fmtp:111')) {
-            const opusFmtp = `a=fmtp:111 minptime=10;useinbandfec=1;stereo=${stereo};sprop-stereo=${stereo};maxplaybackrate=${sampleRate};maxaveragebitrate=${maxBitrate};maxbitrate=${maxBitrate};cbr=0;dtx=0;application=voip`;
-            optimizedSdp = optimizedSdp.replace(/(a=rtcp-fb:111 .+)/, `$1\n${opusFmtp}`);
+    // Добавление параметров Opus если их нет
+    private addOpusFmtpIfMissing(sdp: string, params: QualityParameters): string {
+        const { maxBitrate, stereo, audioSampleRate } = params;
+
+        if (sdp.includes('a=fmtp:111')) {
+            return sdp;
         }
 
-        // Настройки для адаптивного битрейта и контроля перегрузки
-        optimizedSdp = optimizedSdp.replace(/a=rtcp-fb:111 (.+)/, () => {
+        const opusFmtp = `a=fmtp:111 minptime=10;useinbandfec=1;stereo=${stereo};sprop-stereo=${stereo};maxplaybackrate=${audioSampleRate};maxaveragebitrate=${maxBitrate};maxbitrate=${maxBitrate};cbr=0;dtx=0;application=voip`;
+
+        const replaceRtcpFb = (
+            _match: string,
+            _line: string,
+            _offset: number,
+            _string: string,
+            groups?: { line?: string }
+        ): string => {
+            const line = groups?.line ?? _line;
+            return `${line}\n${opusFmtp}`;
+        };
+
+        return sdp.replace(/(?<line>a=rtcp-fb:111 .+)/, replaceRtcpFb);
+    }
+
+    // Улучшение RTCP feedback
+    private enhanceRtcpFeedback(sdp: string): string {
+        return sdp.replace(/a=rtcp-fb:111 (?<params>.+)/, () => {
             const enhancedParams = ['goog-remb', 'transport-cc', 'ccm fir', 'nack', 'nack pli'].join(' ');
             return `a=rtcp-fb:111 ${enhancedParams}`;
         });
+    }
 
-        // Добавляем расширения для улучшения качества
-        if (!optimizedSdp.includes('urn:ietf:params:rtp-hdrext:ssrc-audio-level')) {
-            optimizedSdp = optimizedSdp.replace(
-                /(a=extmap:\d+ .+)/,
-                '$1\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level'
-            );
+    // Замена кодека с приоритетом Opus
+    private replaceWithOpusCodec(params: SdpReplaceParams): string {
+        const port = params.groups?.port ?? params.port;
+        const codecs = params.groups?.codecs ?? params.codecs;
+        const opusCodec = '111';
+        const codecsString = String(codecs);
+        const newCodecs = `${opusCodec} ${codecsString.replace(opusCodec, '').trim()}`;
+        return `m=audio ${port} RTP/SAVPF ${newCodecs}`;
+    }
+
+    // Приоритизация кодека Opus
+    private prioritizeOpusCodec(sdp: string): string {
+        return sdp.replace(
+            /m=audio (?<port>\d+) RTP\/SAVPF (?<codecs>[\d\s]+)/,
+            (...args: [string, string, string, number, string, { port?: string; codecs?: string }?]) => {
+                const [match, port, codecs, offset, string, groups] = args;
+                const params: SdpReplaceParams = { match, port, codecs, offset, string, groups };
+                return this.replaceWithOpusCodec(params);
+            }
+        );
+    }
+
+    // Добавление audio level extension
+    private addAudioLevelExtension(sdp: string): string {
+        if (sdp.includes('urn:ietf:params:rtp-hdrext:ssrc-audio-level')) {
+            return sdp;
         }
+
+        const replaceExtmap = (
+            _match: string,
+            _line: string,
+            _offset: number,
+            _string: string,
+            groups?: { line?: string }
+        ): string => {
+            const line = groups?.line ?? _line;
+            return `${line}\na=extmap:1 urn:ietf:params:rtp-hdrext:ssrc-audio-level`;
+        };
+
+        return sdp.replace(/(?<line>a=extmap:\d+ .+)/, replaceExtmap);
+    }
+
+    // Оптимизация SDP с учетом настроек из AudioSettingsStore
+    private optimizeSdpWithSettings(sdp: string): string {
+        const qualityParams = this.getQualityParameters();
+
+        // Применяем все оптимизации последовательно
+        let optimizedSdp = this.prioritizeOpusCodec(sdp);
+        optimizedSdp = this.optimizeOpusCodec(optimizedSdp, qualityParams);
+        optimizedSdp = this.addOpusFmtpIfMissing(optimizedSdp, qualityParams);
+        optimizedSdp = this.enhanceRtcpFeedback(optimizedSdp);
+        optimizedSdp = this.addAudioLevelExtension(optimizedSdp);
 
         return optimizedSdp;
     }
@@ -359,7 +448,7 @@ class WebRTCClient {
 
             // Создаем аудио контекст с оптимальными настройками
             const audioContext = new AudioContext({
-                sampleRate: audioSettingsStore.sampleRate || this.defaultSampleRate,
+                sampleRate: audioSettingsStore.sampleRate ?? this.defaultSampleRate,
                 latencyHint: audioSettingsStore.latency < 100 ? 'interactive' : 'balanced'
             });
 
@@ -390,7 +479,12 @@ class WebRTCClient {
         remoteStream.addTrack(track);
 
         // Настраиваем обработку аудио если поток готов
-        if (remoteStream.getAudioTracks().length > 0 && !this.audioContexts.get(id)?.state.includes('closed')) {
+        const audioContextState = this.audioContexts.get(id)?.state;
+        if (
+            remoteStream.getAudioTracks().length > 0 &&
+            audioContextState != null &&
+            !audioContextState.includes('closed')
+        ) {
             this.setupAudioProcessing(id, remoteStream);
         }
     }
@@ -400,7 +494,7 @@ class WebRTCClient {
         const audioContext = this.audioContexts.get(id);
         const gainNode = this.gainNodes.get(id);
 
-        if (!audioContext || !gainNode) {
+        if (audioContext == null || gainNode == null) {
             console.error('WebRTCClient: AudioContext or GainNode not found for', id);
             return;
         }
@@ -432,31 +526,36 @@ class WebRTCClient {
 
     // Обновление локального потока
     public resendlocalStream() {
-        if (!audioSettingsStore.stream) {
+        if (audioSettingsStore.stream == null) {
             console.error('WebRTCClient: No local stream available');
             return;
         }
 
         const newAudioTrack = audioSettingsStore.stream.getAudioTracks()[0];
-        if (!newAudioTrack) {
+        if (newAudioTrack == null) {
             console.error('WebRTCClient: No audio track in stream');
             return;
         }
 
-        this.peerConnections.forEach((peerConnection, socketId) => {
+        this.peerConnections.forEach((peerConnection, _socketId) => {
             const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-            if (sender && newAudioTrack) {
+            if (sender != null && newAudioTrack != null) {
                 try {
-                    sender.replaceTrack(newAudioTrack);
+                    sender.replaceTrack(newAudioTrack).catch((error) => {
+                        console.error('WebRTCClient: Error replacing track:', error);
+                    });
+
                     newAudioTrack.enabled = !audioSettingsStore.isMicrophoneMuted;
 
                     // Обновляем параметры кодирования для адаптивного битрейта
-                    if (sender.getParameters) {
+                    if (sender.getParameters != null) {
                         const params = sender.getParameters();
-                        if (params.encodings && params.encodings.length > 0) {
+                        if (params.encodings != null && params.encodings.length > 0) {
                             const bitrate = audioSettingsStore.bitrate * 1000;
                             params.encodings[0].maxBitrate = bitrate;
-                            sender.setParameters(params);
+                            sender.setParameters(params).catch((error) => {
+                                console.error('WebRTCClient: Error setting parameters:', error);
+                            });
                         }
                     }
                 } catch (error) {
@@ -474,7 +573,7 @@ class WebRTCClient {
             return;
         }
 
-        if (!audioSettingsStore.stream) {
+        if (audioSettingsStore.stream == null) {
             console.error('WebRTCClient: No local stream available');
             return;
         }
@@ -482,6 +581,7 @@ class WebRTCClient {
         audioSettingsStore.stream.getTracks().forEach((track) => {
             try {
                 peerConnection.addTrack(track, audioSettingsStore.stream);
+                // eslint-disable-next-line no-param-reassign -- Необходимо изменить состояние трека
                 track.enabled = !audioSettingsStore.isMicrophoneMuted;
             } catch (error) {
                 console.error('WebRTCClient: Error adding track:', error);
@@ -493,9 +593,11 @@ class WebRTCClient {
     public setRemoteAudioMuted(muted: boolean): void {
         this.gainNodes.forEach((gainNode, socketId) => {
             if (muted) {
+                // eslint-disable-next-line no-param-reassign -- Необходимо изменить значение gain
                 gainNode.gain.value = 0;
             } else {
                 const volume = participantVolumeStore.getParticipantVolume(socketId);
+                // eslint-disable-next-line no-param-reassign -- Необходимо изменить значение gain
                 gainNode.gain.value = volume / 100;
             }
         });
@@ -503,7 +605,7 @@ class WebRTCClient {
 
     public setParticipantVolume(socketId: string, volume: number): void {
         const gainNode = this.gainNodes.get(socketId);
-        if (gainNode) {
+        if (gainNode != null) {
             gainNode.gain.value = volume / 100;
             participantVolumeStore.setParticipantVolume(socketId, volume);
         }
@@ -516,25 +618,29 @@ class WebRTCClient {
     // Отключение участника
     public disconnectPeer(id: string) {
         const peerConnection = this.peerConnections.get(id);
-        if (peerConnection) {
+        if (peerConnection != null) {
             peerConnection.close();
             this.peerConnections.delete(id);
         }
 
         const remoteStream = this.remoteStreams.get(id);
-        if (remoteStream) {
-            remoteStream.getTracks().forEach((track) => track.stop());
+        if (remoteStream != null) {
+            remoteStream.getTracks().forEach((track) => {
+                track.stop();
+            });
             this.remoteStreams.delete(id);
         }
 
         const audioElement = this.remoteAudioElements.get(id);
-        if (audioElement) {
+        if (audioElement != null) {
             this.remoteAudioElements.delete(id);
         }
 
         const audioContext = this.audioContexts.get(id);
-        if (audioContext) {
-            audioContext.close();
+        if (audioContext != null) {
+            audioContext.close().catch(() => {
+                // Ignore close errors
+            });
             this.audioContexts.delete(id);
         }
 
@@ -543,7 +649,7 @@ class WebRTCClient {
 
         // Останавливаем мониторинг качества
         const monitor = this.qualityMonitors.get(id);
-        if (monitor) {
+        if (monitor != null) {
             clearInterval(monitor);
             this.qualityMonitors.delete(id);
         }
@@ -562,26 +668,34 @@ class WebRTCClient {
         });
         this.peerConnections.clear();
 
-        if (audioSettingsStore.stream) {
-            audioSettingsStore.stream.getTracks().forEach((track) => track.stop());
+        if (audioSettingsStore.stream != null) {
+            audioSettingsStore.stream.getTracks().forEach((track) => {
+                track.stop();
+            });
         }
 
         this.remoteStreams.forEach((stream) => {
-            stream.getTracks().forEach((track) => track.stop());
+            stream.getTracks().forEach((track) => {
+                track.stop();
+            });
         });
         this.remoteStreams.clear();
 
         this.remoteAudioElements.clear();
 
         this.audioContexts.forEach((audioContext) => {
-            audioContext.close();
+            audioContext.close().catch(() => {
+                // Ignore close errors
+            });
         });
         this.audioContexts.clear();
         this.gainNodes.clear();
         this.audioSources.clear();
 
         // Останавливаем все мониторы качества
-        this.qualityMonitors.forEach((monitor) => clearInterval(monitor));
+        this.qualityMonitors.forEach((monitor) => {
+            clearInterval(monitor);
+        });
         this.qualityMonitors.clear();
         this.connectionQuality.clear();
         this.reconnectionStates.clear();
@@ -592,7 +706,7 @@ class WebRTCClient {
 
     // Настройка VoiceActivity
     private setupLocalVoiceActivity(): void {
-        if (audioSettingsStore.stream) {
+        if (audioSettingsStore.stream != null) {
             voiceActivityService.startMonitoring('local', audioSettingsStore.stream);
         }
     }
@@ -609,48 +723,101 @@ class WebRTCClient {
         return voiceActivityService.getUserVolume(userId);
     }
 
+    // Парсинг статистики из WebRTC stats report
+    private parseStatsReport(stats: RTCStatsReport): StatsReportData {
+        let rtt = 0;
+        let packetsLost = 0;
+        let jitter = 0;
+        let bitrate = 0;
+
+        stats.forEach((report: unknown) => {
+            const reportObj = report as {
+                type?: unknown;
+                mediaType?: unknown;
+                roundTripTime?: unknown;
+                packetsLost?: unknown;
+                jitter?: unknown;
+                bytesSent?: unknown;
+            };
+
+            const reportType = this.extractReportType(reportObj.type);
+            const mediaType = this.extractMediaType(reportObj.mediaType);
+
+            if (reportType === 'remote-inbound-rtp' && mediaType === 'audio') {
+                rtt = typeof reportObj.roundTripTime === 'number' ? reportObj.roundTripTime : 0;
+                packetsLost = typeof reportObj.packetsLost === 'number' ? reportObj.packetsLost : 0;
+                jitter = typeof reportObj.jitter === 'number' ? reportObj.jitter : 0;
+            }
+
+            if (reportType === 'outbound-rtp' && mediaType === 'audio') {
+                const bytesSent = reportObj.bytesSent;
+                bitrate = ((typeof bytesSent === 'number' ? bytesSent : 0) * 8) / 1000; // kbps
+            }
+        });
+
+        return { rtt, packetsLost, jitter, bitrate };
+    }
+
+    // Извлечение типа репорта
+    private extractReportType(typeValue: unknown): string {
+        if (typeValue == null) {
+            return '';
+        }
+        if (typeof typeValue === 'string') {
+            return typeValue;
+        }
+        if (typeof typeValue === 'number' || typeof typeValue === 'boolean') {
+            return String(typeValue);
+        }
+        return '';
+    }
+
+    // Извлечение типа медиа
+    private extractMediaType(mediaTypeValue: unknown): string | null {
+        if (mediaTypeValue == null) {
+            return null;
+        }
+        if (typeof mediaTypeValue === 'string') {
+            return mediaTypeValue;
+        }
+        if (typeof mediaTypeValue === 'number' || typeof mediaTypeValue === 'boolean') {
+            return String(mediaTypeValue);
+        }
+        return null;
+    }
+
+    // Определение качества соединения
+    private determineConnectionQuality(statsData: StatsReportData): ConnectionQuality['quality'] {
+        const { rtt, packetsLost, jitter } = statsData;
+
+        if (rtt > 200 || packetsLost > 10 || jitter > 50) {
+            return 'poor';
+        }
+        if (rtt > 100 || packetsLost > 5 || jitter > 30) {
+            return 'fair';
+        }
+        if (rtt > 50 || packetsLost > 2 || jitter > 15) {
+            return 'good';
+        }
+        return 'excellent';
+    }
+
     // Мониторинг качества соединения
     private startQualityMonitoring(id: string): void {
         const monitor = setInterval(async () => {
             const peerConnection = this.peerConnections.get(id);
-            if (!peerConnection) {
+            if (peerConnection == null) {
                 clearInterval(monitor);
                 return;
             }
 
             try {
                 const stats = await peerConnection.getStats();
-                let rtt = 0;
-                let packetsLost = 0;
-                let jitter = 0;
-                let bitrate = 0;
-
-                stats.forEach((report) => {
-                    if (report.type === 'remote-inbound-rtp' && report.mediaType === 'audio') {
-                        rtt = report.roundTripTime || 0;
-                        packetsLost = report.packetsLost || 0;
-                        jitter = report.jitter || 0;
-                    }
-                    if (report.type === 'outbound-rtp' && report.mediaType === 'audio') {
-                        bitrate = ((report.bytesSent || 0) * 8) / 1000; // kbps
-                    }
-                });
-
-                // Определяем качество соединения
-                let quality: ConnectionQuality['quality'] = 'excellent';
-                if (rtt > 200 || packetsLost > 10 || jitter > 50) {
-                    quality = 'poor';
-                } else if (rtt > 100 || packetsLost > 5 || jitter > 30) {
-                    quality = 'fair';
-                } else if (rtt > 50 || packetsLost > 2 || jitter > 15) {
-                    quality = 'good';
-                }
+                const statsData = this.parseStatsReport(stats);
+                const quality = this.determineConnectionQuality(statsData);
 
                 this.connectionQuality.set(id, {
-                    rtt,
-                    packetsLost,
-                    jitter,
-                    bitrate,
+                    ...statsData,
                     quality
                 });
 
@@ -669,18 +836,18 @@ class WebRTCClient {
     // Адаптивная настройка битрейта
     private adjustBitrateForQuality(id: string, quality: ConnectionQuality['quality']): void {
         const peerConnection = this.peerConnections.get(id);
-        if (!peerConnection) {
+        if (peerConnection == null) {
             return;
         }
 
         const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-        if (!sender?.getParameters) {
+        if (sender?.getParameters == null) {
             return;
         }
 
         try {
             const params = sender.getParameters();
-            if (params.encodings && params.encodings.length > 0) {
+            if (params.encodings != null && params.encodings.length > 0) {
                 const currentBitrate = audioSettingsStore.bitrate * 1000;
                 let newBitrate = currentBitrate;
 
@@ -693,7 +860,9 @@ class WebRTCClient {
 
                 if (newBitrate !== currentBitrate) {
                     params.encodings[0].maxBitrate = newBitrate;
-                    sender.setParameters(params);
+                    sender.setParameters(params).catch((error) => {
+                        console.error('WebRTCClient: Error setting parameters:', error);
+                    });
                 }
             }
         } catch (error) {
@@ -705,13 +874,15 @@ class WebRTCClient {
     private updateAllConnectionsQuality(): void {
         this.peerConnections.forEach((peerConnection) => {
             const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-            if (sender?.getParameters) {
+            if (sender?.getParameters != null) {
                 try {
                     const params = sender.getParameters();
-                    if (params.encodings && params.encodings.length > 0) {
+                    if (params.encodings != null && params.encodings.length > 0) {
                         const bitrate = audioSettingsStore.bitrate * 1000;
                         params.encodings[0].maxBitrate = bitrate;
-                        sender.setParameters(params);
+                        sender.setParameters(params).catch((error) => {
+                            console.error('WebRTCClient: Error setting parameters:', error);
+                        });
                     }
                 } catch (error) {
                     console.error('WebRTCClient: Error updating connection quality:', error);
@@ -724,7 +895,8 @@ class WebRTCClient {
     private handleConnectionProblem(id: string, state: string): void {
         console.warn(`WebRTCClient: Connection problem for ${id}:`, state);
 
-        const reconnectionState = this.reconnectionStates.get(id) || {
+        let reconnectionState = this.reconnectionStates.get(id);
+        reconnectionState ??= {
             attempts: 0,
             maxAttempts: 3,
             backoff: 1000
@@ -736,7 +908,9 @@ class WebRTCClient {
 
             reconnectionState.timer = setTimeout(() => {
                 // Попытка переподключения через создание нового offer
-                this.createOffer(id);
+                this.createOffer(id).catch((error) => {
+                    console.error('WebRTCClient: Error creating offer for reconnection:', error);
+                });
             }, reconnectionState.backoff);
 
             this.reconnectionStates.set(id, reconnectionState);

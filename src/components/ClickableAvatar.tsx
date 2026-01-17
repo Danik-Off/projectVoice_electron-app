@@ -24,6 +24,9 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
     };
 
     const getStatusColor = (userStatus?: string) => {
+        if (userStatus == null) {
+            return '#9E9E9E';
+        }
         switch (userStatus) {
             case 'online':
                 return '#4CAF50';
@@ -32,8 +35,6 @@ const ClickableAvatar: React.FC<ClickableAvatarProps> = ({
             case 'dnd':
                 return '#F44336';
             case 'invisible':
-                return '#9E9E9E';
-            case undefined:
                 return '#9E9E9E';
             default:
                 return '#9E9E9E';

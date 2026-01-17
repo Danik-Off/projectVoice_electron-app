@@ -28,28 +28,42 @@ class MessageStore {
 
     private setupCommandListeners() {
         // Подписка на команды от других модулей
-        eventBus.on<SendMessageCommand>(MESSAGING_COMMANDS.SEND_MESSAGE, async (data) => {
-            if (data) {
+        eventBus.on<SendMessageCommand>(MESSAGING_COMMANDS.SEND_MESSAGE, (data) => {
+            if (data != null && typeof data.channelId === 'number' && typeof data.content === 'string') {
+                const channelId = data.channelId as number;
+                const content = data.content as string;
+
                 // Устанавливаем канал, если он указан в команде
-                if (data.channelId && data.channelId !== this.currentChannelId) {
-                    this.setCurrentChannel(data.channelId);
+                if (channelId !== this.currentChannelId) {
+                    this.setCurrentChannel(channelId);
                 }
                 // Отправляем сообщение
-                if (this.currentChannelId) {
-                    await this.sendMessage(data.content);
+                if (this.currentChannelId != null) {
+                    this.sendMessage(content).catch((error: unknown) => {
+                        console.error('Error sending message from command:', error);
+                    });
                 }
             }
         });
 
-        eventBus.on<UpdateMessageCommand>(MESSAGING_COMMANDS.UPDATE_MESSAGE, async (data) => {
-            if (data) {
-                await this.updateMessage(data.messageId, { content: data.content });
+        eventBus.on<UpdateMessageCommand>(MESSAGING_COMMANDS.UPDATE_MESSAGE, (data) => {
+            if (data != null && typeof data.messageId === 'number' && typeof data.content === 'string') {
+                const messageId = data.messageId as number;
+                const content = data.content as string;
+
+                this.updateMessage(messageId, { content }).catch((error: unknown) => {
+                    console.error('Error updating message from command:', error);
+                });
             }
         });
 
-        eventBus.on<DeleteMessageCommand>(MESSAGING_COMMANDS.DELETE_MESSAGE, async (data) => {
-            if (data) {
-                await this.deleteMessage(data.messageId);
+        eventBus.on<DeleteMessageCommand>(MESSAGING_COMMANDS.DELETE_MESSAGE, (data) => {
+            if (data != null && typeof data.messageId === 'number') {
+                const messageId = data.messageId as number;
+
+                this.deleteMessage(messageId).catch((error: unknown) => {
+                    console.error('Error deleting message from command:', error);
+                });
             }
         });
     }
@@ -67,12 +81,14 @@ class MessageStore {
         // Публикуем событие об изменении канала
         eventBus.emit(MESSAGING_EVENTS.CHANNEL_CHANGED, { channelId });
 
-        this.loadMessages();
+        this.loadMessages().catch((error: unknown) => {
+            console.error('Error loading messages:', error);
+        });
     }
 
     // Загрузка сообщений
     async loadMessages(page = 1, append = false) {
-        if (!this.currentChannelId) {
+        if (this.currentChannelId == null || this.currentChannelId === 0) {
             return;
         }
 
@@ -102,7 +118,7 @@ class MessageStore {
             });
 
             // Публикуем событие о загрузке сообщений
-            eventBus.emit(MESSAGING_EVENTS.MESSAGES_LOADED, {
+            const messageEvent: MessagesLoadedEvent = {
                 channelId: this.currentChannelId,
                 messages: response.messages.map((msg) => ({
                     id: msg.id,
@@ -110,7 +126,8 @@ class MessageStore {
                     userId: msg.userId,
                     createdAt: msg.createdAt
                 }))
-            } as MessagesLoadedEvent);
+            };
+            eventBus.emit(MESSAGING_EVENTS.MESSAGES_LOADED, messageEvent);
         } catch (error) {
             runInAction(() => {
                 this.error = 'Ошибка загрузки сообщений';
@@ -131,8 +148,8 @@ class MessageStore {
     }
 
     // Отправка нового сообщения
-    async sendMessage(content: string) {
-        if (!this.currentChannelId || !content.trim()) {
+    async sendMessage(content: string): Promise<Message | void> {
+        if (this.currentChannelId == null || this.currentChannelId === 0 || !content.trim()) {
             return;
         }
 
@@ -150,7 +167,7 @@ class MessageStore {
             });
 
             // Публикуем событие о создании сообщения
-            eventBus.emit(MESSAGING_EVENTS.MESSAGE_CREATED, {
+            const messageEvent: MessageCreatedEvent = {
                 message: {
                     id: newMessage.id,
                     channelId: newMessage.channelId,
@@ -158,9 +175,8 @@ class MessageStore {
                     content: newMessage.content,
                     createdAt: newMessage.createdAt
                 }
-            } as MessageCreatedEvent);
-
-            return newMessage;
+            };
+            eventBus.emit(MESSAGING_EVENTS.MESSAGE_CREATED, messageEvent);
         } catch (error) {
             runInAction(() => {
                 this.error = 'Ошибка отправки сообщения';
@@ -171,7 +187,7 @@ class MessageStore {
     }
 
     // Обновление сообщения
-    async updateMessage(messageId: number, content: string) {
+    async updateMessage(messageId: number, content: string): Promise<Message | void> {
         if (!content.trim()) {
             return;
         }
@@ -189,8 +205,6 @@ class MessageStore {
                     this.messages[index] = { ...this.messages[index], ...updatedMessage, isEdited: true };
                 }
             });
-
-            return updatedMessage;
         } catch (error) {
             runInAction(() => {
                 this.error = 'Ошибка обновления сообщения';
@@ -223,7 +237,7 @@ class MessageStore {
 
     // Поиск сообщений
     async searchMessages(query: string) {
-        if (!this.currentChannelId || !query.trim()) {
+        if (this.currentChannelId == null || this.currentChannelId === 0 || !query.trim()) {
             return;
         }
 
@@ -256,7 +270,9 @@ class MessageStore {
     // Очистка поиска
     clearSearch() {
         this.searchQuery = '';
-        this.loadMessages(1, false);
+        this.loadMessages(1, false).catch((error: unknown) => {
+            console.error('Error loading messages after clear search:', error);
+        });
     }
 
     // Добавление сообщения в реальном времени (для WebSocket)

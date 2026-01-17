@@ -65,8 +65,8 @@ export const saveUser = (user: User): void => {
 export const getUser = (): User | null => {
     try {
         const userStr = localStorage.getItem(USER_KEY);
-        if (userStr) {
-            return JSON.parse(userStr);
+        if (userStr != null && userStr.length > 0) {
+            return JSON.parse(userStr) as User;
         }
         return null;
     } catch (error) {

@@ -15,12 +15,14 @@ export interface ServerMember {
 }
 
 class ServerMembersService {
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getServerMembers(serverId: number): Promise<ServerMember[]> {
         return apiClient(`/serverMembers/${serverId}/members`, {
             method: 'GET'
         });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
         return apiClient(
             `/serverMembers/${serverId}/members/${memberId}`,
@@ -37,6 +39,7 @@ class ServerMembersService {
         });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
         return apiClient(
             `/serverMembers/${serverId}/members`,

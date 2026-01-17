@@ -1,14 +1,17 @@
+/* eslint-disable max-lines */
 import { makeAutoObservable, runInAction } from 'mobx';
 import { notificationStore } from './NotificationStore';
 import type { VoiceRoomStore } from '../../modules/voice/store/roomStore';
 // Динамический импорт roomStore для избежания циклических зависимостей
 let roomStore: VoiceRoomStore | null = null;
-const getRoomStore = async () => {
-    if (roomStore === null) {
-        const roomStoreModule = await import('../../modules/voice/store/roomStore');
-        const loadedStore = roomStoreModule.default;
-        roomStore = loadedStore;
+const getRoomStore = async (): Promise<VoiceRoomStore | null> => {
+    if (roomStore !== null) {
+        return roomStore;
     }
+    const roomStoreModule = await import('../../modules/voice/store/roomStore');
+    const loadedStore = roomStoreModule.default;
+    // eslint-disable-next-line require-atomic-updates
+    roomStore = loadedStore;
     return roomStore;
 };
 
@@ -154,6 +157,7 @@ class AudioSettingsStore {
         this.applySimpleQualitySettings();
     }
 
+    /* eslint-disable max-lines-per-function */
     private applySimpleQualitySettings() {
         switch (this.audioQuality) {
             case 'low':
@@ -168,7 +172,6 @@ class AudioSettingsStore {
                 this.voiceIsolation = true;
                 this.voiceClarity = 0.5; // Улучшенная четкость
                 this.backgroundNoiseReduction = 0.6;
-                break;
                 this.voiceBoost = 0.2;
                 this.bassBoost = 0.1;
                 this.trebleBoost = 0.1;
@@ -383,7 +386,7 @@ class AudioSettingsStore {
 
     public setVolume(newVolume: number): void {
         this.volume = newVolume;
-        if (this.gainNode) {
+        if (this.gainNode != null) {
             this.gainNode.gain.value = this.volume / 50;
         }
         // Не пересоздаем поток для изменения громкости
@@ -635,6 +638,7 @@ class AudioSettingsStore {
         this.isMicrophoneMuted = !this.isMicrophoneMuted;
         if (this.isMicrophoneMuted) {
             // Отключаем микрофон
+            /* eslint-disable no-param-reassign */
             this._stream.getAudioTracks().forEach((audioTrack) => {
                 audioTrack.enabled = false;
             });
@@ -642,8 +646,10 @@ class AudioSettingsStore {
             this.stream.getAudioTracks().forEach((audioTrack) => {
                 audioTrack.enabled = false;
             });
+            /* eslint-enable no-param-reassign */
         } else {
             // Включаем микрофон
+            /* eslint-disable no-param-reassign */
             this._stream.getAudioTracks().forEach((audioTrack) => {
                 audioTrack.enabled = true;
             });
@@ -651,6 +657,7 @@ class AudioSettingsStore {
             this.stream.getAudioTracks().forEach((audioTrack) => {
                 audioTrack.enabled = true;
             });
+            /* eslint-enable no-param-reassign */
         }
     }
 
@@ -1107,3 +1114,4 @@ class AudioSettingsStore {
 
 const audioSettingsStore = new AudioSettingsStore();
 export default audioSettingsStore;
+export type { AudioSettingsStore };

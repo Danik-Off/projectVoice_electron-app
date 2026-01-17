@@ -9,6 +9,7 @@ interface CreateServerModalProps {
     onClose: () => void;
 }
 
+/* eslint-disable max-lines-per-function -- Complex modal with form validation */
 const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }) => {
     const [serverName, setServerName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +62,14 @@ const CreateServerModal: React.FC<CreateServerModalProps> = ({ isOpen, onClose }
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose} title="Создать сервер" size="small" icon="➕">
-            <form className="create-server-form" onSubmit={handleCreateServer}>
+            <form
+                className="create-server-form"
+                onSubmit={(e) => {
+                    handleCreateServer(e).catch((error: unknown) => {
+                        console.error('Form submission error:', error);
+                    });
+                }}
+            >
                 <div className="create-server-form__field">
                     <label className="create-server-form__label">
                         Название сервера

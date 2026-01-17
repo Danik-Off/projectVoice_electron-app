@@ -5,9 +5,11 @@ import { connectionStore } from '../../../../../core/store/ConnectionStore';
 const GeneralSettings: React.FC = () => {
     const { t, i18n } = useTranslation();
 
-    const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newLanguage = event.target.value;
-        i18n.changeLanguage(newLanguage);
+    const handleLanguageChange = (languageEvent: React.ChangeEvent<HTMLSelectElement>) => {
+        const newLanguage = languageEvent.target.value;
+        i18n.changeLanguage(newLanguage).catch((languageError: unknown) => {
+            console.error('Error changing language:', languageError);
+        });
     };
 
     const handleOpenServerSettings = () => {

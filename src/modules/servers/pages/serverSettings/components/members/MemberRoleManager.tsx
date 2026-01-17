@@ -75,10 +75,14 @@ const MemberRoleManager: React.FC<MemberRoleManagerProps> = observer(({ member, 
                                 <input
                                     type="checkbox"
                                     checked={isSelected}
-                                    onChange={() => toggleRole(role.id)}
+                                    onChange={() => {
+                                        toggleRole(role.id).catch((error: unknown) => {
+                                            console.error('Error in toggleRole:', error);
+                                        });
+                                    }}
                                     disabled={saving}
                                 />
-                                <span className="role-color" style={{ backgroundColor: role.color || '#5865F2' }} />
+                                <span className="role-color" style={{ backgroundColor: role.color ?? '#5865F2' }} />
                                 <span className="role-name">{role.name}</span>
                             </label>
                         );

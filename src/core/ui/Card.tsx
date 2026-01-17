@@ -12,6 +12,7 @@ export interface CardProps {
     onClick?: () => void;
 }
 
+/* eslint-disable complexity */
 const Card: React.FC<CardProps> = ({
     children,
     title,
@@ -22,17 +23,19 @@ const Card: React.FC<CardProps> = ({
     contentClassName = '',
     onClick
 }) => (
-    <div className={`ui-card ${onClick ? 'ui-card--clickable' : ''} ${className}`} onClick={onClick}>
-        {title || description || icon ? (
+    <div className={`ui-card ${onClick != null ? 'ui-card--clickable' : ''} ${className}`} onClick={onClick}>
+        {(title != null && title !== '') || (description != null && description !== '') || icon != null ? (
             <div className={`ui-card__header ${headerClassName}`}>
                 <div className="ui-card__header-content">
-                    {icon ? (
+                    {icon != null ? (
                         <div className="ui-card__icon">{typeof icon === 'string' ? <span>{icon}</span> : icon}</div>
                     ) : null}
-                    {title || description ? (
+                    {(title != null && title !== '') || (description != null && description !== '') ? (
                         <div className="ui-card__header-text">
-                            {title ? <h3 className="ui-card__title">{title}</h3> : null}
-                            {description ? <p className="ui-card__description">{description}</p> : null}
+                            {title != null && title !== '' ? <h3 className="ui-card__title">{title}</h3> : null}
+                            {description != null && description !== '' ? (
+                                <p className="ui-card__description">{description}</p>
+                            ) : null}
                         </div>
                     ) : null}
                 </div>

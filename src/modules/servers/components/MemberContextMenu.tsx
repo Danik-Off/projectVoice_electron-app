@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { serverMembersService, Permissions, hasPermission } from '../index';
+import { serverMembersService, Permissions as ServerPermissions, hasPermission } from '../index';
 import { notificationStore } from '../../../core';
 import { roleService } from '../services/roleService';
 import type { ServerMember } from '../services/serverMembersService';
@@ -61,6 +61,7 @@ const BanModal: React.FC<BanModalProps> = ({ isOpen, onClose, onConfirm }) => {
     );
 };
 
+/* eslint-disable max-lines-per-function, complexity -- Complex member context menu with moderation */
 const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     member,
     serverId,
@@ -75,22 +76,35 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     const [showRolesModal, setShowRolesModal] = useState(false);
     const [roles, setRoles] = useState<Role[]>([]);
     const [loadingRoles, setLoadingRoles] = useState(false);
-    const [isMuted, setIsMuted] = useState(member.isMuted || false);
-    const [isDeafened, setIsDeafened] = useState(member.isDeafened || false);
+    const [isMuted, setIsMuted] = useState(member.isMuted ?? false);
+    const [isDeafened, setIsDeafened] = useState(member.isDeafened ?? false);
+
+    const loadRoles = async () => {
+        setLoadingRoles(true);
+        try {
+            const rolesData = await roleService.getRoles(serverId);
+            setRoles(rolesData);
+        } catch (error) {
+            console.error('Error loading roles:', error);
+            notificationStore.addNotification(t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей', 'error');
+        } finally {
+            setLoadingRoles(false);
+        }
+    };
 
     useEffect(() => {
         let cleanup: (() => void) | null = null;
 
         // Небольшая задержка перед добавлением обработчика, чтобы не закрыть меню сразу после открытия
         const timeoutId = setTimeout(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            const handleClickOutside = (e: MouseEvent) => {
+                if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
                     onClose();
                 }
             };
 
-            const handleEscape = (event: KeyboardEvent) => {
-                if (event.key === 'Escape') {
+            const handleEscape = (e: KeyboardEvent) => {
+                if (e.key === 'Escape') {
                     onClose();
                 }
             };
@@ -106,7 +120,7 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 
         return () => {
             clearTimeout(timeoutId);
-            if (cleanup) {
+            if (cleanup != null) {
                 cleanup();
             }
         };
@@ -115,30 +129,19 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
     // Загрузка ролей при открытии меню управления ролями
     useEffect(() => {
         if (showRolesModal && roles.length === 0 && !loadingRoles) {
-            loadRoles();
+            loadRoles().catch((error: unknown) => {
+                console.error('Error loading roles:', error);
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [showRolesModal]);
 
-    const loadRoles = async () => {
-        setLoadingRoles(true);
-        try {
-            const rolesData = await roleService.getRoles(serverId);
-            setRoles(rolesData);
-        } catch (error) {
-            console.error('Error loading roles:', error);
-            notificationStore.addNotification(t('serverSettings.rolesLoadError') || 'Ошибка загрузки ролей', 'error');
-        } finally {
-            setLoadingRoles(false);
-        }
-    };
-
     // Проверка прав
-    const canKick = hasPermission(currentUserPermissions, Permissions.KICK_MEMBERS);
-    const canBan = hasPermission(currentUserPermissions, Permissions.BAN_MEMBERS);
-    const canMute = hasPermission(currentUserPermissions, Permissions.MUTE_MEMBERS);
-    const canDeafen = hasPermission(currentUserPermissions, Permissions.DEAFEN_MEMBERS);
-    const canManageRoles = hasPermission(currentUserPermissions, Permissions.MANAGE_ROLES);
+    const canKick = hasPermission(currentUserPermissions, ServerPermissions.KICK_MEMBERS);
+    const canBan = hasPermission(currentUserPermissions, ServerPermissions.BAN_MEMBERS);
+    const canMute = hasPermission(currentUserPermissions, ServerPermissions.MUTE_MEMBERS);
+    const canDeafen = hasPermission(currentUserPermissions, ServerPermissions.DEAFEN_MEMBERS);
+    const canManageRoles = hasPermission(currentUserPermissions, ServerPermissions.MANAGE_ROLES);
 
     const handleKick = async () => {
         try {
@@ -157,7 +160,8 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
 
     const handleBan = async (reason: string) => {
         try {
-            await serverMembersService.banMember(serverId, member.id, reason || undefined);
+            const banReason = reason !== '' ? reason : null;
+            await serverMembersService.banMember(serverId, member.id, banReason ?? '');
             notificationStore.addNotification(t('serverMembers.memberBanned') || 'Участник забанен', 'success');
             onMemberUpdate?.();
             setShowBanModal(false);
@@ -235,13 +239,20 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                 }}
             >
                 <div className="context-menu-header">
-                    <span className="member-name">{member.nickname || member.user?.username}</span>
+                    <span className="member-name">{member.nickname ?? member.user?.username}</span>
                 </div>
 
                 <div className="context-menu-divider" />
 
                 {canKick ? (
-                    <button className="context-menu-item danger" onClick={handleKick}>
+                    <button
+                        className="context-menu-item danger"
+                        onClick={() => {
+                            handleKick().catch((error: unknown) => {
+                                console.error('Error kicking member:', error);
+                            });
+                        }}
+                    >
                         <span className="icon">👢</span>
                         {t('serverMembers.kick') || 'Исключить'}
                     </button>
@@ -275,14 +286,30 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                         <div className="context-menu-divider" />
                         {canMute ? (
                             <label className="context-menu-item checkbox">
-                                <input type="checkbox" checked={isMuted} onChange={handleMuteToggle} />
+                                <input
+                                    type="checkbox"
+                                    checked={isMuted}
+                                    onChange={() => {
+                                        handleMuteToggle().catch((error: unknown) => {
+                                            console.error('Error toggling mute:', error);
+                                        });
+                                    }}
+                                />
                                 <span className="icon">🔇</span>
                                 {t('serverMembers.mute') || 'Заглушить'}
                             </label>
                         ) : null}
                         {canDeafen ? (
                             <label className="context-menu-item checkbox">
-                                <input type="checkbox" checked={isDeafened} onChange={handleDeafenToggle} />
+                                <input
+                                    type="checkbox"
+                                    checked={isDeafened}
+                                    onChange={() => {
+                                        handleDeafenToggle().catch((error: unknown) => {
+                                            console.error('Error toggling deafen:', error);
+                                        });
+                                    }}
+                                />
                                 <span className="icon">🔊</span>
                                 {t('serverMembers.deafen') || 'Отключить звук'}
                             </label>
@@ -291,7 +318,15 @@ const MemberContextMenu: React.FC<MemberContextMenuProps> = ({
                 ) : null}
             </div>
 
-            <BanModal isOpen={showBanModal} onClose={() => setShowBanModal(false)} onConfirm={handleBan} />
+            <BanModal
+                isOpen={showBanModal}
+                onClose={() => setShowBanModal(false)}
+                onConfirm={(reason: string) => {
+                    handleBan(reason).catch((error: unknown) => {
+                        console.error('Error banning member:', error);
+                    });
+                }}
+            />
 
             {showRolesModal ? (
                 <MemberRolesModal

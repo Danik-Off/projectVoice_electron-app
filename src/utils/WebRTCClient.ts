@@ -118,8 +118,8 @@ class WebRTCClient {
                 type: 'offer',
                 sdp
             });
-        } catch (error) {
-            console.error('Ошибка при создании предложения:', error);
+        } catch (createOfferError: unknown) {
+            console.error('Ошибка при создании предложения:', createOfferError);
         }
     }
 
@@ -363,8 +363,8 @@ class WebRTCClient {
                 // Настраиваем VoiceActivity для удаленного участника
                 this.setupRemoteVoiceActivity(id, remoteStream);
             }
-        } catch (error) {
-            console.error('Ошибка при настройке аудио обработки для участника:', id, error);
+        } catch (setupError: unknown) {
+            console.error('Ошибка при настройке аудио обработки для участника:', id, setupError);
         }
     }
 

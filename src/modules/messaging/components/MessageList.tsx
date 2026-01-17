@@ -1,52 +1,76 @@
+/* eslint-disable max-lines-per-function */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { observer } from 'mobx-react';
-import { useParams } from 'react-router-dom';
 import { messageStore } from '../store/messageStore';
 import { eventBus, MESSAGING_EVENTS } from '../../../core';
+import channelsStore from '../../channels/store/channelsStore';
 import type { Message } from '../types/message';
 import MessageItem from './MessageItem';
 import MessageInput from './MessageInput';
 import './MessageList.scss';
-import type {
-    ChannelSelectedEvent,
-    ChannelsLoadedEvent,
-    VoiceChannelConnectedEvent,
-    MessagesLoadedEvent,
-    MessageCreatedEvent
-} from '../../../core/events/events';
+import type { MessagesLoadedEvent, MessageCreatedEvent } from '../../../core/events/events';
 
 const MessageList: React.FC = observer(() => {
-    const { roomId } = useParams<{ roomId: string }>();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesContainerRef = useRef<HTMLDivElement>(null);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const [isNearBottom, setIsNearBottom] = useState(true);
 
     const { messages, loading, error, hasMore, currentChannelId } = messageStore;
+    const { currentChannel } = channelsStore;
     const [messagesState, setMessagesState] = useState<Message[]>([]);
     const [loadingState, setLoadingState] = useState(false);
     const [errorState, setErrorState] = useState<string | null>(null);
 
-    // Подписка на события сообщений
-    useEffect(() => {
-        const unsubscribeLoaded = eventBus.on<MessagesLoadedEvent>(MESSAGING_EVENTS.MESSAGES_LOADED, (data) => {
-            if (data && data.channelId === currentChannelId) {
-                setMessagesState(data.messages as Message[]);
+    // Обработчик загруженных сообщений
+    const handleMessagesLoaded = useCallback(
+        (data: unknown) => {
+            if (
+                data != null &&
+                typeof data === 'object' &&
+                'channelId' in data &&
+                data.channelId === currentChannelId
+            ) {
+                const messagesData = data as { messages: Message[] };
+                setMessagesState(messagesData.messages);
                 setLoadingState(false);
             }
-        });
+        },
+        [currentChannelId]
+    );
 
-        const unsubscribeCreated = eventBus.on<MessageCreatedEvent>(MESSAGING_EVENTS.MESSAGE_CREATED, (data) => {
-            if (data && data.message.channelId === currentChannelId) {
-                setMessagesState((prev) => [...prev, data.message as Message]);
+    // Обработчик созданного сообщения
+    const handleMessageCreated = useCallback(
+        (data: unknown) => {
+            if (data != null && typeof data === 'object' && 'message' in data) {
+                const messageData = data as { message: Message };
+                if (
+                    typeof messageData.message.channelId === 'number' &&
+                    messageData.message.channelId === currentChannelId
+                ) {
+                    setMessagesState((prev) => [...prev, messageData.message]);
+                }
             }
-        });
+        },
+        [currentChannelId]
+    );
+
+    // Подписка на события сообщений
+    useEffect(() => {
+        const unsubscribeLoaded = eventBus.on<MessagesLoadedEvent>(
+            MESSAGING_EVENTS.MESSAGES_LOADED,
+            handleMessagesLoaded
+        );
+        const unsubscribeCreated = eventBus.on<MessageCreatedEvent>(
+            MESSAGING_EVENTS.MESSAGE_CREATED,
+            handleMessageCreated
+        );
 
         return () => {
             unsubscribeLoaded();
             unsubscribeCreated();
         };
-    }, [currentChannelId]);
+    }, [handleMessagesLoaded, handleMessageCreated]);
 
     // Синхронизация с messageStore
     useEffect(() => {
@@ -57,10 +81,10 @@ const MessageList: React.FC = observer(() => {
 
     // Загрузка сообщений при изменении канала
     useEffect(() => {
-        if (currentChannel?.id) {
+        if (currentChannel?.id != null && currentChannel.id !== 0) {
             messageStore.setCurrentChannel(currentChannel.id);
         }
-    }, [currentChannel?.id]);
+    }, [currentChannel]);
 
     // Автопрокрутка к новым сообщениям
     const scrollToBottom = useCallback(() => {
@@ -85,8 +109,10 @@ const MessageList: React.FC = observer(() => {
         checkIfNearBottom();
 
         // Загрузка предыдущих сообщений при прокрутке вверх
-        if (messagesContainerRef.current && messagesContainerRef.current.scrollTop === 0 && hasMore) {
-            messageStore.loadMoreMessages();
+        if (messagesContainerRef.current != null && messagesContainerRef.current.scrollTop === 0 && hasMore) {
+            messageStore.loadMoreMessages().catch((err: unknown) => {
+                console.error('Error loading more messages:', err);
+            });
         }
     }, [checkIfNearBottom, hasMore]);
 
@@ -99,7 +125,7 @@ const MessageList: React.FC = observer(() => {
 
     // Прокрутка к началу при загрузке предыдущих сообщений
     useEffect(() => {
-        if (messagesContainerRef.current && !isNearBottom) {
+        if (messagesContainerRef.current != null && !isNearBottom) {
             const container = messagesContainerRef.current;
             const oldHeight = container.scrollHeight;
 
@@ -122,7 +148,7 @@ const MessageList: React.FC = observer(() => {
         messagesState.forEach((message: Message) => {
             const lastGroup = groups[groups.length - 1];
 
-            if (lastGroup && lastGroup.userId === message.userId) {
+            if (lastGroup != null && lastGroup.userId === message.userId) {
                 lastGroup.messages.push(message);
             } else {
                 groups.push({
@@ -150,7 +176,7 @@ const MessageList: React.FC = observer(() => {
                         <path d="M7 9H17V11H7V9ZM7 13H13V15H7V13Z" fill="var(--accent-color)" />
                     </svg>
                 </div>
-                <h3>Добро пожаловать в #{channelName || 'канал'}!</h3>
+                <h3>Добро пожаловать в #{channelName ?? 'канал'}!</h3>
                 <p>Это начало канала. Отправьте первое сообщение, чтобы начать общение.</p>
                 <div className="empty-chat-tips">
                     <div className="tip">
@@ -193,10 +219,10 @@ const MessageList: React.FC = observer(() => {
     );
 
     const VoiceStatusIndicator: React.FC = () => {
-        if (!isVoiceConnected) {
-            return null;
-        }
+        // Voice connection status removed for now
+        return null;
 
+        /* eslint-disable-next-line no-unreachable */
         return (
             <div className="voice-status-indicator">
                 <div className="voice-status-icon">
@@ -220,7 +246,7 @@ const MessageList: React.FC = observer(() => {
         );
     };
 
-    if (!currentChannel) {
+    if (currentChannel == null) {
         return (
             <div className="message-list-container">
                 <NoChannelSelected />
@@ -233,7 +259,11 @@ const MessageList: React.FC = observer(() => {
             <div className="channel-header">
                 <div className="channel-info">
                     <h2 className="channel-name">#{currentChannel.name}</h2>
-                    <span className="channel-description">{currentChannel.description || 'Текстовый канал'}</span>
+                    <span className="channel-description">
+                        {currentChannel.description != null && currentChannel.description !== ''
+                            ? currentChannel.description
+                            : 'Текстовый канал'}
+                    </span>
                 </div>
                 <VoiceStatusIndicator />
                 <div className="channel-actions">
@@ -255,10 +285,18 @@ const MessageList: React.FC = observer(() => {
                         </div>
                     ) : null}
 
-                    {errorState ? (
+                    {errorState != null && errorState !== '' ? (
                         <div className="error-message">
                             <span>Ошибка загрузки сообщений: {errorState}</span>
-                            <button onClick={() => messageStore.loadMessages()}>Попробовать снова</button>
+                            <button
+                                onClick={() => {
+                                    messageStore.loadMessages().catch((err: unknown) => {
+                                        console.error('Error reloading messages:', err);
+                                    });
+                                }}
+                            >
+                                Попробовать снова
+                            </button>
                         </div>
                     ) : null}
 
@@ -266,8 +304,8 @@ const MessageList: React.FC = observer(() => {
                         <EmptyChatState channelName={currentChannel.name} />
                     )}
 
-                    {messageGroups.map((group, groupIndex) => (
-                        <div key={`${group.userId}-${groupIndex}`} className="message-group">
+                    {messageGroups.map((group) => (
+                        <div key={`${group.userId}-${group.messages[0]?.id ?? 0}`} className="message-group">
                             {group.messages.map((message: Message, messageIndex: number) => (
                                 <MessageItem key={message.id} message={message} isFirstInGroup={messageIndex === 0} />
                             ))}

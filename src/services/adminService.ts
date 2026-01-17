@@ -111,77 +111,88 @@ export interface UpdateUserRequest {
 }
 
 class AdminService {
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getStats(): Promise<AdminStats> {
         return apiClient('/admin/stats', { method: 'GET' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getUsers(filters: UserFilters = {}): Promise<UsersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) {
+        if (filters.page != null && filters.page > 0) {
             params.append('page', filters.page.toString());
         }
-        if (filters.limit) {
+        if (filters.limit != null && filters.limit > 0) {
             params.append('limit', filters.limit.toString());
         }
-        if (filters.search) {
+        if (filters.search != null && filters.search.length > 0) {
             params.append('search', filters.search);
         }
-        if (filters.role) {
+        if (filters.role != null && filters.role.length > 0) {
             params.append('role', filters.role);
         }
-        if (filters.status) {
+        if (filters.status != null && filters.status.length > 0) {
             params.append('status', filters.status);
         }
 
         return apiClient(`/admin/users?${params.toString()}`, { method: 'GET' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getUser(userId: number): Promise<User> {
         return apiClient(`/admin/users/${userId}`, { method: 'GET' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async updateUser(userId: number, updates: UpdateUserRequest): Promise<{ message: string; user: User }> {
         return apiClient(`/admin/users/${userId}`, { method: 'PUT' }, updates);
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async deleteUser(userId: number): Promise<{ message: string }> {
         return apiClient(`/admin/users/${userId}`, { method: 'DELETE' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getServers(filters: ServerFilters = {}): Promise<ServersResponse> {
         const params = new URLSearchParams();
-        if (filters.page) {
+        if (filters.page != null && filters.page > 0) {
             params.append('page', filters.page.toString());
         }
-        if (filters.limit) {
+        if (filters.limit != null && filters.limit > 0) {
             params.append('limit', filters.limit.toString());
         }
-        if (filters.search) {
+        if (filters.search != null && filters.search.length > 0) {
             params.append('search', filters.search);
         }
-        if (filters.status) {
+        if (filters.status != null && filters.status.length > 0) {
             params.append('status', filters.status);
         }
 
         return apiClient(`/admin/servers?${params.toString()}`, { method: 'GET' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getServer(serverId: number): Promise<Server> {
         return apiClient(`/admin/servers/${serverId}`, { method: 'GET' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async blockServer(serverId: number, data: BlockServerRequest): Promise<{ message: string; server: Server }> {
         return apiClient(`/admin/servers/${serverId}/block`, { method: 'POST' }, data);
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async unblockServer(serverId: number): Promise<{ message: string; server: Server }> {
         return apiClient(`/admin/servers/${serverId}/unblock`, { method: 'POST' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async deleteServer(serverId: number): Promise<{ message: string }> {
         return apiClient(`/admin/servers/${serverId}`, { method: 'DELETE' });
     }
 
+    // eslint-disable-next-line require-await -- Returns promise directly
     async getLogs(): Promise<LogsResponse> {
         return apiClient('/admin/logs', { method: 'GET' });
     }

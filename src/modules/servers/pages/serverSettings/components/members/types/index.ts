@@ -1,4 +1,5 @@
-import type { ServerMember } from '../../../../../../modules/servers';
+import type React from 'react';
+import type { ServerMember } from '../../../../../services/serverMembersService';
 import type { Role } from '../../../../types/role';
 
 // Props types
@@ -14,7 +15,7 @@ export interface MemberRowProps {
     currentUserId?: number;
     onUpdate: () => void;
     onManageRoles: (member: ServerMember) => void;
-    onContextMenu?: (e: React.MouseEvent, member: ServerMember) => void;
+    onContextMenu?: (e: React.MouseEvent<HTMLElement>, member: ServerMember) => void;
 }
 
 export interface MemberRolesModalProps {

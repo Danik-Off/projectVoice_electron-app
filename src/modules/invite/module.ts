@@ -16,10 +16,12 @@ export const inviteModule: IModule = {
             protected: false
         }
     ],
-    async initialize() {
+    initialize() {
         console.warn('Invite module initialized');
+        return Promise.resolve();
     },
-    async destroy() {
+    destroy() {
         console.warn('Invite module destroyed');
+        return Promise.resolve();
     }
 };

@@ -10,6 +10,7 @@ import { useMembersSettings } from './hooks/useMembersSettings';
 import type { MembersSettingsProps } from './types';
 import './MembersSettings.scss';
 
+/* eslint-disable max-lines-per-function -- Complex members settings component */
 const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserPermissions = 0n }) => {
     const { t } = useTranslation();
     const {
@@ -35,6 +36,12 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
         handleMemberUpdate
     } = useMembersSettings(currentUserPermissions);
 
+    const handleMemberUpdateWrapper = () => {
+        loadMembers().catch((error: unknown) => {
+            console.error('Error in loadMembers:', error);
+        });
+    };
+
     return (
         <div className="settings-section">
             <div className="section-header">
@@ -55,7 +62,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                             <MemberSearch
                                 value={searchQuery}
                                 onChange={setSearchQuery}
-                                placeholder={t('serverSettings.searchMembers') || 'Поиск участников...'}
+                                placeholder={t('serverSettings.searchMembers') ?? 'Поиск участников...'}
                             />
 
                             <MemberFilters
@@ -85,7 +92,7 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                                         <div className="group-header">
                                             <div
                                                 className="group-color-bar"
-                                                style={{ backgroundColor: groupColor || '#5865f2' }}
+                                                style={{ backgroundColor: groupColor ?? '#5865f2' }}
                                             />
                                             <h3 className="group-title">{groupName}</h3>
                                             <span className="group-count">({groupMembers.length})</span>
@@ -95,11 +102,11 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                                                 <MemberRow
                                                     key={member.id}
                                                     member={member}
-                                                    serverId={server?.id || 0}
+                                                    serverId={server?.id ?? 0}
                                                     roles={roles}
                                                     currentUserPermissions={currentUserPermissions}
                                                     currentUserId={currentUser?.id}
-                                                    onUpdate={loadMembers}
+                                                    onUpdate={handleMemberUpdateWrapper}
                                                     onManageRoles={setSelectedMemberForRoles}
                                                     onContextMenu={handleContextMenu}
                                                 />
@@ -113,18 +120,22 @@ const MembersSettings: React.FC<MembersSettingsProps> = observer(({ currentUserP
                 )}
             </div>
 
-            {selectedMemberForRoles && server?.id ? (
+            {selectedMemberForRoles != null && server?.id != null ? (
                 <MemberRolesModal
-                    isOpen={Boolean(selectedMemberForRoles)}
+                    isOpen={selectedMemberForRoles != null}
                     member={selectedMemberForRoles}
                     serverId={server.id}
                     roles={roles}
                     onClose={() => setSelectedMemberForRoles(null)}
-                    onUpdate={loadMembers}
+                    onUpdate={() => {
+                        loadMembers().catch((error: unknown) => {
+                            console.error('Error in loadMembers:', error);
+                        });
+                    }}
                 />
             ) : null}
 
-            {contextMenu && server?.id ? (
+            {contextMenu != null && server?.id != null ? (
                 <MemberContextMenu
                     key={`context-menu-${contextMenu.member.id}`}
                     member={contextMenu.member}

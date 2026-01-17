@@ -60,7 +60,7 @@ const Modal: React.FC<ModalProps> = ({
             <div className={`modal modal--${size}`}>
                 <div className="modal__header">
                     <div className="modal__title">
-                        {icon ? <span className="modal__icon">{icon}</span> : null}
+                        {icon != null && icon.length > 0 ? <span className="modal__icon">{icon}</span> : null}
                         <h2>{title}</h2>
                     </div>
                     {showCloseButton ? (
