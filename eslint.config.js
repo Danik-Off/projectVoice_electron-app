@@ -24,7 +24,6 @@ export default tseslint.config(
     // Базовые настройки для всех файлов
     js.configs.recommended,
     ...tseslint.configs.recommended,
-    prettierConfig,
 
     // Настройки для TypeScript и React файлов
     {
@@ -552,5 +551,8 @@ export default tseslint.config(
             '@typescript-eslint/no-var-requires': 'off',
             'no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
         }
-    }
+    },
+
+    // Prettier config должен быть ПОСЛЕДНИМ, чтобы отключить все конфликтующие правила форматирования
+    prettierConfig
 );
