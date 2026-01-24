@@ -8,9 +8,9 @@ const SAVED_URL = typeof localStorage !== 'undefined' ? localStorage.getItem('pr
 const BASE_SERVER_URL =
     SAVED_URL !== null && SAVED_URL !== ''
         ? SAVED_URL
-        : import.meta.env.VITE_API_BASE_URL !== null && import.meta.env.VITE_API_BASE_URL !== ''
+        : import.meta.env.VITE_API_BASE_URL !== undefined && import.meta.env.VITE_API_BASE_URL !== null && import.meta.env.VITE_API_BASE_URL !== ''
           ? (import.meta.env.VITE_API_BASE_URL as string)
-          : import.meta.env.VITE_SOCKET_URL !== null && import.meta.env.VITE_SOCKET_URL !== ''
+          : import.meta.env.VITE_SOCKET_URL !== undefined && import.meta.env.VITE_SOCKET_URL !== null && import.meta.env.VITE_SOCKET_URL !== ''
             ? (import.meta.env.VITE_SOCKET_URL as string)
             : 'http://localhost:5000';
 
