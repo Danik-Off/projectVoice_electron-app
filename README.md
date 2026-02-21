@@ -222,10 +222,7 @@ projectVoice_electron-app/
 
 ## 👨‍💻 Автор
 
-**Danila Ovchinnikov (Danik Off)**
-
-- GitHub: [@your-username](https://github.com/your-username)
-- Email: [your-email@example.com]
+**Danik Off**
 
 ---
 
