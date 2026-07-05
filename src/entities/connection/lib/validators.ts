@@ -19,18 +19,12 @@ export const validateServerUrl = (url: string): string | null => {
         return 'URL must start with http:// or https://';
     }
 
-    // Проверяем корректность URL через конструктор
+    // Проверяем корректность URL через конструктор (бросает исключение при неверном формате)
     try {
+        // eslint-disable-next-line no-new -- используется только для валидации формата
         new URL(trimmed);
     } catch {
         return 'Invalid URL format';
-    }
-
-    // Проверяем наличие порта (опционально, но желательно)
-    const parsed = new URL(trimmed);
-    if (parsed.port.length === 0 && parsed.protocol === 'http:') {
-        // Для http порт не обязателен, но предупреждаем
-        return null;
     }
 
     return null;

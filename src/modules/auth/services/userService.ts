@@ -2,7 +2,7 @@ import { apiClient } from '../../../core';
 
 export const userService = {
     /** Получить пользователя по ID (GET /users/{id}) */
-    get: async (id: number | null = null) => {
+    get: (id: number | null = null) => {
         if (id === null) {
             // Получить текущего пользователя по токену
             return apiClient('/users/', { method: 'GET' });
@@ -11,24 +11,23 @@ export const userService = {
     },
 
     /** Обновить профиль текущего пользователя (PUT /users/) */
-    updateProfile: async (profileData: { username: string; profilePicture?: string; bio?: string }) => {
-        return apiClient(
-            '/users/',
-            { method: 'PUT' },
-            profileData
-        );
-    },
+    updateProfile: (profileData: { username: string; profilePicture?: string; bio?: string }) => apiClient(
+        '/users/',
+        { method: 'PUT' },
+        profileData
+    ),
 
     /**
      * Смена пароля.
      * Бэкенд не имеет отдельного endpoint для смены пароля.
      * TODO: Уточнить у бэкенда.
      */
-    changePassword: async (_id: number, oldPassword: string, newPassword: string) => {
+    changePassword: (_id: number, oldPassword: string, newPassword: string) => {
+        const body: Record<string, unknown> = { oldPassword, newPassword };
         return apiClient(
             '/users/',
             { method: 'PUT' },
-            { oldPassword, newPassword } as Record<string, unknown>
+            body
         );
     }
 };

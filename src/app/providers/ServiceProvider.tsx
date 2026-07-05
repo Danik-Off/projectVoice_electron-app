@@ -22,13 +22,19 @@
  */
 
 import React, { useMemo } from 'react';
-import { ProfileSettingsContext } from '../../features/profile-settings';
-import { ProfileSettingsApi, NotificationAdapter as ProfileNotificationAdapter } from '../../features/profile-settings';
-import type { ProfileSettingsDeps } from '../../features/profile-settings';
+import {
+    ProfileSettingsContext,
+    ProfileSettingsApi,
+    NotificationAdapter as ProfileNotificationAdapter,
+    type ProfileSettingsDeps
+} from '../../features/profile-settings';
 
-import { ConnectionManagerContext } from '../../features/connection-manager';
-import { ConnectionServiceAdapter, NotificationAdapter as ConnectionNotificationAdapter } from '../../features/connection-manager';
-import type { ConnectionManagerDeps } from '../../features/connection-manager';
+import {
+    ConnectionManagerContext,
+    ConnectionServiceAdapter,
+    NotificationAdapter as ConnectionNotificationAdapter,
+    type ConnectionManagerDeps
+} from '../../features/connection-manager';
 
 interface ServiceProviderProps {
     children: React.ReactNode;

@@ -9,6 +9,4 @@ import type { I18nService } from '../../../entities/connection';
  * Создаёт I18nService из функции t.
  * Вызывается в компоненте, где доступен useTranslation().
  */
-export const createI18nAdapter = (t: (key: string) => string): I18nService => {
-    return { t };
-};
+export const createI18nAdapter = (t: (key: string) => string): I18nService => ({ t });

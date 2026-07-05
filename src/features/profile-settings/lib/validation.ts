@@ -19,12 +19,12 @@ export const validateProfile = (
     const errors: ValidationErrors = {};
 
     const usernameError = validateUsername(form.username);
-    if (usernameError) {
+    if (usernameError !== null) {
         errors.username = i18n.t('settingsPage.profile.validation.usernameRequired');
     }
 
     const emailError = validateEmail(form.email);
-    if (emailError) {
+    if (emailError !== null) {
         errors.email = i18n.t('settingsPage.profile.validation.emailInvalid');
     }
 
@@ -45,12 +45,12 @@ export const validatePasswordForm = (
     }
 
     const newPasswordError = validatePassword(form.newPassword);
-    if (newPasswordError) {
+    if (newPasswordError !== null) {
         errors.newPassword = i18n.t('settingsPage.profile.validation.newPasswordRequired');
     }
 
     const matchError = validatePasswordMatch(form.newPassword, form.confirmPassword);
-    if (matchError) {
+    if (matchError !== null) {
         errors.confirmPassword = i18n.t('settingsPage.profile.validation.passwordsDoNotMatch');
     }
 

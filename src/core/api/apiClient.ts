@@ -68,7 +68,7 @@ export const apiClient = async <T = unknown>(
     };
 
     // Если тело запроса передано, сериализуем его в JSON
-    if (body !== undefined && body !== null) {
+    if (typeof body !== 'undefined' && body !== null) {
         requestOptions.body = JSON.stringify(body);
     }
 

@@ -26,50 +26,21 @@ import { validateProfile, validatePasswordForm as validatePwdForm } from '../lib
  */
 export { useProfileSettingsDeps } from '../ui/ProfileSettingsContext';
 
-/**
- * Основной хук. Принимает сервисы через DI.
- *
- * @param service  — реализация IProfileSettingsService
- * @param notifier — реализация INotificationService
- * @param i18n     — реализация I18nService
- */
-export const useProfileSettings = (
+type SetValidationErrors = (errors: ValidationErrors) => void;
+
+/** ─── Данные пользователя и форма редактирования профиля ─── */
+const useProfileForm = (
     service: IProfileSettingsService,
     notifier: INotificationService,
-    i18n: I18nService
-): UseProfileSettingsReturn => {
-    // ─── Состояние пользователя ───
+    i18n: I18nService,
+    setValidationErrors: SetValidationErrors
+) => {
     const [user, setUser] = useState<User | null>(null);
-
-    // ─── UI-состояния модальных окон ───
     const [showEditProfile, setShowEditProfile] = useState(false);
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
-    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
-    // ─── Состояния загрузки ───
     const [isLoading, setIsLoading] = useState(false);
-    const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+    const [editForm, setEditForm] = useState<ProfileForm>({ username: '', email: '' });
+    const [originalForm, setOriginalForm] = useState<ProfileForm>({ username: '', email: '' });
 
-    // ─── Формы ───
-    const [editForm, setEditForm] = useState<ProfileForm>({
-        username: '',
-        email: ''
-    });
-
-    const [passwordForm, setPasswordForm] = useState<PasswordForm>({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-    });
-
-    const [originalForm, setOriginalForm] = useState<ProfileForm>({
-        username: '',
-        email: ''
-    });
-
-    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-
-    // ─── Загрузка данных пользователя при монтировании ───
     useEffect(() => {
         service.getCurrentUser()
             .then((userData) => {
@@ -87,24 +58,16 @@ export const useProfileSettings = (
             });
     }, [service, notifier, i18n]);
 
-    // ─── Валидация ───
     const validateProfileForm = useCallback((): boolean => {
         const { errors, isValid } = validateProfile(editForm, i18n);
         setValidationErrors(errors);
         return isValid;
-    }, [editForm, i18n]);
+    }, [editForm, i18n, setValidationErrors]);
 
-    const validatePasswordForm = useCallback((): boolean => {
-        const { errors, isValid } = validatePwdForm(passwordForm, i18n);
-        setValidationErrors(errors);
-        return isValid;
-    }, [passwordForm, i18n]);
-
-    // ─── Обработчики профиля ───
     const handleEdit = useCallback(() => {
         setShowEditProfile(true);
         setValidationErrors({});
-    }, []);
+    }, [setValidationErrors]);
 
     const handleSave = useCallback(async (): Promise<void> => {
         if (!validateProfileForm()) return;
@@ -138,14 +101,47 @@ export const useProfileSettings = (
         setEditForm(originalForm);
         setShowEditProfile(false);
         setValidationErrors({});
-    }, [originalForm]);
+    }, [originalForm, setValidationErrors]);
 
-    // ─── Обработчики пароля ───
+    return {
+        user,
+        showEditProfile,
+        isLoading,
+        editForm,
+        setEditForm,
+        handleEdit,
+        handleSave,
+        handleCancel,
+        validateProfileForm
+    };
+};
+
+/** ─── Форма смены пароля ─── */
+const usePasswordForm = (
+    service: IProfileSettingsService,
+    notifier: INotificationService,
+    i18n: I18nService,
+    setValidationErrors: SetValidationErrors
+) => {
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+    const [passwordForm, setPasswordForm] = useState<PasswordForm>({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+
+    const validatePasswordForm = useCallback((): boolean => {
+        const { errors, isValid } = validatePwdForm(passwordForm, i18n);
+        setValidationErrors(errors);
+        return isValid;
+    }, [passwordForm, i18n, setValidationErrors]);
+
     const handleChangePassword = useCallback(() => {
         setShowPasswordForm(true);
         setValidationErrors({});
         setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    }, []);
+    }, [setValidationErrors]);
 
     const handlePasswordSave = useCallback(async (): Promise<void> => {
         if (!validatePasswordForm()) return;
@@ -171,9 +167,24 @@ export const useProfileSettings = (
         setShowPasswordForm(false);
         setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
         setValidationErrors({});
-    }, []);
+    }, [setValidationErrors]);
 
-    // ─── Обработчики выхода ───
+    return {
+        showPasswordForm,
+        isPasswordLoading,
+        passwordForm,
+        setPasswordForm,
+        handleChangePassword,
+        handlePasswordSave,
+        handlePasswordCancel,
+        validatePasswordForm
+    };
+};
+
+/** ─── Подтверждение выхода из аккаунта ─── */
+const useLogoutConfirm = (service: IProfileSettingsService) => {
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
     const handleLogout = useCallback(() => {
         setShowLogoutConfirm(true);
     }, []);
@@ -187,39 +198,60 @@ export const useProfileSettings = (
         setShowLogoutConfirm(false);
     }, []);
 
+    return { showLogoutConfirm, handleLogout, confirmLogout, closeLogoutConfirm };
+};
+
+/**
+ * Основной хук. Принимает сервисы через DI.
+ *
+ * @param service  — реализация IProfileSettingsService
+ * @param notifier — реализация INotificationService
+ * @param i18n     — реализация I18nService
+ */
+export const useProfileSettings = (
+    service: IProfileSettingsService,
+    notifier: INotificationService,
+    i18n: I18nService
+): UseProfileSettingsReturn => {
+    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+
+    const profile = useProfileForm(service, notifier, i18n, setValidationErrors);
+    const password = usePasswordForm(service, notifier, i18n, setValidationErrors);
+    const logout = useLogoutConfirm(service);
+
     return {
         // Состояния
-        user,
-        showEditProfile,
-        showPasswordForm,
-        showLogoutConfirm,
-        isLoading,
-        isPasswordLoading,
-        editForm,
-        passwordForm,
+        user: profile.user,
+        showEditProfile: profile.showEditProfile,
+        showPasswordForm: password.showPasswordForm,
+        showLogoutConfirm: logout.showLogoutConfirm,
+        isLoading: profile.isLoading,
+        isPasswordLoading: password.isPasswordLoading,
+        editForm: profile.editForm,
+        passwordForm: password.passwordForm,
         validationErrors,
 
         // Сеттеры
-        setEditForm,
-        setPasswordForm,
+        setEditForm: profile.setEditForm,
+        setPasswordForm: password.setPasswordForm,
 
         // Обработчики профиля
-        handleEdit,
-        handleSave,
-        handleCancel,
+        handleEdit: profile.handleEdit,
+        handleSave: profile.handleSave,
+        handleCancel: profile.handleCancel,
 
         // Обработчики пароля
-        handleChangePassword,
-        handlePasswordSave,
-        handlePasswordCancel,
+        handleChangePassword: password.handleChangePassword,
+        handlePasswordSave: password.handlePasswordSave,
+        handlePasswordCancel: password.handlePasswordCancel,
 
         // Обработчики выхода
-        handleLogout,
-        confirmLogout,
-        closeLogoutConfirm,
+        handleLogout: logout.handleLogout,
+        confirmLogout: logout.confirmLogout,
+        closeLogoutConfirm: logout.closeLogoutConfirm,
 
         // Валидация
-        validateProfileForm,
-        validatePasswordForm
+        validateProfileForm: profile.validateProfileForm,
+        validatePasswordForm: password.validatePasswordForm
     };
 };

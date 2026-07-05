@@ -86,7 +86,9 @@ export class ConnectionServiceAdapter implements IConnectionService {
         };
 
         // Первая попытка сразу
-        attempt();
+        attempt().catch((err: unknown) => {
+            console.error('Connection retry attempt failed:', err);
+        });
 
         // Последующие через интервал
         this.retryTimer = setInterval(attempt, this.retryDelaySeconds * 1000);

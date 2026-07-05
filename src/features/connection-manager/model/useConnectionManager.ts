@@ -7,12 +7,13 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type {
-    IConnectionService,
-    INotificationService,
-    I18nService
+import {
+    type IConnectionService,
+    type INotificationService,
+    type I18nService,
+    validateServerUrl,
+    normalizeServerUrl
 } from '../../../entities/connection';
-import { validateServerUrl, normalizeServerUrl } from '../../../entities/connection';
 import type { UseConnectionManagerReturn } from './types';
 
 /**
@@ -29,7 +30,7 @@ export const useConnectionManager = (
     const [urlError, setUrlError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [retryInfo, setRetryInfo] = useState(service.retryInfo);
-    const [status, setStatus] = useState(service.status);
+    const [connectionStatus, setConnectionStatus] = useState(service.status);
     const [isManualSettings, setIsManualSettings] = useState(false);
 
     // Ref для отслеживания монтирования
@@ -42,7 +43,7 @@ export const useConnectionManager = (
         // Периодически опрашиваем статус из сервиса
         const interval = setInterval(() => {
             if (!isMounted.current) return;
-            setStatus(service.status);
+            setConnectionStatus(service.status);
             setRetryInfo(service.retryInfo);
             // Синхронизируем ручное открытие настроек
             setIsManualSettings(service.isSettingsModalOpen);
@@ -55,7 +56,7 @@ export const useConnectionManager = (
     }, [service]);
 
     // --- Модалка открыта, если нет подключения ИЛИ открыты настройки вручную ---
-    const isModalOpen = status === 'disconnected' || isManualSettings;
+    const isModalOpen = connectionStatus === 'disconnected' || isManualSettings;
 
     // --- Действия ---
     const openSettings = useCallback(() => {
@@ -119,7 +120,7 @@ export const useConnectionManager = (
 
     return {
         // Состояния
-        status,
+        status: connectionStatus,
         serverUrl: service.serverUrl,
         retryInfo,
         isModalOpen,

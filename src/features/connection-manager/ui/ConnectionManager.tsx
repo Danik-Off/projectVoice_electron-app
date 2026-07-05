@@ -23,7 +23,7 @@ const ConnectionManager: React.FC = () => {
 
     // Хук принимает сервисы через DI
     const {
-        status,
+        status: connectionStatus,
         serverUrl,
         retryInfo,
         isManualSettings,
@@ -46,7 +46,7 @@ const ConnectionManager: React.FC = () => {
 
     return (
         <ConnectionModal
-            status={status}
+            status={connectionStatus}
             serverUrl={serverUrl}
             retryInfo={retryInfo}
             isManualSettings={isManualSettings}
