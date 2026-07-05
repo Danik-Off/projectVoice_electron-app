@@ -11,8 +11,8 @@ interface TechnicalSettingsProps {
 }
 
 export const TechnicalSettings: React.FC<TechnicalSettingsProps> = observer(({ onError }) => (
-    <div className="voice-controls__audio-section">
-        <h4>⚙️ Технические настройки</h4>
+    <div className="audio-settings-section">
+        <h4 className="audio-settings-section__title">⚙️ Технические настройки</h4>
         <SampleRateSlider onError={onError} />
         <BitrateSlider onError={onError} />
         <LatencySlider onError={onError} />

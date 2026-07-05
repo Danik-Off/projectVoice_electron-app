@@ -4,35 +4,24 @@ import ServerSidebar from '../../modules/servers/components/serverSidebar/Server
 import VoiceControls from '../../modules/servers/pages/channelPage/components/channelSidebar/components/voiceControls/VoiceControls';
 import { UserProfileProvider } from '../../components/UserProfileProvider';
 import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
-import voiceRoomStore from '../../modules/voice/store/roomStore';
 
 import './Main.scss';
 
-const Layout = observer(() => {
-    // Проверяем подключение к голосовому каналу напрямую из store
-    const isConnectedToVoice = voiceRoomStore.currentVoiceChannel !== null;
-    const currentChannel = voiceRoomStore.currentVoiceChannel;
-
-    // Показываем VoiceControls сразу при подключении к голосовому каналу
-    const shouldShowVoiceControls = isConnectedToVoice;
-
-    // Логирование для отладки
-    console.warn('Layout - isConnectedToVoice:', isConnectedToVoice, 'currentChannel:', currentChannel);
-
-    return (
-        <UserProfileProvider>
-            <div className={`main-page ${shouldShowVoiceControls ? 'with-voice-controls' : ''}`}>
-                <ToastNotifications />
-                {shouldShowVoiceControls ? <VoiceControls /> : null}
-                <ServerSidebar />
-                <div className="content-page">
-                    <div className="content-wrapper">
-                        <Outlet />
-                    </div>
+// Панель голосового чата теперь всегда видна (как постоянная user-панель), а не
+// только во время звонка - поэтому место под неё резервируется безусловно.
+const Layout = observer(() => (
+    <UserProfileProvider>
+        <div className="main-page with-voice-controls">
+            <ToastNotifications />
+            <VoiceControls />
+            <ServerSidebar />
+            <div className="content-page">
+                <div className="content-wrapper">
+                    <Outlet />
                 </div>
             </div>
-        </UserProfileProvider>
-    );
-});
+        </div>
+    </UserProfileProvider>
+));
 
 export default Layout;

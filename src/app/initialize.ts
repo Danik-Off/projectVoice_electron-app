@@ -14,6 +14,7 @@ import { channelsModule } from '../modules/channels';
 import { inviteModule } from '../modules/invite';
 import { settingsModule } from '../modules/settings';
 import { adminModule } from '../modules/admin';
+import { friendsModule } from '../modules/friends';
 
 // Plugins
 import '../plugins/example-plugin';
@@ -40,7 +41,8 @@ export async function initializeApp() {
             { name: 'admin', module: adminModule },
             { name: 'invite', module: inviteModule },
             { name: 'settings', module: settingsModule },
-            { name: 'messaging', module: messagingModule }
+            { name: 'messaging', module: messagingModule },
+            { name: 'friends', module: friendsModule }
         ];
 
         modules.forEach(({ name: moduleName, module: moduleInstance }) => {

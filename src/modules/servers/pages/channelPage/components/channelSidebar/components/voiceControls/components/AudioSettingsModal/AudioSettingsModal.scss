@@ -1,1 +1,208 @@
-// Стили наследуются от родительского компонента VoiceControls
+@use '../../../../../../../../../../styles/main' as *;
+
+.audio-settings-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: $modal-overlay;
+    backdrop-filter: blur(4px);
+    z-index: $z-index-modal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn $animation-duration ease;
+}
+
+.audio-settings-modal {
+    position: absolute;
+    bottom: 0;
+    background: $modal-bg;
+    border: 1px solid $modal-border;
+    border-radius: $border-radius-large;
+    box-shadow: $shadow-heavy;
+    width: $modal-width;
+    max-width: calc(100vw - #{$spacing-lg * 2});
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: scaleIn $animation-duration cubic-bezier(0.4, 0, 0.2, 1);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $border-primary;
+        flex-shrink: 0;
+
+        h3 {
+            font-size: $font-size-lg;
+            font-weight: 600;
+            color: $text-primary;
+            margin: 0;
+        }
+    }
+
+    &__close {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: transparent;
+        color: $text-secondary;
+        cursor: pointer;
+        border-radius: $border-radius-small;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all $animation-duration-fast $animation-timing;
+
+        &:hover {
+            background: $hover-bg;
+            color: $text-primary;
+        }
+    }
+
+    &__content {
+        padding: $spacing-lg;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $scrollbar-thumb;
+            border-radius: 3px;
+
+            &:hover {
+                background: $scrollbar-thumb-hover;
+            }
+        }
+    }
+
+    // Переключатель Простой / Детальный
+    &__mode-switcher {
+        display: flex;
+        gap: 4px;
+        padding: 4px;
+        background: $tertiary-bg;
+        border-radius: $border-radius-medium;
+        margin-bottom: $spacing-lg;
+    }
+
+    &__mode-tab {
+        flex: 1;
+        padding: $spacing-sm $spacing-md;
+        border: none;
+        background: transparent;
+        color: $text-secondary;
+        border-radius: $border-radius-small;
+        font-size: $font-size-sm;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all $animation-duration-fast $animation-timing;
+
+        &:hover {
+            color: $text-primary;
+        }
+
+        &--active {
+            background: $primary-bg;
+            color: $primary-accent;
+            box-shadow: $shadow-light;
+        }
+    }
+}
+
+// Секция настроек внутри модалки (используется и SimpleMode/DetailedMode секциями)
+.audio-settings-section {
+    margin-bottom: $spacing-lg;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &__title {
+        font-size: $font-size-md;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0 0 $spacing-md 0;
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+    }
+
+    // Расстояние между тумблерами/слайдерами внутри секции
+    > .ui-toggle,
+    > .ui-slider {
+        margin-bottom: $spacing-md;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+// Карточки выбора качества звука (простой режим)
+.audio-quality-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-sm;
+
+    @media (max-width: $breakpoint-mobile) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.audio-quality-card {
+    &.ui-card {
+        padding: $spacing-md;
+        border: 2px solid transparent;
+        background: $tertiary-bg;
+        transition: all $animation-duration-fast $animation-timing;
+    }
+
+    &.ui-card--clickable:hover {
+        border-color: $border-accent;
+        transform: translateY(-2px);
+    }
+
+    &--active.ui-card {
+        border-color: $primary-accent;
+        background: $active-bg;
+    }
+
+    &__title {
+        font-size: $font-size-md;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0 0 4px 0;
+    }
+
+    &__desc {
+        font-size: $font-size-xs;
+        color: $text-secondary;
+        line-height: 1.4;
+        margin: 0;
+    }
+}
+
+// Кнопки тестирования
+.audio-test-buttons {
+    display: flex;
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

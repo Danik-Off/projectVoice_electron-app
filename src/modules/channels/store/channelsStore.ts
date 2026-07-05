@@ -63,7 +63,6 @@ class ChannelsStore {
                 this.loading = false;
             });
         }
-        console.warn('ok');
     }
 
     // Create a new channel in the current server

@@ -8,8 +8,8 @@ interface EqualizerSettingsProps {
 }
 
 export const EqualizerSettings: React.FC<EqualizerSettingsProps> = observer(({ onError }) => (
-    <div className="voice-controls__audio-section">
-        <h4>🎛️ Эквалайзер</h4>
+    <div className="audio-settings-section">
+        <h4 className="audio-settings-section__title">🎛️ Эквалайзер</h4>
         <BassBoostSlider onError={onError} />
         <TrebleBoostSlider onError={onError} />
     </div>

@@ -1,9 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { connectionStore } from '../../../../../core/store/ConnectionStore';
+import { useConnectionManagerDeps } from '../../../../../features/connection-manager';
 
 const GeneralSettings: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const { connectionService } = useConnectionManagerDeps();
 
     const handleLanguageChange = (languageEvent: React.ChangeEvent<HTMLSelectElement>) => {
         const newLanguage = languageEvent.target.value;
@@ -13,7 +14,7 @@ const GeneralSettings: React.FC = () => {
     };
 
     const handleOpenServerSettings = () => {
-        connectionStore.setSettingsModalOpen(true);
+        connectionService.setSettingsModalOpen(true);
     };
 
     return (
@@ -87,7 +88,7 @@ const GeneralSettings: React.FC = () => {
                                     {t('connection.editAddress')}
                                 </button>
                                 <div className="setting-description" style={{ marginTop: '10px' }}>
-                                    {t('connection.currentAddress')} <code>{connectionStore.serverUrl}</code>
+                                    {t('connection.currentAddress')} <code>{connectionService.serverUrl}</code>
                                 </div>
                             </div>
                         </div>

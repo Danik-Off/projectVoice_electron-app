@@ -94,6 +94,7 @@ class ServerMembersService {
 
     /**
      * Получить права текущего пользователя на сервере
+     * TODO: Endpoint /serverMembers/{serverId}/members/me отсутствует в текущем API бэкенда.
      */
     // eslint-disable-next-line require-await -- Returns promise directly
     async getCurrentMemberPermissions(serverId: number): Promise<CurrentMemberPermissions> {
@@ -145,6 +146,7 @@ class ServerMembersService {
 
     /**
      * Обновить роли участника
+     * TODO: Endpoint /serverMembers/{serverId}/members/{memberId}/roles отсутствует в текущем API бэкенда.
      */
     // eslint-disable-next-line require-await -- Returns promise directly
     async updateMemberRoles(serverId: number, memberId: number, roleIds: number[]): Promise<ServerMember> {
@@ -159,6 +161,7 @@ class ServerMembersService {
 
     /**
      * Получить список забаненных пользователей
+     * TODO: Endpoint /servers/{serverId}/bans отсутствует в текущем API бэкенда.
      */
     // eslint-disable-next-line require-await -- Returns promise directly
     async getBans(serverId: number): Promise<BanInfo[]> {
@@ -169,6 +172,7 @@ class ServerMembersService {
 
     /**
      * Разбанить пользователя
+     * TODO: Endpoint /servers/{serverId}/bans/{userId} отсутствует в текущем API бэкенда.
      */
     async unbanMember(serverId: number, userId: number): Promise<void> {
         await apiClient(`/servers/${serverId}/bans/${userId}`, {

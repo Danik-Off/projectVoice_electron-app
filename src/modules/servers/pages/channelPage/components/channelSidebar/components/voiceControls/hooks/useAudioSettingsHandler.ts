@@ -16,10 +16,7 @@ interface WrappedAudioSettingsStore {
     autoGainControl: boolean;
     echoCancellation: boolean;
     noiseSuppression: boolean;
-    voiceIsolation: boolean;
     voiceEnhancement: boolean;
-    spatialAudio: boolean;
-    stereoEnhancement: boolean;
     bassBoost: number;
     trebleBoost: number;
     voiceBoost: number;
@@ -34,10 +31,7 @@ interface WrappedAudioSettingsStore {
     setAutoGainControl: (value: boolean) => void;
     setEchoCancellation: (value: boolean) => void;
     setNoiseSuppression: (value: boolean) => void;
-    setVoiceIsolation: (value: boolean) => void;
     setVoiceEnhancement: (value: boolean) => void;
-    setSpatialAudio: (value: boolean) => void;
-    setStereoEnhancement: (value: boolean) => void;
     setBassBoost: (value: number) => void;
     setTrebleBoost: (value: number) => void;
     setVoiceBoost: (value: number) => void;
@@ -91,24 +85,9 @@ const createAsyncMethods = (onError: ErrorHandler) => ({
         'Error setting noise suppression',
         onError
     ),
-    setVoiceIsolation: wrapAsync(
-        (v: boolean) => audioSettingsStore.setVoiceIsolation(v),
-        'Error setting voice isolation',
-        onError
-    ),
     setVoiceEnhancement: wrapAsync(
         (v: boolean) => audioSettingsStore.setVoiceEnhancement(v),
         'Error setting voice enhancement',
-        onError
-    ),
-    setSpatialAudio: wrapAsync(
-        (v: boolean) => audioSettingsStore.setSpatialAudio(v),
-        'Error setting spatial audio',
-        onError
-    ),
-    setStereoEnhancement: wrapAsync(
-        (v: boolean) => audioSettingsStore.setStereoEnhancement(v),
-        'Error setting stereo enhancement',
         onError
     ),
     setBassBoost: wrapAsync((v: number) => audioSettingsStore.setBassBoost(v), 'Error setting bass boost', onError),
@@ -155,10 +134,7 @@ export const useAudioSettingsHandler = (onError: ErrorHandler): WrappedAudioSett
             autoGainControl: audioSettingsStore.autoGainControl,
             echoCancellation: audioSettingsStore.echoCancellation,
             noiseSuppression: audioSettingsStore.noiseSuppression,
-            voiceIsolation: audioSettingsStore.voiceIsolation,
             voiceEnhancement: audioSettingsStore.voiceEnhancement,
-            spatialAudio: audioSettingsStore.spatialAudio,
-            stereoEnhancement: audioSettingsStore.stereoEnhancement,
             bassBoost: audioSettingsStore.bassBoost,
             trebleBoost: audioSettingsStore.trebleBoost,
             voiceBoost: audioSettingsStore.voiceBoost,

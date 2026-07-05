@@ -32,13 +32,14 @@ const VoiceControls: React.FC = observer(() => {
         handleError
     } = useVoiceControls();
 
-    // Если не подключен к голосовому каналу, не показываем контролы
-    if (!currentVoiceChannel) {
-        return null;
-    }
+    // Панель видна всегда: без звонка - только локальный пользователь и настройки,
+    // в звонке - дополнительно канал, участники и разворачивание списка.
+    const isConnected = currentVoiceChannel != null;
 
     return (
-        <div className={`voice-controls ${isExpanded ? 'voice-controls--expanded' : ''}`}>
+        <div
+            className={`voice-controls ${isConnected ? 'voice-controls--connected' : ''} ${isExpanded && isConnected ? 'voice-controls--expanded' : ''}`}
+        >
             <MainPanel
                 currentVoiceChannel={currentVoiceChannel}
                 participantsCount={participants.length + 1}
@@ -50,7 +51,7 @@ const VoiceControls: React.FC = observer(() => {
                 onOpenSettings={() => setShowAudioSettingsModal(true)}
             />
 
-            {isExpanded ? (
+            {isExpanded && isConnected ? (
                 <ExpandedPanel
                     participants={otherParticipants}
                     onParticipantVolumeChange={handleParticipantVolumeChange}

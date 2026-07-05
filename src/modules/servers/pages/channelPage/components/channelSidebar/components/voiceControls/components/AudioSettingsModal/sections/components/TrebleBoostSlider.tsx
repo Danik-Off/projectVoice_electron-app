@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Slider } from '../../../../../../../../../../../../core';
 import { useAudioSettingsHandler } from '../../../../hooks/useAudioSettingsHandler';
 
 interface TrebleBoostSliderProps {
@@ -10,21 +11,12 @@ export const TrebleBoostSlider: React.FC<TrebleBoostSliderProps> = observer(({ o
     const store = useAudioSettingsHandler(onError);
 
     return (
-        <div className="voice-controls__audio-setting">
-            <label className="voice-controls__audio-label">
-                <span>Усиление высоких частот</span>
-            </label>
-            <div className="voice-controls__audio-control">
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={store.trebleBoost * 100}
-                    onChange={(e) => store.setTrebleBoost(Number(e.target.value) / 100)}
-                    className="voice-controls__audio-slider"
-                />
-                <span className="voice-controls__audio-value">{Math.round(store.trebleBoost * 100)}%</span>
-            </div>
-        </div>
+        <Slider
+            label="Усиление высоких частот"
+            min={0}
+            max={100}
+            value={store.trebleBoost * 100}
+            onChange={(e) => store.setTrebleBoost(Number(e.target.value) / 100)}
+        />
     );
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Button } from '../../../../../../../../../../core';
 import { useAudioSettingsHandler } from '../../hooks/useAudioSettingsHandler';
 
 interface TestSettingsProps {
@@ -18,21 +19,18 @@ export const TestSettings: React.FC<TestSettingsProps> = observer(({ onError }) 
     };
 
     return (
-        <div className="voice-controls__audio-section">
-            <h4>🧪 Тестирование</h4>
-            <div className="voice-controls__audio-test-buttons">
-                <button className="voice-controls__audio-test-btn" onClick={store.testMicrophone}>
+        <div className="audio-settings-section">
+            <h4 className="audio-settings-section__title">🧪 Тестирование</h4>
+            <div className="audio-test-buttons">
+                <Button variant="secondary" size="small" onClick={store.testMicrophone}>
                     🎤 Тест микрофона
-                </button>
-                <button className="voice-controls__audio-test-btn" onClick={store.testSpeakers}>
+                </Button>
+                <Button variant="secondary" size="small" onClick={store.testSpeakers}>
                     🔊 Тест динамиков
-                </button>
-                <button
-                    className="voice-controls__audio-test-btn voice-controls__audio-test-btn--advanced"
-                    onClick={handleAdvancedTest}
-                >
+                </Button>
+                <Button variant="test" size="small" onClick={handleAdvancedTest}>
                     🔬 Полный тест
-                </button>
+                </Button>
             </div>
         </div>
     );

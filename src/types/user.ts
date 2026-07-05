@@ -5,9 +5,11 @@ export interface User {
     role?: string;
     isActive?: boolean;
     profilePicture?: string;
+    bio?: string;
     status?: string;
     tag?: string;
     createdAt?: string;
+    updatedAt?: string;
     blockedAt?: string;
     blockedBy?: string;
     blockReason?: string;

@@ -2,7 +2,7 @@
  * Voice Module - модуль голосового общения
  */
 import type { IModule } from '../../core';
-import VoiceRoom from './components/VoiceRoom';
+import VoiceRoomPage from './components/VoiceRoomPage';
 
 export const voiceModule: IModule = {
     id: 'voice',
@@ -12,7 +12,7 @@ export const voiceModule: IModule = {
     routes: [
         {
             path: 'server/:serverId/voiceRoom/:roomId',
-            component: VoiceRoom,
+            component: VoiceRoomPage,
             protected: true
         }
     ],

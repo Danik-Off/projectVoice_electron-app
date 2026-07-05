@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Toggle } from '../../../../../../../../../../../../core';
 import { useAudioSettingsHandler } from '../../../../hooks/useAudioSettingsHandler';
 
 interface NoiseSuppressionCheckboxProps {
@@ -10,16 +11,11 @@ export const NoiseSuppressionCheckbox: React.FC<NoiseSuppressionCheckboxProps> =
     const store = useAudioSettingsHandler(onError);
 
     return (
-        <div className="voice-controls__audio-setting">
-            <label className="voice-controls__audio-label">
-                <input
-                    type="checkbox"
-                    checked={store.noiseSuppression}
-                    onChange={(e) => store.setNoiseSuppression(e.target.checked)}
-                />
-                <span>Шумоподавление</span>
-            </label>
-            <div className="voice-controls__audio-description">Убирает фоновые шумы</div>
-        </div>
+        <Toggle
+            label="Шумоподавление"
+            helperText="Убирает фоновые шумы"
+            checked={store.noiseSuppression}
+            onChange={(e) => store.setNoiseSuppression(e.target.checked)}
+        />
     );
 });

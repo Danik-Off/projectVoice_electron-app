@@ -477,7 +477,10 @@
         "deafenOff": "Sound on",
         "disconnect": "Disconnect",
         "volume": "Volume",
-        "speaking": "speaking"
+        "speaking": "Speaking",
+        "micOffStatus": "Microphone off",
+        "silent": "Silent",
+        "notConnected": "Not in a voice channel"
     },
     "serverHeader": {
         "selectServer": "Select a server",
@@ -593,7 +596,16 @@
         "saveAndRestart": "Save and restart",
         "cancel": "Cancel",
         "close": "Close",
-        "retryStatus": "Attempting to reconnect..."
+        "retryStatus": "Attempting to reconnect...",
+        "retryNow": "Retry now",
+        "nextRetryIn": "Next retry in",
+        "saving": "Saving...",
+        "invalidUrl": "Invalid URL. Use format http://host:port",
+        "saveError": "Failed to save server address",
+        "statusConnected": "Connected",
+        "statusDisconnected": "Disconnected",
+        "statusReconnecting": "Reconnecting",
+        "statusConnecting": "Connecting..."
     },
     "userProfile": {
         "title": "User Profile",

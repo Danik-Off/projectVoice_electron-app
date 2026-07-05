@@ -1,15 +1,31 @@
 import type { Channel } from './channel';
 
+export interface Role {
+    id: number;
+    serverId: number;
+    name: string;
+    color?: string;
+    permissions: string;
+    position: number;
+    isHoisted?: boolean;
+    isMentionable?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
 export interface ServerMember {
     id: number;
     userId: number;
     serverId: number;
     role: 'member' | 'moderator' | 'admin' | 'owner';
+    isMuted?: boolean;
+    isDeafened?: boolean;
     user?: {
         id: number;
         username: string;
         profilePicture?: string;
     };
+    roles?: Role[];
     createdAt: string;
     updatedAt: string;
 }

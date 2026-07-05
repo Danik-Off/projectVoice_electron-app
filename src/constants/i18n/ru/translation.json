@@ -550,7 +550,10 @@
         "deafenOff": "Звук включен",
         "disconnect": "Отключиться",
         "volume": "Громкость",
-        "speaking": "говорит"
+        "speaking": "Говорит",
+        "micOffStatus": "Микрофон выключен",
+        "silent": "Молчит",
+        "notConnected": "Не в голосовом канале"
     },
     "serverHeader": {
         "selectServer": "Выберите сервер",
@@ -666,7 +669,16 @@
         "saveAndRestart": "Сохранить и перезапустить",
         "cancel": "Отмена",
         "close": "Закрыть",
-        "retryStatus": "Попытка переподключения..."
+        "retryStatus": "Попытка переподключения...",
+        "retryNow": "Повторить сейчас",
+        "nextRetryIn": "Следующая попытка через",
+        "saving": "Сохранение...",
+        "invalidUrl": "Некорректный URL. Укажите адрес в формате http://host:port",
+        "saveError": "Ошибка сохранения адреса сервера",
+        "statusConnected": "Подключено",
+        "statusDisconnected": "Отключено",
+        "statusReconnecting": "Переподключение",
+        "statusConnecting": "Подключение..."
     },
     "userProfile": {
         "title": "Профиль пользователя",

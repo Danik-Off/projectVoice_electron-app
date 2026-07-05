@@ -1,4 +1,4 @@
-import type { AudioSettingsStore } from '../../../../../../../../../../core';
+import type { AudioSettingsStore } from '../../../../../../../../../core';
 
 /**
  * Безопасный вызов метода audioSettingsStore с обработкой ошибок

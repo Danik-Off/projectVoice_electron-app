@@ -40,12 +40,6 @@ class MessageService {
         await apiClient(`/messages/${messageId}`, { method: 'DELETE' });
     }
 
-    // Получение одного сообщения
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async getMessage(messageId: number): Promise<Message> {
-        return apiClient(`/messages/${messageId}`, { method: 'GET' });
-    }
-
     // Поиск сообщений
     // eslint-disable-next-line require-await -- Returns promise directly
     async searchMessages(query: string, channelId: number): Promise<MessageResponse> {

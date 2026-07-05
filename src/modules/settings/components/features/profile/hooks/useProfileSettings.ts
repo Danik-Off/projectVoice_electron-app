@@ -19,7 +19,9 @@ export const useProfileSettings = () => {
     // Формы
     const [editForm, setEditForm] = useState<ProfileForm>({
         username: authStore.user?.username ?? '',
-        email: authStore.user?.email ?? ''
+        email: authStore.user?.email ?? '',
+        profilePicture: authStore.user?.profilePicture ?? '',
+        bio: ''
     });
 
     const [passwordForm, setPasswordForm] = useState<PasswordForm>({
@@ -30,7 +32,9 @@ export const useProfileSettings = () => {
 
     const [originalForm, setOriginalForm] = useState<ProfileForm>({
         username: authStore.user?.username ?? '',
-        email: authStore.user?.email ?? ''
+        email: authStore.user?.email ?? '',
+        profilePicture: authStore.user?.profilePicture ?? '',
+        bio: ''
     });
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
@@ -40,7 +44,9 @@ export const useProfileSettings = () => {
         if (authStore.user != null) {
             const userData: ProfileForm = {
                 username: authStore.user.username ?? '',
-                email: authStore.user.email ?? ''
+                email: authStore.user.email ?? '',
+                profilePicture: authStore.user?.profilePicture ?? '',
+                bio: ''
             };
             setEditForm(userData);
             setOriginalForm(userData);
@@ -107,7 +113,11 @@ export const useProfileSettings = () => {
         }
 
         // Проверяем, изменились ли данные
-        if (editForm.username === originalForm.username && editForm.email === originalForm.email) {
+        if (
+            editForm.username === originalForm.username &&
+            editForm.profilePicture === originalForm.profilePicture &&
+            editForm.bio === originalForm.bio
+        ) {
             notificationStore.addNotification(t('settingsPage.profile.messages.noChanges'), 'info');
             setShowEditProfile(false);
             return;
@@ -116,7 +126,11 @@ export const useProfileSettings = () => {
         setIsLoading(true);
         try {
             if (authStore.user?.id != null) {
-                await authStore.updateProfile(editForm);
+                await authStore.updateProfile({
+                    username: editForm.username,
+                    profilePicture: editForm.profilePicture,
+                    bio: editForm.bio
+                });
                 setOriginalForm(editForm);
                 setShowEditProfile(false);
                 notificationStore.addNotification(t('settingsPage.profile.messages.profileUpdated'), 'success');

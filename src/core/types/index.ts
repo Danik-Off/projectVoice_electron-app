@@ -37,7 +37,4 @@ export interface IAppConfig {
         url: string;
         path: string;
     };
-    webrtc: {
-        iceServers: RTCIceServer[];
-    };
 }

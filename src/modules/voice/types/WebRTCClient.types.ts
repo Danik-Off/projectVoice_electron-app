@@ -8,4 +8,9 @@ export type Signal =
           to: string;
           type: 'offer' | 'answer' | 'candidate';
           candidate: RTCIceCandidate;
+      }
+    | {
+          to: string;
+          type: 'mic-state';
+          muted: boolean;
       };

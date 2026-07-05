@@ -3,12 +3,10 @@ import { Outlet, useParams, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import './ChannelPage.scss'; // Assuming you have a separate CSS file for styling
 import ChannelSidebar from './components/channelSidebar/ChannelSidebar';
-import VoiceControls from './components/channelSidebar/components/voiceControls/VoiceControls';
 import BlockedServerModal from '../../../../components/BlockedServerModal';
 import { serverStore } from '../../../../modules/servers';
-import { eventBus, VOICE_EVENTS, notificationStore } from '../../../../core';
+import { notificationStore } from '../../../../core';
 import Spinner from '../../../../components/spinner/Spinner';
-import type { VoiceChannelConnectedEvent } from '../../../../core/events/events';
 
 const LoadingState: React.FC = () => (
     <div className="loading-state">
@@ -29,35 +27,18 @@ const LoadingState: React.FC = () => (
 );
 
 const Page = observer(() => {
-    const [isVoiceConnected, setIsVoiceConnected] = useState(false);
-
-    useEffect(() => {
-        // Подписка на события голосового канала
-        const unsubscribeConnected = eventBus.on<VoiceChannelConnectedEvent>(VOICE_EVENTS.CHANNEL_CONNECTED, () => {
-            setIsVoiceConnected(true);
-        });
-
-        const unsubscribeDisconnected = eventBus.on(VOICE_EVENTS.CHANNEL_DISCONNECTED, () => {
-            setIsVoiceConnected(false);
-        });
-
-        return () => {
-            unsubscribeConnected();
-            unsubscribeDisconnected();
-        };
-    }, []);
-
     if (serverStore.loading) {
         return <LoadingState />;
     }
 
+    // Постоянная голосовая панель теперь рендерится один раз глобально в Main.tsx,
+    // поэтому здесь она больше не дублируется.
     return (
-        <div className={`channel-page ${isVoiceConnected ? 'with-voice-controls' : ''}`}>
+        <div className="channel-page">
             <ChannelSidebar />
             <div className="channel-content">
                 <Outlet />
             </div>
-            {isVoiceConnected ? <VoiceControls /> : null}
         </div>
     );
 });

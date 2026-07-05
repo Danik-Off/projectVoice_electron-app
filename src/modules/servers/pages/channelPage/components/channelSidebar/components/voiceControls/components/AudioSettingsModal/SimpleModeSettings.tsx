@@ -1,38 +1,30 @@
 import React from 'react';
-import { audioSettingsStore } from '../../../../../../../../../../core';
+import { observer } from 'mobx-react-lite';
+import { Card, audioSettingsStore } from '../../../../../../../../../../core';
 
-export const SimpleModeSettings: React.FC = () => (
-    <div className="voice-controls__audio-section">
-        <h4>🎵 Качество звука</h4>
-        <div className="voice-controls__quality-selector">
-            <button
-                className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'low' ? 'active' : ''}`}
-                onClick={() => audioSettingsStore.setAudioQuality('low')}
-            >
-                <div className="voice-controls__quality-title">Низкое</div>
-                <div className="voice-controls__quality-desc">Экономия трафика, базовая обработка</div>
-            </button>
-            <button
-                className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'medium' ? 'active' : ''}`}
-                onClick={() => audioSettingsStore.setAudioQuality('medium')}
-            >
-                <div className="voice-controls__quality-title">Среднее</div>
-                <div className="voice-controls__quality-desc">Оптимальный баланс качества и производительности</div>
-            </button>
-            <button
-                className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'high' ? 'active' : ''}`}
-                onClick={() => audioSettingsStore.setAudioQuality('high')}
-            >
-                <div className="voice-controls__quality-title">Максимальное</div>
-                <div className="voice-controls__quality-desc">48kHz/24bit, 320kbps, минимальная задержка</div>
-            </button>
-            <button
-                className={`voice-controls__quality-btn ${audioSettingsStore.audioQuality === 'ultra' ? 'active' : ''}`}
-                onClick={() => audioSettingsStore.setAudioQuality('ultra')}
-            >
-                <div className="voice-controls__quality-title">Ультра</div>
-                <div className="voice-controls__quality-desc">48kHz/32bit, 512kbps, профессиональное качество</div>
-            </button>
+type Quality = 'low' | 'medium' | 'high' | 'ultra';
+
+const QUALITY_PRESETS: Array<{ value: Quality; title: string; description: string }> = [
+    { value: 'low', title: 'Низкое', description: 'Экономия трафика, базовая обработка' },
+    { value: 'medium', title: 'Среднее', description: 'Оптимальный баланс качества и производительности' },
+    { value: 'high', title: 'Максимальное', description: '48кГц/24бит, 320kbps, минимальная задержка' },
+    { value: 'ultra', title: 'Ультра', description: '48кГц/32бит, 512kbps, профессиональное качество' }
+];
+
+export const SimpleModeSettings: React.FC = observer(() => (
+    <div className="audio-settings-section">
+        <h4 className="audio-settings-section__title">🎵 Качество звука</h4>
+        <div className="audio-quality-grid">
+            {QUALITY_PRESETS.map((preset) => (
+                <Card
+                    key={preset.value}
+                    className={`audio-quality-card ${audioSettingsStore.audioQuality === preset.value ? 'audio-quality-card--active' : ''}`}
+                    onClick={() => audioSettingsStore.setAudioQuality(preset.value)}
+                >
+                    <p className="audio-quality-card__title">{preset.title}</p>
+                    <p className="audio-quality-card__desc">{preset.description}</p>
+                </Card>
+            ))}
         </div>
     </div>
-);
+));

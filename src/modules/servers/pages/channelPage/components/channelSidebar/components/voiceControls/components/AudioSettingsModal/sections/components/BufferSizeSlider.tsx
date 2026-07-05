@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Slider } from '../../../../../../../../../../../../core';
 import { useAudioSettingsHandler } from '../../../../hooks/useAudioSettingsHandler';
 
 interface BufferSizeSliderProps {
@@ -10,22 +11,14 @@ export const BufferSizeSlider: React.FC<BufferSizeSliderProps> = observer(({ onE
     const store = useAudioSettingsHandler(onError);
 
     return (
-        <div className="voice-controls__audio-setting">
-            <label className="voice-controls__audio-label">
-                <span>Размер буфера</span>
-            </label>
-            <div className="voice-controls__audio-control">
-                <input
-                    type="range"
-                    min="1024"
-                    max="8192"
-                    step="512"
-                    value={store.bufferSize}
-                    onChange={(e) => store.setBufferSize(Number(e.target.value))}
-                    className="voice-controls__audio-slider"
-                />
-                <span className="voice-controls__audio-value">{store.bufferSize} сэмплов</span>
-            </div>
-        </div>
+        <Slider
+            label="Размер буфера"
+            min={1024}
+            max={8192}
+            step={512}
+            value={store.bufferSize}
+            valueLabel={`${store.bufferSize} сэмплов`}
+            onChange={(e) => store.setBufferSize(Number(e.target.value))}
+        />
     );
 });

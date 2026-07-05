@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { Toggle } from '../../../../../../../../../../../../core';
 import { useAudioSettingsHandler } from '../../../../hooks/useAudioSettingsHandler';
 
 interface EchoCancellationCheckboxProps {
@@ -10,16 +11,11 @@ export const EchoCancellationCheckbox: React.FC<EchoCancellationCheckboxProps> =
     const store = useAudioSettingsHandler(onError);
 
     return (
-        <div className="voice-controls__audio-setting">
-            <label className="voice-controls__audio-label">
-                <input
-                    type="checkbox"
-                    checked={store.echoCancellation}
-                    onChange={(e) => store.setEchoCancellation(e.target.checked)}
-                />
-                <span>Подавление эха</span>
-            </label>
-            <div className="voice-controls__audio-description">Убирает эхо и обратную связь</div>
-        </div>
+        <Toggle
+            label="Подавление эха"
+            helperText="Убирает эхо и обратную связь"
+            checked={store.echoCancellation}
+            onChange={(e) => store.setEchoCancellation(e.target.checked)}
+        />
     );
 });

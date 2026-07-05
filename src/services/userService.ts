@@ -1,32 +1,32 @@
 import { apiClient } from '../core';
 
 export const userService = {
-    get: async (id: number | null = null) => {
-        const data = await apiClient(`/auth/users/${id}`, {
-            method: 'GET'
-        });
-        return data;
+    /** Получить пользователя по ID (GET /users/{id}) */
+    get: (id: number | null = null) => {
+        if (id === null) {
+            return apiClient('/users/', { method: 'GET' });
+        }
+        return apiClient(`/users/${id}`, { method: 'GET' });
     },
 
-    updateProfile: async (id: number, profileData: { username: string; email: string }) => {
-        const data = await apiClient(
-            `/auth/users/${id}`,
-            {
-                method: 'PUT'
-            },
-            profileData
-        );
-        return data;
-    },
+    /** Обновить профиль текущего пользователя (PUT /users/) */
+    updateProfile: (profileData: { username: string; profilePicture?: string; bio?: string }) => apiClient(
+        '/users/',
+        { method: 'PUT' },
+        profileData
+    ),
 
-    changePassword: async (id: number, oldPassword: string, newPassword: string) => {
-        const data = await apiClient(
-            `/auth/users/${id}/password`,
-            {
-                method: 'PUT'
-            },
-            { oldPassword, newPassword }
+    /**
+     * Смена пароля.
+     * Бэкенд не имеет отдельного endpoint для смены пароля.
+     * TODO: Уточнить у бэкенда.
+     */
+    changePassword: (_id: number, oldPassword: string, newPassword: string) => {
+        const body: Record<string, unknown> = { oldPassword, newPassword };
+        return apiClient(
+            '/users/',
+            { method: 'PUT' },
+            body
         );
-        return data;
     }
 };

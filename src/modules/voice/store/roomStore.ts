@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { SocketClient, eventBus, VOICE_EVENTS, audioSettingsStore, notificationStore } from '../../../core';
 import { getToken } from '../../../shared/utils/storage';
 import WebRTCClient from '../utils/WebRTCClient';
@@ -27,6 +27,17 @@ export class VoiceRoomStore {
         this.setupServerResponseListeners();
         this.setupWebRTCSenders();
         this.setupVoiceActivityListeners();
+
+        // Рассылаем собеседникам реальное состояние мьюта при его изменении,
+        // чтобы иконка микрофона у других участников не была фиктивной
+        reaction(
+            () => audioSettingsStore.isMicrophoneMuted,
+            (muted) => {
+                if (this.currentVoiceChannel != null) {
+                    this.broadcastMicState(muted);
+                }
+            }
+        );
 
         // Убираем автоматическую инициализацию аудио из конструктора
         // Аудио будет инициализироваться только при подключении к голосовому каналу
@@ -113,13 +124,6 @@ export class VoiceRoomStore {
             eventBus.emit(VOICE_EVENTS.CHANNEL_DISCONNECTED, disconnectedEvent);
         }
     }
-    public muteMicrophone() {
-        audioSettingsStore.setVolume(0);
-    }
-    public unmuteMicrophone() {
-        audioSettingsStore.setVolume(100);
-    }
-
     private setupServerResponseListeners() {
         // this.socketClient.socketOn('connect', () => {
         //     console.log('Соединение с Socket.IO установлено');
@@ -154,6 +158,12 @@ export class VoiceRoomStore {
             console.warn(`Пользователь ${username} подключен`);
             this.webRTCClient.createOffer(user.socketId).catch((error) => {
                 console.error('Error creating offer:', error);
+            });
+            // Сообщаем новому участнику наше текущее состояние микрофона
+            this.webRTCClient.sendSignal?.({
+                to: user.socketId,
+                type: 'mic-state',
+                muted: audioSettingsStore.isMicrophoneMuted
             });
             runInAction(() => {
                 // Проверяем, что это не локальный пользователь
@@ -197,32 +207,7 @@ export class VoiceRoomStore {
             }
         });
         this.socketClient.socketOn('signal', (data: unknown) => {
-            const signalData = data as Signal;
-            const signalTo = signalData.to;
-            const signalType = signalData.type;
-            const signalSdp = 'sdp' in signalData && signalData.sdp != null ? signalData.sdp : null;
-            const signalCandidate =
-                'candidate' in signalData && signalData.candidate != null ? signalData.candidate : null;
-
-            // Преобразуем Signal (с полем 'to') в формат, ожидаемый handleSignal (с полем 'from')
-            const handleSignalData: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit } = {
-                from: signalTo,
-                type: signalType
-            };
-            if (signalSdp != null) {
-                handleSignalData.sdp = signalSdp;
-            }
-            if (signalCandidate != null) {
-                const candidateInit: RTCIceCandidateInit = {
-                    candidate: String(signalCandidate.candidate),
-                    sdpMLineIndex: signalCandidate.sdpMLineIndex != null ? Number(signalCandidate.sdpMLineIndex) : null,
-                    sdpMid: signalCandidate.sdpMid != null ? String(signalCandidate.sdpMid) : null
-                };
-                handleSignalData.candidate = candidateInit;
-            }
-            this.webRTCClient.handleSignal(handleSignalData).catch((signalError: unknown) => {
-                console.error('Error handling signal:', signalError);
-            });
+            this.handleIncomingSignal(data);
         });
         this.socketClient.socketOn('connect_error', (data: unknown) => {
             const connectError = data as Error;
@@ -233,6 +218,68 @@ export class VoiceRoomStore {
         // this.socketClient.socketOn('disconnect', () => {
         //     console.log('Соединение с Socket.IO закрыто');
         // });
+    }
+
+    private handleIncomingSignal(data: unknown): void {
+        const signalData = data as Signal & { from?: string };
+
+        // Сервер при релее сигнала кладёт id отправителя в поле 'from', а не 'to'
+        // ('to' - это поле для ИСХОДЯЩИХ сигналов, куда мы адресуем сообщение через
+        // sendSignal). Раньше здесь ошибочно читалось signalData.to, из-за чего id
+        // отправителя всегда получался undefined - предпочитаем 'from', если оно есть
+        const signalFrom = signalData.from ?? signalData.to;
+        const signalType = signalData.type;
+
+        if (signalFrom == null) {
+            console.error('WebRTCClient: Incoming signal has no sender id (from/to):', signalData);
+            return;
+        }
+
+        // 'mic-state' - не WebRTC-сигнал, а сообщение о реальном состоянии мьюта
+        // собеседника; обновляем участника и не отдаём это webRTCClient.handleSignal
+        if (signalType === 'mic-state') {
+            const muted = signalData.muted;
+            runInAction(() => {
+                const participant = this.participants.find((p) => p.socketId === signalFrom);
+                if (participant != null) {
+                    participant.micToggle = !muted;
+                }
+            });
+            return;
+        }
+
+        const signalSdp = 'sdp' in signalData && signalData.sdp != null ? signalData.sdp : null;
+        const signalCandidate = 'candidate' in signalData && signalData.candidate != null ? signalData.candidate : null;
+
+        const handleSignalData: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit } = {
+            from: signalFrom,
+            type: signalType
+        };
+        if (signalSdp != null) {
+            handleSignalData.sdp = signalSdp;
+        }
+        if (signalCandidate != null) {
+            const candidateInit: RTCIceCandidateInit = {
+                candidate: String(signalCandidate.candidate),
+                sdpMLineIndex: signalCandidate.sdpMLineIndex != null ? Number(signalCandidate.sdpMLineIndex) : null,
+                sdpMid: signalCandidate.sdpMid != null ? String(signalCandidate.sdpMid) : null
+            };
+            handleSignalData.candidate = candidateInit;
+        }
+        this.webRTCClient.handleSignal(handleSignalData).catch((signalError: unknown) => {
+            console.error('Error handling signal:', signalError);
+        });
+    }
+
+    // Рассылка реального состояния мьюта всем текущим участникам голосового канала
+    private broadcastMicState(muted: boolean): void {
+        this.participants.forEach((participant) => {
+            this.webRTCClient.sendSignal?.({
+                to: participant.socketId,
+                type: 'mic-state',
+                muted
+            });
+        });
     }
 
     private setupWebRTCSenders() {

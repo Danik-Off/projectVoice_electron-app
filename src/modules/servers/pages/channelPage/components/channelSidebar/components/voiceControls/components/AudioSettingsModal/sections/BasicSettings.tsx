@@ -9,8 +9,8 @@ interface BasicSettingsProps {
 }
 
 export const BasicSettings: React.FC<BasicSettingsProps> = observer(({ onError }) => (
-    <div className="voice-controls__audio-section">
-        <h4>🔧 Основные настройки</h4>
+    <div className="audio-settings-section">
+        <h4 className="audio-settings-section__title">🔧 Основные настройки</h4>
         <EchoCancellationCheckbox onError={onError} />
         <NoiseSuppressionCheckbox onError={onError} />
         <AutoGainControlCheckbox onError={onError} />

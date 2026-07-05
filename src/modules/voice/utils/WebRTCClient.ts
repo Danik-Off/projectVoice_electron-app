@@ -55,7 +55,10 @@ class WebRTCClient {
     private readonly connectionQuality: Map<string, ConnectionQuality> = new Map();
     private readonly reconnectionStates: Map<string, ReconnectionState> = new Map();
     private readonly qualityMonitors: Map<string, ReturnType<typeof setInterval>> = new Map();
+    private readonly disconnectGraceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
     private readonly defaultSampleRate = 48000;
+    private readonly disconnectGracePeriodMs = 3000;
+    private selectedOutputDeviceId: string | null = null;
 
     // Инициализация медиа с реакцией на изменения настроек
     // eslint-disable-next-line require-await -- No await needed
@@ -90,6 +93,16 @@ class WebRTCClient {
 
     // Создание peer connection с оптимизированными настройками
     public createPeerConnection(id: string) {
+        console.warn('WebRTCClient: Creating peer connection for', id);
+
+        // При реконнекте сюда приходит id с уже существующим соединением - закрываем
+        // старое явно, иначе оно остаётся не закрытым и утекает (не собирается GC,
+        // т.к. висят обработчики событий)
+        const existingPeerConnection = this.peerConnections.get(id);
+        if (existingPeerConnection != null) {
+            existingPeerConnection.close();
+        }
+
         const newPeerConnection = new RTCPeerConnection({
             iceServers,
             iceCandidatePoolSize: 10,
@@ -102,10 +115,21 @@ class WebRTCClient {
         // Обработка ICE кандидатов с улучшенной обработкой ошибок
         newPeerConnection.onicecandidate = (iceEvent) => {
             if (iceEvent.candidate == null) {
+                console.warn('WebRTCClient: ICE gathering complete for', id);
                 return;
             }
 
+            console.warn(
+                'WebRTCClient: Local ICE candidate for',
+                id,
+                'type:',
+                iceEvent.candidate.type,
+                'protocol:',
+                iceEvent.candidate.protocol
+            );
+
             if (!this.sendSignal) {
+                console.error('WebRTCClient: Cannot send ICE candidate - sendSignal not set for', id);
                 return;
             }
 
@@ -123,15 +147,20 @@ class WebRTCClient {
         // Обработка изменений состояния соединения
         newPeerConnection.onconnectionstatechange = () => {
             const state = newPeerConnection.connectionState;
+            console.warn('WebRTCClient: connectionState for', id, '->', state);
 
             if (this.changeState != null) {
                 const connectionEvent = new Event('connectionstatechange');
                 this.changeState(id, connectionEvent);
             }
 
-            // Обработка проблем с соединением
-            if (state === 'failed' || state === 'disconnected') {
+            if (state === 'failed') {
+                // 'failed' - соединение точно не восстановится само, чиним сразу
                 this.handleConnectionProblem(id, state);
+            } else if (state === 'disconnected') {
+                // 'disconnected' часто временный (кратковременная просадка сети) и
+                // сам восстанавливается за пару секунд - даём шанс до реконнекта
+                this.scheduleDisconnectCheck(id);
             } else if (state === 'connected') {
                 this.handleConnectionSuccess(id);
             }
@@ -140,14 +169,18 @@ class WebRTCClient {
         // Обработка ICE соединения
         newPeerConnection.oniceconnectionstatechange = () => {
             const iceState = newPeerConnection.iceConnectionState;
+            console.warn('WebRTCClient: iceConnectionState for', id, '->', iceState);
 
-            if (iceState === 'failed' || iceState === 'disconnected') {
+            if (iceState === 'failed') {
                 this.handleConnectionProblem(id, iceState);
+            } else if (iceState === 'disconnected') {
+                this.scheduleDisconnectCheck(id);
             }
         };
 
         // Обработка получения треков
         newPeerConnection.ontrack = (trackEvent) => {
+            console.warn('WebRTCClient: ontrack from', id, 'kind:', trackEvent.track.kind, 'muted:', trackEvent.track.muted);
             if (trackEvent.track.kind === 'audio') {
                 this.addRemoteStream(trackEvent.track, id);
             }
@@ -163,13 +196,14 @@ class WebRTCClient {
     }
 
     // Создание offer с оптимизацией под настройки качества
-    public async createOffer(id: string) {
+    public async createOffer(id: string, iceRestart = false) {
         const peerConnection = this.createPeerConnection(id);
 
         try {
             const offer = await peerConnection.createOffer({
                 offerToReceiveAudio: true,
-                offerToReceiveVideo: false
+                offerToReceiveVideo: false,
+                iceRestart
             });
 
             // Оптимизируем SDP с учетом настроек качества
@@ -197,6 +231,7 @@ class WebRTCClient {
                 type: 'offer',
                 sdp
             });
+            console.warn('WebRTCClient: Offer sent to', id, 'sdp length:', sdp.length);
         } catch (error) {
             console.error('WebRTCClient: Error creating offer:', error);
             this.handleConnectionError(id, error);
@@ -239,6 +274,7 @@ class WebRTCClient {
                 type: 'answer',
                 sdp
             });
+            console.warn('WebRTCClient: Answer sent to', id, 'sdp length:', sdp.length);
         } catch (error) {
             console.error('WebRTCClient: Error creating answer:', error);
             this.handleConnectionError(id, error);
@@ -248,6 +284,7 @@ class WebRTCClient {
     // Обработка сигналов с улучшенной обработкой ошибок
     public async handleSignal(data: { from: string; type: string; sdp?: string; candidate?: RTCIceCandidateInit }) {
         const { from, type, sdp, candidate } = data;
+        console.warn('WebRTCClient: handleSignal received type:', type, 'from:', from);
 
         let peerConnection = this.peerConnections.get(from);
         peerConnection ??= this.createPeerConnection(from);
@@ -296,35 +333,14 @@ class WebRTCClient {
         }
     }
 
-    // Получение параметров качества из store
+    // Получение параметров качества из store.
+    // AudioSettingsStore.applySimpleQualitySettings() уже выставляет корректный
+    // bitrate/sampleRate/channelCount под выбранный уровень качества - здесь не
+    // нужно повторно клэмпить его по audioQuality, это был второй источник истины.
     private getQualityParameters(): QualityParameters {
-        const bitrate = audioSettingsStore.bitrate * 1000; // Конвертируем в биты
+        const maxBitrate = audioSettingsStore.bitrate * 1000; // Конвертируем в биты
         const audioSampleRate = audioSettingsStore.sampleRate;
-        const channelCount = audioSettingsStore.channelCount;
-        const audioQuality = audioSettingsStore.audioQuality;
-
-        let maxBitrate = bitrate;
-        let stereo = channelCount === 2 ? 1 : 0;
-
-        // Адаптируем параметры под уровень качества
-        switch (audioQuality) {
-            case 'low':
-                maxBitrate = Math.min(maxBitrate, 96000);
-                stereo = 0; // Моно для экономии трафика
-                break;
-            case 'medium':
-                maxBitrate = Math.min(maxBitrate, 192000);
-                break;
-            case 'high':
-                maxBitrate = Math.min(maxBitrate, 320000);
-                break;
-            case 'ultra':
-                maxBitrate = Math.min(maxBitrate, 512000);
-                break;
-            default:
-                maxBitrate = Math.min(maxBitrate, 320000);
-                break;
-        }
+        const stereo = audioSettingsStore.channelCount === 2 ? 1 : 0;
 
         return { maxBitrate, stereo, audioSampleRate };
     }
@@ -452,6 +468,22 @@ class WebRTCClient {
                 latencyHint: audioSettingsStore.latency < 100 ? 'interactive' : 'balanced'
             });
 
+            if (this.selectedOutputDeviceId != null) {
+                this.applySinkId(audioContext, this.selectedOutputDeviceId).catch((error: unknown) => {
+                    console.error('WebRTCClient: Error applying output device to new audio context:', error);
+                });
+            }
+
+            // Новый AudioContext может создаться в состоянии 'suspended' (политика
+            // автовоспроизведения браузера) - без явного resume() звук не пойдёт,
+            // даже если весь граф подключен правильно
+            console.warn('WebRTCClient: Remote AudioContext state for', id, '-', audioContext.state);
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().catch((error: unknown) => {
+                    console.error('WebRTCClient: Error resuming remote audio context for', id, error);
+                });
+            }
+
             const gainNode = audioContext.createGain();
             const initialVolume = participantVolumeStore.getParticipantVolume(id);
             gainNode.gain.value = initialVolume / 100;
@@ -509,6 +541,12 @@ class WebRTCClient {
             }
 
             if (!audioContext.state.includes('closed')) {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume().catch((error: unknown) => {
+                        console.error('WebRTCClient: Error resuming audio context on setup for', id, error);
+                    });
+                }
+
                 const source = audioContext.createMediaStreamSource(remoteStream);
 
                 // Прямое подключение для максимального качества
@@ -516,6 +554,8 @@ class WebRTCClient {
                 gainNode.connect(audioContext.destination);
 
                 this.audioSources.set(id, source);
+
+                console.warn('WebRTCClient: Audio processing connected for', id, 'context state:', audioContext.state);
 
                 this.setupRemoteVoiceActivity(id, remoteStream);
             }
@@ -537,30 +577,44 @@ class WebRTCClient {
             return;
         }
 
-        this.peerConnections.forEach((peerConnection, _socketId) => {
+        this.peerConnections.forEach((peerConnection, socketId) => {
             const sender = peerConnection.getSenders().find((s) => s.track?.kind === 'audio');
-            if (sender != null && newAudioTrack != null) {
+
+            // Если peer connection была создана раньше, чем локальный поток стал
+            // готов (гонка состояний при быстром коннекте), addLocalStream мог не
+            // добавить ни одного трека - тогда здесь нечего заменять, трек нужно
+            // добавить впервые, иначе собеседник никогда не услышит этого пира
+            if (sender == null) {
                 try {
-                    sender.replaceTrack(newAudioTrack).catch((error) => {
-                        console.error('WebRTCClient: Error replacing track:', error);
-                    });
-
+                    peerConnection.addTrack(newAudioTrack, audioSettingsStore.stream);
                     newAudioTrack.enabled = !audioSettingsStore.isMicrophoneMuted;
-
-                    // Обновляем параметры кодирования для адаптивного битрейта
-                    if (sender.getParameters != null) {
-                        const params = sender.getParameters();
-                        if (params.encodings != null && params.encodings.length > 0) {
-                            const bitrate = audioSettingsStore.bitrate * 1000;
-                            params.encodings[0].maxBitrate = bitrate;
-                            sender.setParameters(params).catch((error) => {
-                                console.error('WebRTCClient: Error setting parameters:', error);
-                            });
-                        }
-                    }
+                    console.warn('WebRTCClient: Added missing local audio track for', socketId);
                 } catch (error) {
-                    console.error('WebRTCClient: Error replacing track:', error);
+                    console.error('WebRTCClient: Error adding missing local track for', socketId, error);
                 }
+                return;
+            }
+
+            try {
+                sender.replaceTrack(newAudioTrack).catch((error) => {
+                    console.error('WebRTCClient: Error replacing track:', error);
+                });
+
+                newAudioTrack.enabled = !audioSettingsStore.isMicrophoneMuted;
+
+                // Обновляем параметры кодирования для адаптивного битрейта
+                if (sender.getParameters != null) {
+                    const params = sender.getParameters();
+                    if (params.encodings != null && params.encodings.length > 0) {
+                        const bitrate = audioSettingsStore.bitrate * 1000;
+                        params.encodings[0].maxBitrate = bitrate;
+                        sender.setParameters(params).catch((error) => {
+                            console.error('WebRTCClient: Error setting parameters:', error);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('WebRTCClient: Error replacing track:', error);
             }
         });
     }
@@ -573,8 +627,14 @@ class WebRTCClient {
             return;
         }
 
-        if (audioSettingsStore.stream == null) {
-            console.error('WebRTCClient: No local stream available');
+        const trackCount = audioSettingsStore.stream.getTracks().length;
+        console.warn('WebRTCClient: addLocalStream for', id, '- tracks available:', trackCount);
+
+        if (trackCount === 0) {
+            // Локальный поток ещё не готов (getUserMedia/обработка идёт асинхронно) -
+            // трек добавится позже через resendlocalStream(), когда audioSettingsStore.stream
+            // обновится (см. reaction в initializeMedia())
+            console.warn('WebRTCClient: Local stream not ready yet for', id, '- track will be added once ready');
             return;
         }
 
@@ -613,6 +673,36 @@ class WebRTCClient {
 
     public getParticipantVolume(socketId: string): number {
         return participantVolumeStore.getParticipantVolume(socketId);
+    }
+
+    // Переключение устройства вывода звука для всех удаленных участников.
+    // Раньше выбор динамика в настройках ни на что не влиял - звук удаленных
+    // участников всегда шёл через AudioContext.destination (устройство по умолчанию),
+    // т.к. <audio>-элемент используется только для прогрузки метаданных и заглушен.
+    public async setOutputDevice(deviceId: string): Promise<void> {
+        this.selectedOutputDeviceId = deviceId;
+
+        const results = await Promise.allSettled(
+            Array.from(this.audioContexts.values()).map((audioContext) => this.applySinkId(audioContext, deviceId))
+        );
+
+        const hadFailure = results.some((result) => result.status === 'rejected');
+        if (hadFailure) {
+            console.error('WebRTCClient: Failed to switch output device for one or more active audio contexts');
+        }
+    }
+
+    private async applySinkId(audioContext: AudioContext, deviceId: string): Promise<void> {
+        const contextWithSinkId = audioContext as AudioContext & {
+            setSinkId?: (sinkId: string) => Promise<void>;
+        };
+
+        if (typeof contextWithSinkId.setSinkId !== 'function') {
+            console.warn('WebRTCClient: AudioContext.setSinkId is not supported in this environment');
+            return;
+        }
+
+        await contextWithSinkId.setSinkId(deviceId);
     }
 
     // Отключение участника
@@ -657,6 +747,12 @@ class WebRTCClient {
         this.connectionQuality.delete(id);
         this.reconnectionStates.delete(id);
 
+        const graceTimer = this.disconnectGraceTimers.get(id);
+        if (graceTimer != null) {
+            clearTimeout(graceTimer);
+            this.disconnectGraceTimers.delete(id);
+        }
+
         voiceActivityService.stopMonitoring(id);
         participantVolumeStore.removeParticipant(id);
     }
@@ -699,6 +795,11 @@ class WebRTCClient {
         this.qualityMonitors.clear();
         this.connectionQuality.clear();
         this.reconnectionStates.clear();
+
+        this.disconnectGraceTimers.forEach((timer) => {
+            clearTimeout(timer);
+        });
+        this.disconnectGraceTimers.clear();
 
         participantVolumeStore.resetAllVolumes();
         voiceActivityService.cleanup();
@@ -891,6 +992,35 @@ class WebRTCClient {
         });
     }
 
+    // 'disconnected' часто временный - ждём небольшую паузу и проверяем, не
+    // восстановилось ли соединение само, прежде чем запускать полный реконнект
+    private scheduleDisconnectCheck(id: string): void {
+        if (this.disconnectGraceTimers.has(id)) {
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            this.disconnectGraceTimers.delete(id);
+
+            const peerConnection = this.peerConnections.get(id);
+            if (peerConnection == null) {
+                return;
+            }
+
+            const stillBroken =
+                peerConnection.connectionState === 'disconnected' ||
+                peerConnection.connectionState === 'failed' ||
+                peerConnection.iceConnectionState === 'disconnected' ||
+                peerConnection.iceConnectionState === 'failed';
+
+            if (stillBroken) {
+                this.handleConnectionProblem(id, peerConnection.connectionState);
+            }
+        }, this.disconnectGracePeriodMs);
+
+        this.disconnectGraceTimers.set(id, timer);
+    }
+
     // Обработка проблем с соединением
     private handleConnectionProblem(id: string, state: string): void {
         console.warn(`WebRTCClient: Connection problem for ${id}:`, state);
@@ -907,8 +1037,8 @@ class WebRTCClient {
             reconnectionState.backoff *= 2; // Экспоненциальная задержка
 
             reconnectionState.timer = setTimeout(() => {
-                // Попытка переподключения через создание нового offer
-                this.createOffer(id).catch((error) => {
+                // Попытка переподключения через создание нового offer с ICE restart
+                this.createOffer(id, true).catch((error) => {
                     console.error('WebRTCClient: Error creating offer for reconnection:', error);
                 });
             }, reconnectionState.backoff);
@@ -923,6 +1053,12 @@ class WebRTCClient {
     // Обработка успешного соединения
     private handleConnectionSuccess(id: string): void {
         this.reconnectionStates.delete(id);
+
+        const graceTimer = this.disconnectGraceTimers.get(id);
+        if (graceTimer != null) {
+            clearTimeout(graceTimer);
+            this.disconnectGraceTimers.delete(id);
+        }
     }
 
     // Обработка ошибок соединения

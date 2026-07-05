@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import { audioSettingsStore } from '../../../../../core';
-import roomStore from '../../../../../store/roomStore';
+import roomStore from '../../../../../modules/voice/store/roomStore';
 import './audioSettings.scss';
 
 const AudioSettings: React.FC = observer(() => {
@@ -132,14 +132,11 @@ const AudioSettings: React.FC = observer(() => {
                 noiseSuppression: audioSettingsStore.noiseSuppression,
                 autoGainControl: audioSettingsStore.autoGainControl,
                 voiceEnhancement: audioSettingsStore.voiceEnhancement,
-                voiceIsolation: audioSettingsStore.voiceIsolation,
                 voiceClarity: audioSettingsStore.voiceClarity,
                 backgroundNoiseReduction: audioSettingsStore.backgroundNoiseReduction,
                 voiceBoost: audioSettingsStore.voiceBoost,
                 bassBoost: audioSettingsStore.bassBoost,
                 trebleBoost: audioSettingsStore.trebleBoost,
-                stereoEnhancement: audioSettingsStore.stereoEnhancement,
-                spatialAudio: audioSettingsStore.spatialAudio,
                 sampleRate: audioSettingsStore.sampleRate,
                 bitrate: audioSettingsStore.bitrate,
                 latency: audioSettingsStore.latency,
@@ -535,21 +532,6 @@ const AudioSettings: React.FC = observer(() => {
                                         />
                                         <span className="checkmark" />
                                         <span className="checkbox-label">Улучшение голоса</span>
-                                    </label>
-                                    <label className="settings-checkbox">
-                                        <input
-                                            type="checkbox"
-                                            checked={audioSettingsStore.voiceIsolation}
-                                            onChange={(e) => {
-                                                audioSettingsStore
-                                                    .setVoiceIsolation(e.target.checked)
-                                                    .catch((isolationError: unknown) => {
-                                                        console.error('Error setting voice isolation:', isolationError);
-                                                    });
-                                            }}
-                                        />
-                                        <span className="checkmark" />
-                                        <span className="checkbox-label">Изоляция голоса</span>
                                     </label>
                                 </div>
                                 <div className="setting-description">Дополнительные алгоритмы улучшения</div>

@@ -4,7 +4,8 @@ import { RouterProvider } from 'react-router-dom';
 import { initializeApp } from './app';
 import { createRouter } from './routes/root';
 import { themeStore } from './core';
-import NoConnectionModal from './components/NoConnectionModal';
+import { ServiceProvider } from './app/providers';
+import { ConnectionManager } from './features/connection-manager';
 import './styles/main.scss';
 import './constants/i18n';
 
@@ -30,8 +31,10 @@ initializeApp()
         }
         createRoot(rootEl).render(
             <StrictMode>
-                <RouterProvider router={router} />
-                <NoConnectionModal />
+                <ServiceProvider>
+                    <RouterProvider router={router} />
+                    <ConnectionManager />
+                </ServiceProvider>
             </StrictMode>
         );
     })

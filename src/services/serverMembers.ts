@@ -1,10 +1,10 @@
 import { apiClient } from '../core';
 
 export const serverMembersService = {
-    // Добавление участника в канал
+    // Добавление участника на сервер
     addMember: async (serverId: number, userId: number, role: string) => {
         const response = await apiClient(
-            `/servers/${serverId}/members`,
+            `/serverMembers/${serverId}/members`,
             {
                 method: 'POST'
             },
@@ -12,17 +12,17 @@ export const serverMembersService = {
         );
         return response;
     },
-    // Получение списка участников канала
+    // Получение списка участников сервера
     getMembers: async (serverId: number) => {
-        const data = await apiClient(`/servers/${serverId}/members`, {
+        const data = await apiClient(`/serverMembers/${serverId}/members`, {
             method: 'GET'
         });
         return data;
     },
-    // Обновление роли участника канала
+    // Обновление роли участника
     updateMember: async (serverId: number, memberId: number, role: string) => {
         const response = await apiClient(
-            `/servers/${serverId}/members/${memberId}`,
+            `/serverMembers/${serverId}/members/${memberId}`,
             {
                 method: 'PUT'
             },
@@ -32,7 +32,7 @@ export const serverMembersService = {
     },
     updateRole: async (serverId: number, memberId: number, role: string) => {
         const response = await apiClient(
-            `/servers/${serverId}/members/${memberId}`,
+            `/serverMembers/${serverId}/members/${memberId}`,
             {
                 method: 'PUT'
             },
@@ -40,9 +40,9 @@ export const serverMembersService = {
         );
         return response;
     },
-    // Удаление участника из канала
+    // Удаление участника с сервера
     removeMember: async (serverId: number, memberId: number) => {
-        const response = await apiClient(`/servers/${serverId}/members/${memberId}`, {
+        const response = await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
             method: 'DELETE'
         });
         return response;

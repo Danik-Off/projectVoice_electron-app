@@ -259,13 +259,13 @@ class AuthStore {
     /**
      * Обновление профиля пользователя
      */
-    public async updateProfile(profileData: { username: string; email: string }): Promise<boolean> {
+    public async updateProfile(profileData: { username: string; profilePicture?: string; bio?: string }): Promise<boolean> {
         try {
             if (this.user === null || !this.isAuthenticated) {
                 throw new Error('User not authenticated');
             }
 
-            const updatedUser = await userService.updateProfile(this.user.id, profileData);
+            const updatedUser = await userService.updateProfile(profileData);
 
             if (updatedUser !== null) {
                 // Обновляем данные пользователя в store

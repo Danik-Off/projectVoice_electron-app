@@ -4,4 +4,6 @@ export interface Channel {
     name: string; // Название канала
     type: 'text' | 'voice'; // Тип канала (текстовый или голосовой)
     description?: string; // Описание канала (необязательное поле)
+    createdAt?: string; // Дата создания
+    updatedAt?: string; // Дата обновления
 }

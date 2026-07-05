@@ -29,7 +29,7 @@ class UserStore {
      * Обновление профиля пользователя
      * Делегирует вызов в authStore
      */
-    updateProfile(profileData: { username: string; email: string }): Promise<boolean> {
+    updateProfile(profileData: { username: string; profilePicture?: string; bio?: string }): Promise<boolean> {
         return authStore.updateProfile(profileData);
     }
 

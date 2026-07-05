@@ -19,22 +19,6 @@
         overflow: hidden;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    // Анимация появления VoiceControls
-    .voice-controls {
-        animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
 }
 
 .spinner-container {
@@ -50,25 +34,6 @@
         font-size: 16px;
         color: var(--text-muted);
         font-weight: 500;
-    }
-}
-
-// Адаптация для мобильных устройств
-@media (max-width: 768px) {
-    .channel-page {
-        &.with-voice-controls {
-            .channel-content {
-                height: 100%;
-                overflow: hidden;
-
-                // Outlet (основной контент) должен учитывать высоту voice-controls
-                > *:first-child {
-                    height: calc(100vh - 80px);
-                    max-height: calc(100vh - 80px);
-                    overflow: auto;
-                }
-            }
-        }
     }
 }
 
