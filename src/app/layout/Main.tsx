@@ -2,8 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import ServerSidebar from '../../modules/servers/components/serverSidebar/ServerSidebar';
 import VoiceControls from '../../modules/servers/pages/channelPage/components/channelSidebar/components/voiceControls/VoiceControls';
-import { UserProfileProvider } from '../../components/UserProfileProvider';
-import ToastNotifications from '../../components/toastNotifications/ToastNotifications';
+import { UserProfileProvider, ToastNotifications } from '../../shared';
 
 import './Main.scss';
 

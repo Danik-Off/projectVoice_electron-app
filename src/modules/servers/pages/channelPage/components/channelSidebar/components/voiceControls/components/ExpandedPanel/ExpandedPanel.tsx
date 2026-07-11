@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClickableAvatar, useUserProfile } from '../../../../../../../../../../components';
+import { useUserProfile, ClickableAvatar } from '../../../../../../../../../../shared';
 import { Slider } from '../../../../../../../../../../core';
 import MicIcon from '../../../../../../../../../../icons/Micro';
 

@@ -2,8 +2,7 @@
  * Инициализация приложения
  * Регистрация всех модулей и плагинов
  */
-import { moduleManager, pluginManager, enableMobX } from '../core';
-import { infoService } from '../services/infoService';
+import { moduleManager, pluginManager, enableMobX, infoService } from '../core';
 
 // Modules
 import { authModule } from '../modules/auth';
@@ -15,6 +14,7 @@ import { inviteModule } from '../modules/invite';
 import { settingsModule } from '../modules/settings';
 import { adminModule } from '../modules/admin';
 import { friendsModule } from '../modules/friends';
+import { connectionModule } from '../modules/connection';
 
 // Plugins
 import '../plugins/example-plugin';
@@ -42,7 +42,8 @@ export async function initializeApp() {
             { name: 'invite', module: inviteModule },
             { name: 'settings', module: settingsModule },
             { name: 'messaging', module: messagingModule },
-            { name: 'friends', module: friendsModule }
+            { name: 'friends', module: friendsModule },
+            { name: 'connection', module: connectionModule }
         ];
 
         modules.forEach(({ name: moduleName, module: moduleInstance }) => {

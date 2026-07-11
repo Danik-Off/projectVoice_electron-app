@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './ChannelList.scss'; // Import the CSS file for styling
 import CreateChannelForm from './components/сreateChannelForm/CreateChannelForm';
-import { Spinner } from '../../../../../../../../components';
+import { Spinner } from '../../../../../../../../shared';
 import voiceRoomStore from '../../../../../../../voice/store/roomStore';
 import type { Channel } from '../../../../../../../../types/channel';
 import { channelsStore } from '../../../../../../../channels';

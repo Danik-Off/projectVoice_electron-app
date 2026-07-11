@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ClickableAvatar, useUserProfile } from '../../../../../../../../../../components';
+import { useUserProfile, ClickableAvatar } from '../../../../../../../../../../shared';
 import { authStore, audioSettingsStore } from '../../../../../../../../../../core';
 import MicIcon from '../../../../../../../../../../icons/Micro';
 import HeadphonesIcon from '../../../../../../../../../../icons/HeadphonesIcon';
@@ -21,11 +21,7 @@ interface MainPanelProps {
     onOpenSettings: () => void;
 }
 
-const getStatusText = (
-    t: (key: string) => string,
-    isLocalSpeaking: boolean,
-    isConnected: boolean
-): string => {
+const getStatusText = (t: (key: string) => string, isLocalSpeaking: boolean, isConnected: boolean): string => {
     if (isLocalSpeaking) {
         return t('voiceControls.speaking');
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useParams } from 'react-router-dom';
-import { ClickableAvatar, useUserProfile } from '../../../components';
+import { useUserProfile, ClickableAvatar } from '../../../shared';
 import { authStore } from '../../../core';
 import HeadphonesIcon from '../../../icons/HeadphonesIcon';
 import MicIcon from '../../../icons/Micro';
@@ -38,7 +38,9 @@ const VoiceRoomPage: React.FC = observer(() => {
 
             <div className="voice-room-page__grid">
                 {currentUser != null ? (
-                    <div className={`voice-room-page__tile ${isLocalSpeaking ? 'voice-room-page__tile--speaking' : ''}`}>
+                    <div
+                        className={`voice-room-page__tile ${isLocalSpeaking ? 'voice-room-page__tile--speaking' : ''}`}
+                    >
                         <ClickableAvatar
                             user={currentUser}
                             size="large"
@@ -81,7 +83,9 @@ const VoiceRoomPage: React.FC = observer(() => {
                                 className="voice-room-page__avatar"
                             />
                         ) : null}
-                        <span className="voice-room-page__name">{participant.userData?.username ?? 'Unknown User'}</span>
+                        <span className="voice-room-page__name">
+                            {participant.userData?.username ?? 'Unknown User'}
+                        </span>
                         <span className="voice-room-page__mic">
                             <MicIcon isMuted={participant.micToggle !== true} />
                         </span>

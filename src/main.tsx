@@ -5,7 +5,7 @@ import { initializeApp } from './app';
 import { createRouter } from './routes/root';
 import { themeStore } from './core';
 import { ServiceProvider } from './app/providers';
-import { ConnectionManager } from './features/connection-manager';
+import { ConnectionManager } from './modules/connection';
 import './styles/main.scss';
 import './constants/i18n';
 

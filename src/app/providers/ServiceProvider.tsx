@@ -8,33 +8,26 @@
  * Все остальные слои работают только с интерфейсами (портами).
  *
  * Архитектура зависимостей:
- *   app/providers  ->  features/{name}/api (адаптеры)
+ *   app/providers  ->  modules/{name}/services (адаптеры)
  *        |                |
  *        |                | реализует
  *        |                v
- *        +--provide-->  features/{name}/model/ports (интерфейсы)
+ *        +--provide-->  modules/{name}/model/ports (интерфейсы)
  *                        ^
  *                        | использует
- *                 features/{name}/model/useXxx (хук)
+ *                 modules/{name}/model/useXxx (хук)
  *                        ^
  *                        | вызывает
- *                 features/{name}/ui (компоненты)
+ *                 modules/{name}/components (компоненты)
  */
 
 import React, { useMemo } from 'react';
-import {
-    ProfileSettingsContext,
-    ProfileSettingsApi,
-    NotificationAdapter as ProfileNotificationAdapter,
-    type ProfileSettingsDeps
-} from '../../features/profile-settings';
-
 import {
     ConnectionManagerContext,
     ConnectionServiceAdapter,
     NotificationAdapter as ConnectionNotificationAdapter,
     type ConnectionManagerDeps
-} from '../../features/connection-manager';
+} from '../../modules/connection';
 
 interface ServiceProviderProps {
     children: React.ReactNode;
@@ -46,18 +39,6 @@ interface ServiceProviderProps {
  */
 export const ServiceProvider: React.FC<ServiceProviderProps> = ({ children }) => {
     // Создаем экземпляры адаптеров один раз (composition root)
-
-    // --- Profile Settings ---
-    const profileDeps = useMemo<ProfileSettingsDeps>(
-        () => ({
-            profileSettingsService: new ProfileSettingsApi(),
-            notificationService: new ProfileNotificationAdapter(),
-            i18nService: {
-                t: (key: string) => key // fallback; реальный t подставляется в компоненте
-            }
-        }),
-        []
-    );
 
     // --- Connection Manager ---
     const connectionDeps = useMemo<ConnectionManagerDeps>(
@@ -71,11 +52,5 @@ export const ServiceProvider: React.FC<ServiceProviderProps> = ({ children }) =>
         []
     );
 
-    return (
-        <ProfileSettingsContext.Provider value={profileDeps}>
-            <ConnectionManagerContext.Provider value={connectionDeps}>
-                {children}
-            </ConnectionManagerContext.Provider>
-        </ProfileSettingsContext.Provider>
-    );
+    return <ConnectionManagerContext.Provider value={connectionDeps}>{children}</ConnectionManagerContext.Provider>;
 };

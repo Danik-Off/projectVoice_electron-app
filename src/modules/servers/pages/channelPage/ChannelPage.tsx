@@ -3,10 +3,9 @@ import { Outlet, useParams, useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import './ChannelPage.scss'; // Assuming you have a separate CSS file for styling
 import ChannelSidebar from './components/channelSidebar/ChannelSidebar';
-import BlockedServerModal from '../../../../components/BlockedServerModal';
 import { serverStore } from '../../../../modules/servers';
 import { notificationStore } from '../../../../core';
-import Spinner from '../../../../components/spinner/Spinner';
+import { BlockedServerModal, Spinner } from '../../../../shared';
 
 const LoadingState: React.FC = () => (
     <div className="loading-state">

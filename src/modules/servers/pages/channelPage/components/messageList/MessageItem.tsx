@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Message } from '../../../../../../types/message';
 import { authStore, eventBus, MESSAGING_COMMANDS } from '../../../../../../core';
-import { useUserProfile } from '../../../../../../hooks/useUserProfile';
-import ClickableAvatar from '../../../../../../components/ClickableAvatar';
+import { useUserProfile, ClickableAvatar } from '../../../../../../shared';
 import './MessageItem.scss';
 
 interface MessageItemProps {

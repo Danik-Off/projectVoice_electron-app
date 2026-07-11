@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authStore } from '../../../../core';
-import BlockedServerModal from '../../../../components/BlockedServerModal';
+import { BlockedServerModal } from '../../../../shared';
 import CreateServerModal from './components/CreateServerModal/CreateServerModal';
 import type { Server } from '../../../../types/server';
 import ServerItem from '../../../../app/layout/components/serverSlidebar/serverItem/ServerItem';

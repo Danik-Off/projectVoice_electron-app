@@ -3,9 +3,8 @@ import { observer } from 'mobx-react';
 import { useTranslation } from 'react-i18next';
 
 import './ServerMembers.scss';
-import { useUserProfile } from '../../../../../../../../components';
 import { authStore } from '../../../../../../../../core';
-import { ClickableAvatar } from '../../../../../../../../shared';
+import { useUserProfile, ClickableAvatar } from '../../../../../../../../shared';
 import MemberContextMenu from '../../../../../../components/MemberContextMenu';
 import { Permissions as ServerPermissions, hasPermission } from '../../../../../../index';
 import type { ServerMember } from '../../../../../../services/serverMembersService';

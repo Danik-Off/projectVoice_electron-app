@@ -1,0 +1,155 @@
+@use '../../styles/main' as *;
+
+// Блок: blocked-account-modal-overlay (основной фон модального окна)
+.blocked-account-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modal-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: $z-index-modal;
+    backdrop-filter: blur(5px);
+}
+
+// Блок: blocked-account-modal (контейнер модального окна)
+.blocked-account-modal {
+    background: var(--modal-bg);
+    border-radius: var(--border-radius-large);
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-heavy);
+    border: 1px solid var(--modal-border);
+}
+
+// Элемент: blocked-account-modal__header (заголовок модального окна)
+.blocked-account-modal__header {
+    background: linear-gradient(135deg, var(--error-color) 0%, var(--error-color-hover) 100%);
+    color: #ffffff;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-large) var(--border-radius-large) 0 0;
+    text-align: center;
+    position: relative;
+
+    // Элемент: blocked-account-modal__icon (иконка)
+    &-icon {
+        font-size: $icon-size-xl;
+        margin-bottom: var(--spacing-md);
+    }
+
+    // Элемент: blocked-account-modal__title (заголовок)
+    &-title {
+        margin: 0;
+        font-size: $font-size-xl;
+        font-weight: 600;
+    }
+}
+
+// Элемент: blocked-account-modal__content (содержимое модального окна)
+.blocked-account-modal__content {
+    padding: var(--spacing-lg);
+}
+
+// Элемент: blocked-account-modal__message (сообщение)
+.blocked-account-modal__message {
+    font-size: $font-size-md;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+// Элемент: blocked-account-modal__reason-section (секция с причиной)
+.blocked-account-modal__reason-section {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-left: 4px solid var(--error-color);
+
+    // Элемент: blocked-account-modal__reason-title (заголовок причины)
+    &-title {
+        margin: 0 0 var(--spacing-sm) 0;
+        font-size: $font-size-sm;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    // Элемент: blocked-account-modal__reason-text (текст причины)
+    &-text {
+        margin: 0;
+        font-size: $font-size-md;
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+}
+
+// Элемент: blocked-account-modal__details-section (секция с деталями)
+.blocked-account-modal__details-section {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+
+    // Элемент: blocked-account-modal__details-item (элемент деталей)
+    &-item {
+        margin: var(--spacing-sm) 0;
+        font-size: $font-size-sm;
+        color: var(--text-secondary);
+
+        strong {
+            color: var(--text-primary);
+        }
+    }
+}
+
+// Элемент: blocked-account-modal__contact-info (информация для связи)
+.blocked-account-modal__contact-info {
+    background: linear-gradient(135deg, var(--warning-accent) 0%, var(--warning-color) 100%);
+    color: #ffffff;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    text-align: center;
+
+    // Элемент: blocked-account-modal__contact-text (текст контакта)
+    &-text {
+        margin: 0;
+        font-size: $font-size-sm;
+        line-height: 1.5;
+    }
+}
+
+// Элемент: blocked-account-modal__footer (подвал модального окна)
+.blocked-account-modal__footer {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
+    text-align: center;
+}
+
+// Элемент: blocked-account-modal__close-button (кнопка закрытия)
+.blocked-account-modal__close-button {
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: $font-size-md;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 120px;
+
+    &:hover {
+        background: linear-gradient(135deg, var(--primary-accent-hover) 0%, var(--primary-accent) 100%);
+        box-shadow: var(--shadow-medium);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}

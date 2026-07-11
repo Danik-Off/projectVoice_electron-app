@@ -7,7 +7,7 @@ import { moduleManager } from '../core';
 import { ProtectedRoute, AdminRoute } from '../modules/auth';
 import Layout from '../app/layout/Main';
 import WelcomePage from '../modules/servers/welcomePage/WelcomePage';
-import ProfileDemo from '../components/ProfileDemo';
+import { ProfileDemo } from '../shared';
 import Auth from '../modules/auth/pages/Auth';
 import NotFound from '../app/routes/NotFound';
 

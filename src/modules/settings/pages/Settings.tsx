@@ -11,8 +11,8 @@ import {
     PrivacySettings,
     AboutSettings,
     type SettingsTab
-} from '../components/components';
-import AudioSettings from '../components/components/audioSettings/AudioSettings';
+} from '../components';
+import AudioSettings from '../components/audioSettings/AudioSettings';
 
 const Settings = observer(() => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('profile');

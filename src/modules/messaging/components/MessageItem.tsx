@@ -3,8 +3,7 @@ import { observer } from 'mobx-react';
 import type { Message } from '../types/message';
 import { messageStore } from '../store/messageStore';
 import { authStore } from '../../../core';
-import { useUserProfile } from '../../../hooks/useUserProfile';
-import ClickableAvatar from '../../../components/ClickableAvatar';
+import { useUserProfile, ClickableAvatar } from '../../../shared';
 import './MessageItem.scss';
 
 interface MessageItemProps {

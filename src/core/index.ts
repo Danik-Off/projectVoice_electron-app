@@ -11,6 +11,8 @@ export * from './types';
 
 // API - должен быть экспортирован ПЕРЕД stores, чтобы избежать циклических зависимостей
 export { apiClient } from './api/apiClient';
+export { infoService } from './services/infoService';
+export type { AppInfo } from './services/infoService';
 
 // Plugin System
 export { PluginManager, pluginManager } from './plugin/PluginManager';
