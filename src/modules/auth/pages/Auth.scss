@@ -399,7 +399,8 @@
 }
 
 .language-toggle,
-.theme-toggle {
+.theme-toggle,
+.server-toggle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -421,7 +422,8 @@
     }
 
     .language-icon,
-    .theme-icon {
+    .theme-icon,
+    .server-icon {
         font-size: $icon-size-small;
     }
 }
@@ -476,7 +478,8 @@
     }
 
     .language-toggle,
-    .theme-toggle {
+    .theme-toggle,
+    .server-toggle {
         padding: $spacing-sm $spacing-md;
         font-size: 13px;
     }

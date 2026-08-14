@@ -3,47 +3,13 @@ import type { Server } from '../../../types/server';
 
 export const serverService = {
     // Создание сервера
-    create: async (data: Omit<Server, 'id' | 'ownerId'>) => {
-        const response = await apiClient('/servers', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response;
-    },
+    create: (data: Omit<Server, 'id' | 'ownerId'>) => apiClient('/servers', { method: 'POST' }, data),
     // Получение списка серверов
-    get: async () => {
-        const data = await apiClient('/servers', {
-            method: 'GET'
-        });
-        return data;
-    },
+    get: () => apiClient('/servers', { method: 'GET' }),
     // Получение сервера по ID
-    getBy: async (id: number) => {
-        const data = await apiClient(`/servers/${id}`, {
-            method: 'GET'
-        });
-        return data;
-    },
+    getBy: (id: number) => apiClient(`/servers/${id}`, { method: 'GET' }),
     // Обновление информации о сервере
-    update: async (id: number, data: Partial<Server>) => {
-        const response = await apiClient(`/servers/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response;
-    },
+    update: (id: number, data: Partial<Server>) => apiClient(`/servers/${id}`, { method: 'PUT' }, data),
     // Удаление сервера
-    delete: async (id: number) => {
-        const response = await apiClient(`/servers/${id}`, {
-            method: 'DELETE'
-        });
-
-        return response ?? { success: true };
-    }
+    delete: (id: number) => apiClient(`/servers/${id}`, { method: 'DELETE' })
 };

@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { authStore, themeStore } from '../../../core';
 import { Spinner, BlockedAccountModal, ToastNotifications } from '../../../shared';
+import { useConnectionManagerDeps } from '../../connection';
 import './Auth.scss';
 import LoginForm from './components/loginForm/LoginForm';
 import RegisterForm from './components/registerForm/RegisterForm';
@@ -16,6 +17,7 @@ const AuthPage: React.FC = observer(() => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const redirect = searchParams.get('redirect');
+    const { connectionService } = useConnectionManagerDeps();
 
     // Если пользователь уже авторизован, перенаправляем его
     useEffect(() => {
@@ -109,6 +111,15 @@ const AuthPage: React.FC = observer(() => {
                                 title={t('common.toggleTheme')}
                             >
                                 <span className="theme-icon">{themeStore.currentTheme === 'dark' ? '☀️' : '🌙'}</span>
+                            </button>
+
+                            <button
+                                onClick={() => connectionService.setSettingsModalOpen(true)}
+                                className="server-toggle"
+                                title={t('connection.serverSettings')}
+                            >
+                                <span className="server-icon">🔌</span>
+                                {t('connection.serverSettings')}
                             </button>
                         </div>
                     </div>

@@ -1,66 +1,14 @@
 @use '../../../styles/main' as *;
 
-// Блок: connection-modal-overlay
-.connection-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--modal-overlay);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: $z-index-modal;
-    backdrop-filter: blur(8px);
-    animation: fadeIn 0.3s ease-out;
-}
+// Модалка сама по себе стилизуется через shared/components/Modal.
+// Здесь - только элементы, специфичные для содержимого connection-modal.
 
-// Блок: connection-modal
 .connection-modal {
-    background: var(--modal-bg);
-    border-radius: var(--border-radius-large);
-    max-width: 480px;
-    width: 90%;
-    box-shadow: var(--shadow-heavy);
-    border: 1px solid var(--modal-border);
-    overflow: hidden;
-    animation: scaleIn 0.3s ease-out;
-
-    // Модификатор: режим настроек (зелёный градиент)
-    &--settings {
-        .connection-modal__header {
-            background: linear-gradient(135deg, var(--success-accent) 0%, var(--tertiary-accent) 100%);
-        }
+    .modal__content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
     }
-}
-
-// Элемент: connection-modal__header
-.connection-modal__header {
-    background: linear-gradient(135deg, var(--secondary-accent) 0%, var(--accent-bg) 100%);
-    color: #ffffff;
-    padding: var(--spacing-xl) var(--spacing-lg);
-    text-align: center;
-    border-bottom: 1px solid var(--border-primary);
-
-    &-icon {
-        font-size: $icon-size-xl;
-        margin-bottom: var(--spacing-md);
-        display: inline-block;
-        animation: float 3s ease-in-out infinite;
-    }
-
-    &-title {
-        margin: 0;
-        font-size: $font-size-lg;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-    }
-}
-
-// Элемент: connection-modal__content
-.connection-modal__content {
-    padding: var(--spacing-lg) var(--spacing-xl);
 }
 
 // Элемент: connection-modal__message
@@ -68,251 +16,46 @@
     font-size: $font-size-md;
     line-height: 1.6;
     color: var(--text-secondary);
-    margin-bottom: var(--spacing-lg);
     text-align: center;
+    margin: 0;
 }
 
-// Элемент: connection-modal__current-server
-.connection-modal__current-server {
-    background: var(--secondary-bg);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
-    border: 1px solid var(--border-primary);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-sm);
-
-    &-label {
-        font-size: $font-size-sm;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-    }
-
-    &-url {
-        font-family: 'Fira Code', 'Courier New', monospace;
-        font-size: $font-size-sm;
-        color: var(--text-primary);
-        word-break: break-all;
-    }
-}
-
-// Элемент: connection-modal__edit-button
-.connection-modal__edit-button {
-    width: 100%;
-    background: transparent;
-    color: var(--primary-accent);
-    border: 1px solid var(--primary-accent);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    font-size: $font-size-md;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-        background: var(--hover-bg);
-        transform: translateY(-1px);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
-}
-
-// Элемент: connection-modal__edit-section
-.connection-modal__edit-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-
-    label {
-        font-size: $font-size-sm;
-        color: var(--text-primary);
-        font-weight: 500;
-    }
-
-    &-input {
-        background: var(--input-bg);
-        border: 1px solid var(--input-border);
-        border-radius: var(--border-radius);
-        padding: var(--spacing-md);
-        color: var(--text-primary);
-        font-size: $font-size-md;
-        outline: none;
-        transition: border-color 0.2s ease;
-
-        &:focus {
-            border-color: var(--input-focus-border);
-            box-shadow: var(--input-focus-shadow);
-        }
-
-        &--error {
-            border-color: var(--error-color);
-        }
-    }
-
-    &-error {
-        font-size: $font-size-sm;
-        color: var(--error-color);
-        margin-top: var(--spacing-xs);
-    }
-
-    &-button-group {
-        display: flex;
-        gap: var(--spacing-md);
-        margin-top: var(--spacing-sm);
-
-        button {
-            flex: 1;
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-size: $font-size-md;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-        }
-
-        &-save-button {
-            background: var(--primary-accent);
-            color: #ffffff;
-
-            &:hover {
-                background: var(--primary-accent-hover);
-            }
-
-            &:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-        }
-
-        &-cancel-button {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--border-primary);
-
-            &:hover {
-                background: var(--tertiary-bg);
-            }
-        }
-    }
-}
-
-// Элемент: connection-modal__footer
-.connection-modal__footer {
-    padding: 0 var(--spacing-xl) var(--spacing-xl);
-}
-
-// Элемент: connection-modal__retry-section
-.connection-modal__retry-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-// Элемент: connection-modal__retry-status
-.connection-modal__retry-status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    color: var(--text-muted);
+// Элемент: connection-modal__url (текущий адрес сервера)
+.connection-modal__url {
+    display: block;
+    font-family: 'Fira Code', 'Courier New', monospace;
     font-size: $font-size-sm;
-}
-
-// Элемент: connection-modal__spinner (КРУТЯЩИЙСЯ спиннер)
-.connection-modal__spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border-primary);
-    border-top-color: var(--primary-accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    flex-shrink: 0;
-}
-
-// Элемент: connection-modal__retry-timer
-.connection-modal__retry-timer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: $font-size-sm;
-    color: var(--text-secondary);
-
-    &-count {
-        font-weight: 700;
-        color: var(--primary-accent);
-        font-size: $font-size-md;
-    }
-}
-
-// Элемент: connection-modal__retry-button
-.connection-modal__retry-button {
-    width: 100%;
-    background: var(--primary-accent);
-    color: #ffffff;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    font-size: $font-size-md;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-
-    &:hover {
-        background: var(--primary-accent-hover);
-        transform: translateY(-1px);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
-
-    &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-    }
-}
-
-// Элемент: connection-modal__close-button
-.connection-modal__close-button {
-    width: 100%;
-    background: transparent;
     color: var(--text-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--border-radius);
-    padding: var(--spacing-md);
-    font-size: $font-size-md;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-        background: var(--tertiary-bg);
-    }
+    word-break: break-all;
 }
 
-// Элемент: connection-modal__status-indicator
-.connection-modal__status-indicator {
-    display: inline-flex;
+// Элемент: connection-modal__error
+.connection-modal__error {
+    font-size: $font-size-sm;
+    color: var(--error-color);
+    margin-top: var(--spacing-xs);
+}
+
+// Элемент: connection-modal__actions (кнопки сохранить/отмена)
+.connection-modal__actions {
+    margin-top: var(--spacing-md);
+}
+
+// Модификатор: невалидный ввод адреса
+.connection-modal__input--error {
+    border-color: var(--error-color) !important;
+}
+
+// Блок: статус подключения (бейдж рядом с заголовком модалки)
+.connection-status {
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-xs);
     font-size: $font-size-sm;
     color: var(--text-muted);
-    margin-top: var(--spacing-sm);
 
-    &-dot {
+    &__dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
@@ -334,5 +77,43 @@
             box-shadow: 0 0 8px var(--warning-accent);
             animation: pulse 1.5s ease-in-out infinite;
         }
+    }
+}
+
+// Блок: connection-retry (ретраи переподключения)
+.connection-retry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+
+    &__status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        color: var(--text-muted);
+        font-size: $font-size-sm;
+    }
+
+    &__spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border-primary);
+        border-top-color: var(--primary-accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        flex-shrink: 0;
+    }
+
+    &__timer {
+        font-weight: 600;
+        color: var(--primary-accent);
+    }
+
+    &__button {
+        width: 100%;
+        justify-content: center;
     }
 }

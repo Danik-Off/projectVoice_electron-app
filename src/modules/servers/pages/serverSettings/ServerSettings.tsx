@@ -48,7 +48,7 @@ const ServerSettings: React.FC = observer(() => {
             if (currentUser?.id != null && currentUser.id > 0) {
                 try {
                     const permissionsData = await serverMembersService.getCurrentMemberPermissions(serverIdNum);
-                    setCurrentUserPermissions(permissionsData.totalPermissions ?? '0');
+                    setCurrentUserPermissions(permissionsData?.totalPermissions ?? '0');
                 } catch (error) {
                     console.error('Error loading user permissions:', error);
                     // Fallback: загружаем роль из списка участников

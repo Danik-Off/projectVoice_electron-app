@@ -1,12 +1,16 @@
 import { makeAutoObservable } from 'mobx';
+import { BASE_URL } from '../config';
 
 class ConnectionStore {
     private static STORAGE_KEY = 'projectvoice_server_url';
 
-    public serverUrl: string =
-        localStorage.getItem(ConnectionStore.STORAGE_KEY) ??
-        (typeof import.meta.env.VITE_API_BASE_URL === 'string' ? import.meta.env.VITE_API_BASE_URL : '') ??
-        'http://localhost:5000';
+    public serverUrl: string = (() => {
+        const saved = localStorage.getItem(ConnectionStore.STORAGE_KEY);
+        if (saved !== null && saved !== '') {
+            return saved;
+        }
+        return BASE_URL;
+    })();
 
     public isConnected = true;
     public lastError: string | null = null;

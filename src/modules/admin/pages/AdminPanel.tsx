@@ -753,16 +753,8 @@ const LogsViewer: React.FC<{ logs: LogsResponse | null }> = ({ logs }) => {
     return (
         <div className="logs-content">
             <div className="log-section">
-                <h3>🔧 Системные логи</h3>
-                <pre>{logs.system || 'Нет системных логов'}</pre>
-            </div>
-            <div className="log-section">
-                <h3>❌ Ошибки</h3>
-                <pre>{logs.errors || 'Нет ошибок'}</pre>
-            </div>
-            <div className="log-section">
-                <h3>📊 Логи доступа</h3>
-                <pre>{logs.access || 'Нет логов доступа'}</pre>
+                <h3>📋 Логи системы ({logs.total} записей)</h3>
+                {logs.logs.length > 0 ? <pre>{logs.logs.join('\n')}</pre> : <pre>Нет логов</pre>}
             </div>
         </div>
     );

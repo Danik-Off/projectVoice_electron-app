@@ -52,6 +52,12 @@
             }
         }
 
+        .setting-hint {
+            margin: $spacing-xs 0 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
         .btn-logout {
             background: var(--error-color);
             color: white;

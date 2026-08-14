@@ -12,6 +12,42 @@ import { validateServerUrl, normalizeServerUrl } from './validators';
 import type { UseConnectionManagerReturn } from './types';
 
 /**
+ * Опрашивает сервис раз в 300мс и синхронизирует статус/ретраи/ручные настройки.
+ * Также автоматически запускает ретраи, как только обнаружен разрыв связи -
+ * пользователю не нужно вручную нажимать "Повторить" при первом же дисконнекте.
+ */
+const useConnectionStatusPolling = (service: IConnectionService) => {
+    const [connectionStatus, setConnectionStatus] = useState(service.status);
+    const [retryInfo, setRetryInfo] = useState(service.retryInfo);
+    const [isManualSettings, setIsManualSettings] = useState(false);
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        isMounted.current = true;
+
+        const interval = setInterval(() => {
+            if (!isMounted.current) return;
+            setConnectionStatus(service.status);
+            setRetryInfo(service.retryInfo);
+            setIsManualSettings(service.isSettingsModalOpen);
+        }, 300);
+
+        return () => {
+            isMounted.current = false;
+            clearInterval(interval);
+        };
+    }, [service]);
+
+    useEffect(() => {
+        if (connectionStatus === 'disconnected' && !isManualSettings) {
+            service.startRetrying();
+        }
+    }, [connectionStatus, isManualSettings, service]);
+
+    return { connectionStatus, retryInfo, isManualSettings, setIsManualSettings };
+};
+
+/**
  * Основной хук. Принимает сервисы через DI.
  */
 export const useConnectionManager = (
@@ -24,34 +60,10 @@ export const useConnectionManager = (
     const [newUrl, setNewUrl] = useState(service.serverUrl);
     const [urlError, setUrlError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [retryInfo, setRetryInfo] = useState(service.retryInfo);
-    const [connectionStatus, setConnectionStatus] = useState(service.status);
-    const [isManualSettings, setIsManualSettings] = useState(false);
+    const { connectionStatus, retryInfo, isManualSettings, setIsManualSettings } = useConnectionStatusPolling(service);
 
-    // Ref для отслеживания монтирования
-    const isMounted = useRef(true);
-
-    // --- Синхронизация статуса и retryInfo из сервиса ---
-    useEffect(() => {
-        isMounted.current = true;
-
-        // Периодически опрашиваем статус из сервиса
-        const interval = setInterval(() => {
-            if (!isMounted.current) return;
-            setConnectionStatus(service.status);
-            setRetryInfo(service.retryInfo);
-            // Синхронизируем ручное открытие настроек
-            setIsManualSettings(service.isSettingsModalOpen);
-        }, 300);
-
-        return () => {
-            isMounted.current = false;
-            clearInterval(interval);
-        };
-    }, [service]);
-
-    // --- Модалка открыта, если нет подключения ИЛИ открыты настройки вручную ---
-    const isModalOpen = connectionStatus === 'disconnected' || isManualSettings;
+    // --- Модалка открыта, если нет подключения (в т.ч. идут ретраи) ИЛИ открыты настройки вручную ---
+    const isModalOpen = connectionStatus === 'disconnected' || connectionStatus === 'reconnecting' || isManualSettings;
 
     // --- Действия ---
     const openSettings = useCallback(() => {
@@ -59,7 +71,7 @@ export const useConnectionManager = (
         setIsManualSettings(true);
         setNewUrl(service.serverUrl);
         setUrlError(null);
-    }, [service]);
+    }, [service, setIsManualSettings]);
 
     const closeModal = useCallback(() => {
         if (isManualSettings) {
@@ -68,7 +80,7 @@ export const useConnectionManager = (
         }
         setIsEditing(false);
         setUrlError(null);
-    }, [isManualSettings, service]);
+    }, [isManualSettings, service, setIsManualSettings]);
 
     const startEditing = useCallback(() => {
         setIsEditing(true);

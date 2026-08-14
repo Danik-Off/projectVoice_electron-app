@@ -16,13 +16,20 @@ export interface AppInfo {
 
 class InfoService {
     /**
-     * Получить информацию о приложении (включая стили Discord)
+     * Получить информацию о приложении (включая стили).
+     *
+     * В новом NestJS API endpoint /info отсутствует.
+     * Метод возвращает пустой объект при ошибке, чтобы не блокировать инициализацию.
      */
-    // eslint-disable-next-line require-await -- Returns promise directly
     async getInfo(): Promise<AppInfo> {
-        return apiClient('/info', {
-            method: 'GET'
-        });
+        try {
+            return await apiClient('/info', {
+                method: 'GET'
+            });
+        } catch {
+            // Endpoint /info не существует в новом API — возвращаем пустой объект
+            return {};
+        }
     }
 }
 

@@ -3,4 +3,14 @@
  */
 export { friendsModule } from './module';
 export { friendsService } from './services/friendsService';
-export type { Friendship, SendFriendRequestDTO, FriendWithUser, FriendshipStatus } from './types/friendship';
+export type {
+    FriendshipStatus,
+    FriendUser,
+    FriendRequestEntry,
+    FriendRequestsResponse,
+    SendFriendRequestDTO,
+    SendFriendRequestResponse,
+    AcceptFriendRequestResponse,
+    RemoveFriendResponse,
+    BlockUserResponse
+} from './types/friendship';

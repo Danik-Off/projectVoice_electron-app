@@ -96,9 +96,11 @@ export interface ServersResponse {
 }
 
 export interface LogsResponse {
-    system: string;
-    errors: string;
-    access: string;
+    logs: string[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 export interface BlockServerRequest {

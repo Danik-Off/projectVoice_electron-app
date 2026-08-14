@@ -23,10 +23,9 @@ class SocketClient {
         // Всегда получаем актуальный токен из localStorage
         this.token = getToken() ?? '';
 
-        this.socket = io(appConfig.socket.url, {
-            path: appConfig.socket.path,
-            query: { token: this.token },
-            transports: ['websocket', 'polling'],
+        this.socket = io(`${appConfig.socket.url}${appConfig.socket.path}`, {
+            auth: { token: this.token },
+            transports: ['websocket'],
             timeout: 20000,
             forceNew: true
         });

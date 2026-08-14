@@ -1,10 +1,10 @@
 /**
  * Адаптер ConnectionServiceAdapter - реализация IConnectionService.
  *
- * Этот слой ИМПОРТИРУЕТ интерфейс из entities/connection/model/ports.ts
- * и реализует его через существующий connectionStore (MobX).
+ * Этот слой ИМПОРТИРУЕТ интерфейс из model/ports.ts и реализует его
+ * через существующий connectionStore (MobX).
  *
- * ВАЖНО: api -> model (правильно), а НЕ model -> api (неправильно).
+ * ВАЖНО: services -> model (правильно), а НЕ model -> services (неправильно).
  */
 
 import { connectionStore } from '../../../core/store/ConnectionStore';
@@ -24,22 +24,50 @@ export class ConnectionServiceAdapter implements IConnectionService {
     private retryDelaySeconds = 5;
     private nextRetryAt: number | null = null;
 
-    /** Проверка подключения через ping к API */
+    /**
+     * Проверка подключения к серверу через health-check эндпоинт.
+     *
+     * Использует публичный GET /api/ping, который возвращает { pong: true, timestamp }.
+     * Если получен валидный ответ с pong: true — сервер здоров и подключён.
+     * Если получен любой HTTP-ответ, но без pong: true — сервер доступен по сети,
+     * но возможно работает другая версия API (считаем подключённым, логируем предупреждение).
+     * Сетевая ошибка fetch (сервер недоступен, DNS не резолвится, таймаут) — отключён.
+     */
     async checkConnection(): Promise<ConnectionCheckResult> {
         const startTime = Date.now();
         try {
-            const response = await fetch(`${connectionStore.serverUrl}/api/health`, {
+            const response = await fetch(`${connectionStore.serverUrl}/api/ping`, {
                 method: 'GET',
                 signal: AbortSignal.timeout(5000)
             });
             const latency = Date.now() - startTime;
-            if (response.ok) {
+
+            // Пытаемся распарсить ответ и проверить pong
+            let pong = false;
+            try {
+                const body = (await response.json()) as { pong?: boolean };
+                pong = body.pong === true;
+            } catch {
+                // Ответ не JSON — сервер доступен, но это не health-check
+            }
+
+            if (pong) {
                 connectionStore.setConnected(true);
                 return { isConnected: true, latency };
             }
-            return { isConnected: false, error: `HTTP ${response.status}` };
+
+            // Получили HTTP-ответ, но без pong — сервер доступен по сети
+            if (response.ok || response.status > 0) {
+                console.warn('Server reachable but /api/ping did not return expected response');
+                connectionStore.setConnected(true);
+                return { isConnected: true, latency };
+            }
+
+            connectionStore.setConnected(false);
+            return { isConnected: false, latency };
         } catch (error) {
             const latency = Date.now() - startTime;
+            connectionStore.setConnected(false);
             return {
                 isConnected: false,
                 latency,

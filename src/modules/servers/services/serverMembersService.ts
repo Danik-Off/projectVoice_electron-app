@@ -31,6 +31,135 @@ export interface ServerMember {
     updatedAt: string;
 }
 
+class ServerMembersService {
+    /** Получить список участников сервера (GET /serverMembers/:serverId/members) */
+    // eslint-disable-next-line require-await -- Returns promise directly
+    async getServerMembers(serverId: number): Promise<ServerMember[]> {
+        return apiClient(`/serverMembers/${serverId}/members`, {
+            method: 'GET'
+        });
+    }
+
+    /** Обновить роль участника (PUT /serverMembers/:serverId/members/:memberId) */
+    // eslint-disable-next-line require-await -- Returns promise directly
+    async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
+        return apiClient(
+            `/serverMembers/${serverId}/members/${memberId}`,
+            {
+                method: 'PUT'
+            },
+            { role }
+        );
+    }
+
+    /** Удалить участника из сервера (DELETE /serverMembers/:serverId/members/:memberId) */
+    async removeMember(serverId: number, memberId: number): Promise<void> {
+        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    /** Добавить участника на сервер (POST /serverMembers/:serverId/members) */
+    // eslint-disable-next-line require-await -- Returns promise directly
+    async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
+        return apiClient(
+            `/serverMembers/${serverId}/members`,
+            {
+                method: 'POST'
+            },
+            { userId, role }
+        );
+    }
+
+    /**
+     * Передать владение сервером другому пользователю (POST /serverMembers/:serverId/owner)
+     */
+    // eslint-disable-next-line require-await -- Returns promise directly
+    async transferOwnership(serverId: number, userId: number): Promise<{ message: string }> {
+        return apiClient(
+            `/serverMembers/${serverId}/owner`,
+            {
+                method: 'POST'
+            },
+            { userId }
+        );
+    }
+
+    /**
+     * Исключить участника из сервера (Kick).
+     * Использует тот же endpoint, что и removeMember.
+     */
+    async kickMember(serverId: number, memberId: number): Promise<void> {
+        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
+            method: 'DELETE'
+        });
+    }
+
+    // ─── Методы ниже используют endpoints, отсутствующие в текущем API бэкенда ───
+    // TODO: запросить добавление у бэкенд-команды, если функционал нужен.
+
+    /**
+     * Получить права текущего пользователя на сервере.
+     * Endpoint /serverMembers/:serverId/members/me отсутствует в API бэкенда.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async getCurrentMemberPermissions(_serverId: number): Promise<CurrentMemberPermissions | null> {
+        console.warn('getCurrentMemberPermissions: endpoint not available in current API');
+        return null;
+    }
+
+    /**
+     * Забанить участника.
+     * Endpoint /serverMembers/:serverId/members/:memberId/ban отсутствует в API бэкенда.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async banMember(_serverId: number, _memberId: number, _reason?: string): Promise<void> {
+        throw new Error('Ban endpoint is not available in the current API');
+    }
+
+    /**
+     * Обновить голосовые настройки участника (Mute/Deafen).
+     * Endpoint /serverMembers/:serverId/members/:memberId/voice отсутствует в API бэкенда.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async updateVoiceSettings(
+        _serverId: number,
+        _memberId: number,
+        _isMuted?: boolean,
+        _isDeafened?: boolean
+    ): Promise<ServerMember> {
+        throw new Error('Voice settings endpoint is not available in the current API');
+    }
+
+    /**
+     * Обновить роли участника.
+     * Endpoint /serverMembers/:serverId/members/:memberId/roles отсутствует в API бэкенда.
+     * Используйте roleService.assignRoleToMember / removeRoleFromMember.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async updateMemberRoles(_serverId: number, _memberId: number, _roleIds: number[]): Promise<ServerMember> {
+        throw new Error('Member roles endpoint is not available in the current API. Use roleService instead.');
+    }
+
+    /**
+     * Получить список забаненных пользователей.
+     * Endpoint /servers/:serverId/bans отсутствует в API бэкенда.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async getBans(_serverId: number): Promise<BanInfo[]> {
+        throw new Error('Bans list endpoint is not available in the current API');
+    }
+
+    /**
+     * Разбанить пользователя.
+     * Endpoint /servers/:serverId/bans/:userId отсутствует в API бэкенда.
+     */
+    // eslint-disable-next-line require-await -- Stub: endpoint not available
+    async unbanMember(_serverId: number, _userId: number): Promise<void> {
+        throw new Error('Unban endpoint is not available in the current API');
+    }
+}
+
 export interface CurrentMemberPermissions {
     totalPermissions: string; // BigInt в виде строки
     roles: Array<{
@@ -54,131 +183,6 @@ export interface BanInfo {
         profilePicture?: string;
     };
     bannedAt: string;
-}
-
-class ServerMembersService {
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async getServerMembers(serverId: number): Promise<ServerMember[]> {
-        return apiClient(`/serverMembers/${serverId}/members`, {
-            method: 'GET'
-        });
-    }
-
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async updateMemberRole(serverId: number, memberId: number, role: string): Promise<ServerMember> {
-        return apiClient(
-            `/serverMembers/${serverId}/members/${memberId}`,
-            {
-                method: 'PUT'
-            },
-            { role }
-        );
-    }
-
-    async removeMember(serverId: number, memberId: number): Promise<void> {
-        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
-            method: 'DELETE'
-        });
-    }
-
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async addMember(serverId: number, userId: number, role = 'member'): Promise<ServerMember> {
-        return apiClient(
-            `/serverMembers/${serverId}/members`,
-            {
-                method: 'POST'
-            },
-            { userId, role }
-        );
-    }
-
-    /**
-     * Получить права текущего пользователя на сервере
-     * TODO: Endpoint /serverMembers/{serverId}/members/me отсутствует в текущем API бэкенда.
-     */
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async getCurrentMemberPermissions(serverId: number): Promise<CurrentMemberPermissions> {
-        return apiClient(`/serverMembers/${serverId}/members/me`, {
-            method: 'GET'
-        });
-    }
-
-    /**
-     * Исключить участника из сервера (Kick)
-     */
-    async kickMember(serverId: number, memberId: number): Promise<void> {
-        await apiClient(`/serverMembers/${serverId}/members/${memberId}`, {
-            method: 'DELETE'
-        });
-    }
-
-    /**
-     * Забанить участника
-     */
-    async banMember(serverId: number, memberId: number, reason?: string): Promise<void> {
-        await apiClient(
-            `/serverMembers/${serverId}/members/${memberId}/ban`,
-            {
-                method: 'POST'
-            },
-            { reason }
-        );
-    }
-
-    /**
-     * Обновить голосовые настройки участника (Mute/Deafen)
-     */
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async updateVoiceSettings(
-        serverId: number,
-        memberId: number,
-        isMuted?: boolean,
-        isDeafened?: boolean
-    ): Promise<ServerMember> {
-        return apiClient(
-            `/serverMembers/${serverId}/members/${memberId}/voice`,
-            {
-                method: 'PATCH'
-            },
-            { isMuted, isDeafened }
-        );
-    }
-
-    /**
-     * Обновить роли участника
-     * TODO: Endpoint /serverMembers/{serverId}/members/{memberId}/roles отсутствует в текущем API бэкенда.
-     */
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async updateMemberRoles(serverId: number, memberId: number, roleIds: number[]): Promise<ServerMember> {
-        return apiClient(
-            `/serverMembers/${serverId}/members/${memberId}/roles`,
-            {
-                method: 'PUT'
-            },
-            { roleIds }
-        );
-    }
-
-    /**
-     * Получить список забаненных пользователей
-     * TODO: Endpoint /servers/{serverId}/bans отсутствует в текущем API бэкенда.
-     */
-    // eslint-disable-next-line require-await -- Returns promise directly
-    async getBans(serverId: number): Promise<BanInfo[]> {
-        return apiClient(`/servers/${serverId}/bans`, {
-            method: 'GET'
-        });
-    }
-
-    /**
-     * Разбанить пользователя
-     * TODO: Endpoint /servers/{serverId}/bans/{userId} отсутствует в текущем API бэкенда.
-     */
-    async unbanMember(serverId: number, userId: number): Promise<void> {
-        await apiClient(`/servers/${serverId}/bans/${userId}`, {
-            method: 'DELETE'
-        });
-    }
 }
 
 export const serverMembersService = new ServerMembersService();

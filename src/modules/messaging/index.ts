@@ -13,6 +13,8 @@ export { messageStore } from './store/messageStore';
 
 // Services
 export { messageService } from './services/messageService';
+export { directMessageService } from './services/directMessageService';
 
 // Types
 export * from './types/message';
+export * from './types/directMessage';

@@ -88,6 +88,7 @@
                 "description": "Manage your account security",
                 "password": "Password",
                 "changePassword": "Change Password",
+                "changePasswordUnavailable": "Password change isn't supported by the server yet",
                 "currentPassword": "Current Password",
                 "currentPasswordPlaceholder": "Enter current password",
                 "newPassword": "New Password",

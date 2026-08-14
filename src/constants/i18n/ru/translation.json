@@ -89,6 +89,7 @@
                 "description": "Управление безопасностью аккаунта",
                 "password": "Пароль",
                 "changePassword": "Изменить пароль",
+                "changePasswordUnavailable": "Смена пароля пока не поддерживается сервером",
                 "currentPassword": "Текущий пароль",
                 "currentPasswordPlaceholder": "Введите текущий пароль",
                 "newPassword": "Новый пароль",

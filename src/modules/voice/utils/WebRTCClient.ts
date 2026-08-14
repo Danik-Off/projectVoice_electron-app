@@ -1,9 +1,10 @@
 /* eslint-disable max-lines -- WebRTC client with complex connection management */
 import { reaction } from 'mobx';
-import { iceServers, audioSettingsStore } from '../../../core';
+import { iceServers as staticIceServers, audioSettingsStore } from '../../../core';
 import type { Signal } from '../types/WebRTCClient.types';
 import participantVolumeStore from '../store/ParticipantVolumeStore';
 import voiceActivityService from '../services/VoiceActivityService';
+import { voiceConfigService } from '../services/voiceConfigService';
 
 interface ConnectionQuality {
     rtt: number;
@@ -59,11 +60,19 @@ class WebRTCClient {
     private readonly defaultSampleRate = 48000;
     private readonly disconnectGracePeriodMs = 3000;
     private selectedOutputDeviceId: string | null = null;
+    // ICE-серверы с бэкенда (STUN + короткоживущий TURN, если настроен) -
+    // запрашиваются при инициализации, до этого момента используется статический STUN-фолбэк
+    private dynamicIceServers: RTCIceServer[] | null = null;
 
     // Инициализация медиа с реакцией на изменения настроек
-    // eslint-disable-next-line require-await -- No await needed
     public async initializeMedia() {
         voiceActivityService.initialize();
+
+        try {
+            this.dynamicIceServers = await voiceConfigService.getIceServers();
+        } catch (error) {
+            console.error('WebRTCClient: Failed to fetch ICE servers from backend, using static STUN fallback', error);
+        }
 
         if (audioSettingsStore.stream != null && audioSettingsStore.stream.getAudioTracks().length > 0) {
             this.setupLocalVoiceActivity();
@@ -104,7 +113,7 @@ class WebRTCClient {
         }
 
         const newPeerConnection = new RTCPeerConnection({
-            iceServers,
+            iceServers: this.dynamicIceServers ?? staticIceServers,
             iceCandidatePoolSize: 10,
             bundlePolicy: 'max-bundle',
             rtcpMuxPolicy: 'require',
@@ -180,7 +189,14 @@ class WebRTCClient {
 
         // Обработка получения треков
         newPeerConnection.ontrack = (trackEvent) => {
-            console.warn('WebRTCClient: ontrack from', id, 'kind:', trackEvent.track.kind, 'muted:', trackEvent.track.muted);
+            console.warn(
+                'WebRTCClient: ontrack from',
+                id,
+                'kind:',
+                trackEvent.track.kind,
+                'muted:',
+                trackEvent.track.muted
+            );
             if (trackEvent.track.kind === 'audio') {
                 this.addRemoteStream(trackEvent.track, id);
             }

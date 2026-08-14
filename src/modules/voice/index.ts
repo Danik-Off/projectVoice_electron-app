@@ -10,6 +10,7 @@ export { default as ParticipantVolumeStore } from './store/ParticipantVolumeStor
 
 // Services
 export { default as VoiceActivityService } from './services/VoiceActivityService';
+export { voiceConfigService } from './services/voiceConfigService';
 
 // Utils
 export { default as WebRTCClient } from './utils/WebRTCClient';

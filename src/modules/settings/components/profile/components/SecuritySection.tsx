@@ -70,10 +70,14 @@ const SecuritySection: React.FC<SecuritySectionProps> = observer(
                                 <button
                                     className="btn-change-password"
                                     onClick={onChangePassword}
-                                    disabled={isPasswordLoading}
+                                    disabled
+                                    title={t('settingsPage.profile.security.changePasswordUnavailable')}
                                 >
                                     {t('settingsPage.profile.security.changePassword')}
                                 </button>
+                                <p className="setting-hint">
+                                    {t('settingsPage.profile.security.changePasswordUnavailable')}
+                                </p>
                             </div>
                         </div>
 
